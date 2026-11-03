@@ -346,6 +346,23 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .acmsg{margin:0;font-size:13px;min-height:1em;color:#e07a5f}
 .acmsg.ok{color:var(--muted)}
 .accode{font-family:var(--f-num);font-size:22px;letter-spacing:6px;text-align:center}
+.cmtabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.cmtabs button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 14px;cursor:pointer}
+.cmtabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.cmtabs button .pcsub{margin-left:6px;color:inherit;opacity:.75}
+.cmbody{line-height:1.5}
+.cmbody p{margin:0 0 .6em}
+.cmbody h3{font-family:var(--f-display);font-size:19px;margin:1em 0 .3em}
+.cmbody h4{font-size:16px;margin:.9em 0 .25em}
+.cmbody h5,.cmbody h6{font-size:15px;margin:.8em 0 .2em}
+.cmbody ul{margin:0 0 .6em;padding-left:22px}
+.cmbody .cmhead{font-style:italic;color:var(--muted);margin-bottom:.5em}
+.cmbody .cmsrc{font-size:12px;color:var(--muted);margin-top:.6em}
+.cmtab{border-collapse:collapse;font-size:13px;margin:.4em 0 .8em;max-width:100%}
+.cmtab caption{text-align:left;font-weight:700;padding:2px 0 4px}
+.cmtab th,.cmtab td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
+.cmtab td.sec{font-style:italic;color:var(--muted)}
+.cmwrap{overflow-x:auto}
 .modline{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .modline a,.empty a,.mdbanner a{color:inherit;font-weight:600}
 .mdh{font-family:var(--f-display);font-size:18px;margin:22px 0 8px}
@@ -666,7 +683,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.20</a><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#compendio">📚 Compendio</a><a href="#tablas">🎲 Tablas</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.21</a><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -681,6 +698,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <a class="tool" href="#criaturas"><span class="ti">🐉</span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
     <a class="tool" href="#conjuros"><span class="ti">✨</span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
     <a class="tool" href="#tablas"><span class="ti">🎲</span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
+    <a class="tool" href="#compendio"><span class="ti">📚</span><span class="tn">Compendio</span><span class="td">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span><span class="tstat" id="hs-comp"></span></a>
     <a class="tool" href="#modulos"><span class="ti">📦</span><span class="tn">Módulos</span><span class="td">Activa el SRD, añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
@@ -688,9 +706,22 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   <p class="clmore"><a href="#cambios">Ver historial completo →</a></p>
 </section>
 
+<section class="vpage" id="view-compendio" hidden>
+  <div class="vhead"><h2>Compendio</h2><span class="pcsub" id="cm-count"></span></div>
+  <p class="modline">Objetos, dotes, clases, especies y trasfondos de los módulos activos · <a href="#modulos">📦 Gestionar módulos</a></p>
+  <div class="cmtabs" role="tablist" aria-label="Apartados del compendio" id="cm-tabs"></div>
+  <div class="bfilters">
+    <input id="cm-q" placeholder="Buscar por nombre" aria-label="Buscar en el compendio">
+    <select id="cm-f1" aria-label="Filtro"></select>
+    <select id="cm-f2" aria-label="Filtro"></select>
+    <select id="cm-fu" aria-label="Fuente"></select>
+  </div>
+  <div class="vlist" id="cm-list"></div>
+</section>
+
 <section class="vpage" id="view-modulos" hidden>
   <div class="vhead"><h2>Módulos</h2><span class="pcsub" id="md-count"></span></div>
-  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas y, pronto, objetos, clases, especies, dotes y trasfondos. <b>Nada viene activado</b>: elige lo que quieras usar. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
+  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. <b>Nada viene activado</b>: elige lo que quieras usar. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
   <h3 class="mdh">Oficiales libres</h3>
   <div class="mdgrid" id="md-free"></div>
   <h3 class="mdh">Oficiales · trae tu copia</h3>
@@ -731,7 +762,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
           <tr><td><code>autor</code> · <code>version</code> · <code>licencia</code> · <code>descripcion</code></td><td>Datos que se muestran en la ficha del módulo</td></tr>
           <tr><td><code>criaturas</code></td><td>Fichas con el mismo formato que exporta el bestiario (<code>n</code>, <code>ty</code>, <code>cr</code>, <code>ac</code>, <code>hp</code>, <code>hd</code>, <code>a</code>…)</td></tr>
           <tr><td><code>tablas</code></td><td><code>{"n":"Nombres","formato":"{Nombre} {Apellido}","modo":"columna","columnas":{"Nombre":[…],"Apellido":[…]}}</code>. Las filas son el dado</td></tr>
-          <tr><td><code>objetos</code> · <code>clases</code> · <code>especies</code> · <code>dotes</code> · <code>trasfondos</code></td><td>Se guardan ya y se verán en el Compendio. Cada entrada necesita <code>n</code> y su texto en <code>d</code></td></tr>
+          <tr><td><code>objetos</code> · <code>dotes</code> · <code>clases</code> · <code>especies</code> · <code>trasfondos</code></td><td>Salen en 📚 Compendio. Cada entrada necesita <code>n</code> y su texto en <code>d</code> (admite <code>**negrita**</code>, <code>*cursiva*</code>, listas con «- » y dados como <code>2d6</code>). Opcionales: en objetos <code>t</code> (tipo), <code>r</code> (rareza), <code>s</code> (sintonización) y <code>precio</code>; en dotes <code>cat</code> y <code>req</code>; en clases <code>dado</code>, <code>principal</code>, <code>salvaciones</code> y <code>sub</code> (lista de subclases); en especies <code>tipo</code>, <code>tam</code> y <code>vel</code>; en trasfondos <code>car</code>, <code>dote</code> y <code>hab</code></td></tr>
           <tr><td colspan="2"><b>Cada conjuro</b> de <code>conjuros</code>:</td></tr>
           <tr><td><code>n</code></td><td>Nombre en español (obligatorio)</td></tr>
           <tr><td><code>en</code></td><td>Nombre en inglés: sirve para buscar y para sustituir al conjuro del SRD equivalente</td></tr>
@@ -785,6 +816,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.21 <span>3 nov 2026</span></h3><ul>
+      <li>Nueva página <b>📚 Compendio</b> con pestañas: objetos (258 objetos mágicos, armas, armaduras, herramientas y equipo de aventurero), dotes, clases (con sus tablas de rasgos, subclase y todos los rasgos por nivel), especies y trasfondos del SRD 5.2.1 en español.</li>
+      <li>Buscador y filtros por categoría, rareza y fuente. Al abrir una entrada, sus dados y CD se pueden tirar con un clic.</li>
+      <li>Los objetos, dotes, clases, especies y trasfondos de tus módulos también salen en el compendio y sustituyen a los del SRD con el mismo nombre.</li></ul></li>
     <li><h3>v1.20 <span>3 nov 2026</span></h3><ul>
       <li>Páginas de <a href="terminos.html">condiciones del servicio</a> y <a href="privacidad.html">política de privacidad</a>, enlazadas en el pie y en la ventana de cuenta.</li></ul></li>
     <li><h3>v1.19 <span>3 nov 2026</span></h3><ul>
@@ -896,8 +931,6 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 <section class="vpage" id="view-conjuros" hidden>
   <div class="vhead"><h2>Listado de conjuros</h2><span class="pcsub" id="vs-count"></span></div>
   <p class="modline">Fuentes activas: <span id="bk-count"></span> · <a href="#modulos">📦 Gestionar módulos</a></p>
-    </div>
-  </details>
   <div class="bfilters">
     <input id="vs-q" placeholder="Buscar por nombre (también en inglés)" aria-label="Buscar conjuro">
     <select id="vs-lv" aria-label="Nivel"><option value="">Cualquier nivel</option><option value="0">Truco</option><option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option><option value="4">Nivel 4</option><option value="5">Nivel 5</option><option value="6">Nivel 6</option><option value="7">Nivel 7</option><option value="8">Nivel 8</option><option value="9">Nivel 9</option></select>
@@ -1350,8 +1383,9 @@ function applyHP(c,kind,raw){
 }
 
 /* ---------- fichas ---------- */
-function rich(desc){
-  let h=esc(desc).replace(/−/g,'-');
+// Convierte en botones de tirada los ataques, dados y CD de un texto ya escapado
+function diceify(h){
+  h=h.replace(/−/g,'-');
   h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque):\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
   h=h.replace(/(\d+) \((\d+d\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es)=>{
     const ty=en?en.toLowerCase():es?es.toLowerCase():'';
@@ -1360,6 +1394,13 @@ function rich(desc){
   h=h.replace(/(?<![\w"(=>+-])(\d+d\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno))?/gu,
     (all,ex,tail,ty)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${ty||''}" title="Tirar">${ex}</button>${tail||''}`);
   h=h.replace(/\b(?:DC|CD) (\d+)/g,'<span class="dc">CD $1</span>');
+  return h;
+}
+// Texto con formato propio (fichas de jugador, conjuros y módulos): se escapa y admite **negrita**, *cursiva* y listas
+// HTML generado por nosotros (compendio del SRD): los dados solo se buscan fuera de las etiquetas
+const richHTML=html=>String(html||'').split(/(<[^>]+>)/).map(s=>s.startsWith('<')?s:diceify(s)).join('');
+function rich(desc){
+  let h=diceify(esc(desc));
   h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>');
   // listas en conjuros
   h=h.split(/\n/).map(l=>/^- /.test(l)?`<li>${l.slice(2)}</li>`:l).join('\n').replace(/(<li>.*<\/li>\n?)+/g,m=>`<ul>${m}</ul>`).replace(/\n\n/g,'<br>').replace(/\n/g,' ');
@@ -1815,9 +1856,8 @@ function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}c
 // Módulo: {id,n,ab,ref,autor,version,lic,desc,on,criaturas:[],conjuros:[],tablas:[],objetos:[],clases:[],especies:[],dotes:[],trasfondos:[]}
 const MKEY='combat-modules-v1';
 const MOD_TYPES=[['criaturas','criatura'],['conjuros','conjuro'],['tablas','tabla'],['objetos','objeto'],['clases','clase'],['especies','especie'],['dotes','dote'],['trasfondos','trasfondo']];
-const MOD_LATER=new Set(['objetos','clases','especies','dotes','trasfondos']);   // se guardan ya; se verán en el Compendio
 const OFFICIAL_FREE=[
-  {id:'srd521',n:'SRD 5.2.1',ab:'SRD',year:'2024',lic:'CC-BY-4.0',desc:'Documento de referencia oficial de D&D 2024 en español: criaturas, conjuros y reglas básicas. Objetos, clases, especies, dotes y trasfondos llegarán con el Compendio.'},
+  {id:'srd521',n:'SRD 5.2.1',ab:'SRD',year:'2024',lic:'CC-BY-4.0',desc:'Documento de referencia oficial de D&D 2024 en español: criaturas, conjuros, objetos mágicos y equipo, dotes, clases, especies y trasfondos.'},
   {id:'srd51',n:'SRD 5.1',ab:'SRD51',year:'2014',lic:'CC-BY-4.0',desc:'Las reglas de 2014.',soon:true}];
 const OFFICIAL_BYO=[
   {id:'mdj',n:'Manual del Jugador 2024',ab:'MdJ',k:'manual del jugador'},
@@ -2272,8 +2312,7 @@ async function saveFile(name,text){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);return true;
 }
 function mdCard(o,md,kind){
-  const on=kind==='free'?modOn(o.id):!!md?.on,cnt=kind==='free'?(o.id==='srd521'?[SRD_ALL.length?`${SRD_ALL.length} criaturas`:'',SRD_SPELLS.length?`${SRD_SPELLS.length} conjuros`:''].filter(Boolean).join(' · ')||'Cargando…':''):md?modCounts(md):'';
-  const later=md?MOD_TYPES.filter(([k])=>MOD_LATER.has(k)&&(md[k]||[]).length).length:0;
+  const on=kind==='free'?modOn(o.id):!!md?.on,cnt=kind==='free'?(o.id==='srd521'?[SRD_ALL.length?`${SRD_ALL.length} criaturas`:'',SRD_SPELLS.length?`${SRD_SPELLS.length} conjuros`:'',...(COMP_SRD?CM_TABS.map(([k,,one,many])=>{const n=(COMP_SRD[k]||[]).length;return n?`${n} ${n===1?one:many}`:'';}):['objetos, dotes, clases, especies y trasfondos'])].filter(Boolean).join(' · ')||'Cargando…':''):md?modCounts(md):'';
   const meta=[o.year,o.lic||md?.lic,md?.autor&&`por ${md.autor}`,md?.version&&`v${md.version}`,md?.pub&&'del catálogo'].filter(Boolean).join(' · ');
   let btns='';
   if(o.soon)btns='<span class="mdst">Próximamente</span>';
@@ -2284,7 +2323,7 @@ function mdCard(o,md,kind){
     +(kind!=='free'?`<button type="button" class="btn sm danger" data-act="mddel" data-id="${esc(o.id)}" data-confirm>Quitar</button>`:'');
   return `<div class="mdcard${on?' on':''}${o.soon?' soon':''}"><div class="mdt">${esc(o.n)} <span class="tag">${esc(o.ab||md?.ab||'')}</span></div>
     ${meta?`<p class="mdc">${esc(meta)}</p>`:''}${(o.desc||md?.desc)?`<p>${esc(o.desc||md.desc)}</p>`:''}
-    ${cnt?`<p class="mdc">${esc(cnt)}${later?' (objetos, clases y demás se verán en el Compendio)':''}</p>`:''}<div class="inline">${btns}</div></div>`;
+    ${cnt?`<p class="mdc">${esc(cnt)}</p>`:''}<div class="inline">${btns}</div></div>`;
 }
 function renderMods(){
   if(!$('#md-free'))return;const M=mods();
@@ -2310,6 +2349,75 @@ function mdAct(act,b){
       saveFile(modSlug(n).slice(3)+'.json',JSON.stringify(out,null,2)).then(ok=>{if(ok)toast(`Módulo «${n}» descargado: ${criaturas.length} criaturas y ${tablas.length} tablas`);});break;}
   }
 }
+/* ---------- compendio: objetos, dotes, clases, especies y trasfondos ---------- */
+// SRD 5.2.1 (compendio_srd.json, se descarga al abrir la página) + lo que traigan los módulos activos.
+// Como en conjuros, una entrada de un módulo sustituye a la del SRD con el mismo nombre.
+let COMP_SRD=null,compLoading=false,CM_RES=[];
+let cmTab=(()=>{try{return localStorage.getItem('cm-tab')||'objetos';}catch{return 'objetos';}})();
+const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote','dotes'],['clases','Clases','clase','clases'],['especies','Especies','especie','especies'],['trasfondos','Trasfondos','trasfondo','trasfondos']];
+const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herramienta:'Herramientas',equipo:'Equipo de aventurero'};
+const RARITY=['común','infrecuente','raro','muy raro','legendario','artefacto'];
+const rarKey=r=>{const f=fold(r).replace(/a\b/g,'o');return RARITY.find(k=>f.startsWith(fold(k)))||(f?'variable':'');};
+function compLoad(){
+  if(COMP_SRD||compLoading)return;compLoading=true;
+  getJSON('compendio_srd.json').then(d=>{COMP_SRD=d||{};compLoading=false;if(location.hash==='#compendio')renderCompendio();renderHome();});
+}
+function compList(tab){
+  const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
+  const mod=activeMods().flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n})));
+  const by=new Map();for(const x of [...srd,...mod])by.set(fold(x.n),x);
+  return [...by.values()].sort((a,b)=>a.n.localeCompare(b.n,'es'));
+}
+const cmTxt=v=>esc(String(v??''));
+const CM_COLS={
+  objetos:[['Nombre',x=>cmTxt(x.n)],['Tipo',x=>cmTxt(x.t||OBJ_KIND[x.k]||'')],['Rareza',x=>cmTxt(x.r||'')],['Sint.',x=>x.s?'<span class="yes" title="Requiere sintonización">✓</span>':'<span class="no" aria-label="No">–</span>','c'],['Precio',x=>cmTxt(x.precio||'')]],
+  dotes:[['Nombre',x=>cmTxt(x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Requisitos',x=>cmTxt(x.req||'—')]],
+  clases:[['Nombre',x=>cmTxt(x.n)],['Dado de golpe',x=>cmTxt((x.info?.['Dado de puntos de golpe']||x.dado||'').replace(/ por nivel.*/,''))],['Característica principal',x=>cmTxt(x.info?.['Característica principal']||x.principal||'')],['Salvaciones',x=>cmTxt(x.info?.['Competencias en tiradas de salvación']||x.salvaciones||'')],['Subclases',x=>cmTxt((x.sub||[]).join(', '))]],
+  especies:[['Nombre',x=>cmTxt(x.n)],['Tamaño',x=>cmTxt(String(x.tam||'').replace(/\s*\(.*?\)/g,''))],['Velocidad',x=>cmTxt(x.vel||'')]],
+  trasfondos:[['Nombre',x=>cmTxt(x.n)],['Características',x=>cmTxt(x.car||'')],['Dote',x=>cmTxt(x.dote||'')],['Habilidades',x=>cmTxt(x.hab||'')]]
+};
+function cmFilters(list){
+  const f1=$('#cm-f1'),f2=$('#cm-f2'),fu=$('#cm-fu'),keep=(sel,html)=>{const v=sel.value;sel.innerHTML=html;sel.value=[...sel.options].some(o=>o.value===v)?v:'';};
+  f1.hidden=f2.hidden=true;
+  if(cmTab==='objetos'){f1.hidden=f2.hidden=false;
+    keep(f1,'<option value="">Cualquier categoría</option>'+Object.entries(OBJ_KIND).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')+'<option value="otro">Otros</option>');
+    keep(f2,'<option value="">Cualquier rareza</option>'+[...RARITY,'variable'].map(k=>`<option value="${k}">${k[0].toUpperCase()+k.slice(1)}</option>`).join(''));}
+  if(cmTab==='dotes'){f1.hidden=false;const cats=[...new Set(list.map(x=>x.cat).filter(Boolean))];keep(f1,'<option value="">Cualquier categoría</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join(''));}
+  const srcs=[...new Set(list.map(x=>x._src))];
+  keep(fu,'<option value="">Todas las fuentes</option>'+srcs.map(s=>`<option>${esc(s)}</option>`).join(''));
+}
+function renderCompendio(){
+  compLoad();
+  const counts=Object.fromEntries(CM_TABS.map(([k])=>[k,compList(k).length]));
+  $('#cm-tabs').innerHTML=CM_TABS.map(([k,l])=>`<button type="button" role="tab" data-cmtab="${k}" aria-selected="${k===cmTab}">${l}<span class="pcsub">${counts[k]}</span></button>`).join('');
+  const all=compList(cmTab);cmFilters(all);
+  const q=fold($('#cm-q').value),f1=$('#cm-f1').value,f2=$('#cm-f2').value,fu=$('#cm-fu').value;
+  const res=all.filter(x=>(!q||fold(x.n).includes(q))&&(!fu||x._src===fu)
+    &&(cmTab!=='objetos'||((!f1||(f1==='otro'?!OBJ_KIND[x.k]:x.k===f1))&&(!f2||rarKey(x.r)===f2)))
+    &&(cmTab!=='dotes'||!f1||x.cat===f1));
+  CM_RES=res;const tb=CM_TABS.find(x=>x[0]===cmTab);
+  $('#cm-count').textContent=`${res.length} ${res.length===1?tb[2]:tb[3]}`;
+  const cols=CM_COLS[cmTab];
+  if(!all.length){$('#cm-list').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando el compendio del SRD…</div>':`<div class="empty">No hay ${tb[3]} en tus módulos activos. Activa el SRD 5.2.1 u otro módulo en <a href="#modulos">📦 Módulos</a>.</div>`;return;}
+  $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc(x._src)}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
+}
+function cmBody(x){
+  const head=cmTab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):cmTab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):'';
+  const facts=cmTab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:cmTab==='clases'?Object.entries(x.info||{}):[];
+  const body=x._html?richHTML(x.d):rich(String(x.d||''));
+  return `<div class="cmbody">${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
+}
+function toggleCompRow(r){
+  const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
+  if(nx?.classList.contains('spdet'))nx.remove();
+  r.setAttribute('aria-expanded',open);
+  if(open)r.insertAdjacentHTML('afterend',`<tr class="spdet"><td colspan="${CM_COLS[cmTab].length+1}"><div class="vbody sb">${cmBody(CM_RES[+r.dataset.i])}</div></td></tr>`);
+}
+$('#cm-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-cmtab]');if(!b)return;cmTab=b.dataset.cmtab;try{localStorage.setItem('cm-tab',cmTab);}catch{}$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';renderCompendio();});
+for(const id of ['#cm-q','#cm-f1','#cm-f2','#cm-fu'])$(id).addEventListener('input',renderCompendio);
+$('#cm-list').addEventListener('click',e=>{if(e.target.closest('.spdet button,.spdet a'))return;const r=e.target.closest('tr.sprow');if(r)toggleCompRow(r);});
+$('#cm-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleCompRow(r);}});
+
 function extraAct(act,b,c,e){
   if(act.startsWith('md')){mdAct(act,b);return;}
   if(act.startsWith('cat')){catAct(act,b);return;}
@@ -2351,7 +2459,7 @@ function extraAct(act,b,c,e){
 /* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const v=location.hash.slice(1);
-  const pages=['inicio','jugadores','criaturas','conjuros','tablas','modulos','cambios'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
+  const pages=['inicio','jugadores','criaturas','conjuros','compendio','tablas','modulos','cambios'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage?v2:'combate')));
@@ -2363,6 +2471,7 @@ function showView(){
   if(v==='conjuros'){fillSpellFilters();renderSpellView();}
   if(v==='tablas')renderTables();
   if(v2==='modulos'){renderMods();loadCatalog();}
+  if(v2==='compendio')renderCompendio();
   if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
 }
@@ -2373,6 +2482,7 @@ function renderHome(){
   $('#hs-party').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'Sin personajes';
   $('#hs-best').textContent=allBest().length?`${allBest().length} criaturas${MY.length?` · ${MY.length} tuyas`:''}`:'Sin criaturas activas';
   {const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;$('#hs-mods').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';$('#hs-nomods').hidden=n>0;}
+  {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-comp').textContent=n?`${n} entradas`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
