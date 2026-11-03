@@ -15,6 +15,7 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 | `conjuros.json` | Conjuros generados a partir del CSV personal (manuales). **Uso personal**: no se publica en abierto ni se sube al repositorio. |
 | `tools/build_srd.py` | Descarga y compacta el SRD 2024 en inglés desde Open5e. |
 | `tools/build_es.py` | Extrae los textos del PDF oficial en español y los empareja con los datos en inglés. |
+| `libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`). **Uso personal**: ignorado por git. |
 | `tools/build_spells.py` | Convierte el CSV de conjuros a `conjuros.json`. |
 | `tools/build_srd_spells.py` | Extrae los conjuros del PDF oficial en español (`pdftotext`) y les pone el nombre en inglés de Open5e. |
 

@@ -303,6 +303,12 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .books input[type=url]{flex:1 1 auto;min-width:0;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
 .legal{max-width:1320px;margin:0 auto;padding:18px 16px 28px;font-size:12px;line-height:1.5;color:var(--muted)}
 .legal a{color:inherit}
+.bkfmt>summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.bkfmt[open]{display:grid;gap:8px}
+.fmtt{border-collapse:collapse;font-size:13px}
+.fmtt td{padding:4px 10px 4px 0;vertical-align:top;border-bottom:1px solid var(--line)}
+.fmtt td:first-child{white-space:nowrap}
+.fmtex{margin:0;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;font-family:var(--f-num);font-size:12px;overflow-x:auto;max-height:320px}
 .sptable .num{text-align:right;font-family:var(--f-num);font-size:13px}
 .sptable .num small{display:block;font-size:11px;color:var(--muted)}
 .sptable .src{color:var(--muted);font-size:13px}
@@ -589,7 +595,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.13</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.14</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -605,6 +611,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.14 <span>3 nov 2026</span></h3><ul>
+      <li>📚 Libros opcionales explica el formato del JSON con una tabla de campos y un ejemplo que se puede copiar.</li>
+      <li>El importador JSON acepta la escuela escrita normal («Evocación»), el nivel «Truco», las clases como texto y sí/no en concentración y ritual.</li></ul></li>
     <li><h3>v1.13 <span>3 nov 2026</span></h3><ul>
       <li>Los <b>339 conjuros del SRD 5.2.1</b> en español vienen incluidos de serie, con su nombre en inglés.</li>
       <li>Libros opcionales: en ✨ Conjuros puedes añadir los conjuros de tus manuales desde un archivo (CSV o JSON) o un enlace. Se guardan solo en tu navegador y sustituyen al conjuro del SRD equivalente (también los de nombre genérico, como «Cofre oculto» → «Cofre oculto de Leomund»).</li>
@@ -690,6 +699,39 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
         <form id="bk-urlform" class="inline"><input id="bk-url" type="url" placeholder="o pega un enlace a tu CSV/JSON" aria-label="Enlace al archivo de conjuros"><button class="btn">Importar</button></form>
         <button class="btn danger" data-act="bkclear" id="bk-clear" data-confirm hidden>Quitar mis libros</button>
       </div>
+      <details class="bkfmt">
+        <summary>Formato del archivo JSON</summary>
+        <p class="hint" style="display:block">Una lista de conjuros. Solo <code>n</code> es obligatorio; lo demás se puede omitir. Al importar se sustituye el libro que tuvieras cargado.</p>
+        <table class="fmtt"><tbody>
+          <tr><td><code>n</code></td><td>Nombre en español (obligatorio)</td></tr>
+          <tr><td><code>en</code></td><td>Nombre en inglés: sirve para buscar y para sustituir al conjuro del SRD equivalente</td></tr>
+          <tr><td><code>lv</code></td><td>Nivel: <code>0</code> (o <code>"Truco"</code>) a <code>9</code></td></tr>
+          <tr><td><code>sch</code></td><td>Escuela: Abjuración, Adivinación, Conjuración, Encantamiento, Evocación, Ilusionismo, Nigromancia o Transmutación</td></tr>
+          <tr><td><code>cls</code></td><td>Clases: lista <code>["Mago","Brujo"]</code> o texto separado por comas</td></tr>
+          <tr><td><code>ct</code> · <code>rg</code> · <code>comp</code> · <code>dur</code></td><td>Tiempo de lanzamiento, alcance, componentes y duración (texto). Si <code>comp</code> lleva paréntesis, la M sale en dorado (material con coste)</td></tr>
+          <tr><td><code>conc</code> · <code>rit</code></td><td>Concentración y ritual: <code>true</code> o <code>false</code></td></tr>
+          <tr><td><code>d</code></td><td>Descripción. Los dados (<code>8d6</code>) y las CD se convierten en botones de tirada</td></tr>
+          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página/fuente (<code>"249 MdJ"</code> se muestra como «MdJ p. 249»)</td></tr>
+        </tbody></table>
+        <pre class="fmtex" id="bk-example">[
+  {
+    "n": "Bola de fuego",
+    "en": "Fireball",
+    "lv": 3,
+    "sch": "Evocación",
+    "cls": ["Hechicero", "Mago"],
+    "ct": "Acción",
+    "rg": "45 m",
+    "comp": "V, S, M (una pelota de guano de murciélago y azufre)",
+    "dur": "Instantáneo",
+    "conc": false,
+    "rit": false,
+    "d": "Una ráfaga brillante surge de ti… sufrirán 8d6 de daño de fuego…",
+    "pg": "249 MdJ"
+  }
+]</pre>
+        <div class="inline"><button type="button" class="btn sm" data-act="bkexample">Copiar ejemplo</button></div>
+      </details>
     </div>
   </details>
   <div class="bfilters">
@@ -1651,9 +1693,18 @@ Promise.all([getJSON('conjuros_srd.json'),getJSON('conjuros.json')]).then(([srd,
   if(Array.isArray(srd))SRD_SPELLS=srd;if(Array.isArray(pack))PACK_SPELLS=pack;
   mergeSpells();render();if(location.hash==='#inicio'||!location.hash)renderHome();
 });
+const SCH_KEY=s=>{const f=fold(s);return Object.keys(SCHOOLS).find(k=>k===f||fold(SCHOOLS[k])===f)||'';};
+const yesNo=v=>v===true||/^(true|s[ií]|si|x|1)$/i.test(String(v??'').trim());
+function normSpell(x){
+  const lv=/truco/i.test(String(x.lv))?0:Math.max(0,Math.min(9,parseInt(x.lv,10)||0));
+  const cls=Array.isArray(x.cls)?x.cls:String(x.cls||'').split(',');
+  const str=v=>v==null?'':String(v).trim();
+  return {n:str(x.n),en:str(x.en),lv,fl:str(x.fl),d:str(x.d),dur:str(x.dur),rg:str(x.rg),ct:str(x.ct),comp:str(x.comp),
+    conc:yesNo(x.conc),rit:yesNo(x.rit),use:str(x.use),cls:cls.map(c=>String(c).trim()).filter(Boolean),sch:SCH_KEY(x.sch),pg:str(x.pg)};
+}
 function importBook(text,name){
   const s=text.trim();let arr;
-  if(s.startsWith('[')){arr=JSON.parse(s);if(!Array.isArray(arr)||!arr.every(x=>x&&x.n))throw new Error('el JSON no tiene el formato de conjuros');}
+  if(/^[\[{]/.test(s)){let j=JSON.parse(s);if(!Array.isArray(j))j=j.conjuros||j.spells;if(!Array.isArray(j))throw new Error('el JSON debe ser una lista de conjuros');arr=j.filter(x=>x&&x.n).map(normSpell);if(!arr.length)throw new Error('ningún conjuro tiene «n» (nombre)');}
   else arr=spellsFromCSV(s);
   if(!arr.length)throw new Error('no hay conjuros');
   if(!lsSet(SKEY,arr))toast('El navegador no deja guardar tantos datos; los conjuros solo durarán esta sesión');
@@ -1804,6 +1855,7 @@ function extraAct(act,b,c,e){
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
     case 'openparty':location.hash='jugadores';break;
+    case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
     case 'bkclear':lsSet(SKEY,[]);mergeSpells();render();toast('Libros quitados: quedan los conjuros del SRD');break;
     case 'pcnew':openPC(null);break;
     case 'pcedit':openPC(b.dataset.id);break;
