@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.15.0] - 2026-11-03
+### Añadido
+- Registro de libros: cada libro importado queda guardado con su nombre y abreviatura; el panel 📚 los lista con su número de conjuros y se pueden quitar uno a uno. Se pueden tener varios a la vez.
+- El JSON admite `libro` y `abrev` (`{"libro": "Manual del Jugador 2024", "abrev": "MdJ", "conjuros": [...]}`) o un campo `libro` en cada conjuro.
+- El filtro de fuente permite elegir cada libro registrado.
+### Cambiado
+- La columna Fuente muestra «MdJ p. 249» y la ficha el nombre completo del libro. `pg` pasa a ser solo el número de página.
+- Lo cargado con versiones anteriores se migra solo al registro.
+
 ## [1.14.0] - 2026-11-03
 ### Añadido
 - 📚 Libros opcionales explica el formato del JSON: tabla de campos y ejemplo con botón para copiarlo.

@@ -303,6 +303,8 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .books input[type=url]{flex:1 1 auto;min-width:0;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
 .legal{max-width:1320px;margin:0 auto;padding:18px 16px 28px;font-size:12px;line-height:1.5;color:var(--muted)}
 .legal a{color:inherit}
+.bklist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.bklist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
 .bkfmt>summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .bkfmt[open]{display:grid;gap:8px}
 .fmtt{border-collapse:collapse;font-size:13px}
@@ -595,7 +597,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.14</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.15</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -611,6 +613,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.15 <span>3 nov 2026</span></h3><ul>
+      <li>Los libros quedan <b>registrados con su nombre</b> («Manual del Jugador 2024»): el panel 📚 los lista con sus conjuros y se pueden quitar uno a uno. Puedes tener varios a la vez.</li>
+      <li>El JSON lleva <code>libro</code> y <code>abrev</code>; la columna Fuente muestra «MdJ p. 249» y la ficha el nombre completo. El filtro de fuente permite elegir cada libro.</li>
+      <li>Lo que ya tuvieras cargado se migra solo al nuevo registro.</li></ul></li>
     <li><h3>v1.14 <span>3 nov 2026</span></h3><ul>
       <li>📚 Libros opcionales explica el formato del JSON con una tabla de campos y un ejemplo que se puede copiar.</li>
       <li>El importador JSON acepta la escuela escrita normal («Evocación»), el nivel «Truco», las clases como texto y sí/no en concentración y ritual.</li></ul></li>
@@ -697,12 +703,13 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
       <div class="inline">
         <label class="btn" for="bk-file" tabindex="0">Cargar archivo</label><input type="file" id="bk-file" accept=".csv,.json,text/csv,application/json" hidden>
         <form id="bk-urlform" class="inline"><input id="bk-url" type="url" placeholder="o pega un enlace a tu CSV/JSON" aria-label="Enlace al archivo de conjuros"><button class="btn">Importar</button></form>
-        <button class="btn danger" data-act="bkclear" id="bk-clear" data-confirm hidden>Quitar mis libros</button>
       </div>
+      <ul class="bklist" id="bk-list" aria-label="Libros registrados"></ul>
       <details class="bkfmt">
         <summary>Formato del archivo JSON</summary>
-        <p class="hint" style="display:block">Una lista de conjuros. Solo <code>n</code> es obligatorio; lo demás se puede omitir. Al importar se sustituye el libro que tuvieras cargado.</p>
+        <p class="hint" style="display:block">Un objeto con el nombre del libro y su lista de conjuros. El libro queda registrado con ese nombre: si importas otro con el mismo nombre lo sustituye, y con otro nombre se suma. En cada conjuro solo <code>n</code> es obligatorio. También vale una lista sin más; entonces cada conjuro puede llevar su propio <code>"libro"</code>.</p>
         <table class="fmtt"><tbody>
+          <tr><td><code>libro</code> · <code>abrev</code></td><td>Nombre del manual (<code>"Manual del Jugador 2024"</code>) y abreviatura para la tabla (<code>"MdJ"</code>). Van fuera de la lista</td></tr>
           <tr><td><code>n</code></td><td>Nombre en español (obligatorio)</td></tr>
           <tr><td><code>en</code></td><td>Nombre en inglés: sirve para buscar y para sustituir al conjuro del SRD equivalente</td></tr>
           <tr><td><code>lv</code></td><td>Nivel: <code>0</code> (o <code>"Truco"</code>) a <code>9</code></td></tr>
@@ -711,25 +718,29 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
           <tr><td><code>ct</code> · <code>rg</code> · <code>comp</code> · <code>dur</code></td><td>Tiempo de lanzamiento, alcance, componentes y duración (texto). Si <code>comp</code> lleva paréntesis, la M sale en dorado (material con coste)</td></tr>
           <tr><td><code>conc</code> · <code>rit</code></td><td>Concentración y ritual: <code>true</code> o <code>false</code></td></tr>
           <tr><td><code>d</code></td><td>Descripción. Los dados (<code>8d6</code>) y las CD se convierten en botones de tirada</td></tr>
-          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página/fuente (<code>"249 MdJ"</code> se muestra como «MdJ p. 249»)</td></tr>
+          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página (<code>249</code>, se muestra «MdJ p. 249»)</td></tr>
         </tbody></table>
-        <pre class="fmtex" id="bk-example">[
-  {
-    "n": "Bola de fuego",
-    "en": "Fireball",
-    "lv": 3,
-    "sch": "Evocación",
-    "cls": ["Hechicero", "Mago"],
-    "ct": "Acción",
-    "rg": "45 m",
-    "comp": "V, S, M (una pelota de guano de murciélago y azufre)",
-    "dur": "Instantáneo",
-    "conc": false,
-    "rit": false,
-    "d": "Una ráfaga brillante surge de ti… sufrirán 8d6 de daño de fuego…",
-    "pg": "249 MdJ"
-  }
-]</pre>
+        <pre class="fmtex" id="bk-example">{
+  "libro": "Manual del Jugador 2024",
+  "abrev": "MdJ",
+  "conjuros": [
+    {
+      "n": "Bola de fuego",
+      "en": "Fireball",
+      "lv": 3,
+      "sch": "Evocación",
+      "cls": ["Hechicero", "Mago"],
+      "ct": "Acción",
+      "rg": "45 m",
+      "comp": "V, S, M (una pelota de guano de murciélago y azufre)",
+      "dur": "Instantáneo",
+      "conc": false,
+      "rit": false,
+      "d": "Una ráfaga brillante surge de ti… sufrirán 8d6 de daño de fuego…",
+      "pg": 249
+    }
+  ]
+}</pre>
         <div class="inline"><button type="button" class="btn sm" data-act="bkexample">Copiar ejemplo</button></div>
       </details>
     </div>
@@ -739,7 +750,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <select id="vs-lv" aria-label="Nivel"><option value="">Cualquier nivel</option><option value="0">Truco</option><option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option><option value="4">Nivel 4</option><option value="5">Nivel 5</option><option value="6">Nivel 6</option><option value="7">Nivel 7</option><option value="8">Nivel 8</option><option value="9">Nivel 9</option></select>
     <select id="vs-cls" aria-label="Clase"><option value="">Cualquier clase</option></select>
     <select id="vs-sch" aria-label="Escuela"></select>
-    <select id="vs-fu" aria-label="Fuente"><option value="">Todas las fuentes</option><option value="srd">SRD 5.2.1</option><option value="lib">Libros</option></select>
+    <select id="vs-fu" aria-label="Fuente"><option value="">Todas las fuentes</option><option value="srd">SRD 5.2.1</option></select>
     <select id="vs-sort" aria-label="Orden"><option value="name">Orden: nombre</option><option value="lv">Orden: nivel</option><option value="sch">Orden: escuela</option></select>
     <label class="chk"><input type="checkbox" id="vs-conc"> Concentración</label>
     <label class="chk"><input type="checkbox" id="vs-rit"> Ritual</label>
@@ -1614,7 +1625,7 @@ $('#cfgbtn').addEventListener('click',e=>{const r=document.documentElement,on=r.
 $('#skin').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.skin=v;else delete document.documentElement.dataset.skin;try{localStorage.setItem('combat-skin',v);}catch(err){}});
 
 /* ---------- grupo, encuentros y conjuros ---------- */
-const PKEY='combat-party-v1', EKEY='combat-presets-v1', SKEY='combat-spells-v1';
+const PKEY='combat-party-v1', EKEY='combat-presets-v1', SKEY='combat-spells-v1', LBKEY='combat-books-v1';
 const SCHOOLS={abjuracion:'Abjuración',conjuracion:'Conjuración',adivinacion:'Adivinación',encantamiento:'Encantamiento',evocacion:'Evocación',ilusionismo:'Ilusionismo',nigromancia:'Nigromancia',transmutacion:'Transmutación'};
 function lsGet(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
@@ -1663,7 +1674,20 @@ function spellsFromCSV(text){
 // Un conjuro de un libro sustituye al del SRD con el mismo nombre (en español o en inglés).
 const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 let SRD_SPELLS=[],PACK_SPELLS=[];
-const spellSrcLabel=s=>{if(s.src==='srd')return 'SRD 5.2.1';const m=String(s.pg||'').match(/^(\d+)\s*(\S+)$/);return m?`${m[2]} p. ${m[1]}`:(s.pg||'Libro');};
+// Libros registrados: [{n:'Manual del Jugador 2024',ab:'MdJ',spells:[…]}], guardados solo en este navegador.
+const KNOWN_BOOKS=[['manual del jugador','MdJ'],['guia del master','GdM'],['manual de monstruos','MdM'],['xanathar','GXT'],['tasha','CTT']];
+const bookAbbr=n=>(KNOWN_BOOKS.find(([k])=>fold(n).includes(k))||[])[1]||n;
+const ABBR_BOOK={mdj:'Manual del Jugador 2024',gdm:'Guía del Máster 2024',mdm:'Manual de Monstruos 2024'};
+const pgNum=pg=>(String(pg??'').match(/\d+/)||[''])[0];
+const spellSrcLabel=s=>s.src==='srd'?'SRD 5.2.1':`${s.ab||s.book||'Libro'}${pgNum(s.pg)?` p. ${pgNum(s.pg)}`:''}`;
+const spellSrcFull=s=>s.src==='srd'?'SRD 5.2.1 (CC-BY-4.0)':`${s.book||'Libro'}${pgNum(s.pg)?`, p. ${pgNum(s.pg)}`:''}`;
+function getBooks(){
+  let b=lsGet(LBKEY);if(Array.isArray(b))return b;
+  const old=lsGet(SKEY)||[];b=[];   // migración del formato anterior (una sola lista sin nombre)
+  if(old.length){const ab=(String(old[0].pg||'').match(/[A-Za-z]+$/)||[''])[0];const n=ABBR_BOOK[ab.toLowerCase()]||'Libro importado';b=[{n,ab:ab||bookAbbr(n),spells:old}];lsSet(LBKEY,b);lsSet(SKEY,[]);}
+  return b;
+}
+function saveBooks(b){if(!lsSet(LBKEY,b))toast('El navegador no deja guardar tantos datos; el libro solo durará esta sesión');}
 function setSpells(arr){
   SPELL_LIST=[...arr].sort((a,b)=>a.n.localeCompare(b.n,'es'));
   SPELLS=Object.fromEntries(SPELL_LIST.map(s=>[s.n.toLowerCase(),s]));
@@ -1671,7 +1695,12 @@ function setSpells(arr){
   $('#spells-dl').innerHTML=SPELL_LIST.map(s=>`<option value="${esc(s.n)}">${s.lv?'Nivel '+s.lv:'Truco'}${s.en?' · '+esc(s.en):''}</option>`).join('');
   const nb=SPELL_LIST.filter(s=>s.src!=='srd').length,txt=SPELL_LIST.length?`${SPELL_LIST.length} conjuros${nb?` (${nb} de libros)`:' del SRD'}`:'Sin conjuros cargados';
   for(const id of ['#spcount','#bk-count'])if($(id))$(id).textContent=txt;
-  $('#bk-clear').hidden=!(lsGet(SKEY)||[]).length;
+  const books=getBooks();
+  $('#bk-list').innerHTML=`<li><b>SRD 5.2.1</b> <span class="pcsub">${SRD_SPELLS.length} conjuros · incluido</span></li>`+(PACK_SPELLS.length?`<li><b>Incluido en este tracker</b> <span class="pcsub">${PACK_SPELLS.length} conjuros</span></li>`:'')
+    +books.map((b,i)=>`<li><b>${esc(b.n)}</b>${b.ab&&b.ab!==b.n?` <span class="tag">${esc(b.ab)}</span>`:''} <span class="pcsub">${b.spells.length} conjuro${b.spells.length===1?'':'s'}</span> <button type="button" class="btn sm danger" data-act="bkdel" data-i="${i}" data-confirm>Quitar</button></li>`).join('');
+  const fu=$('#vs-fu'),cur=fu.value,names=[...new Set(SPELL_LIST.filter(s=>s.src!=='srd').map(s=>s.book||'Libro'))];
+  fu.innerHTML='<option value="">Todas las fuentes</option><option value="srd">SRD 5.2.1</option>'+names.map(n=>`<option value="b:${esc(n)}">${esc(n)}</option>`).join('');
+  fu.value=[...fu.options].some(o=>o.value===cur)?cur:'';
   if(location.hash==='#conjuros')renderSpellView();
 }
 // El SRD usa nombres genéricos donde los manuales llevan el del mago («Cofre oculto» = «Cofre oculto de Leomund»)
@@ -1680,7 +1709,8 @@ const enKeys=e=>{const f=fold(e);return f?[f,EN_ALIAS[f],f.replace(/^[a-z-]+'s\s
 function mergeSpells(){
   const by=new Map(),alias=new Map();
   for(const s of SRD_SPELLS){const k=fold(s.n);by.set(k,s);if(s.en)alias.set(fold(s.en),k);}
-  for(const s of [...PACK_SPELLS,...(lsGet(SKEY)||[])]){
+  const lib=[...PACK_SPELLS.map(s=>({...s,book:s.book||'Incluido en este tracker'})),...getBooks().flatMap(bk=>bk.spells.map(s=>({...s,book:bk.n,ab:bk.ab})))];
+  for(const s of lib){
     const b={...s,src:s.src==='srd'?'srd':'lib'},k=fold(b.n);
     for(const e of enKeys(b.en)){const old=alias.get(e);if(old&&old!==k&&by.get(old)?.src==='srd')by.delete(old);}
     by.set(k,b);if(b.en)alias.set(fold(b.en),k);
@@ -1690,7 +1720,8 @@ function mergeSpells(){
 mergeSpells();
 const getJSON=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
 Promise.all([getJSON('conjuros_srd.json'),getJSON('conjuros.json')]).then(([srd,pack])=>{
-  if(Array.isArray(srd))SRD_SPELLS=srd;if(Array.isArray(pack))PACK_SPELLS=pack;
+  if(Array.isArray(srd))SRD_SPELLS=srd;
+  if(pack){try{PACK_SPELLS=parseBook(pack,'').flatMap(g=>g.spells.map(s=>({...s,book:g.n,ab:g.ab})));}catch{}}
   mergeSpells();render();if(location.hash==='#inicio'||!location.hash)renderHome();
 });
 const SCH_KEY=s=>{const f=fold(s);return Object.keys(SCHOOLS).find(k=>k===f||fold(SCHOOLS[k])===f)||'';};
@@ -1702,13 +1733,26 @@ function normSpell(x){
   return {n:str(x.n),en:str(x.en),lv,fl:str(x.fl),d:str(x.d),dur:str(x.dur),rg:str(x.rg),ct:str(x.ct),comp:str(x.comp),
     conc:yesNo(x.conc),rit:yesNo(x.rit),use:str(x.use),cls:cls.map(c=>String(c).trim()).filter(Boolean),sch:SCH_KEY(x.sch),pg:str(x.pg)};
 }
-function importBook(text,name){
-  const s=text.trim();let arr;
-  if(/^[\[{]/.test(s)){let j=JSON.parse(s);if(!Array.isArray(j))j=j.conjuros||j.spells;if(!Array.isArray(j))throw new Error('el JSON debe ser una lista de conjuros');arr=j.filter(x=>x&&x.n).map(normSpell);if(!arr.length)throw new Error('ningún conjuro tiene «n» (nombre)');}
-  else arr=spellsFromCSV(s);
-  if(!arr.length)throw new Error('no hay conjuros');
-  if(!lsSet(SKEY,arr))toast('El navegador no deja guardar tantos datos; los conjuros solo durarán esta sesión');
-  mergeSpells();render();toast(`${arr.length} conjuros añadidos${name?' desde '+name:''}`);
+// Devuelve [{n,ab,spells}]. Acepta {libro,abrev,conjuros:[…]}, una lista (cada conjuro puede llevar su «libro») o el CSV.
+function parseBook(data,fileName){
+  let top={},list;
+  if(typeof data==='string'){const s=data.trim();if(/^[\[{]/.test(s))data=JSON.parse(s);else list=spellsFromCSV(s);}
+  if(!list){if(Array.isArray(data))list=data;else{top=data||{};list=top.conjuros||top.spells;}
+    if(!Array.isArray(list))throw new Error('el JSON debe tener la lista de conjuros en «conjuros»');}
+  const guess=()=>{const ab=(String(list.find(x=>x&&x.pg)?.pg||'').match(/[A-Za-z]+$/)||[''])[0];return ABBR_BOOK[ab.toLowerCase()]||String(fileName||'Libro importado').replace(/\.[^.]+$/,'');};
+  const dflt=String(top.libro||top.nombre||top.book||'').trim()||guess();
+  const groups=new Map();
+  for(const x of list){if(!x||!x.n)continue;const n=String(x.libro||dflt).trim();
+    if(!groups.has(n))groups.set(n,{n,ab:String((n===dflt&&(top.abrev||top.abreviatura))||bookAbbr(n)).trim(),spells:[]});
+    groups.get(n).spells.push(normSpell(x));}
+  if(!groups.size)throw new Error('ningún conjuro tiene «n» (nombre)');
+  return [...groups.values()];
+}
+function importBook(text,fileName){
+  const add=parseBook(text,fileName),books=getBooks();
+  for(const g of add){const i=books.findIndex(b=>fold(b.n)===fold(g.n));if(i>=0)books[i]=g;else books.push(g);}
+  saveBooks(books);mergeSpells();render();
+  toast(add.map(g=>`«${g.n}»: ${g.spells.length} conjuros`).join(' · ')+' registrado'+(add.length>1?'s':''));
 }
 for(const id of ['#spfile','#bk-file'])$(id).addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const rd=new FileReader();
@@ -1725,7 +1769,7 @@ function spellBody(s,dc){
   if(!s)return '<p class="hint" style="display:block">Este conjuro no está en el SRD. Añade tu libro en ✨ Conjuros → 📚 Libros opcionales para ver la descripción.</p>';
   const use=s.use||'',tds=use.match(/TdS\s*(\w+)/i);
   return `${s.fl?`<p class="spfl">${esc(s.fl)}</p>`:''}
-    <div class="spmeta">${[['Lanzamiento',s.ct],['Alcance',s.rg],['Duración',s.dur],['Componentes',s.comp],['Escuela',SCHOOLS[s.sch]],['Clases',s.cls.join(', ')],['Fuente',spellSrcLabel(s)]].filter(x=>x[1]).map(([l,v])=>`<span><b>${l}</b> ${esc(v)}</span>`).join('')}
+    <div class="spmeta">${[['Lanzamiento',s.ct],['Alcance',s.rg],['Duración',s.dur],['Componentes',s.comp],['Escuela',SCHOOLS[s.sch]],['Clases',s.cls.join(', ')],['Fuente',spellSrcFull(s)]].filter(x=>x[1]).map(([l,v])=>`<span><b>${l}</b> ${esc(v)}</span>`).join('')}
     ${tds?`<span><b>Salvación</b> ${esc(tds[1])}${dc?` · <span class="dc">CD ${dc}</span>`:''}</span>`:''}</div>
     <div class="spdesc">${rich(s.d.replace(/\n+/g,'\n\n'))}</div>`;
 }
@@ -1856,7 +1900,7 @@ function extraAct(act,b,c,e){
   switch(act){
     case 'openparty':location.hash='jugadores';break;
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
-    case 'bkclear':lsSet(SKEY,[]);mergeSpells();render();toast('Libros quitados: quedan los conjuros del SRD');break;
+    case 'bkdel':{const books=getBooks(),[gone]=books.splice(+b.dataset.i,1);saveBooks(books);mergeSpells();render();if(gone)toast(`«${gone.n}» quitado`);break;}
     case 'pcnew':openPC(null);break;
     case 'pcedit':openPC(b.dataset.id);break;
     case 'closepc':$('#pcmodal').hidden=true;syncModalOpen();break;
@@ -1948,14 +1992,14 @@ function renderSpellView(){
   fillSpellFilters();
   if(!SPELL_LIST.length){$('#vs-count').textContent='';$('#vs-list').innerHTML='<div class="empty">Cargando los conjuros del SRD…</div>';return;}
   const q=$('#vs-q').value.trim().toLowerCase(),lv=$('#vs-lv').value,cl=$('#vs-cls').value,sc=$('#vs-sch').value,co=$('#vs-conc').checked,ri=$('#vs-rit').checked,fu=$('#vs-fu').value;
-  const res=SPELL_LIST.filter(s=>(!q||s.n.toLowerCase().includes(q)||s.en.toLowerCase().includes(q))&&(lv===''||s.lv===+lv)&&(!cl||s.cls.includes(cl))&&(!sc||s.sch===sc)&&(!co||s.conc)&&(!ri||s.rit)&&(!fu||(fu==='srd')===(s.src==='srd')))
+  const res=SPELL_LIST.filter(s=>(!q||s.n.toLowerCase().includes(q)||s.en.toLowerCase().includes(q))&&(lv===''||s.lv===+lv)&&(!cl||s.cls.includes(cl))&&(!sc||s.sch===sc)&&(!co||s.conc)&&(!ri||s.rit)&&(!fu||(fu==='srd'?s.src==='srd':s.src!=='srd'&&'b:'+(s.book||'Libro')===fu)))
     .sort((a,b)=>{const k=$('#vs-sort').value,n=a.n.localeCompare(b.n,'es');return k==='lv'?a.lv-b.lv||n:k==='sch'?(SCHOOLS[a.sch]||'').localeCompare(SCHOOLS[b.sch]||'','es')||n:n;});
   $('#vs-count').textContent=`${res.length} conjuros`;
   VS_RES=res;
   const srt=$('#vs-sort').value,th=(k,l)=>`<th><button type="button" data-vsort="${k}"${srt===k?' aria-sort="ascending"':''}>${l}</button></th>`;
   const tick=v=>v?'<span class="yes" title="Sí">✓</span>':'<span class="no" aria-label="No">–</span>';
   const comp=s=>{const c=s.comp||'',base=c.split('(')[0].split(',').map(x=>x.trim()),cost=c.includes('(');return `<span class="cp" title="${esc(c)}">${['V','S','M'].map(k=>`<i class="${base.includes(k)?(k==='M'&&cost?'cost':''):'off'}">${k}</i>`).join('')}</span>`;};
-  $('#vs-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${th('name','Nombre')}${th('lv','Nivel')}${th('sch','Escuela')}<th class="c">Ritual</th><th class="c">Concentración</th><th>Componentes</th><th>Fuente</th></tr></thead><tbody>${res.slice(0,400).map((s,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(s.n)}${s.en?`<i class="ven">${esc(s.en)}</i>`:''}</td><td>${spLevel(s.lv)}</td><td>${s.sch?SCHOOLS[s.sch]:''}</td><td class="c">${tick(s.rit)}</td><td class="c">${tick(s.conc)}</td><td>${comp(s)}</td><td class="src">${esc(spellSrcLabel(s))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>400?`<p class="hint" style="display:block">Mostrando 400 de ${res.length}. Afina los filtros.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
+  $('#vs-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${th('name','Nombre')}${th('lv','Nivel')}${th('sch','Escuela')}<th class="c">Ritual</th><th class="c">Concentración</th><th>Componentes</th><th>Fuente</th></tr></thead><tbody>${res.slice(0,400).map((s,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(s.n)}${s.en?`<i class="ven">${esc(s.en)}</i>`:''}</td><td>${spLevel(s.lv)}</td><td>${s.sch?SCHOOLS[s.sch]:''}</td><td class="c">${tick(s.rit)}</td><td class="c">${tick(s.conc)}</td><td>${comp(s)}</td><td class="src" title="${esc(spellSrcFull(s))}">${esc(spellSrcLabel(s))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>400?`<p class="hint" style="display:block">Mostrando 400 de ${res.length}. Afina los filtros.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 for(const id of ['#vs-q','#vs-lv','#vs-cls','#vs-sch','#vs-fu','#vs-conc','#vs-rit','#vs-sort'])$(id).addEventListener('input',renderSpellView);
 let VS_RES=[];
