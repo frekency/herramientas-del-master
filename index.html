@@ -299,8 +299,8 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .books{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
 .books>summary{cursor:pointer;padding:9px 14px;font-weight:700}
 .books-body{padding:0 14px 12px;display:grid;gap:8px}
-.books form.inline{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;margin:0;flex:1 1 360px;max-width:560px}
-.books input[type=url]{flex:1 1 auto;min-width:0;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
+#md-urlform,.books form.inline{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;margin:0;flex:1 1 360px;max-width:560px}
+#md-url,.books input[type=url]{flex:1 1 auto;min-width:0;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
 .legal{max-width:1320px;margin:0 auto;padding:18px 16px 28px;font-size:12px;line-height:1.5;color:var(--muted)}
 .legal a{color:inherit}
 .tbwrap{display:grid;grid-template-columns:230px minmax(0,1fr);gap:14px;align-items:start}
@@ -334,6 +334,30 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .tbfill>summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .tbfill-b{display:grid;gap:8px;margin-top:8px;max-width:520px}
 .tbfill textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px;color:var(--fg);font-family:var(--f-num);font-size:12.5px}
+.modline{margin:0 0 10px;font-size:13px;color:var(--muted)}
+.modline a,.empty a,.mdbanner a{color:inherit;font-weight:600}
+.mdh{font-family:var(--f-display);font-size:18px;margin:22px 0 8px}
+.mdgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px}
+.mdcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.mdcard.on{border-color:var(--sb-rule);box-shadow:inset 3px 0 0 var(--sb-rule)}
+.mdcard.soon{opacity:.6}
+.mdcard .mdt{font-weight:700;font-size:15px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mdcard p{margin:0;font-size:13px;line-height:1.4}
+.mdcard .mdc{font-size:12px;color:var(--muted)}
+.mdcard .inline{margin-top:auto;padding-top:4px}
+.mdst{font-size:12px;font-weight:600}
+.mdexp,.bkfmt{margin-top:18px;max-width:900px}
+.mdexp>summary{cursor:pointer;font-weight:600}
+.mdexp-b{display:grid;gap:10px;margin-top:10px}
+.mdform{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.mdform .wide{grid-column:1/-1}
+.mxpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.mxpick fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-height:240px;overflow:auto;margin:0}
+.mxpick legend{font-size:13px;font-weight:600;padding:0 4px}
+.mxpick label{display:flex;gap:6px;align-items:center;font-size:13px;padding:2px 0}
+.mdbanner{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px dashed var(--sb-rule);border-radius:10px;padding:12px 16px;margin:0 0 16px}
+.tbitem .tag{margin-left:0}
+.tbro td{padding:6px 10px}
 .bklist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .bklist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
 .bkfmt>summary{cursor:pointer;font-size:13px;color:var(--muted)}
@@ -630,7 +654,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#cambios" class="navver" title="Historial de cambios">v1.17</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.18</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -638,22 +662,119 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <h1 class="htitle">Herramientas útiles para el Máster</h1>
     <p class="hsub">Lleva el combate, el grupo y las consultas de reglas desde una sola página, sin perder la cuenta de nada.</p>
   </div>
+  <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="tools-grid">
     <a class="tool" href="#combate"><span class="ti">⚔</span><span class="tn">Tracker de combate</span><span class="td">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span><span class="tstat" id="hs-combat"></span></a>
     <a class="tool" href="#jugadores"><span class="ti">🛡</span><span class="tn">Gestión de jugadores</span><span class="td">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span><span class="tstat" id="hs-party"></span></a>
     <a class="tool" href="#criaturas"><span class="ti">🐉</span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
     <a class="tool" href="#conjuros"><span class="ti">✨</span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
     <a class="tool" href="#tablas"><span class="ti">🎲</span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
+    <a class="tool" href="#modulos"><span class="ti">📦</span><span class="tn">Módulos</span><span class="td">Activa el SRD, añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
   <ol class="changelog" id="changelog-home"></ol>
   <p class="clmore"><a href="#cambios">Ver historial completo →</a></p>
 </section>
 
+<section class="vpage" id="view-modulos" hidden>
+  <div class="vhead"><h2>Módulos</h2><span class="pcsub" id="md-count"></span></div>
+  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas y, pronto, objetos, clases, especies, dotes y trasfondos. <b>Nada viene activado</b>: elige lo que quieras usar. Por ahora se guardan en este navegador; cuando haya cuentas se guardarán en la tuya.</p>
+  <h3 class="mdh">Oficiales libres</h3>
+  <div class="mdgrid" id="md-free"></div>
+  <h3 class="mdh">Oficiales · trae tu copia</h3>
+  <p class="hint" style="display:block;max-width:760px">Estos manuales no se pueden alojar aquí. Si tienes el tuyo, añade tu copia (un JSON con el formato de módulo o el CSV de tu hoja de conjuros): se guarda solo para ti y sustituye a las entradas del SRD equivalentes.</p>
+  <input type="file" id="md-byofile" accept=".csv,.json,text/csv,application/json" hidden>
+  <div class="mdgrid" id="md-byo"></div>
+  <h3 class="mdh">Homebrew y otros</h3>
+  <div class="inline">
+    <label class="btn" for="md-file" tabindex="0">Cargar módulo</label><input type="file" id="md-file" accept=".csv,.json,text/csv,application/json" hidden>
+    <form id="md-urlform" class="inline"><input id="md-url" type="url" placeholder="o pega un enlace a un módulo (.json)" aria-label="Enlace al módulo"><button class="btn">Importar</button></form>
+  </div>
+  <div class="mdgrid" id="md-hb"></div>
+  <details class="mdexp" id="md-exp">
+    <summary>Crear un módulo con tu contenido</summary>
+    <div class="mdexp-b">
+      <div class="mdform">
+        <label class="f">Nombre<input id="mx-n" placeholder="Bestiario de las Marismas"></label>
+        <label class="f">Abreviatura<input id="mx-ab" placeholder="BdM" maxlength="6"></label>
+        <label class="f">Autor<input id="mx-autor"></label>
+        <label class="f">Versión<input id="mx-ver" value="1.0"></label>
+        <label class="f">Licencia<select id="mx-lic"><option>CC-BY-4.0</option><option>CC-BY-SA-4.0</option><option>CC0</option><option>Todos los derechos reservados</option></select></label>
+        <label class="f wide">Descripción<input id="mx-desc"></label>
+      </div>
+      <div class="mxpick" id="mx-pick"></div>
+      <label class="chk"><input type="checkbox" id="mx-own"> El contenido es mío o tiene licencia abierta</label>
+      <div class="inline"><button type="button" class="btn primary" data-act="mdexport">Descargar módulo (.json)</button></div>
+    </div>
+  </details>
+      <details class="bkfmt">
+        <summary>Formato del archivo de módulo (JSON)</summary>
+        <p class="hint" style="display:block">Un objeto con los datos del módulo y, dentro, las listas de contenido que lleve (todas opcionales). Si importas otro con el mismo nombre lo sustituye. Si el nombre es el de un manual oficial («Manual del Jugador…») se asocia a su ficha. También valen el CSV de la hoja de conjuros y una lista de conjuros sin más.</p>
+        <table class="fmtt"><tbody>
+          <tr><td><code>modulo</code> · <code>abrev</code></td><td>Nombre del módulo y abreviatura para la columna Fuente (<code>"BdM"</code>). <code>libro</code> también vale como nombre</td></tr>
+          <tr><td><code>autor</code> · <code>version</code> · <code>licencia</code> · <code>descripcion</code></td><td>Datos que se muestran en la ficha del módulo</td></tr>
+          <tr><td><code>criaturas</code></td><td>Fichas con el mismo formato que exporta el bestiario (<code>n</code>, <code>ty</code>, <code>cr</code>, <code>ac</code>, <code>hp</code>, <code>hd</code>, <code>a</code>…)</td></tr>
+          <tr><td><code>tablas</code></td><td><code>{"n":"Nombres","formato":"{Nombre} {Apellido}","modo":"columna","columnas":{"Nombre":[…],"Apellido":[…]}}</code>. Las filas son el dado</td></tr>
+          <tr><td><code>objetos</code> · <code>clases</code> · <code>especies</code> · <code>dotes</code> · <code>trasfondos</code></td><td>Se guardan ya y se verán en el Compendio. Cada entrada necesita <code>n</code> y su texto en <code>d</code></td></tr>
+          <tr><td colspan="2"><b>Cada conjuro</b> de <code>conjuros</code>:</td></tr>
+          <tr><td><code>n</code></td><td>Nombre en español (obligatorio)</td></tr>
+          <tr><td><code>en</code></td><td>Nombre en inglés: sirve para buscar y para sustituir al conjuro del SRD equivalente</td></tr>
+          <tr><td><code>lv</code></td><td>Nivel: <code>0</code> (o <code>"Truco"</code>) a <code>9</code></td></tr>
+          <tr><td><code>sch</code></td><td>Escuela: Abjuración, Adivinación, Conjuración, Encantamiento, Evocación, Ilusionismo, Nigromancia o Transmutación</td></tr>
+          <tr><td><code>cls</code></td><td>Clases: lista <code>["Mago","Brujo"]</code> o texto separado por comas</td></tr>
+          <tr><td><code>ct</code> · <code>rg</code> · <code>comp</code> · <code>dur</code></td><td>Tiempo de lanzamiento, alcance, componentes y duración (texto). Si <code>comp</code> lleva paréntesis, la M sale en dorado (material con coste)</td></tr>
+          <tr><td><code>conc</code> · <code>rit</code></td><td>Concentración y ritual: <code>true</code> o <code>false</code></td></tr>
+          <tr><td><code>d</code></td><td>Descripción. Los dados (<code>8d6</code>) y las CD se convierten en botones de tirada</td></tr>
+          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página (<code>249</code>, se muestra «MdJ p. 249»)</td></tr>
+        </tbody></table>
+        <pre class="fmtex" id="bk-example">{
+  "modulo": "Bestiario de las Marismas",
+  "abrev": "BdM",
+  "autor": "Eduardo",
+  "version": "1.0",
+  "licencia": "CC-BY-4.0",
+  "descripcion": "Criaturas, conjuros y tablas para una campaña de pantanos",
+  "conjuros": [
+    {
+      "n": "Niebla de la ciénaga",
+      "lv": 2,
+      "sch": "Conjuración",
+      "cls": ["Druida", "Mago"],
+      "ct": "Acción",
+      "rg": "36 m",
+      "comp": "V, S",
+      "dur": "Concentración, hasta 1 minuto",
+      "conc": true,
+      "d": "Una niebla pútrida llena una esfera de 6 m… 2d6 de daño de veneno…",
+      "pg": 12
+    }
+  ],
+  "tablas": [
+    {
+      "n": "Encuentros en la ciénaga",
+      "formato": "{Quién} {Qué hace}",
+      "columnas": {
+        "Quién": ["{1d4} cocodrilos", "Una bruja del pantano", "{2d6} sapos gigantes"],
+        "Qué hace": ["acecha bajo el agua", "pide un trato", "huye de algo peor"]
+      }
+    }
+  ],
+  "criaturas": []
+}</pre>
+        <div class="inline"><button type="button" class="btn sm" data-act="bkexample">Copiar ejemplo</button></div>
+      </details>
+</section>
+
 <section class="vpage" id="view-cambios" hidden>
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.18 <span>3 nov 2026</span></h3><ul>
+      <li>Nueva página <b>📦 Módulos</b>: el contenido llega por módulos que cada uno activa. <b>Nada viene activado de serie</b>; si ya usabas la herramienta, el SRD sigue activado.</li>
+      <li>Tres apartados: oficiales libres (SRD 5.2.1), oficiales «trae tu copia» (Manual del Jugador, Guía del Máster, Manual de Monstruos, Xanathar, Tasha: subes tu archivo y queda asociado al libro) y homebrew.</li>
+      <li>Un módulo puede traer criaturas, conjuros y tablas (y ya guarda objetos, clases, especies, dotes y trasfondos para el Compendio). Sus criaturas salen en el bestiario y sus tablas en 🎲 Tablas, de solo lectura y duplicables.</li>
+      <li><b>Crear un módulo con tu contenido</b>: eliges tus criaturas y tablas, le pones nombre, autor y licencia y se descarga el JSON para compartirlo.</li>
+      <li>Tus libros de conjuros cargados pasan solos a ser módulos.</li></ul></li>
     <li><h3>v1.17 <span>3 nov 2026</span></h3><ul>
       <li>La portada muestra solo las <b>últimas novedades</b>; el historial completo tiene su propia página (<code>#cambios</code>), enlazada desde «Ver historial completo» y desde el número de versión del menú.</li></ul></li>
     <li><h3>v1.16 <span>3 nov 2026</span></h3><ul>
@@ -719,8 +840,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
           <button class="btn" data-act="longrest" data-confirm title="PG al máximo y espacios de conjuro recuperados">🌙 Descanso largo</button>
         </div>
         <div class="inline">
-          <label class="btn" for="spfile" tabindex="0">📚 Añadir libro de conjuros</label>
-          <input type="file" id="spfile" accept=".csv,.json,text/csv,application/json" hidden>
+          <a class="btn" href="#modulos">📦 Módulos</a>
           <span class="spcount" id="spcount"></span>
         </div>
       </div>
@@ -743,7 +863,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   <div class="vhead"><h2>Listado de criaturas</h2><span class="pcsub" id="vc-count"></span></div>
   <div class="bfilters">
     <input id="vc-q" placeholder="Buscar por nombre (también en inglés)" aria-label="Buscar criatura">
-    <select id="vc-src" aria-label="Origen"><option value="">Todas</option><option value="srd">SRD 5.2.1</option><option value="my">Mías</option></select>
+    <select id="vc-src" aria-label="Origen"><option value="">Todas</option><option value="srd">SRD 5.2.1</option><option value="mod">Módulos</option><option value="my">Mías</option></select>
     <select id="vc-cr" aria-label="Valor de desafío"><option value="">Cualquier VD</option><option value="0-1">VD 0–1</option><option value="2-4">VD 2–4</option><option value="5-10">VD 5–10</option><option value="11-16">VD 11–16</option><option value="17-30">VD 17+</option></select>
     <select id="vc-ty" aria-label="Tipo"><option value="">Cualquier tipo</option></select>
     <select id="vc-sort" aria-label="Orden"><option value="name">Orden: nombre</option><option value="cr">Orden: VD</option><option value="ac">Orden: CA</option><option value="hp">Orden: PG</option><option value="ty">Orden: tipo</option></select>
@@ -753,53 +873,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 
 <section class="vpage" id="view-conjuros" hidden>
   <div class="vhead"><h2>Listado de conjuros</h2><span class="pcsub" id="vs-count"></span></div>
-  <details class="books">
-    <summary>📚 Libros opcionales <span class="pcsub" id="bk-count"></span></summary>
-    <div class="books-body">
-      <p class="hint" style="display:block">Los conjuros del <b>SRD 5.2.1</b> vienen incluidos. Si tienes los manuales, añade sus conjuros con tu propio archivo (CSV de la hoja de conjuros o JSON con el formato del tracker). Se guardan solo en este navegador y sustituyen al conjuro del SRD con el mismo nombre.</p>
-      <div class="inline">
-        <label class="btn" for="bk-file" tabindex="0">Cargar archivo</label><input type="file" id="bk-file" accept=".csv,.json,text/csv,application/json" hidden>
-        <form id="bk-urlform" class="inline"><input id="bk-url" type="url" placeholder="o pega un enlace a tu CSV/JSON" aria-label="Enlace al archivo de conjuros"><button class="btn">Importar</button></form>
-      </div>
-      <ul class="bklist" id="bk-list" aria-label="Libros registrados"></ul>
-      <details class="bkfmt">
-        <summary>Formato del archivo JSON</summary>
-        <p class="hint" style="display:block">Un objeto con el nombre del libro y su lista de conjuros. El libro queda registrado con ese nombre: si importas otro con el mismo nombre lo sustituye, y con otro nombre se suma. En cada conjuro solo <code>n</code> es obligatorio. También vale una lista sin más; entonces cada conjuro puede llevar su propio <code>"libro"</code>.</p>
-        <table class="fmtt"><tbody>
-          <tr><td><code>libro</code> · <code>abrev</code></td><td>Nombre del manual (<code>"Manual del Jugador 2024"</code>) y abreviatura para la tabla (<code>"MdJ"</code>). Van fuera de la lista</td></tr>
-          <tr><td><code>n</code></td><td>Nombre en español (obligatorio)</td></tr>
-          <tr><td><code>en</code></td><td>Nombre en inglés: sirve para buscar y para sustituir al conjuro del SRD equivalente</td></tr>
-          <tr><td><code>lv</code></td><td>Nivel: <code>0</code> (o <code>"Truco"</code>) a <code>9</code></td></tr>
-          <tr><td><code>sch</code></td><td>Escuela: Abjuración, Adivinación, Conjuración, Encantamiento, Evocación, Ilusionismo, Nigromancia o Transmutación</td></tr>
-          <tr><td><code>cls</code></td><td>Clases: lista <code>["Mago","Brujo"]</code> o texto separado por comas</td></tr>
-          <tr><td><code>ct</code> · <code>rg</code> · <code>comp</code> · <code>dur</code></td><td>Tiempo de lanzamiento, alcance, componentes y duración (texto). Si <code>comp</code> lleva paréntesis, la M sale en dorado (material con coste)</td></tr>
-          <tr><td><code>conc</code> · <code>rit</code></td><td>Concentración y ritual: <code>true</code> o <code>false</code></td></tr>
-          <tr><td><code>d</code></td><td>Descripción. Los dados (<code>8d6</code>) y las CD se convierten en botones de tirada</td></tr>
-          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página (<code>249</code>, se muestra «MdJ p. 249»)</td></tr>
-        </tbody></table>
-        <pre class="fmtex" id="bk-example">{
-  "libro": "Manual del Jugador 2024",
-  "abrev": "MdJ",
-  "conjuros": [
-    {
-      "n": "Bola de fuego",
-      "en": "Fireball",
-      "lv": 3,
-      "sch": "Evocación",
-      "cls": ["Hechicero", "Mago"],
-      "ct": "Acción",
-      "rg": "45 m",
-      "comp": "V, S, M (una pelota de guano de murciélago y azufre)",
-      "dur": "Instantáneo",
-      "conc": false,
-      "rit": false,
-      "d": "Una ráfaga brillante surge de ti… sufrirán 8d6 de daño de fuego…",
-      "pg": 249
-    }
-  ]
-}</pre>
-        <div class="inline"><button type="button" class="btn sm" data-act="bkexample">Copiar ejemplo</button></div>
-      </details>
+  <p class="modline">Fuentes activas: <span id="bk-count"></span> · <a href="#modulos">📦 Gestionar módulos</a></p>
     </div>
   </details>
   <div class="bfilters">
@@ -909,7 +983,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
         <div style="min-width:0">
           <div class="bfilters">
             <input id="b-q" placeholder="Buscar (nombre, en inglés o tipo)" aria-label="Buscar">
-            <select id="b-src" aria-label="Origen"><option value="">Todas</option><option value="srd">SRD 5.2.1</option><option value="my">Mías</option></select>
+            <select id="b-src" aria-label="Origen"><option value="">Todas</option><option value="srd">SRD 5.2.1</option><option value="mod">Módulos</option><option value="my">Mías</option></select>
             <select id="b-cr" aria-label="Valor de desafío"><option value="">Cualquier VD</option><option value="0-1">VD 0–1</option><option value="2-4">VD 2–4</option><option value="5-10">VD 5–10</option><option value="11-16">VD 11–16</option><option value="17-30">VD 17+</option></select>
           </div>
           <p class="hint" id="b-count" style="margin-bottom:6px"></p>
@@ -1047,25 +1121,26 @@ const crNum=c=>{c=String(c??'');if(c.includes('/')){const[a,b]=c.split('/');retu
 const tr=(m,k)=>m[k]||k;
 
 /* ---------- bestiario ---------- */
-let SRD=[], MY=[];
+let SRD=[], SRD_ALL=[], MY=[];   // SRD = lo visible (solo si el módulo está activado); SRD_ALL = todo lo descargado
 try{MY=JSON.parse(localStorage.getItem(BKEY)||'[]');}catch(e){MY=[];}
 function saveBest(){try{localStorage.setItem(BKEY,JSON.stringify(MY));}catch(e){}}
 function tpl(key){
   if(!key)return null;
-  if(key.startsWith('srd:')){const k=key.slice(4);return SRD.find(m=>(m.en||m.n)===k)||null;}
+  if(key.startsWith('srd:')){const k=key.slice(4);return SRD_ALL.find(m=>(m.en||m.n)===k)||null;}
+  if(key.startsWith('mod:'))return MODCR.find(m=>m._mk===key)||null;
   if(key.startsWith('my:'))return MY.find(m=>m.id===key.slice(3))||null;
   if(key.startsWith('pc:'))return PARTY.find(p=>p.id===key.slice(3))||null;
   return null;
 }
-const tkey=m=>m.id?'my:'+m.id:'srd:'+(m.en||m.n);
-const allBest=()=>[...MY,...SRD];
+const tkey=m=>m.id?'my:'+m.id:m._mk||'srd:'+(m.en||m.n);
+const allBest=()=>[...MY,...MODCR,...SRD];
 function lrMax(m){for(const[n] of m.t||[]){const x=n.match(/Legendary Resistance \((\d+)\/Day/i)||n.match(/Resistencia legendaria \((\d+)\/d/i);if(x)return +x[1];}return 0;}
 const laMax=m=>m.l&&m.l.length?(m.lu??3):0;
 function searchBest(q,src='',cr=''){
   q=q.trim().toLowerCase();
   let[lo,hi]=cr?cr.split('-').map(Number):[null,null];
   return allBest().filter(m=>{
-    if(src==='srd'&&m.id)return false; if(src==='my'&&!m.id)return false;
+    if(src==='srd'&&(m.id||m._mk))return false; if(src==='my'&&!m.id)return false; if(src==='mod'&&!m._mk)return false;
     if(cr){const v=crNum(m.cr);if(v<lo||v>hi+.99)return false;}
     if(!q)return true;
     return m.n.toLowerCase().includes(q)||(m.en||'').toLowerCase().includes(q)||(m.ty||'').toLowerCase().includes(q)||tr(TYPE,m.ty).toLowerCase().includes(q);
@@ -1109,12 +1184,11 @@ function migrate(s){
   return s;
 }
 function boot(data){
-  state=migrate(data&&data.creatures?data:load()); fixOrder(); render();
+  state=migrate(data&&data.creatures?data:load()); refreshMods(); fixOrder(); render();
   fetch('srd2024_es.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{
-    SRD=d;
+    SRD_ALL=d;refreshMods();
     for(const c of state.creatures){const m=tpl(c.tpl);if(m&&!c._init){c.la=c.la||laMax(m);c.lr=c.lr||lrMax(m);c._init=1;}}
-    $('#types').innerHTML=[...new Set(SRD.map(m=>m.ty))].map(t=>`<option value="${esc(t)}">`).join('');
-    render();
+    render();if(location.hash==='#modulos')renderMods();
   }).catch(()=>toast('No se pudo cargar el bestiario del SRD; tus criaturas siguen disponibles'));
 }
 
@@ -1432,7 +1506,7 @@ function detHTML(c,m){
 let bSel=null;
 function renderBest(){
   const res=searchBest($('#b-q').value,$('#b-src').value,$('#b-cr').value);
-  $('#b-count').textContent=SRD.length?`${res.length} criaturas`:(MY.length?`${res.length} criaturas (el SRD aún se está cargando)`:'Cargando el SRD…');
+  $('#b-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el SRD…':'Sin criaturas: activa un módulo en 📦 Módulos o crea las tuyas';
   $('#blist').innerHTML=res.slice(0,400).map(m=>{const k=tkey(m);return `<li><button type="button" data-act="bpick" data-k="${esc(k)}" class="${bSel===k?'on':''}"><span class="bn">${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}</span><span class="bc">VD ${esc(m.cr??'–')}</span><span class="bt">${m.en&&m.en!==m.n?`<i>${esc(m.en)}</i> · `:''}${esc(tr(SIZE,m.sz||''))} · ${esc(tr(TYPE,m.ty||''))} · CA ${m.ac??'–'} · PG ${m.hp??'–'}</span></button></li>`;}).join('')||'<li class="hint" style="padding:12px">Nada coincide. Puedes crearla con «+ Nueva criatura».</li>';
   const m=tpl(bSel);
   $('#bview').innerHTML=m?`<div class="bactions">
@@ -1587,6 +1661,7 @@ document.addEventListener('click',e=>{
       if(!Array.isArray(best)||!Array.isArray(grp)||!Array.isArray(enc))throw 0;
       const up=(arr,list)=>{let k=0;for(const m of list){if(!m||!m.n)continue;m.id=m.id||uid();const i=arr.findIndex(x=>x.id===m.id);if(i>=0)arr[i]=m;else arr.push(m);k++;}return k;};
       const a=up(MY,best),g=up(PARTY,grp),e2=up(PRESETS,enc),tb2=up(TABLES,tbs.filter(x=>x&&Array.isArray(x.cols)));saveTables();
+      if(d.modulos&&Array.isArray(d.modulos.list)){const M=mods();Object.assign(M.on,d.modulos.on||{});for(const m of d.modulos.list){if(!m||!m.id)continue;const i=M.list.findIndex(x=>x.id===m.id);if(i>=0)M.list[i]=m;else M.list.push(m);}saveMods();refreshMods();}
       saveBest();saveParty();savePresets();if(!$('#bestmodal').hidden)renderBest();renderParty();render();$('#iomodal').hidden=true;syncModalOpen();
       toast(`Importado: ${a} criaturas, ${g} personajes, ${e2} encuentros y ${tb2} tablas`);}catch(err){toast('El texto pegado no es una copia de seguridad válida');}break;}
     case 'unlink':formTpl=null;renderLinked();break;
@@ -1686,6 +1761,81 @@ const PKEY='combat-party-v1', EKEY='combat-presets-v1', SKEY='combat-spells-v1',
 const SCHOOLS={abjuracion:'Abjuración',conjuracion:'Conjuración',adivinacion:'Adivinación',encantamiento:'Encantamiento',evocacion:'Evocación',ilusionismo:'Ilusionismo',nigromancia:'Nigromancia',transmutacion:'Transmutación'};
 function lsGet(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+
+/* ---------- módulos ---------- */
+// Nada viene activado: cada usuario elige qué contenido usar. Tres apartados: oficiales libres (alojados aquí),
+// oficiales «trae tu copia» (aquí solo está la ficha; el contenido lo sube cada uno) y homebrew.
+// Módulo: {id,n,ab,ref,autor,version,lic,desc,on,criaturas:[],conjuros:[],tablas:[],objetos:[],clases:[],especies:[],dotes:[],trasfondos:[]}
+const MKEY='combat-modules-v1';
+const MOD_TYPES=[['criaturas','criatura'],['conjuros','conjuro'],['tablas','tabla'],['objetos','objeto'],['clases','clase'],['especies','especie'],['dotes','dote'],['trasfondos','trasfondo']];
+const MOD_LATER=new Set(['objetos','clases','especies','dotes','trasfondos']);   // se guardan ya; se verán en el Compendio
+const OFFICIAL_FREE=[
+  {id:'srd521',n:'SRD 5.2.1',ab:'SRD',year:'2024',lic:'CC-BY-4.0',desc:'Documento de referencia oficial de D&D 2024 en español: criaturas, conjuros y reglas básicas. Objetos, clases, especies, dotes y trasfondos llegarán con el Compendio.'},
+  {id:'srd51',n:'SRD 5.1',ab:'SRD51',year:'2014',lic:'CC-BY-4.0',desc:'Las reglas de 2014.',soon:true}];
+const OFFICIAL_BYO=[
+  {id:'mdj',n:'Manual del Jugador 2024',ab:'MdJ',k:'manual del jugador'},
+  {id:'gdm',n:'Guía del Máster 2024',ab:'GdM',k:'guia del master'},
+  {id:'mdm',n:'Manual de Monstruos 2024',ab:'MdM',k:'manual de monstruos'},
+  {id:'gxt',n:'Guía de Xanathar para todo',ab:'GXT',k:'xanathar'},
+  {id:'ctt',n:'Caldero de Tasha para todo',ab:'CTT',k:'tasha'}];
+let MODS=null,MODCR=[],MODTB=[];
+function loadMods(){
+  let m=lsGet(MKEY);if(m&&m.on&&Array.isArray(m.list))return m;
+  // Primera vez: quien ya usaba la herramienta conserva el SRD activado y sus libros pasan a ser módulos.
+  const used=['combat-tracker-v1','combat-bestiary-v1','combat-party-v1','combat-tables-v1',LBKEY,SKEY].some(k=>{try{return !!localStorage.getItem(k);}catch{return false;}});
+  m={on:{srd521:used},list:[]};
+  for(const bk of getBooks()){const o=OFFICIAL_BYO.find(x=>fold(bk.n).includes(x.k));
+    m.list.push({id:o?o.id:modSlug(bk.n),n:o?o.n:bk.n,ab:o?o.ab:bk.ab,ref:o?o.id:'',on:true,conjuros:bk.spells});}
+  lsSet(MKEY,m);return m;
+}
+const mods=()=>MODS||(MODS=loadMods());
+const modOn=id=>id in mods().on?!!mods().on[id]:!!mods().list.find(m=>m.id===id)?.on;
+const activeMods=()=>mods().list.filter(m=>m.on);
+const modSlug=n=>'hb-'+fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const modAbbr=n=>String(n).split(/\s+/).filter(w=>w.length>2).map(w=>w[0].toUpperCase()).join('').slice(0,5)||String(n).slice(0,4);
+function saveMods(){if(!lsSet(MKEY,mods()))toast('El navegador no deja guardar tantos datos; el módulo solo durará esta sesión');}
+// Tablas de módulo: {n,formato,modo,columnas:{Col:[...]}} o el formato interno de 🎲 Tablas
+function modTable(x,i,md){
+  if(!x||!x.n)return null;let tb;
+  if(Array.isArray(x.cols)&&x.cells)tb=JSON.parse(JSON.stringify(x));
+  else{const cols=Object.keys(x.columnas||{});if(!cols.length)return null;
+    tb=tbMake(String(x.n),Math.max(1,...cols.map(c=>(x.columnas[c]||[]).length)),cols,x.columnas,String(x.formato||x.fmt||''),x.modo==='fila'||x.mode==='row'?'row':'col');}
+  if(md){tb.id='mod:'+md.id+':'+i;tb._mod=md.n;}
+  return tb;
+}
+const tableToMod=tb=>({n:tb.n,formato:tb.fmt,modo:tb.mode==='row'?'fila':'columna',columnas:Object.fromEntries(tb.cols.map(c=>[c.n,(tb.cells[c.id]||[]).slice(0,tb.rows)]))});
+function refreshMods(){
+  SRD=modOn('srd521')?SRD_ALL:[];
+  MODCR=activeMods().flatMap(md=>(md.criaturas||[]).filter(c=>c&&c.n).map(c=>({...c,id:undefined,src:md.n,_mk:'mod:'+md.id+':'+(c.en||c.n)})));
+  MODTB=activeMods().flatMap(md=>(md.tablas||[]).map((x,i)=>modTable(x,i,md)).filter(Boolean));
+  if($('#types'))$('#types').innerHTML=[...new Set(allBest().map(m=>m.ty))].map(t=>`<option value="${esc(t)}">`).join('');
+  if(typeof mergeSpells==='function')mergeSpells();
+}
+// Lee un módulo (JSON del formato de módulo, el antiguo de libro de conjuros, una lista de conjuros o el CSV).
+function parseModule(text,fileName,ref=''){
+  const s=String(text).trim();let d;
+  if(/^[\[{]/.test(s))d=JSON.parse(s);else d={conjuros:spellsFromCSV(s)};
+  if(Array.isArray(d))d={conjuros:d};
+  if(!MOD_TYPES.some(([k])=>Array.isArray(d[k]))&&!Array.isArray(d.spells))throw new Error('no trae contenido (criaturas, conjuros, tablas…)');
+  let n=String(d.modulo||d.libro||d.nombre||d.book||'').trim();
+  const sp=d.conjuros||d.spells,groups=sp?parseBook({libro:n||undefined,abrev:d.abrev,conjuros:sp},fileName):[];
+  n=n||groups[0]?.n||String(fileName||'Módulo importado').replace(/\.[^.]+$/,'');
+  const o=OFFICIAL_BYO.find(x=>x.id===ref)||OFFICIAL_BYO.find(x=>fold(n).includes(x.k));
+  const main={id:o?o.id:modSlug(n),n:o?o.n:n,ab:o?o.ab:String(d.abrev||d.abreviatura||'').trim()||modAbbr(n),ref:o?o.id:'',
+    autor:String(d.autor||'').trim(),version:String(d.version||'').trim(),lic:String(d.licencia||d.license||'').trim(),desc:String(d.descripcion||'').trim(),on:true};
+  for(const[k] of MOD_TYPES)if(Array.isArray(d[k])&&k!=='conjuros')main[k]=d[k].filter(x=>x&&x.n);
+  const out=[main];
+  for(const g of groups){if(fold(g.n)===fold(n)||groups.length===1)main.conjuros=g.spells;
+    else out.push({id:modSlug(g.n),n:g.n,ab:g.ab,ref:'',on:true,conjuros:g.spells});}
+  return out;
+}
+function importModule(text,fileName,ref=''){
+  const add=parseModule(text,fileName,ref),M=mods();
+  for(const md of add){const i=M.list.findIndex(x=>x.id===md.id);if(i>=0)M.list[i]=md;else M.list.push(md);}
+  saveMods();refreshMods();render();renderMods();
+  toast(add.map(md=>`«${md.n}» añadido y activado (${modCounts(md)||'vacío'})`).join(' · '));
+}
+const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
 let PARTY=lsGet(PKEY), PRESETS=lsGet(EKEY), SPELLS={}, SPELL_LIST=[];
 if(!Array.isArray(PARTY))PARTY=[{id:uid(),n:'Lyra (ejemplo)',cls:'Maga 5',ac:12,hp:27,cur:27,temp:0,in:3,sp:'9 m',pp:11,
   ab:[8,16,14,18,12,10],sv:[-1,3,2,7,4,0],sk:'Arcanos +7, Historia +7, Perspicacia +4',
@@ -1699,7 +1849,7 @@ for(const p of PARTY)p.tyl=pcSub(p);
 function pcSub(p){return [p.cls,p.jug].filter(Boolean).join(' · ')||'Personaje';}
 function saveParty(){lsSet(PKEY,PARTY);}
 function savePresets(){lsSet(EKEY,PRESETS);}
-function backupData(){return {bestiario:MY,grupo:PARTY,encuentros:PRESETS,tablas:TABLES};}
+function backupData(){return {bestiario:MY,grupo:PARTY,encuentros:PRESETS,tablas:TABLES,modulos:mods()};}
 
 /* conjuros: CSV propio (en este navegador) o el archivo del tracker */
 function parseCSV(t){
@@ -1730,7 +1880,7 @@ function spellsFromCSV(text){
 // Base libre (SRD 5.2.1, CC-BY-4.0) + libros opcionales: el conjuros.json del artifact privado y lo que importe cada usuario.
 // Un conjuro de un libro sustituye al del SRD con el mismo nombre (en español o en inglés).
 const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-let SRD_SPELLS=[],PACK_SPELLS=[];
+let SRD_SPELLS=[];
 // Libros registrados: [{n:'Manual del Jugador 2024',ab:'MdJ',spells:[…]}], guardados solo en este navegador.
 const KNOWN_BOOKS=[['manual del jugador','MdJ'],['guia del master','GdM'],['manual de monstruos','MdM'],['xanathar','GXT'],['tasha','CTT']];
 const bookAbbr=n=>(KNOWN_BOOKS.find(([k])=>fold(n).includes(k))||[])[1]||n;
@@ -1750,23 +1900,20 @@ function setSpells(arr){
   SPELLS=Object.fromEntries(SPELL_LIST.map(s=>[s.n.toLowerCase(),s]));
   for(const s of SPELL_LIST)if(s.en)SPELLS[s.en.toLowerCase()]??=s;
   $('#spells-dl').innerHTML=SPELL_LIST.map(s=>`<option value="${esc(s.n)}">${s.lv?'Nivel '+s.lv:'Truco'}${s.en?' · '+esc(s.en):''}</option>`).join('');
-  const nb=SPELL_LIST.filter(s=>s.src!=='srd').length,txt=SPELL_LIST.length?`${SPELL_LIST.length} conjuros${nb?` (${nb} de libros)`:' del SRD'}`:'Sin conjuros cargados';
+  const nb=SPELL_LIST.filter(s=>s.src!=='srd').length,txt=SPELL_LIST.length?`${SPELL_LIST.length} conjuros${nb?` (${nb} de módulos)`:' del SRD'}`:'Sin conjuros: activa un módulo';
   for(const id of ['#spcount','#bk-count'])if($(id))$(id).textContent=txt;
-  const books=getBooks();
-  $('#bk-list').innerHTML=`<li><b>SRD 5.2.1</b> <span class="pcsub">${SRD_SPELLS.length} conjuros · incluido</span></li>`+(PACK_SPELLS.length?`<li><b>Incluido en este tracker</b> <span class="pcsub">${PACK_SPELLS.length} conjuros</span></li>`:'')
-    +books.map((b,i)=>`<li><b>${esc(b.n)}</b>${b.ab&&b.ab!==b.n?` <span class="tag">${esc(b.ab)}</span>`:''} <span class="pcsub">${b.spells.length} conjuro${b.spells.length===1?'':'s'}</span> <button type="button" class="btn sm danger" data-act="bkdel" data-i="${i}" data-confirm>Quitar</button></li>`).join('');
   const fu=$('#vs-fu'),cur=fu.value,names=[...new Set(SPELL_LIST.filter(s=>s.src!=='srd').map(s=>s.book||'Libro'))];
   fu.innerHTML='<option value="">Todas las fuentes</option><option value="srd">SRD 5.2.1</option>'+names.map(n=>`<option value="b:${esc(n)}">${esc(n)}</option>`).join('');
   fu.value=[...fu.options].some(o=>o.value===cur)?cur:'';
-  if(location.hash==='#conjuros')renderSpellView();
+  if(location.hash==='#conjuros')try{renderSpellView();}catch{}   // al cargar aún no existe la vista; showView la pinta después
 }
 // El SRD usa nombres genéricos donde los manuales llevan el del mago («Cofre oculto» = «Cofre oculto de Leomund»)
 const EN_ALIAS={"bigby's hand":'arcane hand',"mordenkainen's sword":'arcane sword',"nystul's magic aura":"arcanist's magic aura"};
 const enKeys=e=>{const f=fold(e);return f?[f,EN_ALIAS[f],f.replace(/^[a-z-]+'s\s+/,'')].filter(Boolean):[];};
 function mergeSpells(){
   const by=new Map(),alias=new Map();
-  for(const s of SRD_SPELLS){const k=fold(s.n);by.set(k,s);if(s.en)alias.set(fold(s.en),k);}
-  const lib=[...PACK_SPELLS.map(s=>({...s,book:s.book||'Incluido en este tracker'})),...getBooks().flatMap(bk=>bk.spells.map(s=>({...s,book:bk.n,ab:bk.ab})))];
+  for(const s of modOn('srd521')?SRD_SPELLS:[]){const k=fold(s.n);by.set(k,s);if(s.en)alias.set(fold(s.en),k);}
+  const lib=activeMods().flatMap(md=>(md.conjuros||[]).map(s=>({...s,book:md.n,ab:md.ab})));
   for(const s of lib){
     const b={...s,src:s.src==='srd'?'srd':'lib'},k=fold(b.n);
     for(const e of enKeys(b.en)){const old=alias.get(e);if(old&&old!==k&&by.get(old)?.src==='srd')by.delete(old);}
@@ -1776,10 +1923,9 @@ function mergeSpells(){
 }
 mergeSpells();
 const getJSON=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
-Promise.all([getJSON('conjuros_srd.json'),getJSON('conjuros.json')]).then(([srd,pack])=>{
+getJSON('conjuros_srd.json').then(srd=>{
   if(Array.isArray(srd))SRD_SPELLS=srd;
-  if(pack){try{PACK_SPELLS=parseBook(pack,'').flatMap(g=>g.spells.map(s=>({...s,book:g.n,ab:g.ab})));}catch{}}
-  mergeSpells();render();if(location.hash==='#inicio'||!location.hash)renderHome();
+  mergeSpells();render();if(location.hash==='#inicio'||!location.hash)renderHome();if(location.hash==='#modulos')renderMods();
 });
 const SCH_KEY=s=>{const f=fold(s);return Object.keys(SCHOOLS).find(k=>k===f||fold(SCHOOLS[k])===f)||'';};
 const yesNo=v=>v===true||/^(true|s[ií]|si|x|1)$/i.test(String(v??'').trim());
@@ -1805,25 +1951,19 @@ function parseBook(data,fileName){
   if(!groups.size)throw new Error('ningún conjuro tiene «n» (nombre)');
   return [...groups.values()];
 }
-function importBook(text,fileName){
-  const add=parseBook(text,fileName),books=getBooks();
-  for(const g of add){const i=books.findIndex(b=>fold(b.n)===fold(g.n));if(i>=0)books[i]=g;else books.push(g);}
-  saveBooks(books);mergeSpells();render();
-  toast(add.map(g=>`«${g.n}»: ${g.spells.length} conjuros`).join(' · ')+' registrado'+(add.length>1?'s':''));
-}
-for(const id of ['#spfile','#bk-file'])$(id).addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;const rd=new FileReader();
-  rd.onload=()=>{try{importBook(String(rd.result),f.name);}catch(err){toast('No he podido leer ese archivo: '+err.message);}e.target.value='';};
+for(const id of ['#md-file','#md-byofile'])$(id).addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;const rd=new FileReader(),ref=id==='#md-byofile'?mdRef:'';
+  rd.onload=()=>{try{importModule(String(rd.result),f.name,ref);}catch(err){toast('No he podido leer ese archivo: '+err.message);}e.target.value='';};
   rd.readAsText(f,'utf-8');
 });
-$('#bk-urlform').addEventListener('submit',e=>{
-  e.preventDefault();const u=$('#bk-url').value.trim();if(!u)return;
-  fetch(u).then(r=>{if(!r.ok)throw new Error('respuesta '+r.status);return r.text();}).then(x=>{importBook(x,new URL(u).hostname);$('#bk-url').value='';})
+$('#md-urlform').addEventListener('submit',e=>{
+  e.preventDefault();const u=$('#md-url').value.trim();if(!u)return;
+  fetch(u).then(r=>{if(!r.ok)throw new Error('respuesta '+r.status);return r.text();}).then(x=>{importModule(x,new URL(u).pathname.split('/').pop()||new URL(u).hostname);$('#md-url').value='';})
     .catch(err=>toast(/fetch|network|Failed/i.test(err.message)?'No he podido descargarlo (el sitio no lo permite). Descárgalo y usa «Cargar archivo».':'No he podido leerlo: '+err.message));
 });
 const spLevel=lv=>lv?`Nivel ${lv}`:'Truco';
 function spellBody(s,dc){
-  if(!s)return '<p class="hint" style="display:block">Este conjuro no está en el SRD. Añade tu libro en ✨ Conjuros → 📚 Libros opcionales para ver la descripción.</p>';
+  if(!s)return '<p class="hint" style="display:block">Este conjuro no está en ningún módulo activo. Actívalo o añade tu copia del libro en <a href="#modulos">📦 Módulos</a> para ver la descripción.</p>';
   const use=s.use||'',tds=use.match(/TdS\s*(\w+)/i);
   return `${s.fl?`<p class="spfl">${esc(s.fl)}</p>`:''}
     <div class="spmeta">${[['Lanzamiento',s.ct],['Alcance',s.rg],['Duración',s.dur],['Componentes',s.comp],['Escuela',SCHOOLS[s.sch]],['Clases',s.cls.join(', ')],['Fuente',spellSrcFull(s)]].filter(x=>x[1]).map(([l,v])=>`<span><b>${l}</b> ${esc(v)}</span>`).join('')}
@@ -1958,7 +2098,7 @@ const TKEY='combat-tables-v1';
 let TABLES=lsGet(TKEY)||[],tbSel=TABLES[0]?.id||null,tbHist=[],tbT;
 const saveTables=()=>{clearTimeout(tbT);if(!lsSet(TKEY,TABLES))toast('No se han podido guardar las tablas en este navegador');};
 const saveTablesSoon=()=>{clearTimeout(tbT);tbT=setTimeout(saveTables,300);};
-const curTable=()=>TABLES.find(x=>x.id===tbSel);
+const curTable=()=>TABLES.find(x=>x.id===tbSel)||MODTB.find(x=>x.id===tbSel);
 function tbMake(n,rows,cols,data={},fmt='',mode='col'){
   const tb={id:uid(),n,rows,mode,fmt,cols:cols.map(c=>({id:uid(),n:c})),cells:{}};
   for(const c of tb.cols)tb.cells[c.id]=Array.from({length:rows},(_,i)=>(data[c.n]||[])[i]||'');
@@ -1968,7 +2108,7 @@ function tbMake(n,rows,cols,data={},fmt='',mode='col'){
 function tbResolve(text,depth){
   return String(text??'').replace(/\{([^{}]+)\}/g,(m,inner)=>{
     const x=inner.trim();
-    if(x.startsWith('@')){const o=TABLES.find(tb=>fold(tb.n)===fold(x.slice(1)));return o&&depth<4?tbRoll(o,depth+1).text:m;}
+    if(x.startsWith('@')){const o=[...TABLES,...MODTB].find(tb=>fold(tb.n)===fold(x.slice(1)));return o&&depth<4?tbRoll(o,depth+1).text:m;}
     const r=/^\d*d\d+([+-]\d+)?$/i.test(x.replace(/\s/g,''))?roll(x):null;return r?String(r.v):m;
   });
 }
@@ -1983,10 +2123,19 @@ function tbRoll(tb,depth=0){
 const tbHistHTML=()=>tbHist.map((h,i)=>`<li><span class="tbout">${esc(h.text)||'<span class="pcsub">(vacío)</span>'}</span><button type="button" class="btn sm ghost" data-act="tbcopy" data-i="${i}" title="Copiar">⧉</button><span class="tbparts">${esc(h.n)} · ${h.parts.map(x=>`${esc(x.c)} d${h.rows}: ${x.r}`).join(' · ')}</span></li>`).join('');
 function renderTables(){
   $('#tb-count').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'';
-  $('#tb-list').innerHTML=TABLES.map(tb=>`<button type="button" class="tbitem${tb.id===tbSel?' on':''}" data-act="tbsel" data-id="${tb.id}"><b>${esc(tb.n)}</b><span class="pcsub">d${tb.rows} · ${tb.cols.length} columna${tb.cols.length>1?'s':''}</span></button>`).join('')
-    ||'<p class="hint" style="display:block">Aún no tienes tablas.</p><button type="button" class="btn sm" data-act="tbexamples">Crear tablas de ejemplo</button>';
+  const item=tb=>`<button type="button" class="tbitem${tb.id===tbSel?' on':''}" data-act="tbsel" data-id="${esc(tb.id)}"><b>${esc(tb.n)}</b><span class="pcsub">d${tb.rows} · ${tb.cols.length} columna${tb.cols.length>1?'s':''}</span>${tb._mod?`<span class="pcsub">📦 ${esc(tb._mod)}</span>`:''}</button>`;
+  $('#tb-list').innerHTML=(TABLES.map(item).join('')
+    ||'<p class="hint" style="display:block">Aún no tienes tablas.</p><button type="button" class="btn sm" data-act="tbexamples">Crear tablas de ejemplo</button>')
+    +(MODTB.length?`<p class="pcsub" style="margin:10px 0 2px">De módulos</p>${MODTB.map(item).join('')}`:'');
   const tb=curTable();
   if(!tb){$('#tb-main').innerHTML='<div class="empty">Crea una tabla con «+ Nueva tabla» o empieza con las de ejemplo.</div>';return;}
+  if(tb._mod){$('#tb-main').innerHTML=`<div class="tbcard"><h3 class="tbh3">${esc(tb.n)} <span class="tag">📦 ${esc(tb._mod)}</span></h3>
+    <div class="tbroll"><button type="button" class="btn primary" data-act="tbroll" data-k="1">🎲 Tirar d${tb.rows}</button><button type="button" class="btn" data-act="tbroll" data-k="5">×5</button><button type="button" class="btn" data-act="tbroll" data-k="10">×10</button>${tbHist.length?'<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>':''}</div>
+    <ol class="tbres" id="tb-res" aria-live="polite">${tbHistHTML()}</ol></div>
+  <div class="tbcard"><div class="inline" style="justify-content:space-between"><h3 class="tbh3">Contenido · d${tb.rows}</h3><button type="button" class="btn sm" data-act="tbdup">Duplicar para editarla</button></div>
+    ${tb.fmt?`<p class="hint" style="display:block;margin:0">Formato: <code>${esc(tb.fmt)}</code></p>`:''}
+    <div class="sptwrap"><table class="sptable tbgrid tbro"><thead><tr><th class="num">d${tb.rows}</th>${tb.cols.map(c=>`<th>${esc(c.n)}</th>`).join('')}</tr></thead>
+    <tbody>${Array.from({length:tb.rows},(_,r)=>`<tr><td class="num">${r+1}</td>${tb.cols.map(c=>`<td>${esc((tb.cells[c.id]||[])[r]||'')}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;return;}
   const ph=tb.cols.map(c=>`{${c.n}}`).join(' ');
   $('#tb-main').innerHTML=`<div class="tbcard">
     <div class="tbhead">
@@ -2014,6 +2163,7 @@ function renderTables(){
 function tbSetRows(tb,n){tb.rows=Math.max(1,Math.min(1000,n|0||1));for(const c of tb.cols){const a=tb.cells[c.id]||(tb.cells[c.id]=[]);while(a.length<tb.rows)a.push('');}}
 function tbAct(act,b){
   const tb=curTable();
+  if(tb?._mod&&!['tbnew','tbsel','tbexamples','tbroll','tbclearhist','tbcopy','tbdup'].includes(act))return true;
   switch(act){
     case 'tbnew':{const n=tbMake('Nueva tabla',20,['Resultado']);TABLES.push(n);tbSel=n.id;tbHist=[];break;}
     case 'tbsel':tbSel=b.dataset.id;tbHist=[];break;
@@ -2029,7 +2179,7 @@ function tbAct(act,b){
     case 'tbchip':{const f=$('#tb-fmt'),v=b.dataset.v,s=f.selectionStart??f.value.length,e2=f.selectionEnd??s;f.value=f.value.slice(0,s)+v+f.value.slice(e2);tb.fmt=f.value;saveTables();f.focus();const at=v==='{@}'?s+2:s+v.length;f.setSelectionRange(at,at);return;}
     case 'tbaddcol':{const c={id:uid(),n:'Columna '+(tb.cols.length+1)};tb.cols.push(c);tb.cells[c.id]=Array(tb.rows).fill('');break;}
     case 'tbdelcol':{tb.cols=tb.cols.filter(c=>c.id!==b.dataset.id);delete tb.cells[b.dataset.id];break;}
-    case 'tbdup':{const d=JSON.parse(JSON.stringify(tb));d.id=uid();d.n=tb.n+' (copia)';TABLES.push(d);tbSel=d.id;tbHist=[];break;}
+    case 'tbdup':{const d=JSON.parse(JSON.stringify(tb));delete d._mod;d.id=uid();d.n=tb.n+' (copia)';TABLES.push(d);tbSel=d.id;tbHist=[];break;}
     case 'tbdel':{TABLES=TABLES.filter(x=>x.id!==tb.id);tbSel=TABLES[0]?.id||null;tbHist=[];toast(`«${tb.n}» borrada`);break;}
     case 'tbfill':{const lines=$('#tbf-text').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!lines.length){toast('Pega al menos un valor');return;}
       const cid=$('#tbf-col').value;if($('#tbf-fit').checked)tbSetRows(tb,lines.length);else tbSetRows(tb,Math.max(tb.rows,lines.length));
@@ -2057,13 +2207,62 @@ $('#tb-main').addEventListener('keydown',e=>{
   const el=e.target;if(e.key!=='Enter'||!el.dataset?.tbc)return;e.preventDefault();
   const nx=$(`[data-tbc="${el.dataset.tbc}"][data-r="${+el.dataset.r+(e.shiftKey?-1:1)}"]`);if(nx){nx.focus();nx.select();}
 });
+let mdRef='';
+// Dentro de claude.ai las descargas pasan por el visor (capacidad downloads); fuera, un enlace normal.
+let DL=null;window.claude?.use?.('downloads').then(d=>{DL=d;}).catch(()=>{});
+async function saveFile(name,text){
+  if(DL){try{await DL.save({filename:name,data:text});return true;}catch(e){if(e?.code!=='declined')toast('No se ha podido guardar el archivo');return false;}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);return true;
+}
+function mdCard(o,md,kind){
+  const on=kind==='free'?modOn(o.id):!!md?.on,cnt=kind==='free'?(o.id==='srd521'?[SRD_ALL.length?`${SRD_ALL.length} criaturas`:'',SRD_SPELLS.length?`${SRD_SPELLS.length} conjuros`:''].filter(Boolean).join(' · ')||'Cargando…':''):md?modCounts(md):'';
+  const later=md?MOD_TYPES.filter(([k])=>MOD_LATER.has(k)&&(md[k]||[]).length).length:0;
+  const meta=[o.year,o.lic||md?.lic,md?.autor&&`por ${md.autor}`,md?.version&&`v${md.version}`].filter(Boolean).join(' · ');
+  let btns='';
+  if(o.soon)btns='<span class="mdst">Próximamente</span>';
+  else if(kind==='byo'&&!md)btns=`<span class="mdst">No disponible</span><button type="button" class="btn sm primary" data-act="mdbyo" data-ref="${o.id}">Añadir mi copia</button>`;
+  else btns=`<button type="button" class="btn sm${on?'':' primary'}" data-act="mdtoggle" data-id="${esc(o.id)}">${on?'✓ Activado · Desactivar':'Activar'}</button>`
+    +(kind==='byo'?`<button type="button" class="btn sm" data-act="mdbyo" data-ref="${o.id}">Actualizar copia</button>`:'')
+    +(kind!=='free'?`<button type="button" class="btn sm danger" data-act="mddel" data-id="${esc(o.id)}" data-confirm>Quitar</button>`:'');
+  return `<div class="mdcard${on?' on':''}${o.soon?' soon':''}"><div class="mdt">${esc(o.n)} <span class="tag">${esc(o.ab||md?.ab||'')}</span></div>
+    ${meta?`<p class="mdc">${esc(meta)}</p>`:''}${(o.desc||md?.desc)?`<p>${esc(o.desc||md.desc)}</p>`:''}
+    ${cnt?`<p class="mdc">${esc(cnt)}${later?' (objetos, clases y demás se verán en el Compendio)':''}</p>`:''}<div class="inline">${btns}</div></div>`;
+}
+function renderMods(){
+  if(!$('#md-free'))return;const M=mods();
+  $('#md-free').innerHTML=OFFICIAL_FREE.map(o=>mdCard(o,null,'free')).join('');
+  $('#md-byo').innerHTML=OFFICIAL_BYO.map(o=>mdCard(o,M.list.find(m=>m.ref===o.id),'byo')).join('');
+  const hb=M.list.filter(m=>!m.ref);
+  $('#md-hb').innerHTML=hb.map(m=>mdCard({id:m.id,n:m.n,ab:m.ab},m,'hb')).join('')||'<p class="hint" style="display:block">Aún no has añadido ningún módulo homebrew.</p>';
+  const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;
+  $('#md-count').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';
+  const pick=(title,k,list,lab)=>`<fieldset><legend>${title} (${list.length})</legend>${list.length?list.map((x,i)=>`<label><input type="checkbox" data-mx="${k}" value="${i}" checked> ${esc(lab(x))}</label>`).join(''):'<span class="pcsub">No tienes</span>'}</fieldset>`;
+  $('#mx-pick').innerHTML=pick('Mis criaturas','cr',MY,m=>`${m.n} (VD ${m.cr??'–'})`)+pick('Mis tablas','tb',TABLES,tb=>`${tb.n} (d${tb.rows})`);
+}
+function mdAct(act,b){
+  const M=mods(),id=b.dataset.id;
+  switch(act){
+    case 'mdtoggle':{if(id in M.on||OFFICIAL_FREE.some(o=>o.id===id))M.on[id]=!M.on[id];else{const m=M.list.find(x=>x.id===id);if(m)m.on=!m.on;}
+      saveMods();refreshMods();render();renderMods();if(location.hash==='#inicio'||!location.hash)renderHome();
+      const nm=OFFICIAL_FREE.find(o=>o.id===id)?.n||M.list.find(x=>x.id===id)?.n;toast(`«${nm}» ${modOn(id)?'activado':'desactivado'}`);break;}
+    case 'mdbyo':mdRef=b.dataset.ref;$('#md-byofile').click();break;
+    case 'mddel':{const m=M.list.find(x=>x.id===id);M.list=M.list.filter(x=>x.id!==id);saveMods();refreshMods();render();renderMods();if(m)toast(`«${m.n}» quitado`);break;}
+    case 'mdexport':{const n=$('#mx-n').value.trim();if(!n){toast('Ponle un nombre al módulo');$('#mx-n').focus();return;}
+      if(!$('#mx-own').checked){toast('Marca la casilla: solo se pueden compartir contenidos propios o con licencia abierta');return;}
+      const sel=k=>[...document.querySelectorAll(`[data-mx="${k}"]:checked`)].map(x=>+x.value);
+      const criaturas=sel('cr').map(i=>{const{id:_,src:__,...m}=MY[i];return m;}),tablas=sel('tb').map(i=>tableToMod(TABLES[i]));
+      if(!criaturas.length&&!tablas.length){toast('Elige al menos una criatura o una tabla');return;}
+      const out={modulo:n,abrev:$('#mx-ab').value.trim()||modAbbr(n),autor:$('#mx-autor').value.trim(),version:$('#mx-ver').value.trim(),licencia:$('#mx-lic').value,descripcion:$('#mx-desc').value.trim(),criaturas,tablas};
+      saveFile(modSlug(n).slice(3)+'.json',JSON.stringify(out,null,2)).then(ok=>{if(ok)toast(`Módulo «${n}» descargado: ${criaturas.length} criaturas y ${tablas.length} tablas`);});break;}
+  }
+}
 function extraAct(act,b,c,e){
+  if(act.startsWith('md')){mdAct(act,b);return;}
   if(act.startsWith('tb')){tbAct(act,b);return;}
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
     case 'openparty':location.hash='jugadores';break;
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
-    case 'bkdel':{const books=getBooks(),[gone]=books.splice(+b.dataset.i,1);saveBooks(books);mergeSpells();render();if(gone)toast(`«${gone.n}» quitado`);break;}
     case 'pcnew':openPC(null);break;
     case 'pcedit':openPC(b.dataset.id);break;
     case 'closepc':$('#pcmodal').hidden=true;syncModalOpen();break;
@@ -2096,7 +2295,7 @@ function extraAct(act,b,c,e){
 /* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const v=location.hash.slice(1);
-  const pages=['inicio','jugadores','criaturas','conjuros','tablas','cambios'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
+  const pages=['inicio','jugadores','criaturas','conjuros','tablas','modulos','cambios'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage?v2:'combate')));
@@ -2107,6 +2306,7 @@ function showView(){
   if(v==='criaturas')renderCreatureView();
   if(v==='conjuros'){fillSpellFilters();renderSpellView();}
   if(v==='tablas')renderTables();
+  if(v2==='modulos')renderMods();
   if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
 }
@@ -2115,11 +2315,12 @@ function renderHome(){
   const n=state.creatures.length;
   $('#hs-combat').textContent=state.active?`En curso · ronda ${state.round} · ${n} criaturas`:(n?`${n} criaturas preparadas`:'Sin combate preparado');
   $('#hs-party').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'Sin personajes';
-  $('#hs-best').textContent=SRD.length?`${SRD.length} del SRD${MY.length?` · ${MY.length} tuyas`:''}`:'Cargando…';
+  $('#hs-best').textContent=allBest().length?`${allBest().length} criaturas${MY.length?` · ${MY.length} tuyas`:''}`:'Sin criaturas activas';
+  {const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;$('#hs-mods').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';$('#hs-nomods').hidden=n>0;}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
-function crSrc(m){return m.src??(m.id?'':'Manual de Monstruos 2024');}
+function crSrc(m){return m.src??(m.id?'':'SRD 5.2.1');}
 let VC_RES=[];
 function renderCreatureView(){
   const types=[...new Set(allBest().map(m=>m.ty).filter(Boolean))].sort((a,b)=>tr(TYPE,a).localeCompare(tr(TYPE,b),'es'));
@@ -2130,9 +2331,9 @@ function renderCreatureView(){
   res.sort(sort==='cr'?(a,b)=>crNum(a.cr)-crNum(b.cr)||byN(a,b):sort==='ac'?(a,b)=>(b.ac??-1)-(a.ac??-1)||byN(a,b):sort==='hp'?(a,b)=>(b.hp??-1)-(a.hp??-1)||byN(a,b)
     :sort==='ty'?(a,b)=>tr(TYPE,a.ty||'').localeCompare(tr(TYPE,b.ty||''),'es')||byN(a,b):byN);
   VC_RES=res;
-  $('#vc-count').textContent=SRD.length?`${res.length} criaturas`:'Cargando el bestiario…';
+  $('#vc-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el bestiario…':'';
   const th=(k,l,c='')=>`<th${c?` class="${c}"`:''}><button type="button" data-csort="${k}"${sort===k?' aria-sort="ascending"':''}>${l}</button></th>`;
-  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${esc(crSrc(m))||'–'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nada coincide con esos filtros.</div>';
+  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${esc(crSrc(m))||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos">📦 Módulos</a>, o crea las tuyas desde el bestiario.</div>';
 }
 function toggleCreatureRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
