@@ -546,7 +546,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false">⚙ Ajustes</button>
       <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="pergamino">Pergamino</option><option value="taberna">Taberna</option></select></label>
-      <button class="btn" data-act="openparty">🛡 Grupo</button>
+      <button class="btn" data-act="openparty" title="Ir a la página de jugadores">🛡 Grupo</button>
       <button class="btn" data-act="openbest">📖 Bestiario</button>
       <button class="btn" id="prev" title="Turno anterior (←)">◀ Anterior</button>
       <button class="btn primary big" id="next" title="Siguiente turno (→ o espacio)">Empezar ▶</button>
@@ -555,7 +555,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.9</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.10</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -571,6 +571,8 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.10 <span>3 nov 2026</span></h3><ul>
+      <li>Los jugadores tienen su propia página (#jugadores) en lugar de una ventana emergente. El botón 🛡 Grupo del combate lleva a ella.</li></ul></li>
     <li><h3>v1.9 <span>3 nov 2026</span></h3><ul>
       <li>Los conjuros vienen incluidos en el tracker: ya no hace falta cargar el CSV en cada navegador.</li>
       <li>La cabecera solo muestra «Iniciativa» y los controles de turno en el tracker de combate. En el resto de páginas pone «Herramientas del Máster» y lleva al inicio.</li></ul></li>
@@ -594,6 +596,30 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
       <li>Editor de criaturas propias: crear, clonar y editar.</li></ul></li>
     <li><h3>v1.0</h3><ul><li>Tracker de iniciativa con bandos, PG, PG temporales, estados con duración, salvaciones contra muerte, rondas, deshacer y registro.</li></ul></li>
   </ol>
+</section>
+
+<section class="vpage" id="view-jugadores" hidden>
+  <div class="vhead"><h2>Grupo de jugadores</h2><span class="pcsub" id="vp-count"></span>
+    <div class="inline" style="margin-left:auto">
+      <button class="btn" data-act="pcnew">+ Nuevo personaje</button>
+      <button class="btn" data-act="openio">Copias de seguridad</button>
+    </div>
+  </div>
+  <div style="display:grid;gap:14px">
+      <div class="inline" style="justify-content:space-between">
+        <div class="inline">
+          <button class="btn primary" data-act="partyadd">Añadir todo el grupo al combate</button>
+          <button class="btn" data-act="longrest" data-confirm title="PG al máximo y espacios de conjuro recuperados">🌙 Descanso largo</button>
+        </div>
+        <div class="inline">
+          <label class="btn" for="spfile" tabindex="0">📚 Cargar conjuros (CSV)</label>
+          <input type="file" id="spfile" accept=".csv,text/csv" hidden>
+          <span class="spcount" id="spcount"></span>
+        </div>
+      </div>
+      <div class="pgrid" id="plist"></div>
+      <p class="hint">Los PG actuales de cada personaje se guardan solos: lo que pase en un combate se mantiene en el siguiente hasta que hagáis un descanso largo. Personajes, conjuros y encuentros se guardan solo en este navegador.</p>
+  </div>
 </section>
 
 <section class="vpage" id="view-criaturas" hidden>
@@ -769,35 +795,6 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </form>
 </div>
 <datalist id="types"></datalist>
-
-<!-- Grupo -->
-<div class="modal" id="partymodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="party-h">
-    <div class="mhead">
-      <h2 id="party-h">Grupo de jugadores</h2>
-      <div class="inline">
-        <button class="btn" data-act="pcnew">+ Nuevo personaje</button>
-        <button class="btn" data-act="openio">Copias de seguridad</button>
-        <button class="btn ghost" data-act="closeparty" aria-label="Cerrar">✕</button>
-      </div>
-    </div>
-    <div class="mbody" style="display:grid;gap:14px">
-      <div class="inline" style="justify-content:space-between">
-        <div class="inline">
-          <button class="btn primary" data-act="partyadd">Añadir todo el grupo al combate</button>
-          <button class="btn" data-act="longrest" data-confirm title="PG al máximo y espacios de conjuro recuperados">🌙 Descanso largo</button>
-        </div>
-        <div class="inline">
-          <label class="btn" for="spfile" tabindex="0">📚 Cargar conjuros (CSV)</label>
-          <input type="file" id="spfile" accept=".csv,text/csv" hidden>
-          <span class="spcount" id="spcount"></span>
-        </div>
-      </div>
-      <div class="pgrid" id="plist"></div>
-      <p class="hint">Los PG actuales de cada personaje se guardan solos: lo que pase en un combate se mantiene en el siguiente hasta que hagáis un descanso largo. Personajes, conjuros y encuentros se guardan solo en este navegador.</p>
-    </div>
-  </div>
-</div>
 
 <!-- Personaje -->
 <div class="modal" id="pcmodal" hidden>
@@ -1190,7 +1187,7 @@ function render(){
   $('#log').innerHTML=s.log.length?s.log.map(e=>e.round?`<li class="round">— ${esc(e.msg)} —</li>`:`<li><span class="r">${e.r?'R'+e.r:''}</span><span>${esc(e.msg)}</span></li>`).join(''):'<li class="hint" style="display:block">Aquí aparecerá lo que pase en el combate.</li>';
   if(!$('#bestmodal').hidden)renderBest();
   renderEnc();
-  if(!$('#partymodal').hidden)renderParty();
+  if(!$('#view-jugadores').hidden)renderParty();
   if(location.hash==='#criaturas'&&$('#vc-count').textContent.startsWith('Cargando'))renderCreatureView();
   if(!$('#view-inicio').hidden)renderHome();
 }
@@ -1277,8 +1274,8 @@ function renderBest(){
     </div>${sbHTML(m,null)}`:'<div class="empty">Elige una criatura de la lista para ver su ficha.<br><span class="hint">Fichas del SRD 5.2.1 oficial en español. También puedes buscar por el nombre en inglés.</span></div>';
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
-function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#partymodal','#pcmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
-function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#partymodal','#pcmodal'].some(id=>!$(id).hidden));}
+function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
+function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
   commit(()=>{
@@ -1625,6 +1622,7 @@ function renderParty(){
       <div class="inline"><button class="btn sm primary" data-act="pcadd" data-id="${p.id}" ${inC?'disabled':''}>${inC?'En combate':'Añadir al combate'}</button>
       <button class="btn sm" data-act="pcedit" data-id="${p.id}">Editar</button><button class="btn sm danger" data-act="pcdel" data-id="${p.id}" data-confirm>Borrar</button></div></div>`;
   }).join(''):'<div class="empty">Aún no hay personajes. Crea el primero con «+ Nuevo personaje».</div>';
+  $('#vp-count').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'';
   const cnt=$('#spcount');if(cnt)cnt.textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros${spellSrc==='local'?' (cargados por ti)':''}`:'Sin conjuros cargados';
 }
 let pcEditId=null,pcSpells=[];
@@ -1713,8 +1711,7 @@ function loadEncounter(p){
 function extraAct(act,b,c,e){
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
-    case 'openparty':renderParty();$('#partymodal').hidden=false;syncModalOpen();break;
-    case 'closeparty':$('#partymodal').hidden=true;syncModalOpen();if(location.hash==='#jugadores')location.hash='combate';break;
+    case 'openparty':location.hash='jugadores';break;
     case 'pcnew':openPC(null);break;
     case 'pcedit':openPC(b.dataset.id);break;
     case 'closepc':$('#pcmodal').hidden=true;syncModalOpen();break;
@@ -1743,19 +1740,18 @@ function extraAct(act,b,c,e){
     case 'vadd':{const m=tpl(b.dataset.k);const sel=b.closest('.vitem').querySelector('select');addFromTpl(m,sel.value,1);toast(`${m.n} añadido al combate`);break;}
   }
 }
-$('#partymodal').addEventListener('click',e=>{if(e.target.id==='partymodal'){$('#partymodal').hidden=true;syncModalOpen();}});
 
-/* ---------- páginas: #criaturas y #conjuros ---------- */
+/* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const v=location.hash.slice(1);
-  const pages=['inicio','criaturas','conjuros'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
+  const pages=['inicio','jugadores','criaturas','conjuros'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
-  document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage||v2==='jugadores'?v2:'combate')));
+  document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage?v2:'combate')));
   document.documentElement.dataset.page=isPage?v2:'combate';
   $('#brand').textContent=isPage?'Herramientas del Máster':'Iniciativa';
   if(v2==='inicio')renderHome();
-  if(v2==='jugadores'){renderParty();$('#partymodal').hidden=false;syncModalOpen();}
+  if(v2==='jugadores')renderParty();
   if(v==='criaturas')renderCreatureView();
   if(v==='conjuros'){fillSpellFilters();renderSpellView();}
   window.scrollTo(0,0);
