@@ -303,6 +303,37 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .books input[type=url]{flex:1 1 auto;min-width:0;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
 .legal{max-width:1320px;margin:0 auto;padding:18px 16px 28px;font-size:12px;line-height:1.5;color:var(--muted)}
 .legal a{color:inherit}
+.tbwrap{display:grid;grid-template-columns:230px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:760px){.tbwrap{grid-template-columns:minmax(0,1fr)}}
+.tblist{display:grid;gap:6px}
+.tbitem{all:unset;cursor:pointer;display:grid;gap:2px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.tbitem:hover{border-color:var(--accent)}
+.tbitem.on{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.tbitem:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tbmain{display:grid;gap:14px;min-width:0}
+.tbcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:12px;min-width:0}
+.tbhead{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.tbhead .wide{grid-column:1/-1}
+.tbchips{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.tbchips .chip{cursor:pointer;font-family:var(--f-num)}
+.tbh3{margin:0;font-size:16px}
+.tbroll{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tbres{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:360px;overflow:auto}
+.tbres li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tbres li:first-child{border-color:var(--accent)}
+.tbres .tbout{font-size:17px;font-weight:700;overflow-wrap:anywhere}
+.tbres .tbparts{grid-column:1;font-size:12px;color:var(--muted);font-family:var(--f-num)}
+.tbres .btn{grid-row:1/span 2;grid-column:2}
+.tbgrid td,.tbgrid th{padding:3px 6px}
+.tbgrid td.num{color:var(--muted);width:1%}
+.tbgrid input{width:100%;min-width:130px;background:transparent;border:1px solid transparent;border-radius:5px;padding:5px 6px;color:var(--fg);font:inherit}
+.tbgrid input:hover{border-color:var(--line)}
+.tbgrid input:focus{border-color:var(--accent);background:var(--surface-2);outline:none}
+.tbgrid th input{font-weight:700;text-transform:none;letter-spacing:0;font-size:13px;color:var(--fg)}
+.tbcolh{display:flex;gap:4px;align-items:center}
+.tbfill>summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.tbfill-b{display:grid;gap:8px;margin-top:8px;max-width:520px}
+.tbfill textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px;color:var(--fg);font-family:var(--f-num);font-size:12.5px}
 .bklist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .bklist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
 .bkfmt>summary{cursor:pointer;font-size:13px;color:var(--muted)}
@@ -597,7 +628,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.15</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#inicio" class="navver">v1.16</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -610,9 +641,14 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <a class="tool" href="#jugadores"><span class="ti">🛡</span><span class="tn">Gestión de jugadores</span><span class="td">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span><span class="tstat" id="hs-party"></span></a>
     <a class="tool" href="#criaturas"><span class="ti">🐉</span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
     <a class="tool" href="#conjuros"><span class="ti">✨</span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
+    <a class="tool" href="#tablas"><span class="ti">🎲</span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.16 <span>3 nov 2026</span></h3><ul>
+      <li>Nueva sección <b>🎲 Tablas aleatorias</b>: el número de filas es el dado (80 filas = d80), con tantas columnas como quieras. Se tira una vez por columna (o una para toda la fila) y el resultado se une con tu formato, p. ej. <code>{Nombre} {Apellido}</code>.</li>
+      <li>Fórmulas dentro de las celdas y del formato: <code>{1d4} po</code> se tira al salir; <code>{@Otra tabla}</code> tira en otra tabla.</li>
+      <li>Rellenar una columna pegando una lista, Intro para bajar de fila, duplicar tablas, tiradas ×5 y ×10 y tablas de ejemplo. Las tablas entran en la copia de seguridad.</li></ul></li>
     <li><h3>v1.15 <span>3 nov 2026</span></h3><ul>
       <li>Los libros quedan <b>registrados con su nombre</b> («Manual del Jugador 2024»): el panel 📚 los lista con sus conjuros y se pueden quitar uno a uno. Puedes tener varios a la vez.</li>
       <li>El JSON lleva <code>libro</code> y <code>abrev</code>; la columna Fuente muestra «MdJ p. 249» y la ficha el nombre completo. El filtro de fuente permite elegir cada libro.</li>
@@ -679,6 +715,16 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
       </div>
       <div class="pgrid" id="plist"></div>
       <p class="hint">Los PG actuales de cada personaje se guardan solos: lo que pase en un combate se mantiene en el siguiente hasta que hagáis un descanso largo. Personajes, conjuros y encuentros se guardan solo en este navegador.</p>
+  </div>
+</section>
+
+<section class="vpage" id="view-tablas" hidden>
+  <div class="vhead"><h2>Tablas aleatorias</h2><span class="pcsub" id="tb-count"></span>
+    <div class="inline" style="margin-left:auto"><button class="btn" data-act="tbnew">+ Nueva tabla</button></div>
+  </div>
+  <div class="tbwrap">
+    <nav class="tblist" id="tb-list" aria-label="Tus tablas"></nav>
+    <div class="tbmain" id="tb-main"></div>
   </div>
 </section>
 
@@ -1526,12 +1572,12 @@ document.addEventListener('click',e=>{
     case 'closeio':$('#iomodal').hidden=true;syncModalOpen();break;
     case 'iocopy':{const t=JSON.stringify(backupData());$('#io-text').value=t;navigator.clipboard?.writeText(t).then(()=>toast('Copiado. Pégalo en un archivo de texto para guardarlo')).catch(()=>{$('#io-text').select();toast('Selecciona el texto y cópialo a mano');});break;}
     case 'ioimport':{try{const d=JSON.parse($('#io-text').value);
-      const best=Array.isArray(d)?d:(d.bestiario||[]),grp=Array.isArray(d)?[]:(d.grupo||[]),enc=Array.isArray(d)?[]:(d.encuentros||[]);
+      const best=Array.isArray(d)?d:(d.bestiario||[]),grp=Array.isArray(d)?[]:(d.grupo||[]),enc=Array.isArray(d)?[]:(d.encuentros||[]),tbs=Array.isArray(d)?[]:(d.tablas||[]);
       if(!Array.isArray(best)||!Array.isArray(grp)||!Array.isArray(enc))throw 0;
       const up=(arr,list)=>{let k=0;for(const m of list){if(!m||!m.n)continue;m.id=m.id||uid();const i=arr.findIndex(x=>x.id===m.id);if(i>=0)arr[i]=m;else arr.push(m);k++;}return k;};
-      const a=up(MY,best),g=up(PARTY,grp),e2=up(PRESETS,enc);
+      const a=up(MY,best),g=up(PARTY,grp),e2=up(PRESETS,enc),tb2=up(TABLES,tbs.filter(x=>x&&Array.isArray(x.cols)));saveTables();
       saveBest();saveParty();savePresets();if(!$('#bestmodal').hidden)renderBest();renderParty();render();$('#iomodal').hidden=true;syncModalOpen();
-      toast(`Importado: ${a} criaturas, ${g} personajes y ${e2} encuentros`);}catch(err){toast('El texto pegado no es una copia de seguridad válida');}break;}
+      toast(`Importado: ${a} criaturas, ${g} personajes, ${e2} encuentros y ${tb2} tablas`);}catch(err){toast('El texto pegado no es una copia de seguridad válida');}break;}
     case 'unlink':formTpl=null;renderLinked();break;
     default:extraAct(act,b,c,e);
   }
@@ -1642,7 +1688,7 @@ for(const p of PARTY)p.tyl=pcSub(p);
 function pcSub(p){return [p.cls,p.jug].filter(Boolean).join(' · ')||'Personaje';}
 function saveParty(){lsSet(PKEY,PARTY);}
 function savePresets(){lsSet(EKEY,PRESETS);}
-function backupData(){return {bestiario:MY,grupo:PARTY,encuentros:PRESETS};}
+function backupData(){return {bestiario:MY,grupo:PARTY,encuentros:PRESETS,tablas:TABLES};}
 
 /* conjuros: CSV propio (en este navegador) o el archivo del tracker */
 function parseCSV(t){
@@ -1895,7 +1941,113 @@ function loadEncounter(p){
   toast(`«${p.n}» cargado`);
 }
 
+/* ---------- tablas aleatorias ---------- */
+// Tabla: {id,n,rows,mode:'col'|'row',fmt,cols:[{id,n}],cells:{colId:[texto por fila]}}. Las filas que sobran al reducir se conservan.
+const TKEY='combat-tables-v1';
+let TABLES=lsGet(TKEY)||[],tbSel=TABLES[0]?.id||null,tbHist=[],tbT;
+const saveTables=()=>{clearTimeout(tbT);if(!lsSet(TKEY,TABLES))toast('No se han podido guardar las tablas en este navegador');};
+const saveTablesSoon=()=>{clearTimeout(tbT);tbT=setTimeout(saveTables,300);};
+const curTable=()=>TABLES.find(x=>x.id===tbSel);
+function tbMake(n,rows,cols,data={},fmt='',mode='col'){
+  const tb={id:uid(),n,rows,mode,fmt,cols:cols.map(c=>({id:uid(),n:c})),cells:{}};
+  for(const c of tb.cols)tb.cells[c.id]=Array.from({length:rows},(_,i)=>(data[c.n]||[])[i]||'');
+  return tb;
+}
+// {1d4} se tira; {@Otra tabla} tira en otra tabla (hasta 4 niveles)
+function tbResolve(text,depth){
+  return String(text??'').replace(/\{([^{}]+)\}/g,(m,inner)=>{
+    const x=inner.trim();
+    if(x.startsWith('@')){const o=TABLES.find(tb=>fold(tb.n)===fold(x.slice(1)));return o&&depth<4?tbRoll(o,depth+1).text:m;}
+    const r=/^\d*d\d+([+-]\d+)?$/i.test(x.replace(/\s/g,''))?roll(x):null;return r?String(r.v):m;
+  });
+}
+function tbRoll(tb,depth=0){
+  const one=tb.mode==='row'?1+Math.floor(Math.random()*tb.rows):0;
+  const parts=tb.cols.map(c=>{const r=one||1+Math.floor(Math.random()*tb.rows);return {c:c.n,r,v:tbResolve((tb.cells[c.id]||[])[r-1]||'',depth).trim()};});
+  let text;
+  if(tb.fmt.trim())text=tbResolve(tb.fmt.replace(/\{([^{}@]+)\}/g,(m,inner)=>{const q=parts.find(x=>fold(x.c)===fold(inner));return q?q.v:m;}),depth);
+  else text=parts.map(x=>x.v).filter(Boolean).join(' ');
+  return {text:text.replace(/\s+/g,' ').trim(),parts};
+}
+const tbHistHTML=()=>tbHist.map((h,i)=>`<li><span class="tbout">${esc(h.text)||'<span class="pcsub">(vacío)</span>'}</span><button type="button" class="btn sm ghost" data-act="tbcopy" data-i="${i}" title="Copiar">⧉</button><span class="tbparts">${esc(h.n)} · ${h.parts.map(x=>`${esc(x.c)} d${h.rows}: ${x.r}`).join(' · ')}</span></li>`).join('');
+function renderTables(){
+  $('#tb-count').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'';
+  $('#tb-list').innerHTML=TABLES.map(tb=>`<button type="button" class="tbitem${tb.id===tbSel?' on':''}" data-act="tbsel" data-id="${tb.id}"><b>${esc(tb.n)}</b><span class="pcsub">d${tb.rows} · ${tb.cols.length} columna${tb.cols.length>1?'s':''}</span></button>`).join('')
+    ||'<p class="hint" style="display:block">Aún no tienes tablas.</p><button type="button" class="btn sm" data-act="tbexamples">Crear tablas de ejemplo</button>';
+  const tb=curTable();
+  if(!tb){$('#tb-main').innerHTML='<div class="empty">Crea una tabla con «+ Nueva tabla» o empieza con las de ejemplo.</div>';return;}
+  const ph=tb.cols.map(c=>`{${c.n}}`).join(' ');
+  $('#tb-main').innerHTML=`<div class="tbcard">
+    <div class="tbhead">
+      <label class="f wide">Nombre de la tabla<input id="tb-n" value="${esc(tb.n)}"></label>
+      <label class="f">Filas = dado (d${tb.rows})<input id="tb-rows" type="number" min="1" max="1000" value="${tb.rows}"></label>
+      <label class="f">Tirada<select id="tb-mode"><option value="col"${tb.mode!=='row'?' selected':''}>Una por columna</option><option value="row"${tb.mode==='row'?' selected':''}>Una para toda la fila</option></select></label>
+      <label class="f wide">Formato de salida<input id="tb-fmt" value="${esc(tb.fmt)}" placeholder="${esc(ph)}"></label>
+      <div class="tbchips">Insertar: ${tb.cols.map(c=>`<button type="button" class="chip" data-act="tbchip" data-v="{${esc(c.n)}}">{${esc(c.n)}}</button>`).join('')}<button type="button" class="chip" data-act="tbchip" data-v="{1d4}">{1d4}</button><button type="button" class="chip" data-act="tbchip" data-v="{@}">{@tabla}</button></div>
+      <p class="hint wide" style="display:block;margin:0">Pon <code>{Columna}</code> donde quieras el resultado de esa columna (si lo dejas vacío se unen con espacios). En las celdas y en el formato, <code>{1d4}</code> se tira al salir (<code>{2d6} po</code> → «7 po») y <code>{@Nombre de otra tabla}</code> tira en esa tabla.</p>
+    </div>
+    <div class="tbroll"><button type="button" class="btn primary" data-act="tbroll" data-k="1">🎲 Tirar d${tb.rows}</button><button type="button" class="btn" data-act="tbroll" data-k="5">×5</button><button type="button" class="btn" data-act="tbroll" data-k="10">×10</button>${tbHist.length?'<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>':''}</div>
+    <ol class="tbres" id="tb-res" aria-live="polite">${tbHistHTML()}</ol>
+  </div>
+  <div class="tbcard">
+    <div class="inline" style="justify-content:space-between"><h3 class="tbh3">Contenido · d${tb.rows}</h3><div class="inline"><button type="button" class="btn sm" data-act="tbaddcol">+ Columna</button><button type="button" class="btn sm" data-act="tbdup">Duplicar</button><button type="button" class="btn sm danger" data-act="tbdel" data-confirm>Borrar tabla</button></div></div>
+    <div class="sptwrap"><table class="sptable tbgrid"><thead><tr><th class="num">d${tb.rows}</th>${tb.cols.map(c=>`<th><div class="tbcolh"><input data-tbcol="${c.id}" value="${esc(c.n)}" aria-label="Nombre de la columna">${tb.cols.length>1?`<button type="button" class="btn sm ghost" data-act="tbdelcol" data-id="${c.id}" data-confirm title="Quitar columna" aria-label="Quitar columna ${esc(c.n)}">✕</button>`:''}</div></th>`).join('')}</tr></thead>
+    <tbody>${Array.from({length:tb.rows},(_,r)=>`<tr><td class="num">${r+1}</td>${tb.cols.map(c=>`<td><input data-tbc="${c.id}" data-r="${r}" value="${esc((tb.cells[c.id]||[])[r]||'')}" aria-label="${esc(c.n)}, fila ${r+1}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <details class="tbfill"><summary>Rellenar una columna pegando una lista</summary><div class="tbfill-b">
+      <label class="f">Columna<select id="tbf-col">${tb.cols.map(c=>`<option value="${c.id}">${esc(c.n)}</option>`).join('')}</select></label>
+      <textarea id="tbf-text" rows="7" placeholder="Un valor por línea" aria-label="Lista de valores"></textarea>
+      <label class="chk"><input type="checkbox" id="tbf-fit" checked> Ajustar el número de filas a la lista</label>
+      <div class="inline"><button type="button" class="btn sm primary" data-act="tbfill">Rellenar</button></div></div></details>
+  </div>`;
+}
+function tbSetRows(tb,n){tb.rows=Math.max(1,Math.min(1000,n|0||1));for(const c of tb.cols){const a=tb.cells[c.id]||(tb.cells[c.id]=[]);while(a.length<tb.rows)a.push('');}}
+function tbAct(act,b){
+  const tb=curTable();
+  switch(act){
+    case 'tbnew':{const n=tbMake('Nueva tabla',20,['Resultado']);TABLES.push(n);tbSel=n.id;tbHist=[];break;}
+    case 'tbsel':tbSel=b.dataset.id;tbHist=[];break;
+    case 'tbexamples':
+      TABLES.push(tbMake('Nombres masculinos',10,['Nombre','Apellido'],{Nombre:['Aldric','Bram','Corwin','Darian','Edric','Faelan','Garrick','Halvar','Ivo','Jareth'],Apellido:['Piedrahonda','Vientoalto','Martillo','Robleda','Escarcha','Valleoscuro','Cuervo','Hierro','Brasa','Montenegro']},'{Nombre} {Apellido}'));
+      TABLES.push(tbMake('Botín de bolsillo',6,['Objeto'],{Objeto:['{1d4} po','{2d6} pp','{3d10} pc y una llave oxidada','Un dado de hueso tallado','Una gema que vale {1d4}0 po','Un mapa a medio quemar']},'{Objeto}'));
+      TABLES.push(tbMake('Encuentro en el camino',6,['Quién','Qué hace'],{'Quién':['{1d4} bandidos','Un mercader y su mula','{1d6} lobos','Una patrulla de la guardia','Un peregrino herido','Un goblin perdido'],'Qué hace':['bloquea el paso','pide ayuda','huye de algo peor','vigila desde los árboles','ofrece un trato','os sigue en silencio']},'{Quién} {Qué hace}.'));
+      tbSel=TABLES[0].id;break;
+    case 'tbroll':{if(!tb)return;const k=+b.dataset.k||1;for(let i=0;i<k;i++){const r=tbRoll(tb);tbHist.unshift({n:tb.n,rows:tb.rows,...r});}tbHist=tbHist.slice(0,60);
+      $('#tb-res').innerHTML=tbHistHTML();if(!$('[data-act="tbclearhist"]'))b.parentElement.insertAdjacentHTML('beforeend','<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>');return;}
+    case 'tbclearhist':tbHist=[];break;
+    case 'tbcopy':{const h=tbHist[+b.dataset.i];if(h)navigator.clipboard?.writeText(h.text).then(()=>toast('Copiado')).catch(()=>toast('No se ha podido copiar'));return;}
+    case 'tbchip':{const f=$('#tb-fmt'),v=b.dataset.v,s=f.selectionStart??f.value.length,e2=f.selectionEnd??s;f.value=f.value.slice(0,s)+v+f.value.slice(e2);tb.fmt=f.value;saveTables();f.focus();const at=v==='{@}'?s+2:s+v.length;f.setSelectionRange(at,at);return;}
+    case 'tbaddcol':{const c={id:uid(),n:'Columna '+(tb.cols.length+1)};tb.cols.push(c);tb.cells[c.id]=Array(tb.rows).fill('');break;}
+    case 'tbdelcol':{tb.cols=tb.cols.filter(c=>c.id!==b.dataset.id);delete tb.cells[b.dataset.id];break;}
+    case 'tbdup':{const d=JSON.parse(JSON.stringify(tb));d.id=uid();d.n=tb.n+' (copia)';TABLES.push(d);tbSel=d.id;tbHist=[];break;}
+    case 'tbdel':{TABLES=TABLES.filter(x=>x.id!==tb.id);tbSel=TABLES[0]?.id||null;tbHist=[];toast(`«${tb.n}» borrada`);break;}
+    case 'tbfill':{const lines=$('#tbf-text').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!lines.length){toast('Pega al menos un valor');return;}
+      const cid=$('#tbf-col').value;if($('#tbf-fit').checked)tbSetRows(tb,lines.length);else tbSetRows(tb,Math.max(tb.rows,lines.length));
+      const a=tb.cells[cid];lines.forEach((x,i)=>a[i]=x);toast(`${lines.length} valores en «${tb.cols.find(c=>c.id===cid).n}»`);break;}
+    default:return false;
+  }
+  saveTables();renderTables();return true;
+}
+$('#tb-main').addEventListener('input',e=>{
+  const tb=curTable(),el=e.target;if(!tb)return;
+  if(el.dataset.tbc){tb.cells[el.dataset.tbc][+el.dataset.r]=el.value;saveTablesSoon();}
+  else if(el.id==='tb-fmt'){tb.fmt=el.value;saveTablesSoon();}
+  else if(el.id==='tb-n'){tb.n=el.value;saveTablesSoon();}
+});
+$('#tb-main').addEventListener('change',e=>{
+  const tb=curTable(),el=e.target;if(!tb)return;
+  if(el.dataset.tbcol){const c=tb.cols.find(x=>x.id===el.dataset.tbcol);const old=c.n;c.n=el.value.trim()||old;
+    if(tb.fmt&&old!==c.n)tb.fmt=tb.fmt.split('{'+old+'}').join('{'+c.n+'}');saveTables();renderTables();}
+  else if(el.id==='tb-rows'){tbSetRows(tb,+el.value);saveTables();renderTables();}
+  else if(el.id==='tb-mode'){tb.mode=el.value;saveTables();}
+  else if(el.id==='tb-n'){tb.n=el.value.trim()||'Sin nombre';saveTables();renderTables();}
+});
+// Intro en una celda baja a la fila siguiente (para escribir listas largas de corrido)
+$('#tb-main').addEventListener('keydown',e=>{
+  const el=e.target;if(e.key!=='Enter'||!el.dataset?.tbc)return;e.preventDefault();
+  const nx=$(`[data-tbc="${el.dataset.tbc}"][data-r="${+el.dataset.r+(e.shiftKey?-1:1)}"]`);if(nx){nx.focus();nx.select();}
+});
 function extraAct(act,b,c,e){
+  if(act.startsWith('tb')){tbAct(act,b);return;}
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
     case 'openparty':location.hash='jugadores';break;
@@ -1933,7 +2085,7 @@ function extraAct(act,b,c,e){
 /* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const v=location.hash.slice(1);
-  const pages=['inicio','jugadores','criaturas','conjuros'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
+  const pages=['inicio','jugadores','criaturas','conjuros','tablas'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage?v2:'combate')));
@@ -1943,6 +2095,7 @@ function showView(){
   if(v2==='jugadores')renderParty();
   if(v==='criaturas')renderCreatureView();
   if(v==='conjuros'){fillSpellFilters();renderSpellView();}
+  if(v==='tablas')renderTables();
   window.scrollTo(0,0);
 }
 function renderHome(){
@@ -1950,6 +2103,7 @@ function renderHome(){
   $('#hs-combat').textContent=state.active?`En curso · ronda ${state.round} · ${n} criaturas`:(n?`${n} criaturas preparadas`:'Sin combate preparado');
   $('#hs-party').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'Sin personajes';
   $('#hs-best').textContent=SRD.length?`${SRD.length} del SRD${MY.length?` · ${MY.length} tuyas`:''}`:'Cargando…';
+  $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
 function crSrc(m){return m.src??(m.id?'':'Manual de Monstruos 2024');}
