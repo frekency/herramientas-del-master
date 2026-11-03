@@ -81,6 +81,8 @@ h2{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.0
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .side{display:flex;flex-direction:column;gap:16px;min-width:0}
 
+.acsrd{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface-2)}
+.acsrd .ti{font-size:22px}
 .acex{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
 .acex h3{margin:0;font-size:15px}
 .example{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;border:1px dashed var(--accent);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px}
@@ -728,7 +730,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.29</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.30</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -749,7 +751,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
     <a class="tool" href="#compendio/criaturas"><span class="ti">🐉</span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
     <a class="tool" href="#compendio/conjuros"><span class="ti">✨</span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
     <a class="tool" href="#compendio/objetos"><span class="ti">📚</span><span class="tn">Objetos, dotes y más</span><span class="td">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span><span class="tstat" id="hs-comp"></span></a>
-    <a class="tool" href="#modulos"><span class="ti">📦</span><span class="tn">Módulos</span><span class="td">Activa el SRD, añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
+    <a class="tool" href="#modulos"><span class="ti">📦</span><span class="tn">Módulos</span><span class="td">Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
   <ol class="changelog" id="changelog-home"></ol>
@@ -785,7 +787,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 
 <section class="vpage" id="view-modulos" hidden>
   <div class="vhead"><h2>Módulos</h2><span class="pcsub" id="md-count"></span></div>
-  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. <b>Nada viene activado</b>: elige lo que quieras usar. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
+  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. El SRD 5.2.1 viene siempre incluido; el resto lo eliges tú. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
   <h3 class="mdh">Oficiales libres</h3>
   <div class="mdgrid" id="md-free"></div>
   <h3 class="mdh">Oficiales · trae tu copia</h3>
@@ -880,6 +882,10 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.30 <span>4 nov 2026</span></h3><ul>
+      <li>El <b>SRD 5.2.1 va siempre cargado</b>, para todos: ya no hay que activarlo. En 📦 Módulos aparece como «Incluido siempre».</li>
+      <li>La cuenta sirve para guardar lo tuyo: personajes, encuentros, tablas, criaturas y módulos. Sin cuenta todo funciona igual, pero se guarda solo en este navegador; un aviso en Combate, Jugadores y Tablas lo recuerda.</li>
+      <li>La ventana de la cuenta indica el SRD activo, su versión y el idioma de sus datos.</li></ul></li>
     <li><h3>v1.29 <span>4 nov 2026</span></h3><ul>
       <li>La web empieza vacía: sin combate, personajes, encuentros ni tablas de ejemplo.</li>
       <li>Nuevo botón <b>Insertar datos de ejemplo</b> en la ventana de la cuenta (👤): añade dos personajes, un combate, un encuentro guardado y tres tablas, en tu idioma. Necesita el SRD 5.2.1 activado.</li>
@@ -982,6 +988,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <button class="btn" data-act="openio">Copias de seguridad</button>
     </div>
   </div>
+  <div class="mdbanner localwarn" hidden><span>Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.</span><button type="button" class="btn primary" data-act="acopen">👤 Entrar</button></div>
   <div style="display:grid;gap:14px">
       <div class="inline" style="justify-content:space-between">
         <div class="inline">
@@ -1002,6 +1009,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="vhead"><h2>Tablas aleatorias</h2><span class="pcsub" id="tb-count"></span>
     <div class="inline" style="margin-left:auto"><button class="btn" data-act="tbnew">+ Nueva tabla</button></div>
   </div>
+  <div class="mdbanner localwarn" hidden><span>Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.</span><button type="button" class="btn primary" data-act="acopen">👤 Entrar</button></div>
   <div class="tbwrap">
     <nav class="tblist" id="tb-list" aria-label="Tus tablas"></nav>
     <div class="tbmain" id="tb-main"></div>
@@ -1042,6 +1050,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 
 <main class="wrap">
   <section style="min-width:0">
+    <div class="mdbanner localwarn" hidden><span>Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.</span><button type="button" class="btn primary" data-act="acopen">👤 Entrar</button></div>
     <div class="example" id="example" hidden>
       <span>Esto es un <b>combate de ejemplo</b> para que veas cómo funciona.</span>
       <button class="btn" data-act="clearall">Vaciar y empezar el mío</button>
@@ -1265,9 +1274,10 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
         <div class="inline"><button type="button" class="btn" data-act="pfopen">⚙ Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
+      <div class="acsrd"><span class="ti">📚</span><span><b id="ac-srdv">SRD 5.2.1</b> · <span>Activo siempre</span><br><span class="pcsub" id="ac-srdl"></span></span></div>
       <div class="acex">
         <h3>Datos de ejemplo</h3>
-        <p class="hint" style="display:block;margin:0">Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo. Usan criaturas y conjuros del SRD 5.2.1, así que tiene que estar activado.</p>
+        <p class="hint" style="display:block;margin:0">Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo, con criaturas y conjuros del SRD 5.2.1.</p>
         <div class="inline"><button type="button" class="btn" data-act="acexample" id="ac-exbtn">Insertar datos de ejemplo</button><button type="button" class="btn danger" data-act="acexdel" id="ac-exdel" data-confirm>Eliminar datos de ejemplo</button><span class="pcsub" id="ac-exnote"></span></div>
       </div>
       <p class="acmsg" id="ac-msg" aria-live="polite"></p>
@@ -2244,7 +2254,7 @@ function lsGet(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):nul
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
 
 /* ---------- módulos ---------- */
-// Nada viene activado: cada usuario elige qué contenido usar. Tres apartados: oficiales libres (alojados aquí),
+// El SRD 5.2.1 va siempre cargado; el resto lo elige cada usuario. Tres apartados: oficiales libres (alojados aquí),
 // oficiales «trae tu copia» (aquí solo está la ficha; el contenido lo sube cada uno) y homebrew.
 // Módulo: {id,n,ab,ref,autor,version,lic,desc,on,criaturas:[],conjuros:[],tablas:[],objetos:[],clases:[],especies:[],dotes:[],trasfondos:[]}
 const MKEY='combat-modules-v1';
@@ -2269,7 +2279,7 @@ function loadMods(){
   lsSet(MKEY,m);return m;
 }
 const mods=()=>MODS||(MODS=loadMods());
-const modOn=id=>id in mods().on?!!mods().on[id]:!!mods().list.find(m=>m.id===id)?.on;
+const modOn=id=>id==='srd521'||(id in mods().on?!!mods().on[id]:!!mods().list.find(m=>m.id===id)?.on);
 const activeMods=()=>mods().list.filter(m=>m.on);
 const modSlug=n=>'hb-'+fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const modAbbr=n=>String(n).split(/\s+/).filter(w=>w.length>2).map(w=>w[0].toUpperCase()).join('').slice(0,5)||String(n).slice(0,4);
@@ -2710,7 +2720,8 @@ function mdCard(o,md,kind){
   const on=kind==='free'?modOn(o.id):!!md?.on,cnt=kind==='free'?(o.id==='srd521'?[SRD_ALL.length?`${SRD_ALL.length} criaturas`:'',SRD_SPELLS.length?`${SRD_SPELLS.length} conjuros`:'',...(COMP_SRD?CM_TABS.map(([k,,one,many])=>{const n=(COMP_SRD[k]||[]).length;return n?`${n} ${n===1?one:many}`:'';}):['objetos, dotes, clases, especies y trasfondos'])].filter(Boolean).join(' · ')||'Cargando…':''):md?modCounts(md):'';
   const meta=[o.year,o.lic||md?.lic,md?.autor&&`por ${md.autor}`,md?.version&&`v${md.version}`,md?.pub&&'del catálogo'].filter(Boolean).join(' · ');
   let btns='';
-  if(o.soon)btns='<span class="mdst">Próximamente</span>';
+  if(o.id==='srd521')btns='<span class="mdst">✓ Incluido siempre</span>';
+  else if(o.soon)btns='<span class="mdst">Próximamente</span>';
   else if(kind==='byo'&&!md)btns=`<span class="mdst">No disponible</span><button type="button" class="btn sm primary" data-act="mdbyo" data-ref="${o.id}">Añadir mi copia</button>`;
   else btns=`<button type="button" class="btn sm${on?'':' primary'}" data-act="mdtoggle" data-id="${esc(o.id)}">${on?'✓ Activado · Desactivar':'Activar'}</button>`
     +(kind==='byo'?`<button type="button" class="btn sm" data-act="mdbyo" data-ref="${o.id}">Actualizar copia</button>`:'')
@@ -2735,7 +2746,7 @@ function renderMods(){
 function mdAct(act,b){
   const M=mods(),id=b.dataset.id;
   switch(act){
-    case 'mdtoggle':{if(id in M.on||OFFICIAL_FREE.some(o=>o.id===id))M.on[id]=!M.on[id];else{const m=M.list.find(x=>x.id===id);if(m)m.on=!m.on;}
+    case 'mdtoggle':{if(id==='srd521')break;if(id in M.on||OFFICIAL_FREE.some(o=>o.id===id))M.on[id]=!M.on[id];else{const m=M.list.find(x=>x.id===id);if(m)m.on=!m.on;}
       saveMods();refreshMods();render();renderMods();if(location.hash==='#inicio'||!location.hash)renderHome();
       const nm=OFFICIAL_FREE.find(o=>o.id===id)?.n||M.list.find(x=>x.id===id)?.n;toast(`«${nm}» ${modOn(id)?'activado':'desactivado'}`);break;}
     case 'mdbyo':mdRef=b.dataset.ref;$('#md-byofile').click();break;
@@ -3225,9 +3236,12 @@ function acPane(p){
   renderAcct();
 }
 function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));
-  const ok=modOn('srd521');$('#ac-exbtn').disabled=!ok;$('#ac-exdel').disabled=!hasExamples();$('#ac-exnote').textContent=ok?'':T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.');}
+  $('#ac-srdv').textContent=OFFICIAL_FREE.find(o=>o.id==='srd521')?.n||'SRD';$('#ac-srdl').textContent=`${T('Datos en')} ${LANGS[DATA_LANG]}`;
+  $('#ac-exdel').disabled=!hasExamples();}
 function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
+const SB_STORED=()=>{try{return !!localStorage.getItem('sb-uigkelicqmhiqaokndvo-auth-token');}catch(e){return false;}};
 function renderAcct(){
+  document.querySelectorAll('.localwarn').forEach(el=>el.hidden=!(SB&&!SB_USER&&!SB_STORED()));
   const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
   $('#ac-user').textContent=SB_NAME||'—';
 }
@@ -3271,7 +3285,6 @@ async function acAct(act,b){
     case 'acclose':acClose();break;
     case 'acexdel':{if(!hasExamples())break;removeExamples();$('#ac-exdel').disabled=true;toast(T('Datos de ejemplo eliminados. Lo tuyo se queda como estaba.'));break;}
     case 'acexample':{
-      if(!modOn('srd521')){toast(T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.'));break;}
       if(state.creatures.length&&!confirm(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?')))break;
       insertExamples();acClose();location.hash='#combate';toast(T('Datos de ejemplo añadidos: personajes, combate, encuentro y tablas.'),4200);break;}
     case 'acsync':await syncPush(true);break;

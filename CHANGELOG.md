@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.30.0] - 2026-11-04
+### Cambiado
+- El SRD 5.2.1 va siempre cargado, para todos; en Módulos aparece como «Incluido siempre» y ya no se puede desactivar.
+- Los datos de ejemplo ya no dependen de activar el SRD.
+### Añadido
+- Aviso en Combate, Jugadores y Tablas cuando no hay sesión: lo tuyo se guarda solo en este navegador.
+- La ventana de la cuenta muestra el SRD activo, su versión y el idioma de sus datos.
+
 ## [1.29.1] - 2026-11-04
 ### Añadido
 - Botón «Eliminar datos de ejemplo» en la ventana de la cuenta: quita solo lo marcado como ejemplo (`ex: true` en personajes, encuentros, tablas y criaturas del combate) y deja intacto lo demás.

@@ -688,5 +688,13 @@
   "os sigue en silencio": "vous suit en silence",
   "Eliminar datos de ejemplo": "Supprimer les données d’exemple",
   "Datos de ejemplo eliminados. Lo tuyo se queda como estaba.": "Données d’exemple supprimées. Votre contenu reste tel quel.",
-  "¿Seguro? Pulsa otra vez": "Sûr ? Cliquez encore"
+  "¿Seguro? Pulsa otra vez": "Sûr ? Cliquez encore",
+  "Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. El SRD 5.2.1 viene siempre incluido; el resto lo eliges tú. Se guardan en este navegador y, si entras con tu cuenta, también en ella.": "Les modules ajoutent du contenu à l’outil : créatures, sorts, tables, objets, dons, classes, espèces et historiques. Le SRD 5.2.1 est toujours inclus ; le reste, c’est vous qui choisissez. Ils sont enregistrés dans ce navigateur et, si vous vous connectez, aussi dans votre compte.",
+  "Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.": "Ajoutez votre exemplaire des manuels ou chargez des modules homebrew. Vous pouvez aussi créer les vôtres.",
+  "Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo, con criaturas y conjuros del SRD 5.2.1.": "Ajoute deux personnages, un combat, une rencontre enregistrée et trois tables pour voir comment tout fonctionne, avec des créatures et des sorts du SRD 5.2.1.",
+  "Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.": "Sans compte, vos personnages, rencontres, tables et créatures sont enregistrés uniquement dans ce navigateur : si vous effacez ses données ou changez d’appareil, ils sont perdus. Connectez-vous pour les conserver.",
+  "✓ Incluido siempre": "✓ Toujours inclus",
+  "Incluido siempre": "Toujours inclus",
+  "Activo siempre": "Toujours actif",
+  "Datos en": "Données en"
 }

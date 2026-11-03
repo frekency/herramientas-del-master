@@ -688,5 +688,13 @@
   "os sigue en silencio": "follows you silently",
   "Eliminar datos de ejemplo": "Remove example data",
   "Datos de ejemplo eliminados. Lo tuyo se queda como estaba.": "Example data removed. Your own stuff stays as it was.",
-  "¿Seguro? Pulsa otra vez": "Sure? Click again"
+  "¿Seguro? Pulsa otra vez": "Sure? Click again",
+  "Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. El SRD 5.2.1 viene siempre incluido; el resto lo eliges tú. Se guardan en este navegador y, si entras con tu cuenta, también en ella.": "Modules add content to the tool: creatures, spells, tables, items, feats, classes, species and backgrounds. The SRD 5.2.1 is always included; you choose the rest. They're saved in this browser and, if you sign in, in your account too.",
+  "Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.": "Add your copy of the books or load homebrew modules. You can also create your own.",
+  "Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo, con criaturas y conjuros del SRD 5.2.1.": "Adds two characters, a combat, a saved encounter and three tables so you can see how everything works, with creatures and spells from the SRD 5.2.1.",
+  "Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.": "Without an account, your characters, encounters, tables and creatures are saved only in this browser: if you clear its data or switch devices, they're lost. Sign in to keep them.",
+  "✓ Incluido siempre": "✓ Always included",
+  "Incluido siempre": "Always included",
+  "Activo siempre": "Always on",
+  "Datos en": "Data in"
 }
