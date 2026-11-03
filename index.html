@@ -366,6 +366,8 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .changelog>li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
 .changelog h3{font-family:var(--f-display);font-size:17px;margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
 .changelog h3 span{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:400}
+.clmore{margin:12px 0 0;max-width:760px;text-align:right;font-size:14px}
+.clmore a{color:var(--accent,inherit);font-weight:600}
 .changelog ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}
 
 /* ===== Vista minimalista: solo lo que se usa en mesa ===== */
@@ -628,7 +630,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#inicio" class="navver">v1.16</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#cambios" class="navver" title="Historial de cambios">v1.17</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -643,8 +645,17 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <a class="tool" href="#conjuros"><span class="ti">✨</span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
     <a class="tool" href="#tablas"><span class="ti">🎲</span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
   </div>
-  <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
-  <ol class="changelog">
+  <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
+  <ol class="changelog" id="changelog-home"></ol>
+  <p class="clmore"><a href="#cambios">Ver historial completo →</a></p>
+</section>
+
+<section class="vpage" id="view-cambios" hidden>
+  <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
+    <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
+  <ol class="changelog" id="changelog-full">
+    <li><h3>v1.17 <span>3 nov 2026</span></h3><ul>
+      <li>La portada muestra solo las <b>últimas novedades</b>; el historial completo tiene su propia página (<code>#cambios</code>), enlazada desde «Ver historial completo» y desde el número de versión del menú.</li></ul></li>
     <li><h3>v1.16 <span>3 nov 2026</span></h3><ul>
       <li>Nueva sección <b>🎲 Tablas aleatorias</b>: el número de filas es el dado (80 filas = d80), con tantas columnas como quieras. Se tira una vez por columna (o una para toda la fila) y el resultado se une con tu formato, p. ej. <code>{Nombre} {Apellido}</code>.</li>
       <li>Fórmulas dentro de las celdas y del formato: <code>{1d4} po</code> se tira al salir; <code>{@Otra tabla}</code> tira en otra tabla.</li>
@@ -2085,7 +2096,7 @@ function extraAct(act,b,c,e){
 /* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const v=location.hash.slice(1);
-  const pages=['inicio','jugadores','criaturas','conjuros','tablas'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
+  const pages=['inicio','jugadores','criaturas','conjuros','tablas','cambios'],v2=v===''?'inicio':v,isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage?v2:'combate')));
@@ -2096,9 +2107,11 @@ function showView(){
   if(v==='criaturas')renderCreatureView();
   if(v==='conjuros'){fillSpellFilters();renderSpellView();}
   if(v==='tablas')renderTables();
+  if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
 }
 function renderHome(){
+  const cl=$('#changelog-home');if(!cl.children.length)cl.append(...[...$('#changelog-full').children].slice(0,3).map(li=>li.cloneNode(true)));
   const n=state.creatures.length;
   $('#hs-combat').textContent=state.active?`En curso · ronda ${state.round} · ${n} criaturas`:(n?`${n} criaturas preparadas`:'Sin combate preparado');
   $('#hs-party').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'Sin personajes';
