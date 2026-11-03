@@ -92,6 +92,7 @@ for e in S[eq:eqend]:
     for r in e[1]['rows']:
         if len(r)==1:sec=r[0];continue
         if not r[0]:continue
+        r=[re.sub(r'(alcance \d+(?:,\d+)?/\d+(?:,\d+)?)(?![\d,]|\s*m\b)',r'\1 m',c) for c in r]   # el SRD da el alcance sin unidad: son metros
         d=''.join(f'<p><b>{H.escape(h)}:</b> {H.escape(v)}</p>' for h,v in zip(hd[1:],r[1:]) if v)
         sub=re.sub(r'\s*\(.*\)','',sec).rstrip('s') if sec else kind
         objs.append({'n':r[0],'t':(sec[:1].upper()+sec[1:].split(' (')[0]) if sec else kind,'r':'','s':'','d':d,'pg':e[2],'k':'arma' if kind=='Arma' else 'armadura','precio':r[-1]})
