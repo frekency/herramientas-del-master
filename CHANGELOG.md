@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.26.0] - 2026-11-03
+### Añadido
+- Idioma de la web: español (por defecto) o inglés, en ⚙ Preferencias (`lang` dentro de `preferencias`, sincronizado con la cuenta). En inglés, un observador traduce la interfaz con un diccionario (textos, `placeholder`, `title` y `aria-label`; `#` = cualquier número).
+- Datos del SRD 5.2.1 en inglés: `srd2024.json` (331 criaturas), `conjuros_srd_en.json` (339 conjuros) y `compendio_srd_en.json`. Herramienta `tools/build_spells_en.py`.
+- Las unidades por defecto dependen del idioma (pies y libras en inglés).
+### Limitaciones
+- Lo que ya hayas guardado (personajes, encuentros, nombres de objetos o conjuros añadidos) se queda en el idioma en que lo escribiste. El historial de cambios sigue en español.
+
 ## [1.25.0] - 2026-11-03
 ### Añadido
 - «Clonar y editar» y «+ Nuevo» en conjuros, objetos, dotes, clases, especies, trasfondos y reglas. Se guardan en el módulo «Mi contenido» (`mine: true`), que tiene prioridad sobre los demás si un nombre coincide.
