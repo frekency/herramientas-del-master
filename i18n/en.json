@@ -685,5 +685,8 @@
   "huye de algo peor": "is fleeing something worse",
   "vigila desde los árboles": "watches from the trees",
   "ofrece un trato": "offers a deal",
-  "os sigue en silencio": "follows you silently"
+  "os sigue en silencio": "follows you silently",
+  "Eliminar datos de ejemplo": "Remove example data",
+  "Datos de ejemplo eliminados. Lo tuyo se queda como estaba.": "Example data removed. Your own stuff stays as it was.",
+  "¿Seguro? Pulsa otra vez": "Sure? Click again"
 }

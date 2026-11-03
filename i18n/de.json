@@ -685,5 +685,8 @@
   "huye de algo peor": "flieht vor etwas Schlimmerem",
   "vigila desde los árboles": "beobachtet aus den Bäumen",
   "ofrece un trato": "bietet einen Handel an",
-  "os sigue en silencio": "folgt euch schweigend"
+  "os sigue en silencio": "folgt euch schweigend",
+  "Eliminar datos de ejemplo": "Beispieldaten entfernen",
+  "Datos de ejemplo eliminados. Lo tuyo se queda como estaba.": "Beispieldaten entfernt. Deine eigenen Daten bleiben unverändert.",
+  "¿Seguro? Pulsa otra vez": "Sicher? Noch einmal klicken"
 }

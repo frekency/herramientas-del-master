@@ -882,7 +882,8 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.29 <span>4 nov 2026</span></h3><ul>
       <li>La web empieza vacía: sin combate, personajes, encuentros ni tablas de ejemplo.</li>
-      <li>Nuevo botón <b>Insertar datos de ejemplo</b> en la ventana de la cuenta (👤): añade dos personajes, un combate, un encuentro guardado y tres tablas, en tu idioma. Necesita el SRD 5.2.1 activado.</li></ul></li>
+      <li>Nuevo botón <b>Insertar datos de ejemplo</b> en la ventana de la cuenta (👤): añade dos personajes, un combate, un encuentro guardado y tres tablas, en tu idioma. Necesita el SRD 5.2.1 activado.</li>
+      <li>Y otro para <b>eliminar los datos de ejemplo</b>: quita solo lo que se añadió como ejemplo, sin tocar lo tuyo.</li></ul></li>
     <li><h3>v1.28 <span>4 nov 2026</span></h3><ul>
       <li>Nuevos idiomas: <b>francés, portugués, italiano y alemán</b>, en ⚙ Preferencias. La interfaz y este historial están traducidos a todos los idiomas.</li>
       <li>De momento, criaturas, conjuros y compendio se ven en inglés en esos idiomas; el SRD oficial en alemán, francés e italiano llegará pronto. En portugués no hay SRD oficial.</li></ul></li>
@@ -1267,7 +1268,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <div class="acex">
         <h3>Datos de ejemplo</h3>
         <p class="hint" style="display:block;margin:0">Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo. Usan criaturas y conjuros del SRD 5.2.1, así que tiene que estar activado.</p>
-        <div class="inline"><button type="button" class="btn" data-act="acexample" id="ac-exbtn">Insertar datos de ejemplo</button><span class="pcsub" id="ac-exnote"></span></div>
+        <div class="inline"><button type="button" class="btn" data-act="acexample" id="ac-exbtn">Insertar datos de ejemplo</button><button type="button" class="btn danger" data-act="acexdel" id="ac-exdel" data-confirm>Eliminar datos de ejemplo</button><span class="pcsub" id="ac-exnote"></span></div>
       </div>
       <p class="acmsg" id="ac-msg" aria-live="polite"></p>
     </div>
@@ -1434,7 +1435,7 @@ function emptyState(){
   return {example:false,factions:baseFactions(),creatures:[],order:[],active:false,turnIdx:0,round:1,total:0,skipDead:true,tickDur:true,hpRoll:false,autoRecharge:true,adv:0,lastRoll:null,log:[],expanded:null};
 }
 function sample(pcs={}){
-  const c=(name,fac,init,bonus,hp,max,ac,conds=[],t=null,pcId=null)=>({id:uid(),name,factionId:fac,init,initBonus:bonus,hp,maxHp:max,temp:0,ac,conds,notes:'',ds:0,df:0,tpl:t,used:{},uses:{},la:0,lr:0,...(pcId?{pcId,tpl:'pc:'+pcId}:{})});
+  const c=(name,fac,init,bonus,hp,max,ac,conds=[],t=null,pcId=null)=>({id:uid(),name,factionId:fac,init,initBonus:bonus,hp,maxHp:max,temp:0,ac,conds,notes:'',ds:0,df:0,tpl:t,used:{},uses:{},la:0,lr:0,ex:true,...(pcId?{pcId,tpl:'pc:'+pcId}:{})});
   const cr=[
     c(T('Lyra (maga)'),'pj',19,3,18,26,12,[{key:'concentracion',rounds:null}],null,pcs.lyra),
     c(T('Thorin (guerrero)'),'pj',15,1,44,44,18,[],null,pcs.thorin),
@@ -1448,14 +1449,14 @@ function sample(pcs={}){
   return {...emptyState(),example:2,factions:[...baseFactions(),{id:'cu',name:T('Culto de la Llama'),color:'#9a5bd0',pc:false}],creatures:cr};
 }
 function examplePCs(){
-  const lyra={id:uid(),n:T('Lyra (maga)'),cls:T('Maga 5'),ac:12,hp:26,cur:18,temp:0,in:3,sp:'9 m',pp:11,
+  const lyra={id:uid(),ex:true,n:T('Lyra (maga)'),cls:T('Maga 5'),ac:12,hp:26,cur:18,temp:0,in:3,sp:'9 m',pp:11,
     ab:[8,16,14,18,12,10],sv:[-1,3,2,7,4,0],sk:T('Arcanos +7, Historia +7, Perspicacia +4'),
     a:[[T('Bastón'),T('Ataque: +2, alcance 1,5 m. Acierto: 1d6 - 1 de daño contundente.')]],
     t:[[T('Recuperación arcana (1/día)'),T('Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.')]],
     spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[0,1],
       list:DATA_LANG==='es'?['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']
         :['Mage Hand','Ray of Frost','Mage Armor','Shield','Magic Missile','Misty Step','Web','Fireball']}};
-  const thorin={id:uid(),n:T('Thorin (guerrero)'),cls:T('Guerrero 5'),ac:18,hp:44,cur:44,temp:5,in:1,sp:'9 m',pp:14,
+  const thorin={id:uid(),ex:true,n:T('Thorin (guerrero)'),cls:T('Guerrero 5'),ac:18,hp:44,cur:44,temp:5,in:1,sp:'9 m',pp:14,
     ab:[16,12,14,10,13,8],sv:[6,1,5,0,1,-1],sk:T('Atletismo +6, Intimidación +2, Percepción +4'),
     a:[[T('Espada larga'),T('Ataque: +6, alcance 1,5 m. Acierto: 1d8 + 3 de daño cortante.')],[T('Arco largo'),T('Ataque: +4, alcance 45/180 m. Acierto: 1d8 + 1 de daño perforante.')]],
     t:[[T('Ataque adicional'),T('Atacas dos veces cuando realizas la acción de Ataque.')],
@@ -1463,7 +1464,7 @@ function examplePCs(){
        [T('Oleada de acción (1/descanso corto)'),T('Realizas una acción más en tu turno.')]]};
   return [lyra,thorin];
 }
-const examplePreset=()=>({id:uid(),n:T('Emboscada goblin'),items:[
+const examplePreset=()=>({id:uid(),ex:true,n:T('Emboscada goblin'),items:[
   ...[1,2,3].map(i=>({tpl:'srd:Goblin Warrior',name:T(`Guerrero goblin ${i}`),fname:T('Enemigos'),fcolor:'#d0453c',maxHp:10,ac:15,initBonus:2})),
   {tpl:'srd:Goblin Boss',name:T('Jefe goblin'),fname:T('Enemigos'),fcolor:'#d0453c',maxHp:21,ac:17,initBonus:2}]});
 function exampleTables(){
@@ -1472,7 +1473,7 @@ function exampleTables(){
     tbMake(t('Nombres de aventureros'),10,[ns,ap],{[ns]:['Aldric','Bram','Corwin','Darian','Edric','Faelan','Garrick','Halvar','Ivo','Jareth'],[ap]:['Draven','Mornak','Velkar','Ostrel','Brannoc','Kesterly','Vael','Duskar','Harrow','Ilvane']},`{${ns}} {${ap}}`),
     tbMake(t('Botín de bolsillo'),6,[ob],{[ob]:['{1d4} po','{2d6} pp','{3d10} pc y una llave oxidada','Un dado de hueso tallado','Una gema que vale {1d4}0 po','Un mapa a medio quemar'].map(t)},`{${ob}}`),
     tbMake(t('Encuentro en el camino'),6,[qn,qh],{[qn]:['{1d4} bandidos','Un mercader y su mula','{1d6} lobos','Una patrulla de la guardia','Un peregrino herido','Un goblin perdido'].map(t),
-      [qh]:['bloquea el paso','pide ayuda','huye de algo peor','vigila desde los árboles','ofrece un trato','os sigue en silencio'].map(t)},`{${qn}} {${qh}}.`)];
+      [qh]:['bloquea el paso','pide ayuda','huye de algo peor','vigila desde los árboles','ofrece un trato','os sigue en silencio'].map(t)},`{${qn}} {${qh}}.`)].map(x=>({...x,ex:true}));
 }
 function insertExamples(){
   const pcs=examplePCs().filter(p=>!PARTY.some(q=>q.n===p.n));
@@ -1481,6 +1482,17 @@ function insertExamples(){
   const pr=examplePreset();if(!PRESETS.some(x=>x.n===pr.n)){PRESETS.push(pr);savePresets();}
   const tbs=exampleTables().filter(x=>!TABLES.some(y=>y.n===x.n));TABLES.push(...tbs);if(tbs.length){tbSel=tbs[0].id;saveTables();}
   undoStack.push(JSON.stringify(state));state=sample(ids);sortInto(state);save();render();
+}
+// Quita solo lo marcado como ejemplo (ex); lo que hayas creado tú no se toca.
+const hasExamples=()=>PARTY.some(p=>p.ex)||PRESETS.some(x=>x.ex)||TABLES.some(x=>x.ex)||state.creatures.some(c=>c.ex);
+function removeExamples(){
+  const gone=new Set(PARTY.filter(p=>p.ex).map(p=>p.id));
+  PARTY=PARTY.filter(p=>!p.ex);saveParty();PRESETS=PRESETS.filter(x=>!x.ex);savePresets();
+  TABLES=TABLES.filter(x=>!x.ex);if(!TABLES.some(x=>x.id===tbSel))tbSel=TABLES[0]?.id||null;tbHist=[];saveTables();
+  undoStack.push(JSON.stringify(state));
+  state.creatures=state.creatures.filter(c=>!c.ex&&!gone.has(c.pcId));
+  if(!state.creatures.length){state=emptyState();}else{state.example=false;state.factions=state.factions.filter(f=>f.id!=='cu'||state.creatures.some(c=>c.factionId==='cu'));}
+  sortInto(state);save();render();
 }
 
 let state, undoStack=[];
@@ -3213,7 +3225,7 @@ function acPane(p){
   renderAcct();
 }
 function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));
-  const ok=modOn('srd521');$('#ac-exbtn').disabled=!ok;$('#ac-exnote').textContent=ok?'':T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.');}
+  const ok=modOn('srd521');$('#ac-exbtn').disabled=!ok;$('#ac-exdel').disabled=!hasExamples();$('#ac-exnote').textContent=ok?'':T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.');}
 function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
 function renderAcct(){
   const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
@@ -3257,6 +3269,7 @@ async function acAct(act,b){
     case 'acdiscord':{try{sessionStorage.setItem('oauth-hash',location.hash);}catch{}
       const {error}=await SB.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});if(error)acMsg(acErr(error));break;}
     case 'acclose':acClose();break;
+    case 'acexdel':{if(!hasExamples())break;removeExamples();$('#ac-exdel').disabled=true;toast(T('Datos de ejemplo eliminados. Lo tuyo se queda como estaba.'));break;}
     case 'acexample':{
       if(!modOn('srd521')){toast(T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.'));break;}
       if(state.creatures.length&&!confirm(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?')))break;

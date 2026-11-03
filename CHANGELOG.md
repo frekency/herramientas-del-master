@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.29.1] - 2026-11-04
+### Añadido
+- Botón «Eliminar datos de ejemplo» en la ventana de la cuenta: quita solo lo marcado como ejemplo (`ex: true` en personajes, encuentros, tablas y criaturas del combate) y deja intacto lo demás.
+
 ## [1.29.0] - 2026-11-04
 ### Cambiado
 - La web empieza vacía: sin combate, grupo, encuentros ni tablas de ejemplo.
