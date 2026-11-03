@@ -39,6 +39,7 @@ def lines(doc):
                 yield {'pg':pn,'k':k,'x':l['bbox'][0],'y':l['bbox'][1],'spans':l['spans'],
                        'text':''.join(s['text'] for s in l['spans']).replace('\xa0',' ')}
 
+HYPH=set()   # palabras compuestas con guion que aparecen dentro de una línea
 def join(a,b):
     m=re.search(r'\xad((?:</[bi]>)*)$',a)
     if m:                                  # guion de corte, también al final de una cursiva
@@ -46,11 +47,16 @@ def join(a,b):
         for tg in re.findall(r'</([bi])>',tags):
             if b.startswith(f'<{tg}>'):b=b[3:];tags=tags.replace(f'</{tg}>','',1)
         return a[:m.start()]+tags+b
-    if a.endswith('‑') or a.endswith('-') and re.search(r'\w-$',a) and b[:1].islower():return a+b.lstrip()
+    if a.endswith('‑'):return a+b.lstrip()
+    m=re.search(r'(\w+)-$',a);w=re.match(r'\s*(\w+)',b)
+    if m and w and w[1][:1].islower():   # guion de fin de línea: se conserva si la palabra compuesta sale así en el libro
+        return (a if f'{m[1]}-{w[1]}'.lower() in HYPH else a[:-1])+b.lstrip()
     return a.rstrip()+' '+b.lstrip()
 
 def stream(path):
     doc=pymupdf.open(path);out=[];cur=None;tab=[]
+    HYPH.clear()
+    for page in doc:HYPH.update(w.lower() for w in re.findall(r'\b\w+-\w+\b',page.get_text()))
     def flush():
         nonlocal cur
         if cur:out.append(cur);cur=None
