@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.27.0] - 2026-11-03
+### Cambiado
+- El diccionario de la interfaz sale de la página a `i18n/<idioma>.json` (una entrada por línea, clave en español); solo se descarga si el idioma no es el español.
+### Añadido
+- Pantalla de carga breve mientras la página (y, en otro idioma, su diccionario) está lista.
+
 ## [1.26.0] - 2026-11-03
 ### Añadido
 - Idioma de la web: español (por defecto) o inglés, en ⚙ Preferencias (`lang` dentro de `preferencias`, sincronizado con la cuenta). En inglés, un observador traduce la interfaz con un diccionario (textos, `placeholder`, `title` y `aria-label`; `#` = cualquier número).
