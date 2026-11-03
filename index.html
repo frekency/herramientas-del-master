@@ -694,13 +694,13 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 @keyframes ldspin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){#loading .d20{animation:none}}
 #loading [lang]{display:none}
-html:not([lang="en"]) #loading [lang="es"],html[lang="en"] #loading [lang="en"]{display:inline}
+html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[lang="en"] #loading [lang="en"],html[lang="fr"] #loading [lang="fr"],html[lang="pt"] #loading [lang="pt"],html[lang="it"] #loading [lang="it"],html[lang="de"] #loading [lang="de"]{display:inline}
 </style>
 
 <div id="loading" class="noi18n" role="status" aria-live="polite"><div class="ld">
   <svg class="d20" viewBox="0 0 48 48" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M24 3 43 14v20L24 45 5 34V14Z M24 3 13 30h22Z M5 14l8 16M43 14l-8 16M13 30l11 15 11-15"/></svg>
-  <b><span lang="es">Herramientas del Máster</span><span lang="en">Game Master Tools</span></b>
-  <span><span lang="es">Cargando…</span><span lang="en">Loading…</span></span>
+  <b><span lang="es">Herramientas del Máster</span><span lang="en">Game Master Tools</span><span lang="fr">Outils du MJ</span><span lang="pt">Ferramentas do Mestre</span><span lang="it">Strumenti del Master</span><span lang="de">Spielleiter-Werkzeuge</span></b>
+  <span><span lang="es">Cargando…</span><span lang="en">Loading…</span><span lang="fr">Chargement…</span><span lang="pt">Carregando…</span><span lang="it">Caricamento…</span><span lang="de">Wird geladen …</span></span>
 </div></div>
 
 <header class="bar">
@@ -726,7 +726,7 @@ html:not([lang="en"]) #loading [lang="es"],html[lang="en"] #loading [lang="en"]{
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.27</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.28</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -878,6 +878,9 @@ html:not([lang="en"]) #loading [lang="es"],html[lang="en"] #loading [lang="en"]{
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.28 <span>4 nov 2026</span></h3><ul>
+      <li>Nuevos idiomas: <b>francés, portugués, italiano y alemán</b>, en ⚙ Preferencias. La interfaz y este historial están traducidos a todos los idiomas.</li>
+      <li>De momento, criaturas, conjuros y compendio se ven en inglés en esos idiomas; el SRD oficial en alemán, francés e italiano llegará pronto. En portugués no hay SRD oficial.</li></ul></li>
     <li><h3>v1.27 <span>3 nov 2026</span></h3><ul>
       <li>Pantalla de carga breve al abrir la web, en tu idioma.</li>
       <li>Las traducciones de la interfaz van en archivos aparte (<code>i18n/en.json</code>): solo se descargan si usas otro idioma.</li></ul></li>
@@ -1312,13 +1315,13 @@ html:not([lang="en"]) #loading [lang="es"],html[lang="en"] #loading [lang="en"]{
    La página se escribe en español. En inglés, un observador traduce al vuelo los textos de la interfaz (nodos de texto
    completos y los atributos placeholder, title y aria-label) con este diccionario; los datos (criaturas, conjuros,
    compendio) se cargan de los archivos del SRD en inglés. # = cualquier número. */
-const LANGS={es:'Español',en:'English'};
+const LANGS={es:'Español',en:'English',fr:'Français',pt:'Português',it:'Italiano',de:'Deutsch'};
 let LANG='es';try{const l=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}').lang;if(l in LANGS)LANG=l;}catch(e){}
 document.documentElement.lang=LANG;
-let I18N_EN={},I18N_RX=[];
+let I18N={},I18N_RX=[];
 const I18N_AFX=/^([\s\p{Extended_Pictographic}\uFE0F\u200D←→▶◀✕›‹·•↗+−–-]*)(.*?)([\s→▶↗…:·×]*)$/su;
 function T1(t){
-  if(t in I18N_EN)return I18N_EN[t];
+  if(t in I18N)return I18N[t];
   if(/\d/.test(t))for(const[rx,v]of I18N_RX){const m=t.match(rx);if(m){const c=m.slice(1),n=(v.match(/#/g)||[]).length;let i=c.length-n;return v.replace(/#/g,()=>c[i++]);}}
   return null;
 }
@@ -1343,9 +1346,9 @@ function i18nIn(root){
   for(let n;(n=w.nextNode());){if(n.nodeType===1)i18nEl(n);else{const t=T(n.data);if(t!==n.data)n.data=t;}}
 }
 function i18nStart(dict){
-  I18N_EN=dict;
+  I18N=dict;
   I18N_RX=Object.keys(dict).filter(k=>k.includes('#')).map(k=>[new RegExp('^'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/#/g,'(\\d+)')+'$'),dict[k]]);
-  document.title=T(document.title).replace('Herramientas del Máster','Game Master Tools');
+  document.title=document.title.replace('Herramientas del Máster',T('Herramientas del Máster'));
   new MutationObserver(ms=>{for(const m of ms){
     if(m.type==='childList'){for(const n of m.addedNodes)if(n.nodeType===1||n.nodeType===3)i18nIn(n);}
     else if(m.type==='characterData')i18nIn(m.target);
@@ -1353,16 +1356,21 @@ function i18nStart(dict){
   }}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:I18N_ATTR});
   i18nIn(document.body);
 }
-// Pantalla de carga: tapa la página hasta que está lista (en otro idioma, hasta que llega su diccionario y se ha traducido).
+// El diccionario se pide de forma síncrona: es un archivo pequeño y así todo el código puede usar T() desde el arranque.
+// El historial de cambios de cada idioma va aparte, en i18n/changelog.<idioma>.html.
 function loadDone(){const el=document.getElementById('loading');if(!el)return;el.classList.add('out');setTimeout(()=>el.remove(),260);}
 const whenReady=f=>document.readyState==='loading'?addEventListener('DOMContentLoaded',f):f();
-if(LANG==='es')whenReady(()=>requestAnimationFrame(loadDone));
-else{
-  const fail=setTimeout(loadDone,6000);
-  fetch(`i18n/${LANG}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{i18nStart(d);}).catch(()=>{})
-    .finally(()=>{clearTimeout(fail);whenReady(()=>requestAnimationFrame(loadDone));});
-}
-const DATA_FILES=LANG==='en'?{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'}:{best:'srd2024_es.json',spells:'conjuros_srd.json',comp:'compendio_srd.json'};
+if(LANG!=='es')try{
+  const get=u=>{const x=new XMLHttpRequest();x.open('GET',u,false);x.send();return (x.status===200||x.status===0)&&x.responseText?x.responseText:'';};
+  const cl=get(`i18n/changelog.${LANG}.html`),ol=document.getElementById('changelog-full');
+  if(cl&&ol)ol.innerHTML=cl;
+  const d=get(`i18n/${LANG}.json`);if(d)i18nStart(JSON.parse(d));
+}catch(e){}
+whenReady(()=>requestAnimationFrame(loadDone));
+// Idioma de los datos: el del SRD oficial si existe; si no, inglés.
+const DATA_LANG={es:'es',en:'en'}[LANG]||'en';
+const DATA_FILES={es:{best:'srd2024_es.json',spells:'conjuros_srd.json',comp:'compendio_srd.json'},
+  en:{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'}}[DATA_LANG];
 </script>
 <script>
 const COND=[['agarrado','Agarrado'],['apresado','Apresado'],['asustado','Asustado'],['aturdido','Aturdido'],['cegado','Cegado'],['derribado','Derribado'],['ensordecido','Ensordecido'],['envenenado','Envenenado'],['hechizado','Hechizado'],['incapacitado','Incapacitado'],['inconsciente','Inconsciente'],['invisible','Invisible'],['paralizado','Paralizado'],['petrificado','Petrificado'],['concentracion','Concentración'],['agotamiento','Agotamiento']];
@@ -1379,7 +1387,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const sgn=n=>(n>=0?'+':'')+n;
 const mod=s=>Math.floor((s-10)/2);
 const crNum=c=>{c=String(c??'');if(c.includes('/')){const[a,b]=c.split('/');return a/b;}return parseFloat(c)||0;};
-const tr=(m,k)=>LANG==='en'?k:(m[k]||k);
+const tr=(m,k)=>LANG==='es'?(m[k]||k):(m[k]&&I18N[m[k]])||k;
 
 /* ---------- bestiario ---------- */
 let SRD=[], SRD_ALL=[], MY=[];   // SRD = lo visible (solo si el módulo está activado); SRD_ALL = todo lo descargado
@@ -1612,7 +1620,7 @@ function sbHTML(m,c,{compact=false}={}){
     return `<h4><span>${head}</span></h4>`+arr.map(a=>`<p class="act" data-n="${esc(a[0])}"><b>${esc(a[0])}.</b>${tagHTML(a)} ${rich(a[1])}</p>`).join('');};
   return `<div class="sb" data-who="${esc(who)}" data-cid="${cid}">
     <div class="inline" style="justify-content:space-between;align-items:flex-start"><div style="min-width:0"><h3>${esc(m.n)}</h3>
-    <div class="sub">${m.tyl?esc(m.tyl):`${LANG==='en'?`${esc(m.sz||'')} ${esc(m.ty||'')}`:`${esc(tr(TYPE,m.ty||''))} ${esc(tr(SIZE,m.sz||'').toLowerCase())}`}${m.al?', '+esc(m.al):''}`}</div></div>
+    <div class="sub">${m.tyl?esc(m.tyl):`${LANG!=='es'?`${esc(tr(SIZE,m.sz||''))} ${esc(tr(TYPE,m.ty||''))}`:`${esc(tr(TYPE,m.ty||''))} ${esc(tr(SIZE,m.sz||'').toLowerCase())}`}${m.al?', '+esc(m.al):''}`}</div></div>
     <span class="advsel" role="group" aria-label="Ventaja">${['Desv.','Normal','Vent.'].map((l,i)=>`<button type="button" data-act="adv" data-v="${i-1}" class="${state.adv===i-1?'on':''}">${l}</button>`).join('')}</span></div>
     <hr>
     ${line('CA',m.ac)}${m.hp!=null?`<div class="ln"><b>PG</b> ${m.hp}${m.hd?` (<button type="button" class="rl" data-roll="hp" data-ex="${esc(m.hd)}" title="${c?'Tirar los PG de esta criatura':'Tirar PG'}">${esc(m.hd)}</button>)`:''}${c&&c.maxHp!==m.hp?` · <span class="dc">esta criatura: ${c.maxHp}</span>`:''}</div>`:''}${line('Velocidad',m.sp)}
@@ -1620,7 +1628,7 @@ function sbHTML(m,c,{compact=false}={}){
     <div class="abil">${ab}</div>
     <hr>
     ${m.sk?`<div class="ln"><b>Habilidades</b> ${rollList(m.sk)}</div>`:''}${line('Vulnerabilidades',m.vu)}${line('Resistencias',m.re)}${line('Inmunidades',m.im)}
-    ${line('Equipo',m.eq)}${line('Sentidos',[m.se,m.pp!=null?`${LANG==='en'?'Passive Perception':'Percepción pasiva'} ${m.pp}`:''].filter(Boolean).join('; '))}${line('Idiomas',m.la)}
+    ${line('Equipo',m.eq)}${line('Sentidos',[m.se,m.pp!=null?`${T('Percepción pasiva')} ${m.pp}`:''].filter(Boolean).join('; '))}${line('Idiomas',m.la)}
     ${line('VD',m.cr!=null?`${m.cr}${m.xp?` (${m.xp.toLocaleString('es')} PX)`:''}`:'')}
     ${SECS.map(([k,l])=>sec(k,l)).join('')}
     ${m.spc?spellsHTML(m,c):''}
@@ -1901,8 +1909,8 @@ function newPcFromClass(x){
   const die=+((x.info?.['Dado de puntos de golpe']||'').match(/d(\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
   openPC(null);
   $('#pc-cls').value=`${x.n} 1`;$('#pc-hp').value=$('#pc-cur').value=die;
-  (LANG==='en'?['strength','dexterity','constitution','intelligence','wisdom','charisma']:['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
-  toast(LANG==='en'?`Level 1: ${die} HP plus your Constitution modifier. ${x.n} saving throws already have +2`:`Nivel 1: ${die} PG más tu modificador por Constitución. Las salvaciones de ${x.n.toLowerCase()} ya llevan +2`,5200);
+  (DATA_LANG==='en'?['strength','dexterity','constitution','intelligence','wisdom','charisma']:['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
+  toast(T(`Nivel 1: ${die} PG más tu modificador por Constitución. Las salvaciones de la clase ya llevan +2`),5200);
 }
 function invHTML(p){
   const att=p.inv.filter(i=>i.at).length;
@@ -2170,7 +2178,7 @@ $('#skin').addEventListener('change',e=>{const v=e.target.value;if(v)document.do
 
 /* ---------- grupo, encuentros y conjuros ---------- */
 const PKEY='combat-party-v1', EKEY='combat-presets-v1', SKEY='combat-spells-v1', LBKEY='combat-books-v1';
-const SCHOOLS=LANG==='en'?{abjuracion:'Abjuration',conjuracion:'Conjuration',adivinacion:'Divination',encantamiento:'Enchantment',evocacion:'Evocation',ilusionismo:'Illusion',nigromancia:'Necromancy',transmutacion:'Transmutation'}:{abjuracion:'Abjuración',conjuracion:'Conjuración',adivinacion:'Adivinación',encantamiento:'Encantamiento',evocacion:'Evocación',ilusionismo:'Ilusionismo',nigromancia:'Nigromancia',transmutacion:'Transmutación'};
+const SCHOOLS=Object.fromEntries(Object.entries({abjuracion:'Abjuración',conjuracion:'Conjuración',adivinacion:'Adivinación',encantamiento:'Encantamiento',evocacion:'Evocación',ilusionismo:'Ilusionismo',nigromancia:'Nigromancia',transmutacion:'Transmutación'}).map(([k,v])=>[k,T(v)]));
 function lsGet(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
 
@@ -2373,7 +2381,7 @@ $('#md-urlform').addEventListener('submit',e=>{
   fetch(u).then(r=>{if(!r.ok)throw new Error('respuesta '+r.status);return r.text();}).then(x=>{importModule(x,new URL(u).pathname.split('/').pop()||new URL(u).hostname);$('#md-url').value='';})
     .catch(err=>toast(/fetch|network|Failed/i.test(err.message)?'No he podido descargarlo (el sitio no lo permite). Descárgalo y usa «Cargar archivo».':'No he podido leerlo: '+err.message));
 });
-const spLevel=lv=>LANG==='en'?(lv?`Level ${lv}`:'Cantrip'):(lv?`Nivel ${lv}`:'Truco');
+const spLevel=lv=>lv?T(`Nivel ${lv}`):T('Truco');
 function spellBody(s,dc){
   if(!s)return '<p class="hint" style="display:block">Este conjuro no está en ningún módulo activo. Actívalo o añade tu copia del libro en <a href="#modulos">📦 Módulos</a> para ver la descripción.</p>';
   const use=s.use||'',tds=use.match(/TdS\s*(\w+)/i);
@@ -2909,7 +2917,7 @@ addEventListener('hashchange',showView);
 const CTABS=[['criaturas','Criaturas','🐉'],['conjuros','Conjuros','✨'],['objetos','Objetos','🎒'],['dotes','Dotes','⭐'],['clases','Clases','🛡'],['especies','Especies','🧝'],['trasfondos','Trasfondos','📜'],['reglas','Reglas','📖']];
 const slugOf=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fichaHref=(tab,n)=>`#compendio/${tab}/${slugOf(n)}`;
-const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="${LANG==='en'?'Open the page for':'Abrir la página de'} ${esc(n)}">↗</a>`;
+const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="${T('Abrir la página de')} ${esc(n)}">↗</a>`;
 const goP=(tab,n)=>`<p class="golinkp"><a href="${fichaHref(tab,n)}">Abrir su página →</a></p>`;
 function addGoLink(r,tab,n){const d=r.nextElementSibling;if(n&&d?.classList.contains('spdet'))d.querySelector('td').insertAdjacentHTML('afterbegin',goP(tab,n));}
 function route(){
@@ -2952,7 +2960,7 @@ function renderFicha(tab,slug){
   $('#fc-crumbs').innerHTML=`<a href="#compendio/${t[0]}">← ${t[2]} ${t[1]}</a>`;
   if(!x){
     const loading=modOn('srd521')&&(tab==='criaturas'?!SRD_ALL.length:tab==='conjuros'?!SPELL_LIST.length:!COMP_SRD);
-    el.innerHTML=`<div class="empty">${loading?'Cargando…':LANG==='en'?`I can't find this entry in your active modules. Check <a href="#modulos">📦 Modules</a> or go back to the ${T(t[1]).toLowerCase()} list.`:`No encuentro esta entrada en tus módulos activos. Revisa <a href="#modulos">📦 Módulos</a> o vuelve al listado de ${t[1].toLowerCase()}.`}</div>`;return;
+    el.innerHTML=`<div class="empty">${loading?'Cargando…':`${T('No encuentro esta entrada en tus módulos activos. Revisa')} <a href="#modulos">📦 ${T('Módulos')}</a> ${T('o vuelve al listado.')}`}</div>`;return;
   }
   el.innerHTML=tab==='criaturas'?crActions(x)+sbHTML(x,null):bOtherView(tab+':'+x.n,false);
 }
@@ -3098,18 +3106,17 @@ const uFmt=v=>(Math.round(v*100)/100).toLocaleString(LANG);
 function uShow(k,a,b){
   const two=f=>b!=null?`${uFmt(f(a))}/${uFmt(f(b))}`:uFmt(f(a)),one=f=>f(b??a)===1;
   if(k==='d'){
-    const en=LANG==='en';
-    if(PREFS.dist==='ft')return `${two(v=>v)} ${en?(one(v=>v)?'foot':'feet'):(one(v=>v)?'pie':'pies')}`;
-    if(PREFS.dist==='sq')return `${two(v=>v/5)} ${en?(one(v=>v/5)?'square':'squares'):(one(v=>v/5)?'casilla':'casillas')}`;
+    if(PREFS.dist==='ft')return `${two(v=>v)} ${T(one(v=>v)?'pie':'pies')}`;
+    if(PREFS.dist==='sq')return `${two(v=>v/5)} ${T(one(v=>v/5)?'casilla':'casillas')}`;
     return `${two(v=>v*.3)} m`;
   }
-  if(k==='l')return PREFS.dist==='m'?`${two(v=>v*1.5)} km`:`${two(v=>v)} ${LANG==='en'?(one(v=>v)?'mile':'miles'):(one(v=>v)?'milla':'millas')}`;
+  if(k==='l')return PREFS.dist==='m'?`${two(v=>v*1.5)} km`:`${two(v=>v)} ${T(one(v=>v)?'milla':'millas')}`;
   return PREFS.peso==='lb'?`${two(v=>v)} lb`:`${two(v=>v/2)} kg`;
 }
 function uPaint(s){
   const txt=uShow(s.dataset.k,+s.dataset.a,s.dataset.b!=null?+s.dataset.b:null);
   s.textContent=txt;const cv=fold(txt).replace(/\s/g,'')!==fold(s.dataset.o).replace(/\s/g,'');
-  s.classList.toggle('cv',cv);if(cv)s.title=`${LANG==='en'?'Original':'Original'}: ${s.dataset.o}`;else s.removeAttribute('title');
+  s.classList.toggle('cv',cv);if(cv)s.title=`${T('Original')}: ${s.dataset.o}`;else s.removeAttribute('title');
 }
 function unitsIn(root){
   const base=root.nodeType===3?root.parentElement:root;
@@ -3305,7 +3312,7 @@ async function catAct(act,b){
     case 'catpub':{const out=buildExport();if(out)publishModule(out);break;}
     case 'catpubmd':{const md=mods().list.find(m=>m.id===id);if(!md)return;
       if(!LICS.includes(md.lic)){toast('Este módulo no indica una licencia válida. Créalo desde «Crear un módulo con tu contenido» y publícalo desde allí');return;}
-      if(!confirm(LANG==='en'?`Do you confirm that “${md.n}” is your own or openly licensed content?`:`¿Confirmas que «${md.n}» es contenido tuyo o con licencia abierta?`))return;
+      if(!confirm(T('¿Confirmas que este módulo es contenido tuyo o con licencia abierta?')+`\n\n${md.n}`))return;
       const out={modulo:md.n,abrev:md.ab,autor:md.autor||SB_NAME,version:md.version||'1.0',licencia:md.lic,descripcion:md.desc||''};
       for(const[k] of MOD_TYPES)if((md[k]||[]).length)out[k]=md[k];
       publishModule(out);break;}
