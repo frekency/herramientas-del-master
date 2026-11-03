@@ -274,6 +274,28 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .vs{display:flex;gap:12px;font-size:13px;color:var(--muted);align-items:center;white-space:nowrap}
 .vs b{font-family:var(--f-num);color:var(--fg)}
 .vbody{padding:12px 14px}
+/* tabla de conjuros */
+.sptwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.sptable{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.sptable th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.sptable th button{all:unset;cursor:pointer}
+.sptable th button:hover,.sptable th button[aria-sort]{color:var(--fg)}
+.sptable th button[aria-sort]::after{content:" ▾"}
+.sptable td{padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.sptable .c{text-align:center}
+.sptable tr.sprow{cursor:pointer}
+.sptable tr.sprow:hover td,.sptable tr.sprow[aria-expanded="true"] td{background:var(--surface-2)}
+.sptable tr.sprow td:first-child{font-weight:700;white-space:normal;min-width:180px}
+.sptable tr.sprow td:first-child .ven{display:block;margin-left:0}
+.sptable .yes{color:var(--ok);font-weight:700}
+.sptable .no{color:var(--line)}
+.sptable .cp{display:inline-flex;gap:4px;align-items:center}
+.sptable .cp i{font-style:normal;font-family:var(--f-num);font-size:12px;min-width:18px;text-align:center;border:1px solid var(--line);border-radius:4px;padding:0 3px}
+.sptable .cp i.off{opacity:.25}
+.sptable .cp i.cost{border-color:var(--accent);color:var(--accent)}
+.sptable tr.spdet>td{white-space:normal;padding:0;background:var(--bg)}
+.sptable tr.spdet .vbody{max-width:900px}
+.sptable tr:last-child td{border-bottom:0}
 .vbody.sb{border-radius:0 0 10px 10px;border-top:none}
 .vbody select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
 :root[data-view="mini"] .pagenav{padding-block:6px 0}
@@ -555,7 +577,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.10</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.11</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -571,6 +593,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.11 <span>3 nov 2026</span></h3><ul>
+      <li>El listado de conjuros es ahora una tabla: nombre, nivel, escuela, ritual, concentración y componentes (V, S, M; la M en dorado indica coste en material). Pulsa una fila para ver la descripción y los encabezados para ordenar.</li>
+      <li>Los conjuros vuelven a venir incluidos en el tracker.</li></ul></li>
     <li><h3>v1.10 <span>3 nov 2026</span></h3><ul>
       <li>Los jugadores tienen su propia página (#jugadores) en lugar de una ventana emergente. El botón 🛡 Grupo del combate lleva a ella.</li></ul></li>
     <li><h3>v1.9 <span>3 nov 2026</span></h3><ul>
@@ -641,7 +666,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <select id="vs-lv" aria-label="Nivel"><option value="">Cualquier nivel</option><option value="0">Truco</option><option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option><option value="4">Nivel 4</option><option value="5">Nivel 5</option><option value="6">Nivel 6</option><option value="7">Nivel 7</option><option value="8">Nivel 8</option><option value="9">Nivel 9</option></select>
     <select id="vs-cls" aria-label="Clase"><option value="">Cualquier clase</option></select>
     <select id="vs-sch" aria-label="Escuela"></select>
-    <select id="vs-sort" aria-label="Orden"><option value="name">Orden: nombre</option><option value="lv">Orden: nivel</option></select>
+    <select id="vs-sort" aria-label="Orden"><option value="name">Orden: nombre</option><option value="lv">Orden: nivel</option><option value="sch">Orden: escuela</option></select>
     <label class="chk"><input type="checkbox" id="vs-conc"> Concentración</label>
     <label class="chk"><input type="checkbox" id="vs-rit"> Ritual</label>
   </div>
@@ -1788,13 +1813,28 @@ function renderSpellView(){
   if(!SPELL_LIST.length){$('#vs-count').textContent='';$('#vs-list').innerHTML='<div class="empty">No hay conjuros cargados. Ve a 🛡 Grupo y pulsa «📚 Cargar conjuros (CSV)».</div>';return;}
   const q=$('#vs-q').value.trim().toLowerCase(),lv=$('#vs-lv').value,cl=$('#vs-cls').value,sc=$('#vs-sch').value,co=$('#vs-conc').checked,ri=$('#vs-rit').checked;
   const res=SPELL_LIST.filter(s=>(!q||s.n.toLowerCase().includes(q)||s.en.toLowerCase().includes(q))&&(lv===''||s.lv===+lv)&&(!cl||s.cls.includes(cl))&&(!sc||s.sch===sc)&&(!co||s.conc)&&(!ri||s.rit))
-    .sort((a,b)=>$('#vs-sort').value==='lv'?a.lv-b.lv||a.n.localeCompare(b.n,'es'):a.n.localeCompare(b.n,'es'));
+    .sort((a,b)=>{const k=$('#vs-sort').value,n=a.n.localeCompare(b.n,'es');return k==='lv'?a.lv-b.lv||n:k==='sch'?(SCHOOLS[a.sch]||'').localeCompare(SCHOOLS[b.sch]||'','es')||n:n;});
   $('#vs-count').textContent=`${res.length} conjuros`;
-  $('#vs-list').innerHTML=res.slice(0,400).map(s=>`<details class="vitem"><summary><span class="vn">${esc(s.n)}${s.en?`<i class="ven">${esc(s.en)}</i>`:''}</span>
-    <span class="vm">${spLevel(s.lv)}${s.sch?' · '+SCHOOLS[s.sch]:''}</span><span class="vs"><span>${esc(s.ct)}</span><span>${esc(s.rg.split(' / ')[0])}</span>${s.conc?'<span class="tag" title="Concentración">C</span>':''}${s.rit?'<span class="tag" title="Ritual">R</span>':''}</span></summary>
-    <div class="vbody sb">${spellBody(s)}</div></details>`).join('')+(res.length>400?`<p class="hint" style="display:block">Mostrando 400 de ${res.length}. Afina los filtros.</p>`:'')||'<div class="empty">Nada coincide con esos filtros.</div>';
+  VS_RES=res;
+  const srt=$('#vs-sort').value,th=(k,l)=>`<th><button type="button" data-vsort="${k}"${srt===k?' aria-sort="ascending"':''}>${l}</button></th>`;
+  const tick=v=>v?'<span class="yes" title="Sí">✓</span>':'<span class="no" aria-label="No">–</span>';
+  const comp=s=>{const c=s.comp||'',base=c.split('(')[0].split(',').map(x=>x.trim()),cost=c.includes('(');return `<span class="cp" title="${esc(c)}">${['V','S','M'].map(k=>`<i class="${base.includes(k)?(k==='M'&&cost?'cost':''):'off'}">${k}</i>`).join('')}</span>`;};
+  $('#vs-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${th('name','Nombre')}${th('lv','Nivel')}${th('sch','Escuela')}<th class="c">Ritual</th><th class="c">Concentración</th><th>Componentes</th></tr></thead><tbody>${res.slice(0,400).map((s,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(s.n)}${s.en?`<i class="ven">${esc(s.en)}</i>`:''}</td><td>${spLevel(s.lv)}</td><td>${s.sch?SCHOOLS[s.sch]:''}</td><td class="c">${tick(s.rit)}</td><td class="c">${tick(s.conc)}</td><td>${comp(s)}</td></tr>`).join('')}</tbody></table></div>`+(res.length>400?`<p class="hint" style="display:block">Mostrando 400 de ${res.length}. Afina los filtros.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 for(const id of ['#vs-q','#vs-lv','#vs-cls','#vs-sch','#vs-conc','#vs-rit','#vs-sort'])$(id).addEventListener('input',renderSpellView);
+let VS_RES=[];
+function toggleSpellRow(r){
+  const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
+  if(nx?.classList.contains('spdet'))nx.remove();
+  r.setAttribute('aria-expanded',open);
+  if(open)r.insertAdjacentHTML('afterend',`<tr class="spdet"><td colspan="6"><div class="vbody sb">${spellBody(VS_RES[+r.dataset.i])}</div></td></tr>`);
+}
+$('#vs-list').addEventListener('click',e=>{
+  const h=e.target.closest('[data-vsort]');if(h){$('#vs-sort').value=h.dataset.vsort;renderSpellView();return;}
+  if(e.target.closest('.spdet button,.spdet a'))return;
+  const r=e.target.closest('tr.sprow');if(r)toggleSpellRow(r);
+});
+$('#vs-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleSpellRow(r);}});
 $('#vs-sch').innerHTML='<option value="">Cualquier escuela</option>'+Object.entries(SCHOOLS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
 addEventListener('hashchange',showView);
 
