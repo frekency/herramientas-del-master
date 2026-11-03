@@ -45,6 +45,11 @@ button{cursor:pointer}
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
 .bar-in{max-width:1320px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
 .brand{font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:.02em;margin:0;white-space:nowrap}
+.brand a{color:inherit;text-decoration:none}
+/* fuera del tracker de combate la barra solo lleva el nombre y los ajustes de vista */
+:root:not([data-page="combate"]) .bar .counters,:root:not([data-page="combate"]) .bar .now,:root:not([data-page="combate"]) #prev,:root:not([data-page="combate"]) #next,:root:not([data-page="combate"]) #undo,:root:not([data-page="combate"]) #lastroll{display:none!important}
+:root:not([data-page="combate"]) .bar .nav{margin-left:auto}
+:root[data-view="mini"]:not([data-page="combate"]) .brand{display:block!important}
 .counters{display:flex;gap:18px}
 .counter{display:flex;flex-direction:column;line-height:1.1}
 .counter small{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
@@ -529,7 +534,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 
 <header class="bar">
   <div class="bar-in">
-    <h1 class="brand">Iniciativa</h1>
+    <h1 class="brand"><a href="#inicio" id="brand" title="Ir al inicio">Iniciativa</a></h1>
     <div class="counters">
       <div class="counter"><small>Ronda</small><b id="round">–</b></div>
       <div class="counter"><small>Turno</small><b id="turn">–</b></div>
@@ -550,7 +555,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.8</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.9</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -566,6 +571,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.9 <span>3 nov 2026</span></h3><ul>
+      <li>Los conjuros vienen incluidos en el tracker: ya no hace falta cargar el CSV en cada navegador.</li>
+      <li>La cabecera solo muestra «Iniciativa» y los controles de turno en el tracker de combate. En el resto de páginas pone «Herramientas del Máster» y lleva al inicio.</li></ul></li>
     <li><h3>v1.8 <span>3 nov 2026</span></h3><ul>
       <li><b>Página principal</b> con acceso a todas las herramientas y este historial de cambios.</li>
       <li>Enlace directo a la gestión de jugadores (#jugadores).</li></ul></li>
@@ -1744,6 +1752,8 @@ function showView(){
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(isPage||v2==='jugadores'?v2:'combate')));
+  document.documentElement.dataset.page=isPage?v2:'combate';
+  $('#brand').textContent=isPage?'Herramientas del Máster':'Iniciativa';
   if(v2==='inicio')renderHome();
   if(v2==='jugadores'){renderParty();$('#partymodal').hidden=false;syncModalOpen();}
   if(v==='criaturas')renderCreatureView();
