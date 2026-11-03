@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Política de privacidad</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#e9ebee;--surface:#f7f8f9;--line:#c6cbd3;--fg:#1a1e26;--muted:#5b6370;--accent:#9a6b14;
+  --f-display:"Alegreya SC",Georgia,serif;--f-body:"Alegreya Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151b;--surface:#1a1e26;--line:#2c323d;--fg:#e6e8ec;--muted:#9aa3b2;--accent:#e0a83a}}
+:root[data-theme="dark"]{--bg:#12151b;--surface:#1a1e26;--line:#2c323d;--fg:#e6e8ec;--muted:#9aa3b2;--accent:#e0a83a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 var(--f-body)}
+main{max-width:760px;margin:0 auto;padding:32px 16px 48px}
+.back{font-size:14px;color:var(--muted)}
+a{color:var(--accent)}
+h1{font-family:var(--f-display);font-size:clamp(28px,6vw,40px);line-height:1.1;margin:18px 0 6px}
+h2{font-family:var(--f-display);font-size:22px;margin:32px 0 8px}
+.upd{color:var(--muted);font-size:14px;margin:0 0 24px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px 8px 0;border-bottom:1px solid var(--line)}
+th{font-weight:700}
+.wrap{overflow-x:auto}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">← Volver a Herramientas del Máster</a>
+  <h1>Política de privacidad</h1>
+  <p class="upd">Última actualización: 3 de noviembre de 2026</p>
+
+  <div class="box">
+    <p style="margin:0"><b>En resumen:</b> puedes usar la herramienta sin cuenta y entonces todo se queda en tu navegador. Si entras con Discord, guardamos tu identificador, tu nombre y tus datos de juego para sincronizarlos entre tus dispositivos. No hay publicidad, ni analítica, ni venta de datos.</p>
+  </div>
+
+  <h2>1. Quién es el responsable</h2>
+  <p>Herramientas del Máster es un proyecto personal y sin ánimo de lucro, publicado en <a href="https://github.com/frekency/herramientas-del-master">github.com/frekency/herramientas-del-master</a>. Para cualquier consulta sobre tus datos, escribe abriendo una incidencia en <a href="https://github.com/frekency/herramientas-del-master/issues">ese repositorio</a>. Si prefieres no hacerlo en público, indícalo en la incidencia y te daremos un contacto privado.</p>
+
+  <h2>2. Si no tienes cuenta</h2>
+  <p>Todo lo que haces (combates, personajes, criaturas, tablas, módulos y las copias de tus manuales) se guarda <b>solo en el almacenamiento local de tu navegador</b>. No nos llega nada y no usamos cookies de seguimiento. Si borras los datos del navegador, se pierden; para conservarlos puedes usar la copia de seguridad de la página de jugadores.</p>
+
+  <h2>3. Si entras con Discord</h2>
+  <div class="wrap"><table>
+    <thead><tr><th>Qué datos</th><th>Para qué</th><th>Base legal</th></tr></thead>
+    <tbody>
+      <tr><td>Identificador de Discord, nombre, avatar y correo, que Discord nos facilita al iniciar sesión</td><td>Crear tu cuenta e identificarte cuando vuelvas. El correo no se usa para enviarte nada.</td><td>Ejecución del servicio que pides (art. 6.1.b RGPD)</td></tr>
+      <tr><td>Nombre de usuario que eliges</td><td>Mostrar quién es el autor de los módulos que publicas</td><td>Ejecución del servicio</td></tr>
+      <tr><td>Tus datos de juego: combate en curso, personajes, criaturas, encuentros, tablas y módulos, incluidas tus copias privadas de manuales</td><td>Sincronizarlos entre tus dispositivos. Solo tu cuenta puede leerlos.</td><td>Ejecución del servicio</td></tr>
+      <tr><td>Módulos que publicas en el catálogo</td><td>Que otros usuarios puedan verlos y usarlos, según la licencia que elijas</td><td>Tu consentimiento al publicarlos</td></tr>
+      <tr><td>Denuncias que envías (módulo y motivo)</td><td>Moderar el catálogo</td><td>Interés legítimo en mantener el catálogo legal (art. 6.1.f RGPD)</td></tr>
+    </tbody>
+  </table></div>
+  <p>No pedimos acceso a tus servidores, mensajes ni amigos de Discord.</p>
+
+  <h2>4. Con quién se comparten</h2>
+  <p>Solo con los proveedores necesarios para que el servicio funcione, que actúan como encargados del tratamiento:</p>
+  <ul>
+    <li><b>Supabase</b>: base de datos e inicio de sesión. Ahí se guardan tu cuenta y tus datos.</li>
+    <li><b>Netlify</b>: aloja la web. Como cualquier servidor, registra la dirección IP de las visitas en sus registros técnicos.</li>
+    <li><b>Discord</b>: verifica tu identidad cuando inicias sesión.</li>
+    <li><b>jsDelivr</b> y <b>Google Fonts</b>: sirven la librería de inicio de sesión y las tipografías. Al cargarlas, tu navegador les envía tu dirección IP.</li>
+  </ul>
+  <p>Algunos de estos proveedores pueden tratar datos fuera del Espacio Económico Europeo, con las garantías previstas en el RGPD (cláusulas contractuales tipo o Marco de Privacidad de Datos UE-EE. UU.). Nunca vendemos ni cedemos tus datos a terceros con otros fines.</p>
+  <p>Lo que publicas en el catálogo (módulo, nombre de usuario y autor) es <b>público</b>.</p>
+
+  <h2>5. Cuánto tiempo los guardamos</h2>
+  <p>Mientras tengas la cuenta. Si pides borrarla, eliminamos tu cuenta, tus datos sincronizados, tu perfil y los módulos que hayas publicado. Las denuncias que hayas enviado se borran con tu cuenta.</p>
+
+  <h2>6. Tus derechos</h2>
+  <p>Puedes pedir el acceso a tus datos, su rectificación, su supresión, la limitación u oposición a su tratamiento y su portabilidad. Escríbenos por el medio del apartado 1. Además, desde la herramienta puedes exportar tus datos con la copia de seguridad y retirar en cualquier momento los módulos que hayas publicado.</p>
+  <p>Si crees que no hemos atendido bien tu solicitud, puedes reclamar ante la <a href="https://www.aepd.es">Agencia Española de Protección de Datos</a>.</p>
+
+  <h2>7. Edad mínima</h2>
+  <p>Para crear una cuenta debes tener al menos 14 años, o contar con el consentimiento de tus padres o tutores. Discord exige además su propia edad mínima.</p>
+
+  <h2>8. Almacenamiento en tu navegador</h2>
+  <p>Usamos el almacenamiento local del navegador (<i>localStorage</i>) para guardar tus datos de juego, tus preferencias de vista y, si tienes cuenta, la sesión iniciada. Es imprescindible para que la herramienta funcione y no se usa para seguirte ni con fines publicitarios.</p>
+
+  <h2>9. Cambios</h2>
+  <p>Si cambiamos esta política, actualizaremos la fecha de arriba. Si el cambio es importante, lo avisaremos en el historial de cambios de la herramienta.</p>
+
+  <footer>Herramienta no oficial, sin relación con Wizards of the Coast. Consulta también las <a href="terminos.html">condiciones del servicio</a>.</footer>
+</main>
+</body>
+</html>
