@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.19.2] - 2026-11-03
+### Cambiado
+- Las cuentas son solo con Discord: se quitan el registro por correo, las contraseñas, los códigos por email y sus plantillas.
+
 ## [1.19.1] - 2026-11-03
 ### Añadido
 - «Entrar con Discord» (OAuth con PKCE). La primera vez se pide el nombre de usuario.

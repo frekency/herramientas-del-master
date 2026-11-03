@@ -786,7 +786,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.19 <span>3 nov 2026</span></h3><ul>
-      <li><b>Cuentas</b> (en la versión web): entra con <b>Discord</b> o regístrate con usuario y correo, confirma con el código de 6 dígitos que te llega y elige tu contraseña. «¿Olvidaste la contraseña?» envía otro código para poner una nueva.</li>
+      <li><b>Cuentas con Discord</b> (en la versión web): pulsa «👤 Entrar», entra con Discord y elige tu nombre de usuario la primera vez.</li>
       <li>Con la sesión iniciada, personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo. Tus copias de los manuales siguen siendo solo tuyas.</li>
       <li><b>Catálogo de la comunidad</b> en 📦 Módulos: publica tus módulos homebrew (con autor y licencia), añade los de otros con un clic, actualízalos cuando haya versión nueva y denuncia lo que no sea legítimo.</li></ul></li>
     <li><h3>v1.18 <span>3 nov 2026</span></h3><ul>
@@ -1112,49 +1112,21 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="ac-h" style="width:min(440px,100%)">
     <div class="mhead"><h2 id="ac-h">Tu cuenta</h2><button class="btn ghost" data-act="acclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody acbody">
-      <form class="acpane" data-pane="in">
+      <div class="acpane" data-pane="in">
+        <p style="margin:0">Entra con tu cuenta de Discord. Tus personajes, criaturas, encuentros, tablas y módulos se guardarán en tu cuenta y te seguirán a cualquier dispositivo, y podrás publicar módulos en el catálogo.</p>
         <button type="button" class="btn discord" data-act="acdiscord"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a12.9 12.9 0 0 1-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Entrar con Discord</button>
-        <p class="acor"><span>o con tu correo</span></p>
-        <label class="f">Correo<input id="ac-in-mail" type="email" autocomplete="email" required></label>
-        <label class="f">Contraseña<input id="ac-in-pass" type="password" autocomplete="current-password" required></label>
-        <button class="btn primary">Entrar</button>
-        <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="up">Crear una cuenta</button> · <button type="button" class="aclink" data-act="acgo" data-to="forgot">¿Olvidaste la contraseña?</button></p>
-      </form>
-      <form class="acpane" data-pane="up" hidden>
-        <button type="button" class="btn discord" data-act="acdiscord"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a12.9 12.9 0 0 1-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Entrar con Discord</button>
-        <p class="acor"><span>o con tu correo</span></p>
-        <label class="f">Nombre de usuario<input id="ac-up-user" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_.\-]{3,24}" title="De 3 a 24 letras, números, punto, guion o guion bajo"></label>
-        <label class="f">Correo<input id="ac-up-mail" type="email" autocomplete="email" required></label>
-        <p class="hint" style="display:block;margin:0">Te enviaremos un código de 6 dígitos para confirmar el correo; después eliges tu contraseña. Tu nombre de usuario firma los módulos que publiques.</p>
-        <button class="btn primary">Crear cuenta</button>
-        <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="in">Ya tengo cuenta</button></p>
-      </form>
-      <form class="acpane" data-pane="forgot" hidden>
-        <label class="f">Correo de tu cuenta<input id="ac-fg-mail" type="email" autocomplete="email" required></label>
-        <button class="btn primary">Enviarme un código</button>
-        <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="in">Volver</button></p>
-      </form>
-      <form class="acpane" data-pane="code" hidden>
-        <p id="ac-codemsg" style="margin:0"></p>
-        <label class="f">Código<input id="ac-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="10" class="accode"></label>
-        <button class="btn primary">Confirmar</button>
-        <p class="aclinks"><button type="button" class="aclink" data-act="acresend">Reenviar el código</button> · <button type="button" class="aclink" data-act="acgo" data-to="in">Volver</button></p>
-      </form>
+        <p class="hint" style="display:block;margin:0">Solo usamos tu identificador de Discord y tu nombre; no leemos tus servidores ni mensajes.</p>
+      </div>
       <form class="acpane" data-pane="name" hidden>
         <p style="margin:0">Elige tu nombre de usuario. Es el que firma los módulos que publiques.</p>
         <label class="f">Nombre de usuario<input id="ac-nm-user" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_.\-]{3,24}" title="De 3 a 24 letras, números, punto, guion o guion bajo"></label>
         <button class="btn primary">Guardar</button>
       </form>
-      <form class="acpane" data-pane="pw" hidden>
-        <label class="f">Contraseña nueva<input id="ac-pw1" type="password" autocomplete="new-password" required minlength="8"></label>
-        <label class="f">Repítela<input id="ac-pw2" type="password" autocomplete="new-password" required minlength="8"></label>
-        <button class="btn primary">Guardar contraseña</button>
-      </form>
       <div class="acpane" data-pane="me" hidden>
-        <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub" id="ac-mail"></span></p>
+        <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub">con Discord</span></p>
         <p class="pcsub" id="ac-sync" style="margin:0"></p>
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
-        <div class="inline"><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn" data-act="acgo" data-to="pw">Cambiar contraseña</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
+        <div class="inline"><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
       <p class="acmsg" id="ac-msg" aria-live="polite"></p>
     </div>
@@ -2470,7 +2442,7 @@ addEventListener('hashchange',showView);
 
 window.claude?.hot?.snapshot?.(()=>state);
 // Estado de la cuenta: declarado antes de boot() porque las vistas lo consultan al pintar
-let SB=null,SB_USER=null,SB_NAME='',acMode='',acEmail='',syncT=null,syncBusy=false,lastRaw={},CAT=null;
+let SB=null,SB_USER=null,SB_NAME='',syncT=null,syncBusy=false,lastRaw={},CAT=null;
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data);
 
 /* ---------- cuentas y sincronización (Supabase) ---------- */
@@ -2482,16 +2454,12 @@ const LICS=['CC-BY-4.0','CC-BY-SA-4.0','CC0','Todos los derechos reservados'];
 const canon=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(q=>[q,x[q]])):x);
 const hsh=s=>{let x=5381;for(let i=0;i<s.length;i++)x=(Math.imul(x,33)^s.charCodeAt(i))>>>0;return x.toString(36)+'.'+s.length;};
 const lsRaw=k=>{try{return localStorage.getItem(k);}catch{return null;}};
-const tmpPass=()=>Array.from(crypto.getRandomValues(new Uint8Array(18)),x=>x.toString(16).padStart(2,'0')).join('')+'Aa1!';
-const AC_ERR=[[/invalid login/i,'Correo o contraseña incorrectos'],[/already registered|already exists/i,'Ese correo ya tiene cuenta: entra o recupera la contraseña'],
-  [/not confirmed/i,'Aún no has confirmado el correo: usa «¿Olvidaste la contraseña?» para recibir un código'],[/expired|invalid.*(otp|token)|otp.*(invalid|expired)/i,'El código no es válido o ha caducado: pide otro'],
-  [/rate limit|too many|security purposes/i,'Demasiados intentos seguidos; espera un minuto y vuelve a probar'],[/should be different/i,'La contraseña nueva tiene que ser distinta de la anterior'],
-  [/password/i,'La contraseña no es válida: usa al menos 8 caracteres'],[/sending.*email|smtp|mail/i,'No se ha podido enviar el correo; inténtalo más tarde'],[/fetch|network/i,'No hay conexión con el servidor']];
+const AC_ERR=[[/rate limit|too many/i,'Demasiados intentos seguidos; espera un minuto y vuelve a probar'],[/duplicate|unique/i,'Ese nombre de usuario ya está cogido'],[/fetch|network/i,'No hay conexión con el servidor']];
 const acErr=e=>(AC_ERR.find(([r])=>r.test(e?.message||''))||[])[1]||('Error: '+(e?.message||e));
 function acMsg(t,ok){const m=$('#ac-msg');m.textContent=t||'';m.classList.toggle('ok',!!ok);}
 function acPane(p){
   acMsg('');for(const el of document.querySelectorAll('#acctmodal [data-pane]'))el.hidden=el.dataset.pane!==p;
-  $('#ac-h').textContent={in:'Entrar',up:'Crear cuenta',forgot:'Recuperar contraseña',code:'Escribe el código',name:'Tu nombre de usuario',pw:'Elige tu contraseña',me:'Tu cuenta'}[p];
+  $('#ac-h').textContent={in:'Entrar',name:'Tu nombre de usuario',me:'Tu cuenta'}[p];
   const f=document.querySelector(`#acctmodal [data-pane="${p}"] input`);if(f)setTimeout(()=>f.focus(),30);
   renderAcct();
 }
@@ -2499,7 +2467,7 @@ function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_US
 function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
 function renderAcct(){
   const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
-  $('#ac-user').textContent=SB_NAME||'—';$('#ac-mail').textContent=SB_USER?.email||'';
+  $('#ac-user').textContent=SB_NAME||'—';
 }
 const acStatus=t=>{$('#ac-sync').textContent=t;};
 async function sbInit(){
@@ -2521,32 +2489,16 @@ async function acSignedIn(){
   if(!data){const meta=SB_USER.user_metadata||{},sug=String(meta.usuario||meta.custom_claims?.global_name||meta.full_name||meta.name||'').normalize('NFD').replace(/[^A-Za-z0-9_.-]/g,'').slice(0,24);
     if(meta.usuario){const {error}=await SB.from('perfiles').insert({user_id:SB_USER.id,usuario:meta.usuario});if(!error)SB_NAME=meta.usuario;}
     if(!SB_NAME){acOpen('name');$('#ac-nm-user').value=sug;acMsg('Bienvenido. Antes de seguir, elige tu nombre de usuario',true);}}
-  if(!SB_NAME)SB_NAME=SB_USER.email?.split('@')[0]||'';
   renderAcct();if(location.hash==='#modulos')renderMods();
-  if(SB_USER.user_metadata?.pw_set===false&&($('#acctmodal').hidden||$('[data-pane="pw"]').hidden)){acOpen('pw');acMsg('Elige tu contraseña para terminar el registro',true);}
   await syncPull();
 }
 $('#acctmodal').addEventListener('submit',async e=>{
   e.preventDefault();const p=e.target.dataset.pane,v=id=>$(id).value.trim(),btn=e.target.querySelector('button:not([type=button])');
   if(btn)btn.disabled=true;
   try{
-    if(p==='in'){const {error}=await SB.auth.signInWithPassword({email:v('#ac-in-mail'),password:$('#ac-in-pass').value});if(error)throw error;$('#ac-in-pass').value='';acClose();toast('Sesión iniciada');}
-    if(p==='up'){const u=v('#ac-up-user'),em=v('#ac-up-mail');
-      if(!/^[A-Za-z0-9_.-]{3,24}$/.test(u)){acMsg('El usuario debe tener de 3 a 24 letras, números, punto, guion o guion bajo');return;}
-      const {data:free}=await SB.rpc('usuario_libre',{u});if(free===false){acMsg('Ese nombre de usuario ya está cogido');return;}
-      const {data,error}=await SB.auth.signUp({email:em,password:tmpPass(),options:{data:{usuario:u,pw_set:false}}});if(error)throw error;
-      if(data.session){acPane('pw');acMsg('Cuenta creada. Elige tu contraseña',true);return;}
-      if(data.user&&!data.user.identities?.length){acMsg('Ese correo ya tiene cuenta: entra o recupera la contraseña');return;}
-      acMode='signup';acEmail=em;acPane('code');$('#ac-codemsg').textContent=`Te hemos enviado un código a ${em}. Si no llega en un par de minutos, mira en spam.`;}
-    if(p==='forgot'){const em=v('#ac-fg-mail');const {error}=await SB.auth.resetPasswordForEmail(em);if(error)throw error;
-      acMode='recovery';acEmail=em;acPane('code');$('#ac-codemsg').textContent=`Si ${em} tiene cuenta, te hemos enviado un código.`;}
-    if(p==='code'){const {error}=await SB.auth.verifyOtp({email:acEmail,token:v('#ac-code').replace(/\s/g,''),type:acMode==='recovery'?'recovery':'signup'});if(error)throw error;
-      $('#ac-code').value='';acPane('pw');acMsg(acMode==='recovery'?'Código correcto. Elige tu contraseña nueva':'Correo confirmado. Elige tu contraseña',true);}
     if(p==='name'){const u=v('#ac-nm-user');if(!/^[A-Za-z0-9_.-]{3,24}$/.test(u)){acMsg('El usuario debe tener de 3 a 24 letras, números, punto, guion o guion bajo');return;}
       const {data:free}=await SB.rpc('usuario_libre',{u});if(free===false){acMsg('Ese nombre de usuario ya está cogido');return;}
       const {error}=await SB.from('perfiles').insert({user_id:SB_USER.id,usuario:u});if(error)throw error;SB_NAME=u;renderAcct();acPane('me');acMsg('Listo, ya tienes tu cuenta',true);}
-    if(p==='pw'){const a=$('#ac-pw1').value;if(a.length<8){acMsg('La contraseña necesita al menos 8 caracteres');return;}if(a!==$('#ac-pw2').value){acMsg('Las dos contraseñas no coinciden');return;}
-      const {error}=await SB.auth.updateUser({password:a,data:{pw_set:true}});if(error)throw error;$('#ac-pw1').value=$('#ac-pw2').value='';acPane('me');acMsg('Contraseña guardada',true);}
   }catch(err){acMsg(acErr(err));}finally{if(btn)btn.disabled=false;}
 });
 async function acAct(act,b){
@@ -2555,8 +2507,6 @@ async function acAct(act,b){
     case 'acdiscord':{try{sessionStorage.setItem('oauth-hash',location.hash);}catch{}
       const {error}=await SB.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});if(error)acMsg(acErr(error));break;}
     case 'acclose':acClose();break;
-    case 'acgo':acPane(b.dataset.to);break;
-    case 'acresend':{const {error}=acMode==='recovery'?await SB.auth.resetPasswordForEmail(acEmail):await SB.auth.resend({type:'signup',email:acEmail});acMsg(error?acErr(error):'Código reenviado',!error);break;}
     case 'acsync':await syncPush(true);break;
     case 'acout':await syncPush();await SB.auth.signOut();acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
   }
