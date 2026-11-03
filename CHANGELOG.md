@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.19.1] - 2026-11-03
+### Añadido
+- «Entrar con Discord» (OAuth con PKCE). La primera vez se pide el nombre de usuario.
+- Política `crear mi perfil` en `supabase/schema.sql`.
+
 ## [1.19.0] - 2026-11-03
 ### Añadido
 - Cuentas con Supabase (solo en la versión web): registro con usuario y correo, código de 6 dígitos por email, elección de contraseña y recuperación con código.

@@ -133,3 +133,7 @@ language sql stable security definer set search_path = '' as $$
 $$;
 grant execute on function public.usuario_libre(text) to anon, authenticated;
 create unique index if not exists perfiles_usuario_ci on public.perfiles (lower(usuario));
+
+-- Quien entra con Discord elige su nombre de usuario la primera vez (no tiene «usuario» en el registro)
+drop policy if exists "crear mi perfil" on public.perfiles;
+create policy "crear mi perfil" on public.perfiles for insert to authenticated with check (user_id = (select auth.uid()));

@@ -340,6 +340,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .acpane[hidden]{display:none}
 .aclinks{margin:0;font-size:13px;color:var(--muted)}
 .aclink{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
+.btn.discord{background:#5865f2;border-color:#5865f2;color:#fff;justify-content:center;gap:8px;display:inline-flex;align-items:center}
+.acor{margin:0;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.acor::before,.acor::after{content:"";flex:1;border-top:1px solid var(--line)}
 .acmsg{margin:0;font-size:13px;min-height:1em;color:#e07a5f}
 .acmsg.ok{color:var(--muted)}
 .accode{font-family:var(--f-num);font-size:22px;letter-spacing:6px;text-align:center}
@@ -783,7 +786,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.19 <span>3 nov 2026</span></h3><ul>
-      <li><b>Cuentas</b> (en la versión web): regístrate con usuario y correo, confirma con el código de 6 dígitos que te llega y elige tu contraseña. «¿Olvidaste la contraseña?» envía otro código para poner una nueva.</li>
+      <li><b>Cuentas</b> (en la versión web): entra con <b>Discord</b> o regístrate con usuario y correo, confirma con el código de 6 dígitos que te llega y elige tu contraseña. «¿Olvidaste la contraseña?» envía otro código para poner una nueva.</li>
       <li>Con la sesión iniciada, personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo. Tus copias de los manuales siguen siendo solo tuyas.</li>
       <li><b>Catálogo de la comunidad</b> en 📦 Módulos: publica tus módulos homebrew (con autor y licencia), añade los de otros con un clic, actualízalos cuando haya versión nueva y denuncia lo que no sea legítimo.</li></ul></li>
     <li><h3>v1.18 <span>3 nov 2026</span></h3><ul>
@@ -1110,12 +1113,16 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <div class="mhead"><h2 id="ac-h">Tu cuenta</h2><button class="btn ghost" data-act="acclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody acbody">
       <form class="acpane" data-pane="in">
+        <button type="button" class="btn discord" data-act="acdiscord"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a12.9 12.9 0 0 1-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Entrar con Discord</button>
+        <p class="acor"><span>o con tu correo</span></p>
         <label class="f">Correo<input id="ac-in-mail" type="email" autocomplete="email" required></label>
         <label class="f">Contraseña<input id="ac-in-pass" type="password" autocomplete="current-password" required></label>
         <button class="btn primary">Entrar</button>
         <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="up">Crear una cuenta</button> · <button type="button" class="aclink" data-act="acgo" data-to="forgot">¿Olvidaste la contraseña?</button></p>
       </form>
       <form class="acpane" data-pane="up" hidden>
+        <button type="button" class="btn discord" data-act="acdiscord"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a12.9 12.9 0 0 1-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Entrar con Discord</button>
+        <p class="acor"><span>o con tu correo</span></p>
         <label class="f">Nombre de usuario<input id="ac-up-user" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_.\-]{3,24}" title="De 3 a 24 letras, números, punto, guion o guion bajo"></label>
         <label class="f">Correo<input id="ac-up-mail" type="email" autocomplete="email" required></label>
         <p class="hint" style="display:block;margin:0">Te enviaremos un código de 6 dígitos para confirmar el correo; después eliges tu contraseña. Tu nombre de usuario firma los módulos que publiques.</p>
@@ -1132,6 +1139,11 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
         <label class="f">Código<input id="ac-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="10" class="accode"></label>
         <button class="btn primary">Confirmar</button>
         <p class="aclinks"><button type="button" class="aclink" data-act="acresend">Reenviar el código</button> · <button type="button" class="aclink" data-act="acgo" data-to="in">Volver</button></p>
+      </form>
+      <form class="acpane" data-pane="name" hidden>
+        <p style="margin:0">Elige tu nombre de usuario. Es el que firma los módulos que publiques.</p>
+        <label class="f">Nombre de usuario<input id="ac-nm-user" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_.\-]{3,24}" title="De 3 a 24 letras, números, punto, guion o guion bajo"></label>
+        <button class="btn primary">Guardar</button>
       </form>
       <form class="acpane" data-pane="pw" hidden>
         <label class="f">Contraseña nueva<input id="ac-pw1" type="password" autocomplete="new-password" required minlength="8"></label>
@@ -2479,7 +2491,7 @@ const acErr=e=>(AC_ERR.find(([r])=>r.test(e?.message||''))||[])[1]||('Error: '+(
 function acMsg(t,ok){const m=$('#ac-msg');m.textContent=t||'';m.classList.toggle('ok',!!ok);}
 function acPane(p){
   acMsg('');for(const el of document.querySelectorAll('#acctmodal [data-pane]'))el.hidden=el.dataset.pane!==p;
-  $('#ac-h').textContent={in:'Entrar',up:'Crear cuenta',forgot:'Recuperar contraseña',code:'Escribe el código',pw:'Elige tu contraseña',me:'Tu cuenta'}[p];
+  $('#ac-h').textContent={in:'Entrar',up:'Crear cuenta',forgot:'Recuperar contraseña',code:'Escribe el código',name:'Tu nombre de usuario',pw:'Elige tu contraseña',me:'Tu cuenta'}[p];
   const f=document.querySelector(`#acctmodal [data-pane="${p}"] input`);if(f)setTimeout(()=>f.focus(),30);
   renderAcct();
 }
@@ -2493,7 +2505,8 @@ const acStatus=t=>{$('#ac-sync').textContent=t;};
 async function sbInit(){
   if(window.claude)return;
   try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
-  SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{detectSessionInUrl:false}});
+  SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true}});
+  if(new URLSearchParams(location.search).has('error_description')){const m=new URLSearchParams(location.search).get('error_description');history.replaceState(null,'',location.pathname+location.hash);toast('No se ha podido entrar: '+m);}
   renderAcct();if(location.hash==='#modulos'){renderMods();loadCatalog();}
   SB.auth.onAuthStateChange((ev,session)=>{
     const u=session?.user||null,was=SB_USER?.id;SB_USER=u;
@@ -2503,7 +2516,12 @@ async function sbInit(){
 }
 async function acSignedIn(){
   const {data}=await SB.from('perfiles').select('usuario').eq('user_id',SB_USER.id).maybeSingle();
-  SB_NAME=data?.usuario||SB_USER.user_metadata?.usuario||SB_USER.email.split('@')[0];
+  SB_NAME=data?.usuario||'';
+  if(location.search.includes('code=')){let h='';try{h=sessionStorage.getItem('oauth-hash')||'';sessionStorage.removeItem('oauth-hash');}catch{}history.replaceState(null,'',location.pathname+(h||location.hash));showView();}
+  if(!data){const meta=SB_USER.user_metadata||{},sug=String(meta.usuario||meta.custom_claims?.global_name||meta.full_name||meta.name||'').normalize('NFD').replace(/[^A-Za-z0-9_.-]/g,'').slice(0,24);
+    if(meta.usuario){const {error}=await SB.from('perfiles').insert({user_id:SB_USER.id,usuario:meta.usuario});if(!error)SB_NAME=meta.usuario;}
+    if(!SB_NAME){acOpen('name');$('#ac-nm-user').value=sug;acMsg('Bienvenido. Antes de seguir, elige tu nombre de usuario',true);}}
+  if(!SB_NAME)SB_NAME=SB_USER.email?.split('@')[0]||'';
   renderAcct();if(location.hash==='#modulos')renderMods();
   if(SB_USER.user_metadata?.pw_set===false&&($('#acctmodal').hidden||$('[data-pane="pw"]').hidden)){acOpen('pw');acMsg('Elige tu contraseña para terminar el registro',true);}
   await syncPull();
@@ -2524,6 +2542,9 @@ $('#acctmodal').addEventListener('submit',async e=>{
       acMode='recovery';acEmail=em;acPane('code');$('#ac-codemsg').textContent=`Si ${em} tiene cuenta, te hemos enviado un código.`;}
     if(p==='code'){const {error}=await SB.auth.verifyOtp({email:acEmail,token:v('#ac-code').replace(/\s/g,''),type:acMode==='recovery'?'recovery':'signup'});if(error)throw error;
       $('#ac-code').value='';acPane('pw');acMsg(acMode==='recovery'?'Código correcto. Elige tu contraseña nueva':'Correo confirmado. Elige tu contraseña',true);}
+    if(p==='name'){const u=v('#ac-nm-user');if(!/^[A-Za-z0-9_.-]{3,24}$/.test(u)){acMsg('El usuario debe tener de 3 a 24 letras, números, punto, guion o guion bajo');return;}
+      const {data:free}=await SB.rpc('usuario_libre',{u});if(free===false){acMsg('Ese nombre de usuario ya está cogido');return;}
+      const {error}=await SB.from('perfiles').insert({user_id:SB_USER.id,usuario:u});if(error)throw error;SB_NAME=u;renderAcct();acPane('me');acMsg('Listo, ya tienes tu cuenta',true);}
     if(p==='pw'){const a=$('#ac-pw1').value;if(a.length<8){acMsg('La contraseña necesita al menos 8 caracteres');return;}if(a!==$('#ac-pw2').value){acMsg('Las dos contraseñas no coinciden');return;}
       const {error}=await SB.auth.updateUser({password:a,data:{pw_set:true}});if(error)throw error;$('#ac-pw1').value=$('#ac-pw2').value='';acPane('me');acMsg('Contraseña guardada',true);}
   }catch(err){acMsg(acErr(err));}finally{if(btn)btn.disabled=false;}
@@ -2531,6 +2552,8 @@ $('#acctmodal').addEventListener('submit',async e=>{
 async function acAct(act,b){
   switch(act){
     case 'acopen':acOpen();break;
+    case 'acdiscord':{try{sessionStorage.setItem('oauth-hash',location.hash);}catch{}
+      const {error}=await SB.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});if(error)acMsg(acErr(error));break;}
     case 'acclose':acClose();break;
     case 'acgo':acPane(b.dataset.to);break;
     case 'acresend':{const {error}=acMode==='recovery'?await SB.auth.resetPasswordForEmail(acEmail):await SB.auth.resend({type:'signup',email:acEmail});acMsg(error?acErr(error):'Código reenviado',!error);break;}
