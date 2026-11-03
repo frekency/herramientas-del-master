@@ -334,6 +334,15 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .tbfill>summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .tbfill-b{display:grid;gap:8px;margin-top:8px;max-width:520px}
 .tbfill textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px;color:var(--fg);font-family:var(--f-num);font-size:12.5px}
+.pagenav .acct{margin-left:10px}
+.acbody{display:grid;gap:10px}
+.acpane{display:grid;gap:10px}
+.acpane[hidden]{display:none}
+.aclinks{margin:0;font-size:13px;color:var(--muted)}
+.aclink{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
+.acmsg{margin:0;font-size:13px;min-height:1em;color:#e07a5f}
+.acmsg.ok{color:var(--muted)}
+.accode{font-family:var(--f-num);font-size:22px;letter-spacing:6px;text-align:center}
 .modline{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .modline a,.empty a,.mdbanner a{color:inherit;font-weight:600}
 .mdh{font-family:var(--f-display);font-size:18px;margin:22px 0 8px}
@@ -654,7 +663,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.18</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#tablas">🎲 Tablas</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.19</a><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -678,7 +687,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 
 <section class="vpage" id="view-modulos" hidden>
   <div class="vhead"><h2>Módulos</h2><span class="pcsub" id="md-count"></span></div>
-  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas y, pronto, objetos, clases, especies, dotes y trasfondos. <b>Nada viene activado</b>: elige lo que quieras usar. Por ahora se guardan en este navegador; cuando haya cuentas se guardarán en la tuya.</p>
+  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas y, pronto, objetos, clases, especies, dotes y trasfondos. <b>Nada viene activado</b>: elige lo que quieras usar. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
   <h3 class="mdh">Oficiales libres</h3>
   <div class="mdgrid" id="md-free"></div>
   <h3 class="mdh">Oficiales · trae tu copia</h3>
@@ -691,6 +700,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <form id="md-urlform" class="inline"><input id="md-url" type="url" placeholder="o pega un enlace a un módulo (.json)" aria-label="Enlace al módulo"><button class="btn">Importar</button></form>
   </div>
   <div class="mdgrid" id="md-hb"></div>
+  <h3 class="mdh">Catálogo de la comunidad</h3>
+  <p class="hint" style="display:block;max-width:760px">Módulos homebrew publicados por otros usuarios, con su autor y su licencia. Añádelos a tus módulos con un clic. Solo se admite contenido propio o con licencia abierta: si ves un manual oficial, denúncialo.</p>
+  <div id="md-cat"><div class="inline" id="cat-tools"><input id="cat-q" type="search" placeholder="Buscar por nombre, autor o descripción" aria-label="Buscar en el catálogo" style="flex:1 1 260px;max-width:420px"></div>
+    <p class="hint" id="cat-msg" style="display:block"></p><div class="mdgrid" id="cat-grid"></div></div>
   <details class="mdexp" id="md-exp">
     <summary>Crear un módulo con tu contenido</summary>
     <div class="mdexp-b">
@@ -704,7 +717,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
       </div>
       <div class="mxpick" id="mx-pick"></div>
       <label class="chk"><input type="checkbox" id="mx-own"> El contenido es mío o tiene licencia abierta</label>
-      <div class="inline"><button type="button" class="btn primary" data-act="mdexport">Descargar módulo (.json)</button></div>
+      <div class="inline"><button type="button" class="btn primary" data-act="mdexport">Descargar módulo (.json)</button><button type="button" class="btn" data-act="catpub" id="mx-pub" hidden>Publicar en el catálogo</button></div>
     </div>
   </details>
       <details class="bkfmt">
@@ -769,6 +782,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.19 <span>3 nov 2026</span></h3><ul>
+      <li><b>Cuentas</b> (en la versión web): regístrate con usuario y correo, confirma con el código de 6 dígitos que te llega y elige tu contraseña. «¿Olvidaste la contraseña?» envía otro código para poner una nueva.</li>
+      <li>Con la sesión iniciada, personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo. Tus copias de los manuales siguen siendo solo tuyas.</li>
+      <li><b>Catálogo de la comunidad</b> en 📦 Módulos: publica tus módulos homebrew (con autor y licencia), añade los de otros con un clic, actualízalos cuando haya versión nueva y denuncia lo que no sea legítimo.</li></ul></li>
     <li><h3>v1.18 <span>3 nov 2026</span></h3><ul>
       <li>Nueva página <b>📦 Módulos</b>: el contenido llega por módulos que cada uno activa. <b>Nada viene activado de serie</b>; si ya usabas la herramienta, el SRD sigue activado.</li>
       <li>Tres apartados: oficiales libres (SRD 5.2.1), oficiales «trae tu copia» (Manual del Jugador, Guía del Máster, Manual de Monstruos, Xanathar, Tasha: subes tu archivo y queda asociado al libro) y homebrew.</li>
@@ -1088,6 +1105,50 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 <datalist id="spells-dl"></datalist>
 
 <!-- Copias -->
+<div class="modal" id="acctmodal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="ac-h" style="width:min(440px,100%)">
+    <div class="mhead"><h2 id="ac-h">Tu cuenta</h2><button class="btn ghost" data-act="acclose" aria-label="Cerrar">✕</button></div>
+    <div class="mbody acbody">
+      <form class="acpane" data-pane="in">
+        <label class="f">Correo<input id="ac-in-mail" type="email" autocomplete="email" required></label>
+        <label class="f">Contraseña<input id="ac-in-pass" type="password" autocomplete="current-password" required></label>
+        <button class="btn primary">Entrar</button>
+        <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="up">Crear una cuenta</button> · <button type="button" class="aclink" data-act="acgo" data-to="forgot">¿Olvidaste la contraseña?</button></p>
+      </form>
+      <form class="acpane" data-pane="up" hidden>
+        <label class="f">Nombre de usuario<input id="ac-up-user" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_.\-]{3,24}" title="De 3 a 24 letras, números, punto, guion o guion bajo"></label>
+        <label class="f">Correo<input id="ac-up-mail" type="email" autocomplete="email" required></label>
+        <p class="hint" style="display:block;margin:0">Te enviaremos un código de 6 dígitos para confirmar el correo; después eliges tu contraseña. Tu nombre de usuario firma los módulos que publiques.</p>
+        <button class="btn primary">Crear cuenta</button>
+        <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="in">Ya tengo cuenta</button></p>
+      </form>
+      <form class="acpane" data-pane="forgot" hidden>
+        <label class="f">Correo de tu cuenta<input id="ac-fg-mail" type="email" autocomplete="email" required></label>
+        <button class="btn primary">Enviarme un código</button>
+        <p class="aclinks"><button type="button" class="aclink" data-act="acgo" data-to="in">Volver</button></p>
+      </form>
+      <form class="acpane" data-pane="code" hidden>
+        <p id="ac-codemsg" style="margin:0"></p>
+        <label class="f">Código<input id="ac-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="10" class="accode"></label>
+        <button class="btn primary">Confirmar</button>
+        <p class="aclinks"><button type="button" class="aclink" data-act="acresend">Reenviar el código</button> · <button type="button" class="aclink" data-act="acgo" data-to="in">Volver</button></p>
+      </form>
+      <form class="acpane" data-pane="pw" hidden>
+        <label class="f">Contraseña nueva<input id="ac-pw1" type="password" autocomplete="new-password" required minlength="8"></label>
+        <label class="f">Repítela<input id="ac-pw2" type="password" autocomplete="new-password" required minlength="8"></label>
+        <button class="btn primary">Guardar contraseña</button>
+      </form>
+      <div class="acpane" data-pane="me" hidden>
+        <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub" id="ac-mail"></span></p>
+        <p class="pcsub" id="ac-sync" style="margin:0"></p>
+        <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
+        <div class="inline"><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn" data-act="acgo" data-to="pw">Cambiar contraseña</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
+      </div>
+      <p class="acmsg" id="ac-msg" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="iomodal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="io-h" style="width:min(640px,100%)">
     <div class="mhead"><h2 id="io-h">Copias de seguridad</h2><button class="btn ghost" data-act="closeio" aria-label="Cerrar">✕</button></div>
@@ -1518,8 +1579,8 @@ function renderBest(){
     </div>${sbHTML(m,null)}`:'<div class="empty">Elige una criatura de la lista para ver su ficha.<br><span class="hint">Fichas del SRD 5.2.1 oficial en español. También puedes buscar por el nombre en inglés.</span></div>';
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
-function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
-function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal'].some(id=>!$(id).hidden));}
+function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
+function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
   commit(()=>{
@@ -1833,7 +1894,8 @@ function importModule(text,fileName,ref=''){
   const add=parseModule(text,fileName,ref),M=mods();
   for(const md of add){const i=M.list.findIndex(x=>x.id===md.id);if(i>=0)M.list[i]=md;else M.list.push(md);}
   saveMods();refreshMods();render();renderMods();
-  toast(add.map(md=>`«${md.n}» añadido y activado (${modCounts(md)||'vacío'})`).join(' · '));
+  setTimeout(()=>toast(add.map(md=>`«${md.n}» añadido y activado (${modCounts(md)||'vacío'})`).join(' · ')),0);
+  return add;
 }
 const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
 let PARTY=lsGet(PKEY), PRESETS=lsGet(EKEY), SPELLS={}, SPELL_LIST=[];
@@ -2208,6 +2270,15 @@ $('#tb-main').addEventListener('keydown',e=>{
   const nx=$(`[data-tbc="${el.dataset.tbc}"][data-r="${+el.dataset.r+(e.shiftKey?-1:1)}"]`);if(nx){nx.focus();nx.select();}
 });
 let mdRef='';
+// Datos del formulario «Crear un módulo con tu contenido»; null (y un aviso) si falta algo
+function buildExport(){
+  const n=$('#mx-n').value.trim();if(!n){toast('Ponle un nombre al módulo');$('#mx-n').focus();return null;}
+  if(!$('#mx-own').checked){toast('Marca la casilla: solo se pueden compartir contenidos propios o con licencia abierta');return null;}
+  const sel=k=>[...document.querySelectorAll(`[data-mx="${k}"]:checked`)].map(x=>+x.value);
+  const criaturas=sel('cr').map(i=>{const{id:_,src:__,...m}=MY[i];return m;}),tablas=sel('tb').map(i=>tableToMod(TABLES[i]));
+  if(!criaturas.length&&!tablas.length){toast('Elige al menos una criatura o una tabla');return null;}
+  return {modulo:n,abrev:$('#mx-ab').value.trim()||modAbbr(n),autor:$('#mx-autor').value.trim()||SB_NAME,version:$('#mx-ver').value.trim()||'1.0',licencia:$('#mx-lic').value,descripcion:$('#mx-desc').value.trim(),criaturas,tablas};
+}
 // Dentro de claude.ai las descargas pasan por el visor (capacidad downloads); fuera, un enlace normal.
 let DL=null;window.claude?.use?.('downloads').then(d=>{DL=d;}).catch(()=>{});
 async function saveFile(name,text){
@@ -2217,12 +2288,13 @@ async function saveFile(name,text){
 function mdCard(o,md,kind){
   const on=kind==='free'?modOn(o.id):!!md?.on,cnt=kind==='free'?(o.id==='srd521'?[SRD_ALL.length?`${SRD_ALL.length} criaturas`:'',SRD_SPELLS.length?`${SRD_SPELLS.length} conjuros`:''].filter(Boolean).join(' · ')||'Cargando…':''):md?modCounts(md):'';
   const later=md?MOD_TYPES.filter(([k])=>MOD_LATER.has(k)&&(md[k]||[]).length).length:0;
-  const meta=[o.year,o.lic||md?.lic,md?.autor&&`por ${md.autor}`,md?.version&&`v${md.version}`].filter(Boolean).join(' · ');
+  const meta=[o.year,o.lic||md?.lic,md?.autor&&`por ${md.autor}`,md?.version&&`v${md.version}`,md?.pub&&'del catálogo'].filter(Boolean).join(' · ');
   let btns='';
   if(o.soon)btns='<span class="mdst">Próximamente</span>';
   else if(kind==='byo'&&!md)btns=`<span class="mdst">No disponible</span><button type="button" class="btn sm primary" data-act="mdbyo" data-ref="${o.id}">Añadir mi copia</button>`;
   else btns=`<button type="button" class="btn sm${on?'':' primary'}" data-act="mdtoggle" data-id="${esc(o.id)}">${on?'✓ Activado · Desactivar':'Activar'}</button>`
     +(kind==='byo'?`<button type="button" class="btn sm" data-act="mdbyo" data-ref="${o.id}">Actualizar copia</button>`:'')
+    +(kind==='hb'&&SB_USER&&!md.pub?`<button type="button" class="btn sm" data-act="catpubmd" data-id="${esc(o.id)}">Publicar</button>`:'')
     +(kind!=='free'?`<button type="button" class="btn sm danger" data-act="mddel" data-id="${esc(o.id)}" data-confirm>Quitar</button>`:'');
   return `<div class="mdcard${on?' on':''}${o.soon?' soon':''}"><div class="mdt">${esc(o.n)} <span class="tag">${esc(o.ab||md?.ab||'')}</span></div>
     ${meta?`<p class="mdc">${esc(meta)}</p>`:''}${(o.desc||md?.desc)?`<p>${esc(o.desc||md.desc)}</p>`:''}
@@ -2237,6 +2309,7 @@ function renderMods(){
   const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;
   $('#md-count').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';
   const pick=(title,k,list,lab)=>`<fieldset><legend>${title} (${list.length})</legend>${list.length?list.map((x,i)=>`<label><input type="checkbox" data-mx="${k}" value="${i}" checked> ${esc(lab(x))}</label>`).join(''):'<span class="pcsub">No tienes</span>'}</fieldset>`;
+  if($('#mx-pub'))$('#mx-pub').hidden=!SB;renderCatalog();
   $('#mx-pick').innerHTML=pick('Mis criaturas','cr',MY,m=>`${m.n} (VD ${m.cr??'–'})`)+pick('Mis tablas','tb',TABLES,tb=>`${tb.n} (d${tb.rows})`);
 }
 function mdAct(act,b){
@@ -2247,17 +2320,14 @@ function mdAct(act,b){
       const nm=OFFICIAL_FREE.find(o=>o.id===id)?.n||M.list.find(x=>x.id===id)?.n;toast(`«${nm}» ${modOn(id)?'activado':'desactivado'}`);break;}
     case 'mdbyo':mdRef=b.dataset.ref;$('#md-byofile').click();break;
     case 'mddel':{const m=M.list.find(x=>x.id===id);M.list=M.list.filter(x=>x.id!==id);saveMods();refreshMods();render();renderMods();if(m)toast(`«${m.n}» quitado`);break;}
-    case 'mdexport':{const n=$('#mx-n').value.trim();if(!n){toast('Ponle un nombre al módulo');$('#mx-n').focus();return;}
-      if(!$('#mx-own').checked){toast('Marca la casilla: solo se pueden compartir contenidos propios o con licencia abierta');return;}
-      const sel=k=>[...document.querySelectorAll(`[data-mx="${k}"]:checked`)].map(x=>+x.value);
-      const criaturas=sel('cr').map(i=>{const{id:_,src:__,...m}=MY[i];return m;}),tablas=sel('tb').map(i=>tableToMod(TABLES[i]));
-      if(!criaturas.length&&!tablas.length){toast('Elige al menos una criatura o una tabla');return;}
-      const out={modulo:n,abrev:$('#mx-ab').value.trim()||modAbbr(n),autor:$('#mx-autor').value.trim(),version:$('#mx-ver').value.trim(),licencia:$('#mx-lic').value,descripcion:$('#mx-desc').value.trim(),criaturas,tablas};
+    case 'mdexport':{const out=buildExport();if(!out)return;const n=out.modulo,{criaturas,tablas}=out;
       saveFile(modSlug(n).slice(3)+'.json',JSON.stringify(out,null,2)).then(ok=>{if(ok)toast(`Módulo «${n}» descargado: ${criaturas.length} criaturas y ${tablas.length} tablas`);});break;}
   }
 }
 function extraAct(act,b,c,e){
   if(act.startsWith('md')){mdAct(act,b);return;}
+  if(act.startsWith('cat')){catAct(act,b);return;}
+  if(act.startsWith('ac')){acAct(act,b);return;}
   if(act.startsWith('tb')){tbAct(act,b);return;}
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
@@ -2306,7 +2376,7 @@ function showView(){
   if(v==='criaturas')renderCreatureView();
   if(v==='conjuros'){fillSpellFilters();renderSpellView();}
   if(v==='tablas')renderTables();
-  if(v2==='modulos')renderMods();
+  if(v2==='modulos'){renderMods();loadCatalog();}
   if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
 }
@@ -2387,6 +2457,185 @@ $('#vs-sch').innerHTML='<option value="">Cualquier escuela</option>'+Object.entr
 addEventListener('hashchange',showView);
 
 window.claude?.hot?.snapshot?.(()=>state);
+// Estado de la cuenta: declarado antes de boot() porque las vistas lo consultan al pintar
+let SB=null,SB_USER=null,SB_NAME='',acMode='',acEmail='',syncT=null,syncBusy=false,lastRaw={},CAT=null;
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data);
+
+/* ---------- cuentas y sincronización (Supabase) ---------- */
+// Solo en la web: dentro del visor de claude.ai no hay conexión con Supabase. La clave publicable puede ir en la página:
+// lo que protege los datos son las reglas de la base de datos (cada uno solo lee y escribe lo suyo).
+const SB_URL='https://uigkelicqmhiqaokndvo.supabase.co',SB_KEY='sb_publishable_yaFkSGsgTGVAY3dW-7vKRw_-_4dfata';
+const SYNC_KEYS={tracker:KEY,bestiario:BKEY,grupo:PKEY,encuentros:EKEY,tablas:TKEY,modulos:MKEY},SYNC_META='combat-sync-v1';
+const LICS=['CC-BY-4.0','CC-BY-SA-4.0','CC0','Todos los derechos reservados'];
+const canon=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(q=>[q,x[q]])):x);
+const hsh=s=>{let x=5381;for(let i=0;i<s.length;i++)x=(Math.imul(x,33)^s.charCodeAt(i))>>>0;return x.toString(36)+'.'+s.length;};
+const lsRaw=k=>{try{return localStorage.getItem(k);}catch{return null;}};
+const tmpPass=()=>Array.from(crypto.getRandomValues(new Uint8Array(18)),x=>x.toString(16).padStart(2,'0')).join('')+'Aa1!';
+const AC_ERR=[[/invalid login/i,'Correo o contraseña incorrectos'],[/already registered|already exists/i,'Ese correo ya tiene cuenta: entra o recupera la contraseña'],
+  [/not confirmed/i,'Aún no has confirmado el correo: usa «¿Olvidaste la contraseña?» para recibir un código'],[/expired|invalid.*(otp|token)|otp.*(invalid|expired)/i,'El código no es válido o ha caducado: pide otro'],
+  [/rate limit|too many|security purposes/i,'Demasiados intentos seguidos; espera un minuto y vuelve a probar'],[/should be different/i,'La contraseña nueva tiene que ser distinta de la anterior'],
+  [/password/i,'La contraseña no es válida: usa al menos 8 caracteres'],[/sending.*email|smtp|mail/i,'No se ha podido enviar el correo; inténtalo más tarde'],[/fetch|network/i,'No hay conexión con el servidor']];
+const acErr=e=>(AC_ERR.find(([r])=>r.test(e?.message||''))||[])[1]||('Error: '+(e?.message||e));
+function acMsg(t,ok){const m=$('#ac-msg');m.textContent=t||'';m.classList.toggle('ok',!!ok);}
+function acPane(p){
+  acMsg('');for(const el of document.querySelectorAll('#acctmodal [data-pane]'))el.hidden=el.dataset.pane!==p;
+  $('#ac-h').textContent={in:'Entrar',up:'Crear cuenta',forgot:'Recuperar contraseña',code:'Escribe el código',pw:'Elige tu contraseña',me:'Tu cuenta'}[p];
+  const f=document.querySelector(`#acctmodal [data-pane="${p}"] input`);if(f)setTimeout(()=>f.focus(),30);
+  renderAcct();
+}
+function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));}
+function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
+function renderAcct(){
+  const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
+  $('#ac-user').textContent=SB_NAME||'—';$('#ac-mail').textContent=SB_USER?.email||'';
+}
+const acStatus=t=>{$('#ac-sync').textContent=t;};
+async function sbInit(){
+  if(window.claude)return;
+  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
+  SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{detectSessionInUrl:false}});
+  renderAcct();if(location.hash==='#modulos'){renderMods();loadCatalog();}
+  SB.auth.onAuthStateChange((ev,session)=>{
+    const u=session?.user||null,was=SB_USER?.id;SB_USER=u;
+    if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(location.hash==='#modulos')renderMods();return;}
+    if(u.id!==was)setTimeout(acSignedIn,0);   // fuera del callback, como pide supabase-js
+  });
+}
+async function acSignedIn(){
+  const {data}=await SB.from('perfiles').select('usuario').eq('user_id',SB_USER.id).maybeSingle();
+  SB_NAME=data?.usuario||SB_USER.user_metadata?.usuario||SB_USER.email.split('@')[0];
+  renderAcct();if(location.hash==='#modulos')renderMods();
+  if(SB_USER.user_metadata?.pw_set===false&&($('#acctmodal').hidden||$('[data-pane="pw"]').hidden)){acOpen('pw');acMsg('Elige tu contraseña para terminar el registro',true);}
+  await syncPull();
+}
+$('#acctmodal').addEventListener('submit',async e=>{
+  e.preventDefault();const p=e.target.dataset.pane,v=id=>$(id).value.trim(),btn=e.target.querySelector('button:not([type=button])');
+  if(btn)btn.disabled=true;
+  try{
+    if(p==='in'){const {error}=await SB.auth.signInWithPassword({email:v('#ac-in-mail'),password:$('#ac-in-pass').value});if(error)throw error;$('#ac-in-pass').value='';acClose();toast('Sesión iniciada');}
+    if(p==='up'){const u=v('#ac-up-user'),em=v('#ac-up-mail');
+      if(!/^[A-Za-z0-9_.-]{3,24}$/.test(u)){acMsg('El usuario debe tener de 3 a 24 letras, números, punto, guion o guion bajo');return;}
+      const {data:free}=await SB.rpc('usuario_libre',{u});if(free===false){acMsg('Ese nombre de usuario ya está cogido');return;}
+      const {data,error}=await SB.auth.signUp({email:em,password:tmpPass(),options:{data:{usuario:u,pw_set:false}}});if(error)throw error;
+      if(data.session){acPane('pw');acMsg('Cuenta creada. Elige tu contraseña',true);return;}
+      if(data.user&&!data.user.identities?.length){acMsg('Ese correo ya tiene cuenta: entra o recupera la contraseña');return;}
+      acMode='signup';acEmail=em;acPane('code');$('#ac-codemsg').textContent=`Te hemos enviado un código a ${em}. Si no llega en un par de minutos, mira en spam.`;}
+    if(p==='forgot'){const em=v('#ac-fg-mail');const {error}=await SB.auth.resetPasswordForEmail(em);if(error)throw error;
+      acMode='recovery';acEmail=em;acPane('code');$('#ac-codemsg').textContent=`Si ${em} tiene cuenta, te hemos enviado un código.`;}
+    if(p==='code'){const {error}=await SB.auth.verifyOtp({email:acEmail,token:v('#ac-code').replace(/\s/g,''),type:acMode==='recovery'?'recovery':'signup'});if(error)throw error;
+      $('#ac-code').value='';acPane('pw');acMsg(acMode==='recovery'?'Código correcto. Elige tu contraseña nueva':'Correo confirmado. Elige tu contraseña',true);}
+    if(p==='pw'){const a=$('#ac-pw1').value;if(a.length<8){acMsg('La contraseña necesita al menos 8 caracteres');return;}if(a!==$('#ac-pw2').value){acMsg('Las dos contraseñas no coinciden');return;}
+      const {error}=await SB.auth.updateUser({password:a,data:{pw_set:true}});if(error)throw error;$('#ac-pw1').value=$('#ac-pw2').value='';acPane('me');acMsg('Contraseña guardada',true);}
+  }catch(err){acMsg(acErr(err));}finally{if(btn)btn.disabled=false;}
+});
+async function acAct(act,b){
+  switch(act){
+    case 'acopen':acOpen();break;
+    case 'acclose':acClose();break;
+    case 'acgo':acPane(b.dataset.to);break;
+    case 'acresend':{const {error}=acMode==='recovery'?await SB.auth.resetPasswordForEmail(acEmail):await SB.auth.resend({type:'signup',email:acEmail});acMsg(error?acErr(error):'Código reenviado',!error);break;}
+    case 'acsync':await syncPush(true);break;
+    case 'acout':await syncPush();await SB.auth.signOut();acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
+  }
+}
+// Sincronización: una fila por clave de localStorage. Se compara por contenido (no por texto: la base de datos reordena las claves).
+async function syncPull(){
+  acStatus('Sincronizando…');
+  const {data,error}=await SB.from('datos_usuario').select('clave,valor');
+  if(error){acStatus('No se ha podido leer tu cuenta: '+error.message);return;}
+  const meta=lsGet(SYNC_META)||{},same=meta.user===SB_USER.id;meta.user=SB_USER.id;if(!same||!meta.h)meta.h={};
+  if(!data.length){lsSet(SYNC_META,meta);await syncPush(true);startSync();toast('Tus datos de este navegador se han guardado en tu cuenta');return;}
+  const srv=Object.fromEntries(data.map(r=>[r.clave,r.valor]));
+  const preferLocal=!same&&Object.values(SYNC_KEYS).some(k=>lsRaw(k))&&!confirm('Tu cuenta ya tiene datos guardados.\n\nAceptar: usar en este navegador los de tu cuenta.\nCancelar: guardar en tu cuenta los de este navegador.');
+  let changed=false;
+  for(const[cl,k] of Object.entries(SYNC_KEYS)){
+    const raw=lsRaw(k);let loc=null;try{loc=raw==null?null:JSON.parse(raw);}catch{}
+    const hl=loc==null?null:hsh(canon(loc)),hs=cl in srv?hsh(canon(srv[cl])):null;
+    if(hl===hs){meta.h[cl]=hs;continue;}
+    if(hs===null||preferLocal||(same&&hl!==null&&hl!==meta.h[cl]&&hs===meta.h[cl]))continue;   // se sube lo de aquí
+    try{localStorage.setItem(k,JSON.stringify(srv[cl]));meta.h[cl]=hs;changed=true;}catch{}
+  }
+  lsSet(SYNC_META,meta);
+  let again=false;try{again=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}
+  if(changed&&!again){try{sessionStorage.setItem('sync-reload','1');}catch{}location.reload();return;}
+  await syncPush(preferLocal);startSync();
+}
+async function syncPush(all=false){
+  if(!SB_USER)return;const meta=lsGet(SYNC_META)||{};const rows=[],hs={};
+  for(const[cl,k] of Object.entries(SYNC_KEYS)){
+    const raw=lsRaw(k);lastRaw[cl]=raw;if(raw==null)continue;let v;try{v=JSON.parse(raw);}catch{continue;}
+    const c=hsh(canon(v));if(all||c!==meta.h?.[cl]){rows.push({user_id:SB_USER.id,clave:cl,valor:v,actualizado:new Date().toISOString()});hs[cl]=c;}
+  }
+  if(!rows.length){acStatus('Todo guardado en tu cuenta');return;}
+  acStatus('Guardando…');
+  const {error}=await SB.from('datos_usuario').upsert(rows);
+  if(error){acStatus('No se ha podido guardar en tu cuenta: '+error.message);return;}
+  const m2=lsGet(SYNC_META)||{};m2.user=SB_USER.id;m2.h={...(m2.h||{}),...hs};lsSet(SYNC_META,m2);
+  acStatus('Guardado en tu cuenta a las '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
+}
+function startSync(){
+  clearInterval(syncT);
+  syncT=setInterval(()=>{if(!SB_USER||syncBusy)return;if(Object.entries(SYNC_KEYS).some(([cl,k])=>lsRaw(k)!==lastRaw[cl])){syncBusy=true;syncPush().finally(()=>{syncBusy=false;});}},4000);
+}
+addEventListener('visibilitychange',()=>{if(document.hidden&&SB_USER&&!syncBusy)syncPush();});
+
+/* ---------- catálogo de la comunidad ---------- */
+async function loadCatalog(){
+  if(!SB)return;
+  const {data,error}=await SB.from('modulos_publicos').select('id,slug,nombre,abrev,autor,autor_id,version,licencia,descripcion,resumen,descargas,actualizado').order('descargas',{ascending:false}).limit(200);
+  CAT=error?{error:error.message}:data;renderCatalog();
+}
+function renderCatalog(){
+  const msg=$('#cat-msg'),grid=$('#cat-grid');if(!msg)return;
+  $('#cat-tools').hidden=!SB||!Array.isArray(CAT)||!CAT.length;
+  if(!SB){msg.textContent='El catálogo y las cuentas funcionan en la versión web de la herramienta.';grid.innerHTML='';return;}
+  if(!CAT){msg.textContent='Cargando el catálogo…';grid.innerHTML='';return;}
+  if(CAT.error){msg.textContent='No se ha podido cargar el catálogo ('+CAT.error+').';grid.innerHTML='';return;}
+  const q=fold($('#cat-q').value),list=CAT.filter(c=>!q||fold(`${c.nombre} ${c.autor} ${c.descripcion}`).includes(q));
+  msg.textContent=CAT.length?(list.length?'':'Nada coincide con la búsqueda.'):'Aún no hay módulos publicados. Crea uno con tu contenido y publícalo.';
+  grid.innerHTML=list.map(c=>{
+    const mine=SB_USER&&c.autor_id===SB_USER.id,have=mods().list.find(m=>m.pub===c.id);
+    const cnt=Object.entries(c.resumen||{}).filter(([,n])=>n).map(([k,n])=>`${n} ${n===1?(MOD_TYPES.find(x=>x[0]===k)||[k,k])[1]:k}`).join(' · ');
+    const add=have?(have.pubVer!==c.version?`<button type="button" class="btn sm primary" data-act="catadd" data-id="${c.id}">Actualizar a v${esc(c.version)}</button>`:'<span class="mdst">✓ En tus módulos</span>')
+      :`<button type="button" class="btn sm primary" data-act="catadd" data-id="${c.id}">Añadir a mis módulos</button>`;
+    return `<div class="mdcard"><div class="mdt">${esc(c.nombre)} <span class="tag">${esc(c.abrev)}</span></div>
+      <p class="mdc">${esc([c.autor&&'por '+c.autor,'v'+c.version,c.licencia,`${c.descargas} descarga${c.descargas===1?'':'s'}`].filter(Boolean).join(' · '))}</p>
+      ${c.descripcion?`<p>${esc(c.descripcion)}</p>`:''}${cnt?`<p class="mdc">${esc(cnt)}</p>`:''}
+      <div class="inline">${add}${mine?`<button type="button" class="btn sm danger" data-act="catdel" data-id="${c.id}" data-confirm>Retirar del catálogo</button>`:SB_USER?`<button type="button" class="btn sm ghost" data-act="catreport" data-id="${c.id}">Denunciar</button>`:''}</div></div>`;
+  }).join('');
+}
+$('#cat-q').addEventListener('input',renderCatalog);
+async function publishModule(out){
+  if(!SB_USER){acOpen('in');acMsg('Entra en tu cuenta para publicar en el catálogo',true);return;}
+  if(OFFICIAL_BYO.some(o=>fold(out.modulo).includes(o.k))){toast('Los manuales oficiales no se pueden publicar');return;}
+  if(!LICS.includes(out.licencia)){toast('Indica una licencia para publicarlo');return;}
+  const resumen=Object.fromEntries(MOD_TYPES.map(([k])=>[k,(out[k]||[]).length]).filter(([,n])=>n));
+  const row={autor_id:SB_USER.id,slug:modSlug(out.modulo).slice(3),nombre:out.modulo,abrev:String(out.abrev||'').slice(0,6),autor:out.autor||SB_NAME,version:out.version||'1.0',
+    licencia:out.licencia,descripcion:String(out.descripcion||'').slice(0,500),resumen,contenido:out};
+  const {error}=await SB.from('modulos_publicos').upsert(row,{onConflict:'autor_id,slug'});
+  if(error){toast('No se ha podido publicar: '+error.message);return;}
+  toast(`«${out.modulo}» publicado en el catálogo`);loadCatalog();
+}
+async function catAct(act,b){
+  if(!SB)return;const id=b.dataset.id;
+  switch(act){
+    case 'catadd':{b.disabled=true;const {data,error}=await SB.from('modulos_publicos').select('contenido,version').eq('id',id).single();
+      if(error){toast('No se ha podido descargar: '+error.message);b.disabled=false;return;}
+      const isNew=!mods().list.some(m=>m.pub===id),add=importModule(JSON.stringify(data.contenido),'');
+      add[0].pub=id;add[0].pubVer=data.version;saveMods();if(isNew)SB.rpc('sumar_descarga',{mid:id}).then(()=>loadCatalog());else renderCatalog();break;}
+    case 'catdel':{const {error}=await SB.from('modulos_publicos').delete().eq('id',id);toast(error?'No se ha podido retirar: '+error.message:'Módulo retirado del catálogo');loadCatalog();break;}
+    case 'catreport':{const motivo=prompt('¿Por qué lo denuncias? (por ejemplo: «copia texto del Manual del Jugador»)');if(!motivo||motivo.trim().length<3)return;
+      const {error}=await SB.from('denuncias').insert({modulo_id:id,user_id:SB_USER.id,motivo:motivo.trim().slice(0,500)});
+      toast(error?(/duplicate/i.test(error.message)?'Ya lo habías denunciado':'No se ha podido enviar: '+error.message):'Denuncia enviada. Gracias');break;}
+    case 'catpub':{const out=buildExport();if(out)publishModule(out);break;}
+    case 'catpubmd':{const md=mods().list.find(m=>m.id===id);if(!md)return;
+      if(!LICS.includes(md.lic)){toast('Este módulo no indica una licencia válida. Créalo desde «Crear un módulo con tu contenido» y publícalo desde allí');return;}
+      if(!confirm(`¿Confirmas que «${md.n}» es contenido tuyo o con licencia abierta?`))return;
+      const out={modulo:md.n,abrev:md.ab,autor:md.autor||SB_NAME,version:md.version||'1.0',licencia:md.lic,descripcion:md.desc||''};
+      for(const[k] of MOD_TYPES)if((md[k]||[]).length)out[k]=md[k];
+      publishModule(out);break;}
+  }
+}
+sbInit();
 showView();
 </script>

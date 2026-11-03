@@ -36,3 +36,12 @@ Versionado semántico. Cada cambio actualiza `VERSION`, `CHANGELOG.md`, el histo
 
 ## Licencias
 El contenido del SRD 5.2.1 se usa bajo CC-BY-4.0: «This work includes material from the System Reference Document 5.2.1 ("SRD 5.2.1") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License.»
+
+## Cuentas y catálogo (Supabase)
+
+1. En Supabase → **SQL Editor**, ejecuta `supabase/schema.sql` (se puede repetir sin problema).
+2. En **Authentication → Emails → Templates**, pega `supabase/emails/confirmar-registro.html` en «Confirm signup» y `supabase/emails/recuperar-contrasena.html` en «Reset password». Usan el código `{{ .Token }}`, sin enlaces.
+3. En **Authentication → Emails → SMTP Settings**, configura un proveedor de correo propio (el de Supabase solo envía a los miembros del proyecto).
+4. La URL y la clave publicable del proyecto están en `index.html` (`SB_URL`, `SB_KEY`). Nunca pongas ahí la clave `service_role`/secret.
+
+Para ocultar un módulo del catálogo, pon `oculto = true` en la tabla `modulos_publicos`; las denuncias llegan a la tabla `denuncias`.
