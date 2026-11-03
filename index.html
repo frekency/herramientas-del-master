@@ -81,6 +81,8 @@ h2{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.0
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .side{display:flex;flex-direction:column;gap:16px;min-width:0}
 
+.acex{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.acex h3{margin:0;font-size:15px}
 .example{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;border:1px dashed var(--accent);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px}
 .factions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .fsum{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--fc) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--fc) 40%,var(--line));font-size:13px}
@@ -726,7 +728,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.28</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.29</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -878,6 +880,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.29 <span>4 nov 2026</span></h3><ul>
+      <li>La web empieza vacía: sin combate, personajes, encuentros ni tablas de ejemplo.</li>
+      <li>Nuevo botón <b>Insertar datos de ejemplo</b> en la ventana de la cuenta (👤): añade dos personajes, un combate, un encuentro guardado y tres tablas, en tu idioma. Necesita el SRD 5.2.1 activado.</li></ul></li>
     <li><h3>v1.28 <span>4 nov 2026</span></h3><ul>
       <li>Nuevos idiomas: <b>francés, portugués, italiano y alemán</b>, en ⚙ Preferencias. La interfaz y este historial están traducidos a todos los idiomas.</li>
       <li>De momento, criaturas, conjuros y compendio se ven en inglés en esos idiomas; el SRD oficial en alemán, francés e italiano llegará pronto. En portugués no hay SRD oficial.</li></ul></li>
@@ -1259,6 +1264,11 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
         <div class="inline"><button type="button" class="btn" data-act="pfopen">⚙ Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
+      <div class="acex">
+        <h3>Datos de ejemplo</h3>
+        <p class="hint" style="display:block;margin:0">Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo. Usan criaturas y conjuros del SRD 5.2.1, así que tiene que estar activado.</p>
+        <div class="inline"><button type="button" class="btn" data-act="acexample" id="ac-exbtn">Insertar datos de ejemplo</button><span class="pcsub" id="ac-exnote"></span></div>
+      </div>
       <p class="acmsg" id="ac-msg" aria-live="polite"></p>
     </div>
   </div>
@@ -1416,28 +1426,67 @@ function searchBest(q,src='',cr=''){
   }).sort((a,b)=>{const as=a.n.toLowerCase().startsWith(q),bs=b.n.toLowerCase().startsWith(q);return (bs-as)||(!!b.id-!!a.id)||a.n.localeCompare(b.n);});
 }
 
-/* ---------- datos de ejemplo ---------- */
-function sample(){
-  const f={pj:'pj',al:'al',en:'en',cu:'cu'};
-  const c=(name,fac,init,bonus,hp,max,ac,conds=[],t=null)=>({id:uid(),name,factionId:fac,init,initBonus:bonus,hp,maxHp:max,temp:0,ac,conds,notes:'',ds:0,df:0,tpl:t,used:{},uses:{},la:0,lr:0});
+/* ---------- datos de ejemplo ----------
+   Nada se mete solo: «Insertar datos de ejemplo» (en la ventana de la cuenta) añade personajes, un combate, un encuentro
+   y tablas, si el SRD 5.2.1 está activado. Los textos pasan por T(), así que se crean en el idioma de cada cual. */
+const baseFactions=()=>[{id:'pj',name:T('Jugadores'),color:'#3d7bd9',pc:true},{id:'al',name:T('Aliados'),color:'#3fa266',pc:false},{id:'en',name:T('Enemigos'),color:'#d0453c',pc:false}];
+function emptyState(){
+  return {example:false,factions:baseFactions(),creatures:[],order:[],active:false,turnIdx:0,round:1,total:0,skipDead:true,tickDur:true,hpRoll:false,autoRecharge:true,adv:0,lastRoll:null,log:[],expanded:null};
+}
+function sample(pcs={}){
+  const c=(name,fac,init,bonus,hp,max,ac,conds=[],t=null,pcId=null)=>({id:uid(),name,factionId:fac,init,initBonus:bonus,hp,maxHp:max,temp:0,ac,conds,notes:'',ds:0,df:0,tpl:t,used:{},uses:{},la:0,lr:0,...(pcId?{pcId,tpl:'pc:'+pcId}:{})});
   const cr=[
-    c('Lyra (maga)',f.pj,19,3,18,26,12,[{key:'concentracion',rounds:null}]),
-    c('Thorin (guerrero)',f.pj,15,1,44,44,18),
-    c('Capitana Vex',f.al,14,0,52,52,18,[],'srd:Knight'),
-    c('Ogro',f.en,8,-1,41,68,11,[{key:'derribado',rounds:null}],'srd:Ogre'),
-    c('Goblin 1',f.en,17,2,10,10,15,[],'srd:Goblin Warrior'),
-    c('Goblin 2',f.en,12,2,0,10,15,[],'srd:Goblin Warrior'),
-    c('Cultista de la Llama',f.cu,11,1,9,9,12,[{key:'asustado',rounds:2}],'srd:Cultist'),
+    c(T('Lyra (maga)'),'pj',19,3,18,26,12,[{key:'concentracion',rounds:null}],null,pcs.lyra),
+    c(T('Thorin (guerrero)'),'pj',15,1,44,44,18,[],null,pcs.thorin),
+    c(T('Capitana Vex'),'al',14,0,52,52,18,[],'srd:Knight'),
+    c(T('Ogro'),'en',8,-1,41,68,11,[{key:'derribado',rounds:null}],'srd:Ogre'),
+    c(T('Goblin 1'),'en',17,2,10,10,15,[],'srd:Goblin Warrior'),
+    c(T('Goblin 2'),'en',12,2,0,10,15,[],'srd:Goblin Warrior'),
+    c(T('Cultista de la Llama'),'cu',11,1,9,9,12,[{key:'asustado',rounds:2}],'srd:Cultist'),
   ];
   cr[1].temp=5;
-  return {example:2,factions:[{id:f.pj,name:'Jugadores',color:'#3d7bd9',pc:true},{id:f.al,name:'Aliados',color:'#3fa266',pc:false},{id:f.en,name:'Enemigos',color:'#d0453c',pc:false},{id:f.cu,name:'Culto de la Llama',color:'#9a5bd0',pc:false}],
-    creatures:cr,order:[],active:false,turnIdx:0,round:1,total:0,skipDead:true,tickDur:true,hpRoll:false,autoRecharge:true,adv:0,lastRoll:null,log:[],expanded:null};
+  return {...emptyState(),example:2,factions:[...baseFactions(),{id:'cu',name:T('Culto de la Llama'),color:'#9a5bd0',pc:false}],creatures:cr};
+}
+function examplePCs(){
+  const lyra={id:uid(),n:T('Lyra (maga)'),cls:T('Maga 5'),ac:12,hp:26,cur:18,temp:0,in:3,sp:'9 m',pp:11,
+    ab:[8,16,14,18,12,10],sv:[-1,3,2,7,4,0],sk:T('Arcanos +7, Historia +7, Perspicacia +4'),
+    a:[[T('Bastón'),T('Ataque: +2, alcance 1,5 m. Acierto: 1d6 - 1 de daño contundente.')]],
+    t:[[T('Recuperación arcana (1/día)'),T('Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.')]],
+    spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[0,1],
+      list:DATA_LANG==='es'?['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']
+        :['Mage Hand','Ray of Frost','Mage Armor','Shield','Magic Missile','Misty Step','Web','Fireball']}};
+  const thorin={id:uid(),n:T('Thorin (guerrero)'),cls:T('Guerrero 5'),ac:18,hp:44,cur:44,temp:5,in:1,sp:'9 m',pp:14,
+    ab:[16,12,14,10,13,8],sv:[6,1,5,0,1,-1],sk:T('Atletismo +6, Intimidación +2, Percepción +4'),
+    a:[[T('Espada larga'),T('Ataque: +6, alcance 1,5 m. Acierto: 1d8 + 3 de daño cortante.')],[T('Arco largo'),T('Ataque: +4, alcance 45/180 m. Acierto: 1d8 + 1 de daño perforante.')]],
+    t:[[T('Ataque adicional'),T('Atacas dos veces cuando realizas la acción de Ataque.')],
+       [T('Tomar aliento (1/descanso corto)'),T('Como acción adicional recuperas 1d10 + 5 PG.')],
+       [T('Oleada de acción (1/descanso corto)'),T('Realizas una acción más en tu turno.')]]};
+  return [lyra,thorin];
+}
+const examplePreset=()=>({id:uid(),n:T('Emboscada goblin'),items:[
+  ...[1,2,3].map(i=>({tpl:'srd:Goblin Warrior',name:T(`Guerrero goblin ${i}`),fname:T('Enemigos'),fcolor:'#d0453c',maxHp:10,ac:15,initBonus:2})),
+  {tpl:'srd:Goblin Boss',name:T('Jefe goblin'),fname:T('Enemigos'),fcolor:'#d0453c',maxHp:21,ac:17,initBonus:2}]});
+function exampleTables(){
+  const t=T,ns=t('Nombre'),ap=t('Apellido'),ob=t('Objeto'),qn=t('Quién'),qh=t('Qué hace');
+  return [
+    tbMake(t('Nombres de aventureros'),10,[ns,ap],{[ns]:['Aldric','Bram','Corwin','Darian','Edric','Faelan','Garrick','Halvar','Ivo','Jareth'],[ap]:['Draven','Mornak','Velkar','Ostrel','Brannoc','Kesterly','Vael','Duskar','Harrow','Ilvane']},`{${ns}} {${ap}}`),
+    tbMake(t('Botín de bolsillo'),6,[ob],{[ob]:['{1d4} po','{2d6} pp','{3d10} pc y una llave oxidada','Un dado de hueso tallado','Una gema que vale {1d4}0 po','Un mapa a medio quemar'].map(t)},`{${ob}}`),
+    tbMake(t('Encuentro en el camino'),6,[qn,qh],{[qn]:['{1d4} bandidos','Un mercader y su mula','{1d6} lobos','Una patrulla de la guardia','Un peregrino herido','Un goblin perdido'].map(t),
+      [qh]:['bloquea el paso','pide ayuda','huye de algo peor','vigila desde los árboles','ofrece un trato','os sigue en silencio'].map(t)},`{${qn}} {${qh}}.`)];
+}
+function insertExamples(){
+  const pcs=examplePCs().filter(p=>!PARTY.some(q=>q.n===p.n));
+  for(const p of pcs){p.tyl=pcSub(p);PARTY.push(p);}saveParty();
+  const ids={lyra:PARTY.find(p=>p.n===T('Lyra (maga)'))?.id,thorin:PARTY.find(p=>p.n===T('Thorin (guerrero)'))?.id};
+  const pr=examplePreset();if(!PRESETS.some(x=>x.n===pr.n)){PRESETS.push(pr);savePresets();}
+  const tbs=exampleTables().filter(x=>!TABLES.some(y=>y.n===x.n));TABLES.push(...tbs);if(tbs.length){tbSel=tbs[0].id;saveTables();}
+  undoStack.push(JSON.stringify(state));state=sample(ids);sortInto(state);save();render();
 }
 
 let state, undoStack=[];
 function load(){
   try{const raw=localStorage.getItem(KEY); if(raw){const s=JSON.parse(raw); if(s.example!==true) return s;}}catch(e){}
-  const s=sample(); sortInto(s); return s;
+  return emptyState();
 }
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}
@@ -1624,7 +1673,7 @@ function sbHTML(m,c,{compact=false}={}){
     <span class="advsel" role="group" aria-label="Ventaja">${['Desv.','Normal','Vent.'].map((l,i)=>`<button type="button" data-act="adv" data-v="${i-1}" class="${state.adv===i-1?'on':''}">${l}</button>`).join('')}</span></div>
     <hr>
     ${line('CA',m.ac)}${m.hp!=null?`<div class="ln"><b>PG</b> ${m.hp}${m.hd?` (<button type="button" class="rl" data-roll="hp" data-ex="${esc(m.hd)}" title="${c?'Tirar los PG de esta criatura':'Tirar PG'}">${esc(m.hd)}</button>)`:''}${c&&c.maxHp!==m.hp?` · <span class="dc">esta criatura: ${c.maxHp}</span>`:''}</div>`:''}${line('Velocidad',m.sp)}
-    <div class="ln"><b>Iniciativa</b> <button type="button" class="rl" data-roll="chk" data-mod="${m.in??0}" data-lbl="iniciativa" title="${c?'Tirar y fijar la iniciativa de esta criatura':'Tirar iniciativa'}">${sgn(m.in??0)}</button>${c&&c.init!=null?` · <span class="dc">actual: ${c.init}</span>`:''}</div>
+    <div class="ln"><b>Iniciativa</b> <button type="button" class="rl" data-roll="chk" data-mod="${m.in??0}" data-lbl="iniciativa" title="${c?'Tirar y fijar la iniciativa de esta criatura':'Tirar iniciativa'}">${sgn(m.in??0)}</button>${c&&c.init!=null?` · <span class="dc">${T('actual:')} ${c.init}</span>`:''}</div>
     <div class="abil">${ab}</div>
     <hr>
     ${m.sk?`<div class="ln"><b>Habilidades</b> ${rollList(m.sk)}</div>`:''}${line('Vulnerabilidades',m.vu)}${line('Resistencias',m.re)}${line('Inmunidades',m.im)}
@@ -2257,14 +2306,8 @@ function importModule(text,fileName,ref=''){
 }
 const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
 let PARTY=lsGet(PKEY), PRESETS=lsGet(EKEY), SPELLS={}, SPELL_LIST=[];
-if(!Array.isArray(PARTY))PARTY=[{id:uid(),n:'Lyra (ejemplo)',cls:'Maga 5',ac:12,hp:27,cur:27,temp:0,in:3,sp:'9 m',pp:11,
-  ab:[8,16,14,18,12,10],sv:[-1,3,2,7,4,0],sk:'Arcanos +7, Historia +7, Perspicacia +4',
-  a:[['Bastón','Ataque: +2, alcance 1,5 m. Acierto: 1d6 - 1 de daño contundente.']],
-  t:[['Recuperación arcana (1/día)','Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.']],
-  spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[],list:['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']}}];
-if(!Array.isArray(PRESETS))PRESETS=[{id:uid(),n:'Emboscada goblin (ejemplo)',items:[
-  ...[1,2,3].map(i=>({tpl:'srd:Goblin Warrior',name:`Guerrero goblin ${i}`,fname:'Enemigos',fcolor:'#d0453c',maxHp:10,ac:15,initBonus:2})),
-  {tpl:'srd:Goblin Boss',name:'Jefe goblin',fname:'Enemigos',fcolor:'#d0453c',maxHp:21,ac:17,initBonus:2}]}];
+if(!Array.isArray(PARTY))PARTY=[];
+if(!Array.isArray(PRESETS))PRESETS=[];
 for(const p of PARTY)p.tyl=pcSub(p);
 function pcSub(p){return [p.cls,p.esp,p.tf,p.jug].filter(Boolean).join(' · ')||'Personaje';}
 function saveParty(){lsSet(PKEY,PARTY);}
@@ -2396,7 +2439,7 @@ function spellsHTML(p,c){
   const slots=(s.slots||[]).map((mx,i)=>mx?`<span class="slot" title="Espacios de nivel ${i+1}"><b>${i+1}</b><span class="pips">${Array.from({length:mx},(_,k)=>`<button type="button" class="pip u ${k<(s.used?.[i]||0)?'on':''}" data-act="slot" data-lv="${i+1}" data-v="${k+1}" aria-label="Espacio de nivel ${i+1} gastado"></button>`).join('')}</span></span>`:'').join('');
   const atk=s.atk!=null&&s.atk!==''?` <button type="button" class="rl" data-roll="hit" data-mod="${+s.atk}" data-lbl="ataque de conjuro" title="Ataque de conjuro">${sgn(+s.atk)}</button>`:'';
   const lvls=Object.keys(by).sort((a,b)=>(a==='?')-(b==='?')||a-b);
-  return `<div data-pc="${p.id}"><h4><span>Conjuros${s.ab?` · ${esc(s.ab)}`:''}</span><span class="spmeta-h">${s.dc?`<span class="dc">CD ${s.dc}</span>`:''}${atk}</span></h4>
+  return `<div data-pc="${p.id}"><h4><span>${T('Conjuros')}${s.ab?` · ${esc(T(s.ab))}`:''}</span><span class="spmeta-h">${s.dc?`<span class="dc">CD ${s.dc}</span>`:''}${atk}</span></h4>
     ${slots?`<div class="slots">${slots}</div>`:''}
     ${lvls.map(lv=>`<div class="lvl">${lv==='?'?'Sin datos':spLevel(+lv)}</div>`+by[lv].map(({n,sp})=>{
       const use=sp?.use||'';
@@ -2423,10 +2466,10 @@ function renderParty(){
     return `<div class="pcard"><div class="pc-top"><div style="min-width:0"><b class="pn">${esc(p.n)}</b><div class="pcsub">${esc(p.tyl)}</div></div><div class="shield">${p.ac??'–'}</div></div>
       <div class="hptext"><span><b>${p.cur??p.hp}</b> / ${p.hp} PG</span>${p.temp?`<span class="tmp">+${p.temp} temp</span>`:''}</div>
       <div class="hpbar"><i style="width:${Math.max(0,pct*100)}%;background:${col}"></i></div>
-      <div class="pcsub">Inic. ${sgn(p.in||0)}${p.spc?` · ${(p.spc.list||[]).length} conjuros`:''}${p.inv?.length?` · ${p.inv.length} objeto${p.inv.length>1?'s':''}`:''}${sl?` · espacios ${sl}`:''}</div>
-      <div class="inline"><button class="btn sm primary" data-act="pcadd" data-id="${p.id}" ${inC?'disabled':''}>${inC?'En combate':'Añadir al combate'}</button>
+      <div class="pcsub">${T('Inic.')} ${sgn(p.in||0)}${p.spc?` · ${T(`${(p.spc.list||[]).length} conjuros`)}`:''}${p.inv?.length?` · ${T(`${p.inv.length} objeto${p.inv.length>1?'s':''}`)}`:''}${sl?` · ${T('espacios')} ${sl}`:''}</div>
+      <div class="inline"><button class="btn sm primary" data-act="pcadd" data-id="${p.id}" ${inC?'disabled':''}>${T(inC?'En combate':'Añadir al combate')}</button>
       <button class="btn sm" data-act="pcedit" data-id="${p.id}">Editar</button><button class="btn sm danger" data-act="pcdel" data-id="${p.id}" data-confirm>Borrar</button></div></div>`;
-  }).join(''):'<div class="empty">Aún no hay personajes. Crea el primero con «+ Nuevo personaje».</div>';
+  }).join(''):`<div class="empty">${T('Aún no hay personajes. Crea el primero con «+ Nuevo personaje».')}</div>`;
   $('#vp-count').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'';
 }
 let pcEditId=null,pcSpells=[],pcInv=[];
@@ -2598,11 +2641,8 @@ function tbAct(act,b){
   switch(act){
     case 'tbnew':{const n=tbMake('Nueva tabla',20,['Resultado']);TABLES.push(n);tbSel=n.id;tbHist=[];break;}
     case 'tbsel':tbSel=b.dataset.id;tbHist=[];break;
-    case 'tbexamples':
-      TABLES.push(tbMake('Nombres masculinos',10,['Nombre','Apellido'],{Nombre:['Aldric','Bram','Corwin','Darian','Edric','Faelan','Garrick','Halvar','Ivo','Jareth'],Apellido:['Piedrahonda','Vientoalto','Martillo','Robleda','Escarcha','Valleoscuro','Cuervo','Hierro','Brasa','Montenegro']},'{Nombre} {Apellido}'));
-      TABLES.push(tbMake('Botín de bolsillo',6,['Objeto'],{Objeto:['{1d4} po','{2d6} pp','{3d10} pc y una llave oxidada','Un dado de hueso tallado','Una gema que vale {1d4}0 po','Un mapa a medio quemar']},'{Objeto}'));
-      TABLES.push(tbMake('Encuentro en el camino',6,['Quién','Qué hace'],{'Quién':['{1d4} bandidos','Un mercader y su mula','{1d6} lobos','Una patrulla de la guardia','Un peregrino herido','Un goblin perdido'],'Qué hace':['bloquea el paso','pide ayuda','huye de algo peor','vigila desde los árboles','ofrece un trato','os sigue en silencio']},'{Quién} {Qué hace}.'));
-      tbSel=TABLES[0].id;break;
+    case 'tbexamples':{const n=exampleTables();TABLES.push(...n);tbSel=n[0].id;break;}
+
     case 'tbroll':{if(!tb)return;const k=+b.dataset.k||1;for(let i=0;i<k;i++){const r=tbRoll(tb);tbHist.unshift({n:tb.n,rows:tb.rows,...r});}tbHist=tbHist.slice(0,60);
       $('#tb-res').innerHTML=tbHistHTML();if(!$('[data-act="tbclearhist"]'))b.parentElement.insertAdjacentHTML('beforeend','<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>');return;}
     case 'tbclearhist':tbHist=[];break;
@@ -3172,7 +3212,8 @@ function acPane(p){
   const f=document.querySelector(`#acctmodal [data-pane="${p}"] input`);if(f)setTimeout(()=>f.focus(),30);
   renderAcct();
 }
-function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));}
+function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));
+  const ok=modOn('srd521');$('#ac-exbtn').disabled=!ok;$('#ac-exnote').textContent=ok?'':T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.');}
 function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
 function renderAcct(){
   const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
@@ -3216,6 +3257,10 @@ async function acAct(act,b){
     case 'acdiscord':{try{sessionStorage.setItem('oauth-hash',location.hash);}catch{}
       const {error}=await SB.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});if(error)acMsg(acErr(error));break;}
     case 'acclose':acClose();break;
+    case 'acexample':{
+      if(!modOn('srd521')){toast(T('Activa el SRD 5.2.1 en 📦 Módulos para poder insertarlos.'));break;}
+      if(state.creatures.length&&!confirm(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?')))break;
+      insertExamples();acClose();location.hash='#combate';toast(T('Datos de ejemplo añadidos: personajes, combate, encuentro y tablas.'),4200);break;}
     case 'acsync':await syncPush(true);break;
     case 'acout':await syncPush();await SB.auth.signOut();acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
   }

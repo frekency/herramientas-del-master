@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.29.0] - 2026-11-04
+### Cambiado
+- La web empieza vacía: sin combate, grupo, encuentros ni tablas de ejemplo.
+### Añadido
+- Botón «Insertar datos de ejemplo» en la ventana de la cuenta: dos personajes (con su ficha enlazada en el combate), un combate, un encuentro guardado y tres tablas, creados en el idioma de la interfaz. Solo con el SRD 5.2.1 activado.
+- Más textos traducidos en la tarjeta y la ficha de los personajes.
+
 ## [1.28.0] - 2026-11-04
 ### Añadido
 - Idiomas francés (`fr`), portugués (`pt`), italiano (`it`) y alemán (`de`) en ⚙ Preferencias, con la terminología oficial de cada edición de D&D.
