@@ -296,6 +296,11 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .sptable tr.spdet>td{white-space:normal;padding:0;background:var(--bg)}
 .sptable tr.spdet .vbody{max-width:900px}
 .sptable tr:last-child td{border-bottom:0}
+.sptable .num{text-align:right;font-family:var(--f-num);font-size:13px}
+.sptable .num small{display:block;font-size:11px;color:var(--muted)}
+.sptable .src{color:var(--muted);font-size:13px}
+.sptable .vadd-cell{text-align:right}
+.crtable .vbody{display:grid;gap:8px}
 .vbody.sb{border-radius:0 0 10px 10px;border-top:none}
 .vbody select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
 :root[data-view="mini"] .pagenav{padding-block:6px 0}
@@ -577,7 +582,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.11</a></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#criaturas">🐉 Criaturas</a><a href="#conjuros">✨ Conjuros</a><a href="#inicio" class="navver">v1.12</a></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -593,6 +598,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Historial de cambios</span></div>
   <ol class="changelog">
+    <li><h3>v1.12 <span>3 nov 2026</span></h3><ul>
+      <li>El listado de criaturas es ahora una tabla con columnas separadas: nombre, tipo, tamaño, VD, CA, PG (con sus dados) y manual de origen. Pulsa una fila para ver la ficha y añadirla al combate; los encabezados ordenan.</li>
+      <li>Las criaturas propias tienen un campo «Manual» para anotar de dónde salen.</li></ul></li>
     <li><h3>v1.11 <span>3 nov 2026</span></h3><ul>
       <li>El listado de conjuros es ahora una tabla: nombre, nivel, escuela, ritual, concentración y componentes (V, S, M; la M en dorado indica coste en material). Pulsa una fila para ver la descripción y los encabezados para ordenar.</li>
       <li>Los conjuros vuelven a venir incluidos en el tracker.</li></ul></li>
@@ -654,7 +662,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <select id="vc-src" aria-label="Origen"><option value="">Todas</option><option value="srd">SRD 5.2.1</option><option value="my">Mías</option></select>
     <select id="vc-cr" aria-label="Valor de desafío"><option value="">Cualquier VD</option><option value="0-1">VD 0–1</option><option value="2-4">VD 2–4</option><option value="5-10">VD 5–10</option><option value="11-16">VD 11–16</option><option value="17-30">VD 17+</option></select>
     <select id="vc-ty" aria-label="Tipo"><option value="">Cualquier tipo</option></select>
-    <select id="vc-sort" aria-label="Orden"><option value="name">Orden: nombre</option><option value="cr">Orden: VD</option></select>
+    <select id="vc-sort" aria-label="Orden"><option value="name">Orden: nombre</option><option value="cr">Orden: VD</option><option value="ac">Orden: CA</option><option value="hp">Orden: PG</option><option value="ty">Orden: tipo</option></select>
   </div>
   <div class="vlist" id="vc-list"></div>
 </section>
@@ -794,6 +802,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
         <label class="f">Dados de golpe<input id="ed-hd" placeholder="3d6+3"></label>
         <label class="f">Iniciativa<input id="ed-in" type="number"></label>
         <label class="f w2">Velocidad<input id="ed-sp" placeholder="9 m, volar 18 m"></label>
+        <label class="f w2">Manual<input id="ed-src" list="srcs" placeholder="Manual de Monstruos 2024"><datalist id="srcs"><option>Manual de Monstruos 2024</option><option>Guía del Máster 2024</option><option>Manual del Jugador 2024</option><option>Aventura propia</option></datalist></label>
       </div>
       <div class="sec-label" style="margin-top:12px">Características y salvaciones</div>
       <div class="egrid" id="ed-ab"></div>
@@ -1338,7 +1347,7 @@ function openEditor(m,{asNew=false,relink=null}={}){
   $('#ed-h').textContent=edKey?`Editar · ${m.n}`:(m.n?`Nueva a partir de ${m.n}`:'Nueva criatura');
   $('#ed-sz').innerHTML=Object.entries(SIZE).map(([k,v])=>`<option value="${k}" ${k===m.sz?'selected':''}>${v}</option>`).join('');
   const set=(id,v)=>$(id).value=v??'';
-  set('#ed-n',asNew&&m.n&&!edRelink?`${m.n} (variante)`:m.n);set('#ed-ty',m.ty);set('#ed-al',m.al);set('#ed-cr',m.cr);set('#ed-xp',m.xp);set('#ed-ac',m.ac);set('#ed-hp',m.hp);set('#ed-hd',m.hd);set('#ed-in',m.in);set('#ed-sp',m.sp);
+  set('#ed-n',asNew&&m.n&&!edRelink?`${m.n} (variante)`:m.n);set('#ed-ty',m.ty);set('#ed-al',m.al);set('#ed-cr',m.cr);set('#ed-xp',m.xp);set('#ed-ac',m.ac);set('#ed-hp',m.hp);set('#ed-hd',m.hd);set('#ed-in',m.in);set('#ed-sp',m.sp);set('#ed-src',crSrc(m));
   set('#ed-sk',m.sk);set('#ed-se',m.se);set('#ed-pp',m.pp);set('#ed-la',m.la);set('#ed-vu',m.vu);set('#ed-re',m.re);set('#ed-im',m.im);set('#ed-lu',m.l?m.lu??3:'');
   const ab=m.ab||[10,10,10,10,10,10];
   $('#ed-ab').innerHTML=AB.map((l,i)=>`<label class="f">${l}<input id="ed-ab${i}" type="number" value="${ab[i]}"></label><label class="f">Salv. ${l}<input id="ed-sv${i}" type="number" value="${m.sv?m.sv[i]:mod(ab[i])}"></label>`).join('');
@@ -1348,7 +1357,7 @@ function openEditor(m,{asNew=false,relink=null}={}){
 $('#editform').addEventListener('submit',e=>{
   e.preventDefault();
   const v=id=>$(id).value.trim(), n=id=>{const x=parseInt($(id).value,10);return isNaN(x)?undefined:x;};
-  const m={id:edKey||uid(),n:v('#ed-n'),sz:v('#ed-sz'),ty:v('#ed-ty'),al:v('#ed-al'),cr:v('#ed-cr'),xp:n('#ed-xp'),ac:n('#ed-ac'),hp:n('#ed-hp'),hd:v('#ed-hd').replace(/\s/g,''),in:n('#ed-in'),sp:v('#ed-sp'),
+  const m={id:edKey||uid(),n:v('#ed-n'),sz:v('#ed-sz'),ty:v('#ed-ty'),al:v('#ed-al'),cr:v('#ed-cr'),xp:n('#ed-xp'),ac:n('#ed-ac'),hp:n('#ed-hp'),hd:v('#ed-hd').replace(/\s/g,''),in:n('#ed-in'),sp:v('#ed-sp'),src:v('#ed-src'),
     ab:AB.map((_,i)=>n('#ed-ab'+i)??10),sv:AB.map((_,i)=>n('#ed-sv'+i)??mod(n('#ed-ab'+i)??10)),sk:v('#ed-sk'),se:v('#ed-se'),pp:n('#ed-pp'),la:v('#ed-la'),vu:v('#ed-vu'),re:v('#ed-re'),im:v('#ed-im')};
   for(const[k] of SECS){const s=textToSec($('#ed-'+k).value);if(s.length)m[k]=s;}
   if(m.l){const lu=n('#ed-lu');if(lu!=null)m.lu=lu;}
@@ -1762,7 +1771,7 @@ function extraAct(act,b,c,e){
     case 'encsave':saveEncounter();break;
     case 'encload':loadEncounter(PRESETS[+b.dataset.i]);break;
     case 'encdel':{const p=PRESETS[+b.dataset.i];PRESETS.splice(+b.dataset.i,1);savePresets();renderEnc();toast(`«${p.n}» borrado`);break;}
-    case 'vadd':{const m=tpl(b.dataset.k);const sel=b.closest('.vitem').querySelector('select');addFromTpl(m,sel.value,1);toast(`${m.n} añadido al combate`);break;}
+    case 'vadd':{const m=tpl(b.dataset.k);const sel=b.closest('.vitem,.spdet').querySelector('select');addFromTpl(m,sel.value,1);toast(`${m.n} añadido al combate`);break;}
   }
 }
 
@@ -1788,20 +1797,36 @@ function renderHome(){
   $('#hs-best').textContent=SRD.length?`${SRD.length} del SRD${MY.length?` · ${MY.length} tuyas`:''}`:'Cargando…';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
+function crSrc(m){return m.src??(m.id?'':'Manual de Monstruos 2024');}
+let VC_RES=[];
 function renderCreatureView(){
   const types=[...new Set(allBest().map(m=>m.ty).filter(Boolean))].sort((a,b)=>tr(TYPE,a).localeCompare(tr(TYPE,b),'es'));
   const ts=$('#vc-ty');if(ts.options.length<=1)ts.innerHTML='<option value="">Cualquier tipo</option>'+types.map(t=>`<option value="${esc(t)}">${esc(tr(TYPE,t))}</option>`).join('');
   const ty=ts.value,sort=$('#vc-sort').value;
-  let res=searchBest($('#vc-q').value,$('#vc-src').value,$('#vc-cr').value).filter(m=>!ty||m.ty===ty);
-  if(sort==='cr')res.sort((a,b)=>crNum(a.cr)-crNum(b.cr)||a.n.localeCompare(b.n,'es'));
-  if(sort==='name')res.sort((a,b)=>a.n.localeCompare(b.n,'es'));
+  const res=searchBest($('#vc-q').value,$('#vc-src').value,$('#vc-cr').value).filter(m=>!ty||m.ty===ty);
+  const byN=(a,b)=>a.n.localeCompare(b.n,'es');
+  res.sort(sort==='cr'?(a,b)=>crNum(a.cr)-crNum(b.cr)||byN(a,b):sort==='ac'?(a,b)=>(b.ac??-1)-(a.ac??-1)||byN(a,b):sort==='hp'?(a,b)=>(b.hp??-1)-(a.hp??-1)||byN(a,b)
+    :sort==='ty'?(a,b)=>tr(TYPE,a.ty||'').localeCompare(tr(TYPE,b.ty||''),'es')||byN(a,b):byN);
+  VC_RES=res;
   $('#vc-count').textContent=SRD.length?`${res.length} criaturas`:'Cargando el bestiario…';
-  const facs=state.factions.map(f=>`<option value="${f.id}" ${!f.pc&&/enem/i.test(f.name)?'selected':''}>${esc(f.name)}</option>`).join('');
-  $('#vc-list').innerHTML=res.map(m=>`<details class="vitem" data-k="${esc(tkey(m))}"><summary><span class="vn">${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}</span>
-    <span class="vm">${esc(tr(TYPE,m.ty||''))} · ${esc(tr(SIZE,m.sz||''))}</span><span class="vs"><span>VD <b>${esc(m.cr??'–')}</b></span><span>CA <b>${m.ac??'–'}</b></span><span>PG <b>${m.hp??'–'}</b></span></span></summary>
-    <div class="vbody"><div class="inline" style="margin-bottom:8px"><select aria-label="Bando">${facs}</select><button class="btn sm primary" data-act="vadd" data-k="${esc(tkey(m))}">Añadir al combate</button></div><div class="vsb"></div></div></details>`).join('')||'<div class="empty">Nada coincide con esos filtros.</div>';
+  const th=(k,l,c='')=>`<th${c?` class="${c}"`:''}><button type="button" data-csort="${k}"${sort===k?' aria-sort="ascending"':''}>${l}</button></th>`;
+  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${esc(crSrc(m))||'–'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nada coincide con esos filtros.</div>';
 }
-$('#vc-list').addEventListener('toggle',e=>{const d=e.target;if(d.open&&d.matches('.vitem')){const s=d.querySelector('.vsb');if(!s.innerHTML)s.innerHTML=sbHTML(tpl(d.dataset.k),null);}},true);
+function toggleCreatureRow(r){
+  const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
+  if(nx?.classList.contains('spdet'))nx.remove();
+  r.setAttribute('aria-expanded',open);
+  if(!open)return;
+  const m=VC_RES[+r.dataset.i],k=tkey(m);
+  const facs=state.factions.map(f=>`<option value="${f.id}" ${!f.pc&&/enem/i.test(f.name)?'selected':''}>${esc(f.name)}</option>`).join('');
+  r.insertAdjacentHTML('afterend',`<tr class="spdet"><td colspan="7"><div class="vbody"><div class="inline"><select aria-label="Bando">${facs}</select><button class="btn sm primary" data-act="vadd" data-k="${esc(k)}">Añadir al combate</button></div><div class="vsb">${sbHTML(tpl(k),null)}</div></div></td></tr>`);
+}
+$('#vc-list').addEventListener('click',e=>{
+  const h=e.target.closest('[data-csort]');if(h){$('#vc-sort').value=h.dataset.csort;renderCreatureView();return;}
+  if(e.target.closest('.spdet'))return;
+  const r=e.target.closest('tr.sprow');if(r)toggleCreatureRow(r);
+});
+$('#vc-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleCreatureRow(r);}});
 for(const id of ['#vc-q','#vc-src','#vc-cr','#vc-ty','#vc-sort'])$(id).addEventListener('input',renderCreatureView);
 function fillSpellFilters(){
   const cs=$('#vs-cls');if(cs.options.length>1||!SPELL_LIST.length)return;
