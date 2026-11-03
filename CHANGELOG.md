@@ -4,6 +4,16 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.13.0] - 2026-11-03
+### Añadido
+- Los 339 conjuros del SRD 5.2.1 en español vienen incluidos de serie (`conjuros_srd.json`), con su nombre en inglés.
+- Libros opcionales: importación de conjuros de los manuales desde archivo (CSV o JSON) o enlace, guardada solo en el navegador. Un conjuro de libro sustituye al del SRD equivalente, también los de nombre genérico («Cofre oculto» → «Cofre oculto de Leomund»).
+- Columna y filtro «Fuente» en la tabla de conjuros.
+- Atribución CC-BY-4.0 del SRD 5.2.1 al pie de todas las páginas.
+- Versión pública con solo contenido del SRD.
+### Cambiado
+- `conjuros.json` ya no sustituye a todo: se suma al SRD como un libro más.
+
 ## [1.12.0] - 2026-11-03
 ### Cambiado
 - El listado de criaturas pasa a ser una tabla con columnas separadas: nombre, tipo, tamaño, VD, CA, PG (con sus dados) y manual. Al pulsar una fila se despliega la ficha con el botón de añadir al combate, y los encabezados ordenan la tabla.
