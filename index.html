@@ -422,6 +422,16 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .ficha>.sb{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--surface)}
 .u.cv{text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,var(--muted) 70%,transparent);text-underline-offset:3px}
 .tools-h{margin-top:22px}
+.qrsec{margin:18px 0 6px}
+.qrsec h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:18px}
+.qrsec h3 .pcsub{font-weight:400}
+.qrgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.qrcard{display:grid;grid-template-columns:40px minmax(0,1fr);grid-template-rows:auto auto;gap:2px 10px;align-items:start;text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--qc);border-radius:10px;padding:9px 11px;cursor:pointer;min-width:0}
+.qrcard:hover{background:color-mix(in srgb,var(--qc) 10%,var(--surface))}
+.qrcard .qi{grid-row:1/3;width:40px;height:40px;border-radius:9px;display:grid;place-items:center;font-size:21px;background:color-mix(in srgb,var(--qc) 20%,var(--surface))}
+.qrcard .qt{font-weight:700;line-height:1.25}
+.qrcard .qs{font-size:13px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#qrmodal .mhead h2 .pcsub{margin-left:8px;font-weight:400}
 .hero{padding-block:18px 22px;max-width:760px}
 .eyebrow{margin:0 0 6px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .htitle{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5vw,44px);line-height:1.05;margin:0;text-wrap:balance}
@@ -701,7 +711,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.23</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.24</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -715,6 +725,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <a class="tool" href="#combate"><span class="ti">⚔</span><span class="tn">Tracker de combate</span><span class="td">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span><span class="tstat" id="hs-combat"></span></a>
     <a class="tool" href="#jugadores"><span class="ti">🛡</span><span class="tn">Gestión de jugadores</span><span class="td">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span><span class="tstat" id="hs-party"></span></a>
     <a class="tool" href="#tablas"><span class="ti">🎲</span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
+    <a class="tool" href="#referencia"><span class="ti">📋</span><span class="tn">Referencia rápida</span><span class="td">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span><span class="tstat" id="hs-ref"></span></a>
   </div>
   <div class="vhead tools-h"><h2>Compendio</h2><span class="pcsub">Todo el contenido de tus módulos, cada cosa con su página</span></div>
   <div class="tools-grid">
@@ -739,6 +750,13 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
     <select id="cm-fu" aria-label="Fuente"></select>
   </div>
   <div class="vlist" id="cm-list"></div>
+</section>
+
+<section class="vpage" id="view-referencia" hidden>
+  <div class="vhead"><h2>Referencia rápida</h2><span class="pcsub" id="qr-count"></span></div>
+  <p class="modline">Reglas de 2024 (SRD 5.2.1). Pulsa una tarjeta para ver la regla completa. Todas están también en <a href="#compendio/reglas">📚 Compendio › Reglas</a>, con su propia página.</p>
+  <div class="bfilters"><input id="qr-q" placeholder="Filtrar por nombre o texto" aria-label="Filtrar reglas"><select id="qr-cat" aria-label="Categoría"></select></div>
+  <div id="qr-body"></div>
 </section>
 
 <section class="vpage" id="view-ficha" hidden>
@@ -844,6 +862,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.24 <span>3 nov 2026</span></h3><ul>
+      <li><b>📋 Referencia rápida</b> (en Herramientas): las reglas de 2024 en tarjetas por categoría (acciones, turno y reacciones, estados, combate, daño, movimiento, visión, áreas, viajes…), cada una con su resumen. Al pulsarla se abre la regla completa.</li>
+      <li>Nuevo apartado <b>📖 Reglas</b> en el Compendio: las 173 entradas del glosario del SRD 5.2.1 y las secciones clave de «Cómo jugar», con categoría, filtros y su propia página. Las referencias entre reglas («Consulta también…») son enlaces.</li>
+      <li>El buscador incluye las reglas y filtra por categoría en reglas, dotes y objetos.</li></ul></li>
     <li><h3>v1.23 <span>3 nov 2026</span></h3><ul>
       <li>Menú en dos partes: <b>Herramientas</b> (combate, jugadores y tablas) y <b>Consulta</b> (compendio y módulos). Criaturas y conjuros pasan a ser apartados del Compendio.</li>
       <li>Cada criatura, conjuro, objeto, dote, clase, especie y trasfondo tiene <b>su propia página</b> con enlace (botón ↗ en los listados). Las tablas desplegables se mantienen.</li>
@@ -1078,7 +1100,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
           <div class="bfilters">
             <input id="b-q" placeholder="Buscar en todo el compendio" aria-label="Buscar">
             <select id="b-src" aria-label="Origen"><option value="">Todas</option><option value="srd">SRD 5.2.1</option><option value="mod">Módulos</option><option value="my">Mías</option></select>
-            <select id="b-cr" aria-label="Valor de desafío"><option value="">Cualquier VD</option><option value="0-1">VD 0–1</option><option value="2-4">VD 2–4</option><option value="5-10">VD 5–10</option><option value="11-16">VD 11–16</option><option value="17-30">VD 17+</option></select>
+            <select id="b-cat" aria-label="Categoría" hidden></select><select id="b-cr" aria-label="Valor de desafío"><option value="">Cualquier VD</option><option value="0-1">VD 0–1</option><option value="2-4">VD 2–4</option><option value="5-10">VD 5–10</option><option value="11-16">VD 11–16</option><option value="17-30">VD 17+</option></select>
           </div>
           <p class="hint" id="b-count" style="margin-bottom:6px"></p>
           <ul class="blist" id="blist"></ul>
@@ -1209,6 +1231,13 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
       </div>
       <p class="acmsg" id="ac-msg" aria-live="polite"></p>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="qrmodal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="qr-h" style="width:min(720px,100%)">
+    <div class="mhead"><h2 id="qr-h"></h2><button class="btn ghost" data-act="qrclose" aria-label="Cerrar">✕</button></div>
+    <div class="mbody" id="qr-mbody"></div>
   </div>
 </div>
 
@@ -1649,12 +1678,12 @@ function detHTML(c,m){
 /* ---------- bestiario: vista ---------- */
 let bSel=null;
 // Tipos del buscador: las criaturas usan su clave del bestiario; el resto, «tipo:nombre»
-const BTY=[['todo','Todo'],['criaturas','🐉 Criaturas'],['conjuros','✨ Conjuros'],['objetos','🎒 Objetos'],['dotes','⭐ Dotes'],['clases','🛡 Clases'],['especies','🧝 Especies'],['trasfondos','📜 Trasfondos']];
-const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Dote',clases:'Clase',especies:'Especie',trasfondos:'Trasfondo'};
+const BTY=[['todo','Todo'],['criaturas','🐉 Criaturas'],['conjuros','✨ Conjuros'],['objetos','🎒 Objetos'],['dotes','⭐ Dotes'],['clases','🛡 Clases'],['especies','🧝 Especies'],['trasfondos','📜 Trasfondos'],['reglas','📖 Reglas']];
+const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Dote',clases:'Clase',especies:'Especie',trasfondos:'Trasfondo',reglas:'Regla'};
 let bTy=(()=>{try{return localStorage.getItem('b-ty')||'todo';}catch{return 'todo';}})();
 const bTyOf=k=>{const p=String(k||'').split(':')[0];return TY_ONE[p]&&p!=='criaturas'?p:'criaturas';};
 function cmSub(tab,x){
-  const s=tab==='objetos'?[x.t||OBJ_KIND[x.k],x.r,x.precio]:tab==='dotes'?[x.cat&&'Dote '+(fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()),x.req]:tab==='clases'?[(x.info?.['Dado de puntos de golpe']||'').replace(/ por nivel.*/,''),x.info?.['Característica principal']]:tab==='especies'?[String(x.tam||'').replace(/\s*\(.*?\)/g,''),x.vel]:[x.dote];
+  const s=tab==='objetos'?[x.t||OBJ_KIND[x.k],x.r,x.precio]:tab==='dotes'?[x.cat&&'Dote '+(fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()),x.req]:tab==='clases'?[(x.info?.['Dado de puntos de golpe']||'').replace(/ por nivel.*/,''),x.info?.['Característica principal']]:tab==='reglas'?[x.cat]:tab==='especies'?[String(x.tam||'').replace(/\s*\(.*?\)/g,''),x.vel]:[x.dote];
   return [...s,x._src!=='SRD 5.2.1'&&x._src].filter(Boolean).join(' · ');
 }
 function bItem(k){
@@ -1664,10 +1693,10 @@ function bItem(k){
   return ty==='conjuros'?SPELLS[n.toLowerCase()]||null:compFind(ty,n);
 }
 function compFind(tab,n){const f=fold(n);return compList(tab).find(x=>fold(x.n)===f)||null;}
-function searchAll(ty,q){
+function searchAll(ty,q,cat=''){
   const fq=fold(q),hit=n=>!fq||fold(n).includes(fq),out=[];
   if(ty==='conjuros'||ty==='todo')for(const s of SPELL_LIST)if(hit(s.n)||(s.en&&hit(s.en)))out.push({ty:'conjuros',k:'conjuros:'+s.n,n:s.n,en:s.en,sub:[spLevel(s.lv),SCHOOLS[s.sch],s.src!=='srd'&&(s.ab||s.book)].filter(Boolean).join(' · ')});
-  for(const[tab] of CM_TABS)if(ty===tab||ty==='todo')for(const x of compList(tab))if(hit(x.n))out.push({ty:tab,k:tab+':'+x.n,n:x.n,sub:cmSub(tab,x)});
+  for(const[tab] of CM_TABS)if(ty===tab||ty==='todo')for(const x of compList(tab))if((hit(x.n)||(tab==='reglas'&&x.cat&&hit(x.cat)))&&(!cat||(tab==='objetos'?x.k===cat:x.cat===cat)))out.push({ty:tab,k:tab+':'+x.n,n:x.n,sub:cmSub(tab,x)});
   if(ty==='todo')for(const m of searchBest(q))out.push({ty:'criaturas',k:tkey(m),n:m.n,en:m.en,cr:m.cr,sub:`${tr(SIZE,m.sz||'')} · ${tr(TYPE,m.ty||'')}`});
   return out.sort((a,b)=>(fold(b.n).startsWith(fq)-fold(a.n).startsWith(fq))||a.n.localeCompare(b.n,'es'));
 }
@@ -1675,6 +1704,9 @@ function renderBest(){
   compLoad();
   $('#b-ty').innerHTML=BTY.map(([k,l])=>`<button type="button" role="tab" data-bty="${k}" aria-selected="${k===bTy}">${l}</button>`).join('');
   const cr=bTy==='criaturas';$('#b-src').hidden=$('#b-cr').hidden=!cr;
+  {const sel=$('#b-cat'),on=['objetos','dotes','reglas'].includes(bTy);sel.hidden=!on;
+   if(on&&sel.dataset.ty!==bTy){const L=compList(bTy),cats=bTy==='objetos'?Object.entries(OBJ_KIND):[...new Set(L.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')).map(c=>[c,c]);
+     sel.innerHTML='<option value="">Cualquier categoría</option>'+cats.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join('');sel.dataset.ty=L.length?bTy:'';}}
   $('#b-q').placeholder=cr?'Buscar (nombre, en inglés o tipo)':bTy==='todo'?'Buscar en todo el compendio':`Buscar ${BTY.find(x=>x[0]===bTy)[1].replace(/^\S+\s/,'').toLowerCase()} por nombre`;
   if(!cr)renderBestOther();else{
   const res=searchBest($('#b-q').value,$('#b-src').value,$('#b-cr').value);
@@ -1691,7 +1723,7 @@ function renderBestOther(){
     $('#b-count').textContent='';
     $('#blist').innerHTML=`<li class="hint" style="padding:12px">${n.length?`Escribe para buscar entre ${n.map(([c,l])=>`${c} ${l}`).join(', ')}.`:'No hay contenido: activa el SRD 5.2.1 u otro módulo en 📦 Módulos.'}</li>`;return;
   }
-  const res=searchAll(bTy,q),one=bTy==='todo';
+  const res=searchAll(bTy,q,$('#b-cat').hidden?'':$('#b-cat').value),one=bTy==='todo';
   $('#b-count').textContent=`${res.length} resultado${res.length===1?'':'s'}${res.length>400?' (se muestran 400)':''}`;
   $('#blist').innerHTML=res.slice(0,400).map(r=>`<li><button type="button" data-act="bpick" data-k="${esc(r.k)}" class="${bSel===r.k?'on':''}"><span class="bn">${esc(r.n)}</span><span class="bc">${r.ty==='criaturas'?`VD ${esc(r.cr??'–')}`:one?`<span class="bk">${TY_ONE[r.ty]}</span>`:''}</span><span class="bt">${r.ty==='criaturas'&&one?'<span class="bk">Criatura</span> · ':''}${r.en&&r.en!==r.n?`<i>${esc(r.en)}</i> · `:''}${esc(r.sub)}</span></button></li>`).join('')||`<li class="hint" style="padding:12px">${!COMP_SRD&&modOn('srd521')?'Cargando el compendio…':'Nada coincide.'}</li>`;
 }
@@ -1788,8 +1820,8 @@ function fillCompDL(){
     $(id).innerHTML=compList(tab).map(x=>`<option value="${esc(x.n)}">${esc(tab==='objetos'?x.t||OBJ_KIND[x.k]||'':x._src)}</option>`).join('');
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
-function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
-function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal'].some(id=>!$(id).hidden));}
+function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
+function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
   commit(()=>{
@@ -1940,9 +1972,9 @@ document.addEventListener('click',e=>{
   }
 });
 $('#bestmodal').addEventListener('click',e=>{if(e.target.id==='bestmodal')closeModals();});
-for(const id of ['#b-q','#b-src','#b-cr'])$(id).addEventListener('input',renderBest);
+for(const id of ['#b-q','#b-src','#b-cr','#b-cat'])$(id).addEventListener('input',renderBest);
 $('#bestmodal').addEventListener('click',e=>{if(e.target.closest('a[href^="#"]'))closeModals();});
-$('#b-ty').addEventListener('click',e=>{const b=e.target.closest('[data-bty]');if(!b)return;bTy=b.dataset.bty;try{localStorage.setItem('b-ty',bTy);}catch{}renderBest();$('#b-q').focus();});
+$('#b-ty').addEventListener('click',e=>{const b=e.target.closest('[data-bty]');if(!b)return;bTy=b.dataset.bty;try{localStorage.setItem('b-ty',bTy);}catch{}$('#b-cat').value='';renderBest();$('#b-q').focus();});
 
 document.addEventListener('change',e=>{
   const el=e.target,frow=el.closest('.frow');
@@ -2550,13 +2582,13 @@ function mdAct(act,b){
 // Como en conjuros, una entrada de un módulo sustituye a la del SRD con el mismo nombre.
 let COMP_SRD=null,compLoading=false,CM_RES=[];
 let cmTab='objetos';
-const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote','dotes'],['clases','Clases','clase','clases'],['especies','Especies','especie','especies'],['trasfondos','Trasfondos','trasfondo','trasfondos']];
+const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote','dotes'],['clases','Clases','clase','clases'],['especies','Especies','especie','especies'],['trasfondos','Trasfondos','trasfondo','trasfondos'],['reglas','Reglas','regla','reglas']];
 const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herramienta:'Herramientas',equipo:'Equipo de aventurero'};
 const RARITY=['común','infrecuente','raro','muy raro','legendario','artefacto'];
 const rarKey=r=>{const f=fold(r).replace(/a\b/g,'o');return RARITY.find(k=>f.startsWith(fold(k)))||(f?'variable':'');};
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
-  getJSON('compendio_srd.json').then(d=>{COMP_SRD=d||{};compLoading=false;refreshCompView();renderHome();fillCompDL();if(!$('#bestmodal').hidden)renderBest();});
+  getJSON('compendio_srd.json').then(d=>{COMP_SRD=d||{};compLoading=false;refreshCompView();renderHome();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
 }
 function compList(tab){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
@@ -2570,7 +2602,8 @@ const CM_COLS={
   dotes:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Requisitos',x=>cmTxt(x.req||'—')]],
   clases:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Dado de golpe',x=>cmTxt((x.info?.['Dado de puntos de golpe']||x.dado||'').replace(/ por nivel.*/,''))],['Característica principal',x=>cmTxt(x.info?.['Característica principal']||x.principal||'')],['Salvaciones',x=>cmTxt(x.info?.['Competencias en tiradas de salvación']||x.salvaciones||'')],['Subclases',x=>cmTxt((x.sub||[]).join(', '))]],
   especies:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tamaño',x=>cmTxt(String(x.tam||'').replace(/\s*\(.*?\)/g,''))],['Velocidad',x=>cmTxt(x.vel||'')]],
-  trasfondos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Características',x=>cmTxt(x.car||'')],['Dote',x=>cmTxt(x.dote||'')],['Habilidades',x=>cmTxt(x.hab||'')]]
+  trasfondos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Características',x=>cmTxt(x.car||'')],['Dote',x=>cmTxt(x.dote||'')],['Habilidades',x=>cmTxt(x.hab||'')]],
+  reglas:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Resumen',x=>cmTxt(ruleSum(x))]]
 };
 function cmFilters(list){
   const f1=$('#cm-f1'),f2=$('#cm-f2'),fu=$('#cm-fu'),keep=(sel,html)=>{const v=sel.value;sel.innerHTML=html;sel.value=[...sel.options].some(o=>o.value===v)?v:'';};
@@ -2578,7 +2611,7 @@ function cmFilters(list){
   if(cmTab==='objetos'){f1.hidden=f2.hidden=false;
     keep(f1,'<option value="">Cualquier categoría</option>'+Object.entries(OBJ_KIND).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')+'<option value="otro">Otros</option>');
     keep(f2,'<option value="">Cualquier rareza</option>'+[...RARITY,'variable'].map(k=>`<option value="${k}">${k[0].toUpperCase()+k.slice(1)}</option>`).join(''));}
-  if(cmTab==='dotes'){f1.hidden=false;const cats=[...new Set(list.map(x=>x.cat).filter(Boolean))];keep(f1,'<option value="">Cualquier categoría</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join(''));}
+  if(cmTab==='dotes'||cmTab==='reglas'){f1.hidden=false;const cats=[...new Set(list.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));keep(f1,'<option value="">Cualquier categoría</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join(''));}
   const srcs=[...new Set(list.map(x=>x._src))];
   keep(fu,'<option value="">Todas las fuentes</option>'+srcs.map(s=>`<option>${esc(s)}</option>`).join(''));
 }
@@ -2588,7 +2621,7 @@ function renderCompendio(){
   const q=fold($('#cm-q').value),f1=$('#cm-f1').value,f2=$('#cm-f2').value,fu=$('#cm-fu').value;
   const res=all.filter(x=>(!q||fold(x.n).includes(q))&&(!fu||x._src===fu)
     &&(cmTab!=='objetos'||((!f1||(f1==='otro'?!OBJ_KIND[x.k]:x.k===f1))&&(!f2||rarKey(x.r)===f2)))
-    &&(cmTab!=='dotes'||!f1||x.cat===f1));
+    &&(!['dotes','reglas'].includes(cmTab)||!f1||x.cat===f1));
   CM_RES=res;const tb=CM_TABS.find(x=>x[0]===cmTab);
   $('#cm-count').textContent=`${res.length} ${res.length===1?tb[2]:tb[3]}`;
   const cols=CM_COLS[cmTab];
@@ -2598,7 +2631,7 @@ function renderCompendio(){
 function cmBody(x,tab=cmTab){
   const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):'';
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):[];
-  const body=x._html?richHTML(x.d):rich(String(x.d||''));
+  const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')));
   return `<div class="cmbody">${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }
 function toggleCompRow(r){
@@ -2621,6 +2654,7 @@ function extraAct(act,b,c,e){
   switch(act){
     case 'openparty':location.hash='jugadores';break;
     case 'pfopen':$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
+    case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
     case 'pcnew':openPC(null);break;
@@ -2663,7 +2697,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','jugadores','criaturas','conjuros','compendio','ficha','tablas','modulos','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','jugadores','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   $('main.wrap').hidden=isPage;
   const nav=!isPage?'combate':r.page==='compendio'?'compendio':v2;
@@ -2674,6 +2708,7 @@ function showView(){
   if(v2==='jugadores')renderParty();
   if(r.page==='compendio'){if(v2==='conjuros')fillSpellFilters();refreshCompView();}
   if(v2==='tablas')renderTables();
+  if(v2==='referencia')renderRef();
   if(v2==='modulos'){renderMods();loadCatalog();}
   if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
@@ -2686,6 +2721,7 @@ function renderHome(){
   $('#hs-best').textContent=allBest().length?`${allBest().length} criaturas${MY.length?` · ${MY.length} tuyas`:''}`:'Sin criaturas activas';
   {const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;$('#hs-mods').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';$('#hs-nomods').hidden=n>0;}
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-comp').textContent=n?`${n} entradas`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
+  {const n=COMP_SRD||!modOn('srd521')?compList('reglas').length:0;$('#hs-ref').textContent=n?`${n} reglas`:modOn('srd521')?'Reglas de 2024':'Activa el SRD 5.2.1';}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
@@ -2758,7 +2794,7 @@ addEventListener('hashchange',showView);
 /* ---------- compendio: rutas y páginas propias ----------
    #compendio/<apartado> es el listado; #compendio/<apartado>/<nombre> la página de un elemento.
    #criaturas y #conjuros siguen funcionando como alias. */
-const CTABS=[['criaturas','Criaturas','🐉'],['conjuros','Conjuros','✨'],['objetos','Objetos','🎒'],['dotes','Dotes','⭐'],['clases','Clases','🛡'],['especies','Especies','🧝'],['trasfondos','Trasfondos','📜']];
+const CTABS=[['criaturas','Criaturas','🐉'],['conjuros','Conjuros','✨'],['objetos','Objetos','🎒'],['dotes','Dotes','⭐'],['clases','Clases','🛡'],['especies','Especies','🧝'],['trasfondos','Trasfondos','📜'],['reglas','Reglas','📖']];
 const slugOf=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fichaHref=(tab,n)=>`#compendio/${tab}/${slugOf(n)}`;
 const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="Abrir la página de ${esc(n)}">↗</a>`;
@@ -2808,6 +2844,55 @@ function renderFicha(tab,slug){
   }
   el.innerHTML=tab==='criaturas'?crActions(x)+sbHTML(x,null):bOtherView(tab+':'+x.n,false);
 }
+
+/* ---------- reglas y referencia rápida ---------- */
+const RSUM=new Map();
+// Resumen de una regla: su primera frase; si es «…los siguientes efectos:», la lista de efectos en cursiva
+function ruleSum(x){
+  const k=x.n+'|'+x._src;if(RSUM.has(k))return RSUM.get(k);
+  const plain=String(x.d||'').replace(/<table[\s\S]*?<\/table>/g,'').replace(/<\/p>/g,' ').replace(/<[^>]+>/g,'').replace(/&(amp|lt|gt|quot|#x27|#39);/g,m=>ENT[m]).replace(/\s+/g,' ').trim();
+  let s=(plain.match(/^.*?[.:](?=\s|$)/)||[plain])[0];
+  if(s.endsWith(':')){const labs=[...String(x.d).matchAll(/<b><i>([\s\S]*?)<\/i>\.?<\/b>/g)].map(m=>m[1].replace(/<[^>]+>/g,'').replace(/\.\s*$/,'').trim()).filter(Boolean);if(labs.length)s=labs.join(' · ');else s=(plain.match(/^.*?:\s*(.*?\.)(?=\s|$)/)||[0,s])[1];}
+  if(s.length>180)s=s.slice(0,177).replace(/\s\S*$/,'')+'…';
+  RSUM.set(k,s);return s;
+}
+// Las menciones «Consulta también “Agarrado”» enlazan con la página de esa regla
+function ruleLinks(h){
+  if(!h.includes('“'))return h;
+  const names=new Set(compList('reglas').map(x=>fold(x.n)));
+  return h.replace(/“([^”<]{2,60})”/g,(m,n)=>names.has(fold(n))?`“<a href="${fichaHref('reglas',n)}">${n}</a>”`:m);
+}
+const QR_SECS=[['Acciones','⚔','#c0392b'],['Turno y reacciones','⏱','#d35400'],['Estados','🌀','#8e44ad'],['Combate','🎯','#b03a2e'],['Daño y curación','❤','#c2185b'],
+  ['Movimiento','🏃','#2e86c1'],['Visión y luz','👁','#b7950b'],['Áreas de efecto','📐','#16a085'],['Exploración','🧭','#27ae60'],['Peligros','⚠','#ca6f1e'],
+  ['Pruebas y tiradas','🎲','#5d6d7e'],['Magia','✨','#6c3483'],['Interacción social','🗣','#117a65']];
+const QR_ICON={Atacar:'⚔',Ayudar:'🤝',Buscar:'🔍',Correr:'💨',Destrabarse:'🦶',Esconderse:'🌫',Esquivar:'🛡',Estudiar:'📖',Influir:'🗣',Magia:'✨','Preparar una acción':'⏳',Utilizar:'🧰',
+  Agarrado:'✊',Apresado:'⛓',Asustado:'😱',Aturdido:'💫',Cansancio:'😩',Cegado:'🙈',Derribado:'⬇',Ensordecido:'🙉',Envenenado:'🤢',Hechizado:'💘',Incapacitado:'🚫',Inconsciente:'💤',Invisible:'👻',Paralizado:'🧊',Petrificado:'🗿',
+  'Acción adicional':'➕',Reacción:'↩','Ataques de oportunidad':'⚡',Cobertura:'🧱',Crítico:'💥',Concentración:'🧠','Descanso corto':'☕','Descanso largo':'🛌',Ventaja:'⬆',Desventaja:'⬇',
+  Cono:'🔺',Esfera:'⚪',Cubo:'🟫',Cilindro:'🛢',Línea:'➖',Emanación:'📡',Saltar:'🦘',Trepar:'🧗',Nadar:'🏊',Volar:'🕊','Terreno difícil':'🪨','Ritmo de viaje':'🗺',Fuego:'🔥',Asfixia:'🫁',Caídas:'🪂'};
+function renderRef(){
+  compLoad();
+  const all=compList('reglas'),sel=$('#qr-cat');
+  if(!all.length){$('#qr-count').textContent='';$('#qr-body').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando las reglas…</div>':'<div class="empty">Activa el SRD 5.2.1 en <a href="#modulos">📦 Módulos</a> para ver la referencia rápida.</div>';return;}
+  if(sel.options.length<=1)sel.innerHTML='<option value="">Todas las categorías</option>'+QR_SECS.map(([c,i])=>`<option value="${esc(c)}">${i} ${esc(c)}</option>`).join('');
+  const q=fold($('#qr-q').value),cat=sel.value;
+  const hit=x=>!q||fold(x.n).includes(q)||fold(ruleSum(x)).includes(q)||fold(String(x.d).replace(/<[^>]+>/g,'')).includes(q);
+  let n=0;
+  $('#qr-body').innerHTML=QR_SECS.filter(([c])=>!cat||c===cat).map(([c,ic,col])=>{
+    const L=all.filter(x=>x.cat===c&&hit(x));n+=L.length;if(!L.length)return '';
+    return `<section class="qrsec"><h3>${ic} ${esc(c)} <span class="pcsub">${L.length}</span></h3><div class="qrgrid">${L.map(x=>`<button type="button" class="qrcard" data-qr="${esc(x.n)}" style="--qc:${col}"><span class="qi">${QR_ICON[x.n]||ic}</span><span class="qt">${esc(x.n)}</span><span class="qs">${esc(ruleSum(x))}</span></button>`).join('')}</div></section>`;
+  }).join('')||'<div class="empty">Nada coincide.</div>';
+  $('#qr-count').textContent=`${n} reglas`;
+}
+function openRule(n){
+  const x=compFind('reglas',n);if(!x)return;
+  $('#qr-h').innerHTML=`${esc(x.n)}<span class="pcsub">${esc(x.cat||'')}</span>`;
+  $('#qr-mbody').innerHTML=`<div class="sb" data-who="${esc(x.n)}">${cmBody(x,'reglas')}</div>${goP('reglas',x.n)}`;
+  $('#qrmodal').hidden=false;syncModalOpen();
+}
+$('#qr-body').addEventListener('click',e=>{const b=e.target.closest('[data-qr]');if(b)openRule(b.dataset.qr);});
+for(const id of ['#qr-q','#qr-cat'])$(id).addEventListener('input',renderRef);
+$('#qrmodal').addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const m=a.getAttribute('href').match(/^#compendio\/reglas\/(.+)$/);
+  if(m&&!a.closest('.golinkp')){e.preventDefault();const x=compList('reglas').find(r=>slugOf(r.n)===m[1]);if(x)openRule(x.n);return;}closeModals();});
 
 /* ---------- unidades ----------
    Las medidas se reconocen en cualquier texto que se pinta (SRD en metros, módulos en pies o en metros…), se pasan

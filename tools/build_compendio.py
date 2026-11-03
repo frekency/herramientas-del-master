@@ -156,6 +156,36 @@ for n,pg,els in entries(i,j,2):
     subs=[e[2].split(':',1)[1].strip() for e in els if e[0]=='h' and e[1]==3 and e[2].startswith('Subclase de')]
     cls.append({'n':n,'pg':pg,'info':info,'sub':subs,'d':to_html(els,base=3)})
 out['clases']=cls
+# ---------- reglas: el glosario y algunas secciones de «Cómo jugar» que se consultan en la mesa ----------
+i=find('h',2,'Definiciones de las reglas');j=find('h',1,'Herramientas del juego',i)
+reg=[]
+for n,pg,els in entries(i,j,4):
+    m=re.match(r'(.*?)\s*\[(.*?)\]$',n)
+    reg.append({'n':m[1] if m else n,'tag':m[2] if m else '','d':to_html(els),'pg':pg})
+have={fold for fold in (x['n'].lower() for x in reg)}
+cj=find('h',1,'Cómo jugar');cje=find('h',1,'Creación de personajes',cj)
+for name,lv in (('Ritmo de viaje',4),('Tamaño de una criatura',4),('Iluminación',4),('Zonas oscuras',4),('Sentidos especiales',4),('Tu turno',4),
+                ('Moverse alrededor de otras criaturas',4),('Tirarse al suelo',4),('Ataques a distancia en combate cuerpo a cuerpo',4),('Combate montado',3),
+                ('Combate bajo el agua',3),('Muerte instantánea',4),('Caer inconsciente',4),('Estabilizar a un personaje',4),('Daño contra varios objetivos',4),
+                ('Resistencia y vulnerabilidad',3),('Interactuar con objetos',3),('Dividir el movimiento',4)):
+    if name.lower() in have:continue
+    a=find('h',lv,name,cj)
+    if a>=cje:raise SystemExit(f'{name} fuera de «Cómo jugar»')
+    b=until(a,lambda e:e[0]=='h' and e[1]<=lv)
+    reg.append({'n':name,'tag':'cómo jugar','d':to_html(S[a+1:b],base=lv),'pg':S[a][3]})
+RCAT={'Turno y reacciones':'Acción|Acción adicional|Reacción|Tu turno|Ataques de oportunidad|Dividir el movimiento|Iniciativa|Sorpresa',
+  'Combate':'Tirada de ataque|Ataque con arma|Ataque de conjuro|Ataque sin armas|Agarrar|Noquear a una criatura|Crítico|Cobertura|Armas improvisadas|Arma|Ataques a distancia en combate cuerpo a cuerpo|Combate montado|Combate bajo el agua|Alcance|Clase de armadura|Objetivo|Enemigo|Aliado|Encuentro',
+  'Daño y curación':'Daño|Tipos de daño|Tirada de daño|Resistencia|Vulnerabilidad|Inmunidad|Resistencia y vulnerabilidad|Daño contra varios objetivos|Puntos de golpe|Puntos de golpe temporales|Curación|Dados de puntos de golpe|Muerte instantánea|Caer inconsciente|Tirada de salvación contra muerte|Estabilizar a un personaje|Estable|Muerto|Maltrecho|Umbral de daño',
+  'Movimiento':'Velocidad|Velocidad excavando|Velocidad nadando|Velocidad trepando|Velocidad volando|Saltar|Salto de altura|Salto de longitud|Trepar|Nadar|Volar|Arrastrarse|Levitar|Terreno difícil|Moverse alrededor de otras criaturas|Tirarse al suelo|Teletransporte|Tamaño de una criatura|Tamaño|Espacio ocupado|Espacio sin ocupar',
+  'Visión y luz':'Iluminación|Zonas oscuras|Sentidos especiales|Luz brillante|Luz tenue|Oscuridad|Ligeramente oscuro|Muy oscuro|Visión ciega|Visión en la oscuridad|Visión verdadera|Sentir vibraciones|Telepatía',
+  'Exploración':'Ritmo de viaje|Interactuar con objetos|Romper objetos|Capacidad de carga|Descanso corto|Descanso largo|Objeto|Aventura|Campaña',
+  'Pruebas y tiradas':'Prueba con d20|Prueba de característica|Tirada de salvación|Salvación|Ventaja|Desventaja|Clase de dificultad|Competencia|Pericia|Habilidad|Percepción pasiva|Inspiración heroica|Redondear hacia abajo|Efectos simultáneos|Puntuación de característica y modificador|Entrenamiento con armaduras',
+  'Magia':'Conjuro|Truco|Ritual|Concentración|Canalizador mágico|Efecto mágico|Ilusiones|Sintonización|Cambio de forma|Posesión|Maldiciones',
+  'Interacción social':'Actitud'}
+RC={n:c for c,ns in RCAT.items() for n in ns.split('|')}
+TAGC={'acción':'Acciones','estado':'Estados','área de efecto':'Áreas de efecto','peligro':'Peligros','actitud':'Interacción social'}
+for x in reg:x['cat']=TAGC.get(x['tag'])or RC.get(x['n'])or'General'
+out['reglas']=reg
 
 json.dump(out,open(sys.argv[2],'w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
 for k,v in out.items():print(k,len(v))
