@@ -1820,11 +1820,12 @@ if(LANG!=='es')try{
 }catch(e){}
 whenReady(()=>requestAnimationFrame(loadDone));
 // Idioma de los datos: el del SRD oficial si existe; si no, inglés.
-const DATA_LANG={es:'es',en:'en',fr:'fr',de:'de'}[LANG]||'en';
+const DATA_LANG={es:'es',en:'en',fr:'fr',de:'de',it:'it'}[LANG]||'en';
 const DATA_FILES={es:{best:'srd2024_es.json',spells:'conjuros_srd.json',comp:'compendio_srd.json'},
   en:{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'},
   fr:{best:'srd2024_fr.json',spells:'conjuros_srd_fr.json',comp:'compendio_srd_fr.json'},
-  de:{best:'srd2024_de.json',spells:'conjuros_srd_de.json',comp:'compendio_srd_de.json'}}[DATA_LANG];
+  de:{best:'srd2024_de.json',spells:'conjuros_srd_de.json',comp:'compendio_srd_de.json'},
+  it:{best:'srd2024_it.json',spells:'conjuros_srd_it.json',comp:'compendio_srd_it.json'}}[DATA_LANG];
 </script>
 <script>
 const COND=[['agarrado','Agarrado'],['apresado','Apresado'],['asustado','Asustado'],['aturdido','Aturdido'],['cegado','Cegado'],['derribado','Derribado'],['ensordecido','Ensordecido'],['envenenado','Envenenado'],['hechizado','Hechizado'],['incapacitado','Incapacitado'],['inconsciente','Inconsciente'],['invisible','Invisible'],['paralizado','Paralizado'],['petrificado','Petrificado'],['concentracion','Concentración'],['agotamiento','Agotamiento']];
@@ -1899,6 +1900,7 @@ function examplePCs(){
     t:[[T('Recuperación arcana (1/día)'),T('Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.')]],
     spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[0,1],
       list:DATA_LANG==='es'?['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']
+        :DATA_LANG==='it'?['Mano magica','Raggio di gelo','Armatura magica','Scudo','Dardo incantato','Passo velato','Ragnatela','Palla di fuoco']
         :DATA_LANG==='de'?['Magierhand','Kältestrahl','Magierrüstung','Schild','Magisches Geschoss','Nebelschritt','Spinnennetz','Feuerball']
         :DATA_LANG==='fr'?['Main du mage','Rayon de givre','Armure du mage','Bouclier','Projectile magique','Foulée brumeuse','Toile d’araignée','Boule de feu']
         :['Mage Hand','Ray of Frost','Mage Armor','Shield','Magic Missile','Misty Step','Web','Fireball']}};
@@ -2090,13 +2092,13 @@ function applyHP(c,kind,raw){
 // Convierte en botones de tirada los ataques, dados y CD de un texto ya escapado
 function diceify(h){
   h=h.replace(/−/g,'-');
-  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance|(?:Nah|Fern)kampfangriffswurf|Nah- oder Fernkampfangriffswurf)\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
-  h=h.replace(/(\d+) \((\d+[dW]\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)|(\p{L}+schaden|\p{L}+ Schaden)))?/gu,(all,avg,ex,tail,en,es,fr,de)=>{
-    const ty=(en||es||fr||de||'').toLowerCase();
+  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance|(?:Nah|Fern)kampfangriffswurf|Nah- oder Fernkampfangriffswurf|Tiro per colpire (?:in mischia(?: o a distanza)?|a distanza))\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
+  h=h.replace(/(\d+) \((\d+[dW]\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)|(\p{L}+schaden|\p{L}+ Schaden)|danni (?:da |del )?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es,fr,de,it)=>{
+    const ty=(en||es||fr||de||it||'').toLowerCase();
     return `${avg} (<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${esc(ty)}" title="Tirar daño">${ex}</button>)${tail||''}`;});
   // dados sueltos (fichas de jugador y conjuros): «1d8 + 4 de daño cortante», «8d6 de daño de fuego»
-  h=h.replace(/(?<![\w"(=>+-])(\d+[dW]\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre)|\s+(\p{L}+schaden|\p{L}+ Schaden))?/gu,
-    (all,ex,tail,ty,tyfr,tyde)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${ty||tyfr||tyde||''}" title="Tirar">${ex}</button>${tail||''}`);
+  h=h.replace(/(?<![\w"(=>+-])(\d+[dW]\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre)|\s+(\p{L}+schaden|\p{L}+ Schaden)|\s+danni\s+(?:da |del )?(perforanti|taglienti|contundenti|fuoco|veleno|necrotici|forza|radiosi|acido|freddo|psichici|fulmine|tuono))?/gu,
+    (all,ex,tail,ty,tyfr,tyde,tyit)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${ty||tyfr||tyde||tyit||''}" title="Tirar">${ex}</button>${tail||''}`);
   h=h.replace(/\b(DC|CD|DD|SG)[ -](\d+)/g,(_,l,n)=>`<span class="dc">${l==='DD'||l==='SG'?l:'CD'} ${n}</span>`);
   return h;
 }
@@ -2477,7 +2479,7 @@ function newPcFromClass(x){
   const die=+((x.info?.['Dado de puntos de golpe']||'').match(/[dw](\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
   openPC(null);
   $('#pc-cls').value=`${x.n} 1`;$('#pc-hp').value=$('#pc-cur').value=die;
-  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme'],de:['starke','geschicklichkeit','konstitution','intelligenz','weisheit','charisma']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
+  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme'],de:['starke','geschicklichkeit','konstitution','intelligenz','weisheit','charisma'],it:['forza','destrezza','costituzione','intelligenza','saggezza','carisma']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
   toast(T(`Nivel 1: ${die} PG más tu modificador por Constitución. Las salvaciones de la clase ya llevan +2`),5200);
 }
 function invHTML(p){
@@ -3280,12 +3282,14 @@ const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herr
 // Las fichas de clase del SRD en inglés traen los campos con su nombre en inglés: se copian a los nombres que usa la página.
 const CLS_INFO={'Hit Point Die':'Dado de puntos de golpe','Primary Ability':'Característica principal','Saving Throw Proficiencies':'Competencias en tiradas de salvación',
   'Dé de vie':'Dado de puntos de golpe','Caractéristique principale':'Característica principal','Maîtrise des jets de sauvegarde':'Competencias en tiradas de salvación',
-  'Trefferpunktewürfel':'Dado de puntos de golpe','Hauptattribut':'Característica principal','Rettungswürfe, in denen du geübt bist':'Competencias en tiradas de salvación'};
+  'Trefferpunktewürfel':'Dado de puntos de golpe','Hauptattribut':'Característica principal','Rettungswürfe, in denen du geübt bist':'Competencias en tiradas de salvación',
+  'Dado Vita':'Dado de puntos de golpe','Caratteristiche primarie':'Característica principal','Competenze nei tiri salvezza':'Competencias en tiradas de salvación'};
 function normClasses(d){for(const x of d.clases||[])if(x.info)for(const[en,es]of Object.entries(CLS_INFO))if(x.info[en]&&!(es in x.info))Object.defineProperty(x.info,es,{value:x.info[en],enumerable:false});}
 const RARITY=['común','infrecuente','raro','muy raro','legendario','artefacto'];
 const RAR_EN={'very rare':'muy raro',uncommon:'infrecuente',common:'comun',rare:'raro',legendary:'legendario',artifact:'artefacto',
   'tres rare':'muy raro','peu courant':'infrecuente',courant:'comun',legendaire:'legendario',artefact:'artefacto',
-  'sehr selten':'muy raro',ungewohnlich:'infrecuente',gewohnlich:'comun',selten:'raro',legendar:'legendario',artefakt:'artefacto'};
+  'sehr selten':'muy raro',ungewohnlich:'infrecuente',gewohnlich:'comun',selten:'raro',legendar:'legendario',artefakt:'artefacto',
+  'molto rar':'muy raro','non comune':'infrecuente',comune:'comun',leggendari:'legendario',manufatto:'artefacto','rarita variabile':'variable'};
 const rarKey=r=>{let f=fold(r);for(const[e,k]of Object.entries(RAR_EN))if(f.startsWith(e)){f=k;break;}f=f.replace(/a\b/g,'o');return RARITY.find(k=>f.startsWith(fold(k)))||(f?'variable':'');};
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
