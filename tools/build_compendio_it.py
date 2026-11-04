@@ -19,6 +19,11 @@ for n,pg,els in entries(i,j,4):
     sint=''
     ms=re.search(r'\((richiede (?:la )?sintonia[^)]*)\)',rr,re.I)
     if ms:sint=ms[1];rr=rr.replace(ms[0],'').strip()
+    mt=re.match(r'(.*?(?:comune|rar[oa]|leggendari[oa]|manufatto|variabile))\s+([A-ZÀ-Ý].*)$',rr,re.S)
+    if mt:   # la descripción empieza en la misma línea que la rareza
+        rr=mt[1];rest=list(rest)
+        if rest and rest[0][0]=='p':rest[0]=('p',H.escape(mt[2])+' '+rest[0][1],*rest[0][2:])
+        else:rest.insert(0,('p',H.escape(mt[2]),pg))
     objs.append({'n':n,'t':tipo,'r':rr.strip(' ,'),'s':sint,'d':to_html(rest),'pg':pg,'k':'magico'})
 # ---------- equipaggiamento ----------
 eq=find('h',1,'Equipaggiamento');eqend=find('h',1,'Incantesimi',eq)
