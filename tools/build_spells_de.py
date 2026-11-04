@@ -44,7 +44,16 @@ for name,els in ents:
                     if mm:meta[mm[1]]=mm[2].strip()
                     elif meta:k=list(meta)[-1];meta[k]+=' '+c.strip()
             continue
-        if e[0]=='p':paras.append(md(e[1]))
+        if e[0]=='p':
+            t=md(e[1])
+            mm=re.match(r'\*\*(Zeitaufwand|Reichweite|Komponenten|Wirkungsdauer):\*\*\s*(.*)',t)
+            if mm and 'Wirkungsdauer' not in meta:   # datos de lanzamiento como párrafos sueltos; la duración puede llevar pegado el texto
+                v=mm[2]
+                if mm[1]=='Wirkungsdauer':
+                    k=re.search(r' (?=(?:Du|Ein|Eine|Bis|Wähle|Jede|Das|Der|Die|Dieser|Diese|Ziel)\b)',v)
+                    if k:paras.append(v[k.end():]);v=v[:k.start()]
+                meta[mm[1]]=v.strip();continue
+            paras.append(t)
         elif e[0]=='table':paras+=[' | '.join(r) for r in ([e[1]['head']] if e[1]['head'] else [])+e[1]['rows']]
         elif e[0]=='h':paras.append('**'+e[2]+'**')
     ct,rg,comp,dur=(re.sub(r'(\w)- (?=[A-ZÄÖÜ])',r'\1-',meta.get(k,'')) for k in ('Zeitaufwand','Reichweite','Komponenten','Wirkungsdauer'))

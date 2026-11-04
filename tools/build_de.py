@@ -96,7 +96,7 @@ def build(L):
   print(stats,file=sys.stderr)
   return merged
 # dos lecturas del PDF: la normal (mejor orden de líneas) y la «raw» (sin mezclar columnas); por criatura gana la que tenga menos secciones de reserva
-rd=lambda f:open(f,encoding='utf-8').read().replace(chr(12),chr(10)).split(chr(10))
+rd=lambda f:open(f,encoding='utf-8').read().replace(chr(173),'').replace(chr(12),chr(10)).split(chr(10))
 A=build(rd(sys.argv[1]))
 B=build(rd(sys.argv[1].replace('.txt','_raw.txt')))
 bad=lambda o:len(o.get('_fb',[]))

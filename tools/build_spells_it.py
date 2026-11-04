@@ -69,6 +69,17 @@ for name,els in ents:
     js=re.search(r'tiro salvezza su (Forza|Destrezza|Costituzione|Intelligenza|Saggezza|Carisma)',desc)
     use=('TdS '+AB[js[1]]) if js else ('Ataque' if re.search(r'attacco con incantesimo',desc) else '')
     out.append({'n':name,'en':'','lv':lv,'fl':'','d':desc,'dur':cap(dur),'rg':cap(rg),'ct':cap(ct),'comp':comp,'conc':conc,'rit':rit,'use':use,'cls':cls,'sch':sch,'pg':'SRD 5.2.1','src':'srd'})
+# Si el texto se perdió en el salto de página del stream, se toma de pdftotext (4.º argumento opcional)
+if len(sys.argv)>4:
+    R=open(sys.argv[4],encoding='utf-8').read().replace('\f','\n')
+    for s in out:
+        if s['d']:continue
+        m=re.search(r'\n'+re.escape(s['n'])+r'\n[^\n]*livello[^\n]*\n(?:Tempo di lancio[^\n]*\n)(.*?)\n(?=[^\n]+\n(?:Trucchetto di |(?:'+SC+r') di [1-9]º livello))',R,re.S)
+        if m:
+            L=[l for l in m[1].split('\n') if l.strip() and not re.search(r'System Reference Document',l)]
+            s['d']='\n'.join(re.sub(r'^(Utilizzo di uno slot incantesimo di livello superiore\.|Trucchetto potenziato\.)',r'**\1**',l) for l in L).strip()
+            js=re.search(r'tiro salvezza su (Forza|Destrezza|Costituzione|Intelligenza|Saggezza|Carisma)',s['d'])
+            s['use']=('TdS '+AB[js[1]]) if js else ('Ataque' if 'attacco con incantesimo' in s['d'] else '')
 # nombre inglés
 pool=[dict(e,cl=sorted(e['cls'])) for e in EN]
 used=set()

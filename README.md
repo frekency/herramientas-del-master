@@ -37,6 +37,18 @@ python -m http.server 8000
 ```
 y abre http://localhost:8000. Los datos (combate, grupo, encuentros, criaturas propias) se guardan en el navegador.
 
+## Tests
+Sin dependencias: usan el ejecutor de tests de Node (`node --test`). Se lanzan con `npm test` o `node --test tests/`.
+
+| Archivo | Qué comprueba |
+|---|---|
+| `tests/datos.test.mjs` | Criaturas, conjuros y compendio de cada idioma: mismo contenido que el inglés, campos obligatorios, sin caracteres basura del PDF. |
+| `tests/i18n.test.mjs` | Los cinco diccionarios con las mismas claves, los textos de `T('…')` traducidos y la versión igual en `VERSION`, `CHANGELOG.md`, el menú y los changelogs. |
+| `tests/seguridad.test.mjs` | Sin secretos en git, clave publicable de Supabase, manuales fuera del repositorio, scripts externos con versión e integridad (SRI), RLS y límites en `supabase/schema.sql`. |
+| `tests/navegador.test.mjs` | Abre la página en Edge o Chrome sin ventana con módulos, grupo, bestiario y copia de seguridad maliciosos (código en todos los campos) y con datos de tipos absurdos; recorre todas las vistas y comprueba que nada se ejecuta ni rompe la página. También prueba las tiradas y las rarezas en todos los idiomas. Se salta si no hay navegador (`BROWSER=ruta` para indicar otro). |
+
+El hook `.githooks/pre-push` pasa los tests antes de cada `git push` y no deja subir si alguno falla. Se activa una vez por clon con `git config core.hooksPath .githooks`.
+
 ## Versionado
 Versionado semántico. Cada cambio actualiza `VERSION`, `CHANGELOG.md`, el historial de la página principal y crea una etiqueta git `vX.Y.Z`.
 

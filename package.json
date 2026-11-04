@@ -1,0 +1,8 @@
+{
+  "name": "herramientas-del-master",
+  "private": true,
+  "description": "Tests de Herramientas del Máster (sin dependencias: usan el ejecutor de tests de Node)",
+  "scripts": {
+    "test": "node --test tests/"
+  }
+}

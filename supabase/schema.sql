@@ -17,6 +17,14 @@ create policy "cada uno lo suyo" on public.datos_usuario
   for all to authenticated
   using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
+-- Solo las claves que sincroniza la página y como mucho 5 MB por fila: así nadie puede llenar la base de datos.
+do $$ begin
+  alter table public.datos_usuario add constraint datos_usuario_clave
+    check (clave in ('tracker','bestiario','grupo','encuentros','tablas','modulos','preferencias')) not valid;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter table public.datos_usuario add constraint datos_usuario_tamano check (octet_length(valor::text) < 5000000) not valid;
+exception when duplicate_object then null; end $$;
 
 -- ---------- catálogo de módulos de la comunidad ----------
 -- Solo homebrew o contenido con licencia abierta. Los manuales oficiales nunca se publican aquí.
@@ -71,6 +79,10 @@ begin
   else
     new.descargas := 0;
     new.oculto := false;
+    -- como mucho 30 módulos por autor (cada uno puede pesar hasta 2 MB)
+    if (select count(*) from public.modulos_publicos where autor_id = new.autor_id) >= 30 then
+      raise exception 'Has llegado al límite de 30 módulos publicados';
+    end if;
   end if;
   new.actualizado := now();
   return new;
@@ -79,11 +91,23 @@ drop trigger if exists proteger_modulo on public.modulos_publicos;
 create trigger proteger_modulo before insert or update on public.modulos_publicos
   for each row execute function public.proteger_modulo();
 
--- Contador de descargas: cualquiera puede sumar una, nadie puede poner otro número.
+-- Contador de descargas: una por cuenta y módulo, así nadie puede inflarlo llamando a la función en bucle.
+create table if not exists public.descargas_usuario (
+  modulo_id uuid not null references public.modulos_publicos on delete cascade,
+  user_id   uuid not null references auth.users on delete cascade,
+  primary key (modulo_id, user_id)
+);
+alter table public.descargas_usuario enable row level security;   -- sin políticas: solo la usa sumar_descarga
+drop function if exists public.sumar_descarga(uuid);
 create or replace function public.sumar_descarga(mid uuid) returns void
-language sql security definer set search_path = '' as $$
-  update public.modulos_publicos set descargas = descargas + 1 where id = mid and not oculto;
-$$;
+language plpgsql security definer set search_path = '' as $$
+begin
+  if auth.uid() is null then return; end if;
+  insert into public.descargas_usuario (modulo_id, user_id) values (mid, auth.uid()) on conflict do nothing;
+  if found then
+    update public.modulos_publicos set descargas = descargas + 1 where id = mid and not oculto;
+  end if;
+end $$;
 revoke all on function public.sumar_descarga(uuid) from public;
 grant execute on function public.sumar_descarga(uuid) to anon, authenticated;
 

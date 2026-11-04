@@ -1847,7 +1847,24 @@ const tr=(m,k)=>LANG==='es'?(m[k]||k):(m[k]&&I18N[m[k]])||k;
 
 /* ---------- bestiario ---------- */
 let SRD=[], SRD_ALL=[], MY=[];   // SRD = lo visible (solo si el módulo está activado); SRD_ALL = todo lo descargado
-try{MY=JSON.parse(localStorage.getItem(BKEY)||'[]');}catch(e){MY=[];}
+// Datos guardados o importados con otra forma (archivos ajenos, módulos del catálogo): solo objetos y con nombre de texto
+const cleanList=(a,named=true)=>(Array.isArray(a)?a:[]).filter(x=>x&&typeof x==='object'&&!Array.isArray(x)&&(!named||String(x.n??'').trim())).map(x=>named||x.n!=null?{...x,n:String(x.n??'')}:x);
+// Cada campo con el tipo que espera la página: los textos como texto y las listas como listas
+const ITEM_STR={objetos:'t r s k d precio',dotes:'cat req d',clases:'d',especies:'tipo tam vel d',trasfondos:'car dote hab herr equipo d',reglas:'cat tag d',
+  conjuros:'d dur rg ct comp sch en fl',criaturas:'ty sz al cr sp sk se la im re vu tyl hd en'};
+const txt=v=>v==null||typeof v==='string'?v:typeof v==='object'?'':String(v);
+function normItem(k,x){
+  for(const f of (ITEM_STR[k]||'').split(' '))if(f&&f in x)x[f]=txt(x[f]);
+  if(k==='clases'){x.sub=(Array.isArray(x.sub)?x.sub:[]).map(String);if(x.info!=null&&(typeof x.info!=='object'||Array.isArray(x.info)))x.info={};
+    else if(x.info)for(const i in x.info)x.info[i]=txt(x.info[i])??'';}
+  if(k==='conjuros'){x.cls=(Array.isArray(x.cls)?x.cls:x.cls?[x.cls]:[]).map(String);x.lv=Math.max(0,Math.min(9,parseInt(x.lv)||0));}
+  if(k==='criaturas'){
+    for(const f of ['ab','sv'])if(f in x)x[f]=Array.isArray(x[f])?Array.from({length:6},(_,i)=>Number.isFinite(+x[f][i])&&x[f][i]!==null?+x[f][i]:f==='ab'?10:0):undefined;
+    for(const f of 'tabrl')if(f in x)x[f]=(Array.isArray(x[f])?x[f]:[]).filter(Array.isArray).map(e=>e.map(v=>txt(v)??''));
+    for(const f of ['ac','hp'])if(f in x&&!Number.isFinite(+x[f]))x[f]=f==='ac'?10:1;}
+  return x;
+}
+try{MY=cleanList(JSON.parse(localStorage.getItem(BKEY)||'[]')).map(x=>normItem('criaturas',x));}catch(e){MY=[];}
 function saveBest(){try{localStorage.setItem(BKEY,JSON.stringify(MY));}catch(e){}}
 function tpl(key){
   if(!key)return null;
@@ -1945,7 +1962,11 @@ function removeExamples(){
 
 let state, undoStack=[];
 function load(){
-  try{const raw=localStorage.getItem(KEY); if(raw){const s=JSON.parse(raw); if(s.example!==true) return s;}}catch(e){}
+  try{const raw=localStorage.getItem(KEY); if(raw){const s=JSON.parse(raw); if(s&&typeof s==='object'&&!Array.isArray(s)&&s.example!==true){
+    // un combate guardado con otra forma: cada campo que no encaja vuelve a su valor inicial
+    const e=emptyState();
+    for(const k in e)if(e[k]!==null&&(Array.isArray(e[k])!==Array.isArray(s[k])||typeof e[k]!==typeof s[k]))s[k]=e[k];
+    s.creatures=cleanList(s.creatures,false);return s;}}}catch(e){}
   return emptyState();
 }
 function save(){
@@ -2662,11 +2683,14 @@ document.addEventListener('click',e=>{
     case 'closeio':$('#iomodal').hidden=true;syncModalOpen();break;
     case 'iocopy':{const t=JSON.stringify(backupData());$('#io-text').value=t;navigator.clipboard?.writeText(t).then(()=>toast('Copiado. Pégalo en un archivo de texto para guardarlo')).catch(()=>{$('#io-text').select();toast('Selecciona el texto y cópialo a mano');});break;}
     case 'ioimport':{try{const d=JSON.parse($('#io-text').value);
-      const best=Array.isArray(d)?d:(d.bestiario||[]),grp=Array.isArray(d)?[]:(d.grupo||[]),enc=Array.isArray(d)?[]:(d.encuentros||[]),tbs=Array.isArray(d)?[]:(d.tablas||[]);
+      const best=cleanList(Array.isArray(d)?d:(d.bestiario||[])).map(x=>normItem('criaturas',x)),grp=Array.isArray(d)?[]:(d.grupo||[]),enc=Array.isArray(d)?[]:(d.encuentros||[]),tbs=Array.isArray(d)?[]:(d.tablas||[]);
       if(!Array.isArray(best)||!Array.isArray(grp)||!Array.isArray(enc))throw 0;
       const up=(arr,list)=>{let k=0;for(const m of list){if(!m||!m.n)continue;m.id=m.id||uid();const i=arr.findIndex(x=>x.id===m.id);if(i>=0)arr[i]=m;else arr.push(m);k++;}return k;};
       const a=up(MY,best),g=up(PARTY,grp),e2=up(PRESETS,enc),tb2=up(TABLES,tbs.filter(x=>x&&Array.isArray(x.cols)));saveTables();
-      if(d.modulos&&Array.isArray(d.modulos.list)){const M=mods();Object.assign(M.on,d.modulos.on||{});for(const m of d.modulos.list){if(!m||!m.id)continue;const i=M.list.findIndex(x=>x.id===m.id);if(i>=0)M.list[i]=m;else M.list.push(m);}saveMods();refreshMods();}
+      if(d.modulos&&Array.isArray(d.modulos.list)){const M=mods();
+        // solo interruptores sí/no y sin claves especiales: «__proto__» en el archivo cambiaría el prototipo de M.on
+        for(const[k,v] of Object.entries(d.modulos.on||{}))if(typeof v==='boolean'&&k!=='__proto__'&&k!=='constructor')M.on[k]=v;
+        for(const m of cleanMods(d.modulos.list)){if(!m||!m.id)continue;const i=M.list.findIndex(x=>x.id===m.id);if(i>=0)M.list[i]=m;else M.list.push(m);}saveMods();refreshMods();}
       saveBest();saveParty();savePresets();if(!$('#bestmodal').hidden)renderBest();renderParty();render();$('#iomodal').hidden=true;syncModalOpen();
       toast(`Importado: ${a} criaturas, ${g} personajes, ${e2} encuentros y ${tb2} tablas`);}catch(err){toast('El texto pegado no es una copia de seguridad válida');}break;}
     case 'unlink':formTpl=null;renderLinked();break;
@@ -2787,7 +2811,7 @@ const OFFICIAL_BYO=[
   {id:'ctt',n:'Caldero de Tasha para todo',ab:'CTT',k:'tasha'}];
 let MODS=null,MODCR=[],MODTB=[];
 function loadMods(){
-  let m=lsGet(MKEY);if(m&&m.on&&Array.isArray(m.list))return m;
+  let m=lsGet(MKEY);if(m&&m.on&&typeof m.on==='object'&&Array.isArray(m.list)){m.list=cleanMods(m.list);return m;}
   // Primera vez: quien ya usaba la herramienta conserva el SRD activado y sus libros pasan a ser módulos.
   const used=['combat-tracker-v1','combat-bestiary-v1','combat-party-v1','combat-tables-v1',LBKEY,SKEY].some(k=>{try{return !!localStorage.getItem(k);}catch{return false;}});
   m={on:{srd521:used},list:[]};
@@ -2795,6 +2819,7 @@ function loadMods(){
     m.list.push({id:o?o.id:modSlug(bk.n),n:o?o.n:bk.n,ab:o?o.ab:bk.ab,ref:o?o.id:'',on:true,conjuros:bk.spells});}
   lsSet(MKEY,m);return m;
 }
+function cleanMods(list){return cleanList(list).map(md=>{for(const[k] of MOD_TYPES)if(k in md)md[k]=cleanList(md[k]).map(x=>normItem(k,x));return md;});}
 const mods=()=>MODS||(MODS=loadMods());
 const modOn=id=>id==='srd521'||(id in mods().on?!!mods().on[id]:!!mods().list.find(m=>m.id===id)?.on);
 const activeMods=()=>mods().list.filter(m=>m.on);
@@ -2830,11 +2855,11 @@ function parseModule(text,fileName,ref=''){
   const o=OFFICIAL_BYO.find(x=>x.id===ref)||OFFICIAL_BYO.find(x=>fold(n).includes(x.k));
   const main={id:o?o.id:modSlug(n),n:o?o.n:n,ab:o?o.ab:String(d.abrev||d.abreviatura||'').trim()||modAbbr(n),ref:o?o.id:'',
     autor:String(d.autor||'').trim(),version:String(d.version||'').trim(),lic:String(d.licencia||d.license||'').trim(),desc:String(d.descripcion||'').trim(),on:true};
-  for(const[k] of MOD_TYPES)if(Array.isArray(d[k])&&k!=='conjuros')main[k]=d[k].filter(x=>x&&x.n);
+  for(const[k] of MOD_TYPES)if(Array.isArray(d[k])&&k!=='conjuros')main[k]=cleanList(d[k]);
   const out=[main];
   for(const g of groups){if(fold(g.n)===fold(n)||groups.length===1)main.conjuros=g.spells;
     else out.push({id:modSlug(g.n),n:g.n,ab:g.ab,ref:'',on:true,conjuros:g.spells});}
-  return out;
+  return cleanMods(out);
 }
 function importModule(text,fileName,ref=''){
   const add=parseModule(text,fileName,ref),M=mods();
@@ -2845,8 +2870,7 @@ function importModule(text,fileName,ref=''){
 }
 const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
 let PARTY=lsGet(PKEY), PRESETS=lsGet(EKEY), SPELLS={}, SPELL_LIST=[];
-if(!Array.isArray(PARTY))PARTY=[];
-if(!Array.isArray(PRESETS))PRESETS=[];
+PARTY=cleanList(PARTY,false);PRESETS=cleanList(PRESETS,false);
 for(const p of PARTY)p.tyl=pcSub(p);
 function pcSub(p){return [p.cls,p.esp,p.tf,p.jug].filter(Boolean).join(' · ')||'Personaje';}
 function saveParty(){lsSet(PKEY,PARTY);}
@@ -3108,7 +3132,7 @@ function loadEncounter(p){
 /* ---------- tablas aleatorias ---------- */
 // Tabla: {id,n,rows,mode:'col'|'row',fmt,cols:[{id,n}],cells:{colId:[texto por fila]}}. Las filas que sobran al reducir se conservan.
 const TKEY='combat-tables-v1';
-let TABLES=lsGet(TKEY)||[],tbSel=TABLES[0]?.id||null,tbHist=[],tbT;
+let TABLES=cleanList(lsGet(TKEY),false),tbSel=TABLES[0]?.id||null,tbHist=[],tbT;
 const saveTables=()=>{clearTimeout(tbT);if(!lsSet(TKEY,TABLES))toast('No se han podido guardar las tablas en este navegador');};
 const saveTablesSoon=()=>{clearTimeout(tbT);tbT=setTimeout(saveTables,300);};
 const curTable=()=>TABLES.find(x=>x.id===tbSel)||MODTB.find(x=>x.id===tbSel);
@@ -3297,7 +3321,7 @@ function compLoad(){
 }
 function compList(tab){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
-  const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mine:!!md.mine})));
+  const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   const by=new Map();for(const x of [...srd,...mod])by.set(fold(x.n),x);
   return [...by.values()].sort((a,b)=>a.n.localeCompare(b.n,'es'));
 }
@@ -3778,7 +3802,7 @@ function renderAcct(){
 const acStatus=t=>{$('#ac-sync').textContent=t;};
 async function sbInit(){
   if(window.claude)return;
-  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
+  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.integrity='sha384-2zrRDgDHSYB/GN3nFW3fsZXoxEhKIr3N2h63Tc6DEOB9JJdFIu8xMJT2Cph/gBil';s.crossOrigin='anonymous';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
   SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true}});
   if(new URLSearchParams(location.search).has('error_description')){const m=new URLSearchParams(location.search).get('error_description');history.replaceState(null,'',location.pathname+location.hash);toast('No se ha podido entrar: '+m);}
   renderAcct();if(location.hash==='#modulos'){renderMods();loadCatalog();}
