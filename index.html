@@ -732,9 +732,24 @@ main.wrap .listhead{scroll-margin-top:100px}
   .pagenav.open a.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
   .pagenav.open .navsep{order:0;flex-basis:100%;margin:8px 0 0 2px}
   .pagenav.open .navver{flex:0 0 auto;margin:0;min-height:36px;font-size:12px;color:var(--muted)}
-  .factions{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-  .factions::-webkit-scrollbar{display:none}
-  .fsum{flex:none}
+  /* turno en el móvil: «Después: …» bajo el turno actual y la ficha justo detrás */
+  .nextup{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:14px}
+  .nextup .nl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+  .nextup .nn{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .nextup .nn.first{font-weight:700}
+  .nextup .ar{color:var(--muted)}
+  .sheetslot{list-style:none}
+  /* con el combate en marcha, en el móvil solo queda lo de la mesa */
+  :root[data-mesa] .wrap .quietnote,:root[data-mesa] .listhead .tools,:root[data-mesa] .now .nx{display:none}
+  .sheetslot #curpanel{padding:12px}
+  #curtitle{cursor:pointer;display:flex;align-items:center;gap:8px}
+  #curtitle::after{content:'▾';margin-left:auto;color:var(--muted);font-size:14px}
+  #curpanel.folded #curtitle::after{content:'▸'}
+  #curpanel.folded #cursb{display:none}
+  /* bandos: compactos y en varias líneas, nada cortado */
+  .factions{gap:6px}
+  .fsum{padding:3px 9px;font-size:12px;gap:6px}
+  .fsum .mini{width:28px}
   :root[data-page="combate"] .brand,:root[data-page="combate"] .c-total{display:none}
   :root[data-page="combate"] .bar-in{flex-wrap:nowrap;gap:14px;padding-block:8px}
   :root[data-page="combate"] .counters{gap:12px}
@@ -1146,7 +1161,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 
   <aside class="side">
     <div class="panel" id="curpanel" hidden>
-      <h2 id="curtitle">Ficha del turno</h2>
+      <h2 id="curtitle" data-act="sheetfold">Ficha del turno</h2>
       <div id="cursb"></div>
     </div>
 
@@ -1843,7 +1858,7 @@ function render(){
 
   // ficha del turno
   const m=cur&&tpl(cur.tpl);
-  $('#curpanel').hidden=!m;$('#gosheet').hidden=!m;
+  $('#curpanel').hidden=!m;try{$('#curpanel').classList.toggle('folded',localStorage.getItem('combat-sheet-folded')==='1');}catch(e){}$('#gosheet').hidden=!m;
   if(m){$('#curtitle').textContent=`Ficha del turno · ${cur.name}`;$('#cursb').innerHTML=sbHTML(m,cur,{compact:true});}
 
   $('#fsum').innerHTML=s.factions.map(f=>{
@@ -1857,7 +1872,16 @@ function render(){
   else{
     const rows=s.order.map((id,idx)=>rowHTML(get(id),idx,cur&&cur.id===id));
     const rot=s.active&&s.rotate!==false&&s.turnIdx>0;
-    L.innerHTML=rot?rows.slice(s.turnIdx).join('')+`<li class="rsep" role="separator"><span>${T('Ronda')} ${s.round+1}</span></li>`+rows.slice(0,s.turnIdx).join(''):rows.join('');
+    const cp=$('#curpanel');if(cp.parentElement!==$('.side'))$('.side').prepend(cp);
+    const seq=rot?[...rows.slice(s.turnIdx),`<li class="rsep" role="separator"><span>${T('Ronda')} ${s.round+1}</span></li>`,...rows.slice(0,s.turnIdx)]:rows;
+    const mob=MOB.matches&&s.active&&cur;
+    if(mob){
+      const nx=[];for(let k=1;k<n&&nx.length<3;k++){const c=get(s.order[(s.turnIdx+k)%n]);if(c&&!(s.skipDead&&c.hp<=0&&!isPC(c)))nx.push(c);}
+      const up=nx.length?`<li class="nextup" aria-label="${T('Después')}"><span class="nl">${T('Después')}</span>${nx.map((c,i)=>`<span class="nn${i?'':' first'}" style="--fc:${fac(c.factionId).color}"><span class="dot"></span>${esc(c.name)}</span>`).join('<span class="ar" aria-hidden="true">→</span>')}</li>`:'';
+      seq.splice(rot?1:s.turnIdx+1,0,up,'<li class="sheetslot"></li>');
+    }
+    L.innerHTML=seq.join('');
+    if(mob)L.querySelector('.sheetslot').append(cp);
     // al pasar turno, si la lista quedó fuera de la vista, se vuelve a su principio
     const key=s.active?`${s.round}:${s.turnIdx}`:'';
     if(s.active&&s.rotate!==false&&key!==lastTurnKey&&lastTurnKey!==null){const h=document.querySelector('main.wrap .listhead'),r=h&&h.getBoundingClientRect();if(r&&(r.top<0||r.top>innerHeight*.6))h.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -1881,6 +1905,8 @@ function render(){
 }
 
 let lastTurnKey=null;
+const MOB=matchMedia('(max-width:680px)');
+MOB.addEventListener('change',()=>render());
 function rowHTML(c,idx,isCur){
   const f=fac(c.factionId),pct=c.maxHp?c.hp/c.maxHp:0;
   const col=c.hp<=0?'var(--crit)':pct<=.25?'var(--crit)':pct<=.5?'var(--warn)':'var(--ok)';
@@ -2224,7 +2250,8 @@ document.addEventListener('click',e=>{
       if(m.id)openEditor(m);else openEditor(m,{asNew:true,relink:same});break;}
     case 'mkfromrow':openEditor({n:c.name.replace(/ \d+$/,''),sz:'Medium',ty:'Humanoid',ac:c.ac,hp:c.maxHp,in:c.initBonus,ab:[10,10,10,10,10,10]},{asNew:true,relink:[c.id]});break;
     // bestiario
-    case 'gosheet':$('#curpanel').scrollIntoView({behavior:'smooth',block:'start'});break;
+    case 'sheetfold':if(!MOB.matches)break;{const p=$('#curpanel'),c=p.classList.toggle('folded');try{localStorage.setItem('combat-sheet-folded',c?'1':'');}catch(e){}}break;
+    case 'gosheet':$('#curpanel').classList.remove('folded');$('#curpanel').scrollIntoView({behavior:'smooth',block:'start'});break;
     case 'openbest':openBest();break;
     case 'closemodal':closeModals();break;
     case 'bpick':bSel=b.dataset.k;renderBest();if(matchMedia('(max-width:760px)').matches)$('#bview').scrollIntoView({behavior:'smooth'});break;
