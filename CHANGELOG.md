@@ -4,6 +4,19 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.31.0] - 2026-11-04
+### Cambiado
+- Nuevo diseño: el estilo Clásico pasa a «Tinta y cuero» (papel crema en modo claro, cuero oscuro en modo oscuro, rúbricas rojas, filetes y sello de iniciativa). Esos recursos de manual se aplican también a Arcano y Taberna.
+- Móvil y tablet: barra de turno inferior, menú ☰ plegable, lista de iniciativa que gira con el turno, franja «Después» y ficha del turno plegable dentro de la lista; objetivos táctiles de 44 px.
+- Las confirmaciones se hacen en una ventanita junto al botón en lugar de cambiar su texto.
+- − y + de vida con el campo vacío restan/suman 1 (o usan la última tirada para el daño).
+### Añadido
+- Aviso con «Deshacer» tras quitar una criatura, terminar, empezar un nuevo encuentro o vaciar el combate; «Deshecho» indica qué se ha deshecho.
+- Resumen al terminar el combate (rondas, turnos, caídos, quién sigue en pie, PG del grupo) con descanso largo y nuevo encuentro.
+- Estado «Maltrecho» escrito junto a los PG, anuncio del turno para lectores de pantalla, Vista y Estilo también en ⚙ Preferencias.
+### Eliminado
+- Estilo «Pergamino» (quien lo tuviera guardado pasa a Clásico).
+
 ## [1.30.0] - 2026-11-04
 ### Cambiado
 - El SRD 5.2.1 va siempre cargado, para todos; en Módulos aparece como «Incluido siempre» y ya no se puede desactivar.
