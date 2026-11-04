@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
-<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.removeItem('combat-skin');}if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;}catch(e){}</script>
+<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.removeItem('combat-skin');}if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;const t=localStorage.getItem('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
@@ -537,7 +537,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   --fg:#1c2740; --muted:#566079; --accent:#2e4a8a; --accent-fg:#ffffff;
   --sb:#fffdf8; --sb-rule:#b8342a; --hl:rgb(250 214 70/.55); --hl-solid:#9a5f00;
   --ok:#2f7d4a; --warn:#a0680a; --crit:#b8342a;
-  --cu-rule:rgb(110 145 210/.26); --cu-marg:rgb(210 100 100/.5); --cu-tape:rgb(226 204 140/.55); --cu-edge:#e2dccd; --cu-hlrow:rgb(250 214 70/.12);
+  --cu-rule:rgb(110 145 210/.45); --cu-marg:rgb(210 100 100/.5); --cu-tape:rgb(226 204 140/.55); --cu-edge:#e2dccd; --cu-hlrow:rgb(250 214 70/.12);
   --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%232e4a8a' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23b8342a' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%231c2740' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
   --shadow:0 2px 3px rgb(30 30 50/.08),0 12px 26px rgb(30 30 50/.09);
   --f-display:"Kalam","Literata",cursive; --f-body:"Literata",Georgia,serif; --f-sb:"Literata",Georgia,serif; --f-num:"Kalam","Literata",cursive;
@@ -547,7 +547,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
   --sb:#202227; --sb-rule:#ff8a78; --hl:rgb(240 214 80/.30); --hl-solid:#e9cf55;
   --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
-  --cu-rule:rgb(150 170 215/.09); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
+  --cu-rule:rgb(150 170 215/.2); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
   --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%239db8ff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23ff8a78' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%23d9d4c7' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
   --shadow:0 2px 4px rgb(0 0 0/.35),0 12px 28px rgb(0 0 0/.35);
   color-scheme:dark; scrollbar-color:#4a4e5a transparent}}
@@ -556,15 +556,15 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
   --sb:#202227; --sb-rule:#ff8a78; --hl:rgb(240 214 80/.30); --hl-solid:#e9cf55;
   --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
-  --cu-rule:rgb(150 170 215/.09); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
+  --cu-rule:rgb(150 170 215/.2); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
   --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%239db8ff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23ff8a78' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%23d9d4c7' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
   --shadow:0 2px 4px rgb(0 0 0/.35),0 12px 28px rgb(0 0 0/.35);
   color-scheme:dark; scrollbar-color:#4a4e5a transparent}
-[data-skin="cuaderno"] body{background-color:var(--bg);background-image:linear-gradient(90deg,transparent 40px,var(--cu-marg) 40px 41.5px,transparent 41.5px),repeating-linear-gradient(180deg,transparent 0 31px,var(--cu-rule) 31px 32px);background-attachment:fixed,local}
+[data-skin="cuaderno"] body{background-color:var(--bg);background-image:linear-gradient(90deg,transparent 40px,var(--cu-marg) 40px 41.5px,transparent 41.5px);background-attachment:fixed}
 [data-skin="cuaderno"] body::before{background:var(--bg)}
 [data-skin="cuaderno"] ::selection{background:var(--hl);color:var(--fg)}
 [data-skin="cuaderno"] .brand::first-letter,[data-skin="cuaderno"] .htitle::first-letter{color:inherit}
-[data-skin="cuaderno"] .bar{background:color-mix(in srgb,var(--bg) 94%,transparent);border-bottom:1.5px dashed color-mix(in srgb,var(--fg) 22%,transparent);box-shadow:var(--shadow)}
+[data-skin="cuaderno"] .bar{background:color-mix(in srgb,var(--bg) 94%,transparent);border-bottom:1.5px solid var(--cu-marg);box-shadow:var(--shadow)}
 [data-skin="cuaderno"] .brand{font-weight:700;font-size:26px;letter-spacing:0;color:var(--accent)}
 [data-skin="cuaderno"] .counter small,[data-skin="cuaderno"] .now small{font-family:"Kalam",cursive;text-transform:none;letter-spacing:0;font-size:15px}
 [data-skin="cuaderno"] .counter b{font-size:26px;font-weight:700}
@@ -573,7 +573,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="cuaderno"] h2,[data-skin="cuaderno"] .panel>h2,[data-skin="cuaderno"] .listhead h2,[data-skin="cuaderno"] .vhead h2{font-weight:700;font-size:24px;letter-spacing:0;color:var(--sb-rule);border-bottom:0;padding-bottom:0}
 [data-skin="cuaderno"] .panel,[data-skin="cuaderno"] .tool{position:relative}
 [data-skin="cuaderno"] .panel::before{display:none}
-[data-skin="cuaderno"] .panel{background:transparent;border:0;border-top:1.5px dashed color-mix(in srgb,var(--fg) 20%,transparent);border-radius:0;box-shadow:none;padding:14px 4px}
+[data-skin="cuaderno"] .panel{background:transparent;border:0;border-top:1px solid var(--cu-rule);border-radius:0;box-shadow:none;padding:14px 4px}
 [data-skin="cuaderno"] .btn{border:1.5px solid color-mix(in srgb,var(--fg) 60%,transparent);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;background:var(--surface)}
 [data-skin="cuaderno"] .btn:hover{background:var(--surface-2);border-color:var(--fg)}
 [data-skin="cuaderno"] .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
@@ -584,7 +584,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="cuaderno"] .pagenav .navsep{font-family:"Kalam",cursive;text-transform:none;letter-spacing:0;font-size:14px}
 /* lista de iniciativa: renglones, no tarjetas */
 [data-skin="cuaderno"] .list{gap:0}
-[data-skin="cuaderno"] .row{background:transparent;border:0;border-bottom:1.5px dashed color-mix(in srgb,var(--fg) 18%,transparent);border-radius:0;box-shadow:none}
+[data-skin="cuaderno"] .row{background:transparent;border:0;border-bottom:1px solid var(--cu-rule);border-radius:0;box-shadow:none}
 [data-skin="cuaderno"] .row.cur{box-shadow:none;background:linear-gradient(90deg,var(--cu-hlrow),transparent 60%)}
 [data-skin="cuaderno"] .row.cur .name{display:inline-block;max-width:100%;padding:0 5px;background:linear-gradient(100deg,transparent 1%,var(--hl) 3%,var(--hl) 96%,transparent 99%)}
 [data-skin="cuaderno"] .row.down{opacity:.6}
@@ -609,11 +609,11 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="cuaderno"] label.f input,[data-skin="cuaderno"] label.f select,[data-skin="cuaderno"] label.f textarea,[data-skin="cuaderno"] .skin select,[data-skin="cuaderno"] .bfilters input,[data-skin="cuaderno"] .bfilters select,[data-skin="cuaderno"] .frow input[type=text]{background:var(--surface);border:1.5px solid color-mix(in srgb,var(--fg) 28%,transparent);border-radius:4px}
 [data-skin="cuaderno"] label.f textarea{font-family:"IBM Plex Mono",ui-monospace,monospace}
 /* la ficha: una cartulina con clip */
-[data-skin="cuaderno"] .sb{background-color:var(--sb);background-image:linear-gradient(180deg,transparent 52px,var(--cu-marg) 52px 53.5px,transparent 53.5px),repeating-linear-gradient(180deg,transparent 0 23px,var(--cu-rule) 23px 24px);border:1px solid var(--cu-edge);border-radius:2px;box-shadow:var(--shadow);padding:16px 18px}
+[data-skin="cuaderno"] .sb{background-color:var(--sb);background-image:none;border:1px solid var(--cu-edge);border-radius:2px;box-shadow:var(--shadow);padding:16px 18px}
 [data-skin="cuaderno"] #curpanel .sb{transform:rotate(.4deg)}
-[data-skin="cuaderno"] .sb h3{font-weight:700;font-size:30px;color:var(--accent)}
+[data-skin="cuaderno"] .sb h3{font-weight:700;font-size:30px;color:var(--accent);padding-bottom:4px;border-bottom:1.5px solid var(--cu-marg)}
 [data-skin="cuaderno"] .sb h4{font-weight:700;font-size:21px;color:var(--sb-rule);border-bottom:0}
-[data-skin="cuaderno"] .sb hr{height:0;background:none;border-top:1.5px dashed var(--cu-marg)}
+[data-skin="cuaderno"] .sb hr{height:0;background:none;border-top:1px solid var(--cu-rule)}
 [data-skin="cuaderno"] .sb .ln b{font-family:"Kalam",cursive;font-weight:700;font-size:17px;color:var(--accent)}
 [data-skin="cuaderno"] .sb .abil div{background:none;font-size:18px}
 [data-skin="cuaderno"] .sb .abil b{font-family:"Literata",serif;font-size:11px;letter-spacing:.06em;color:var(--muted)}
@@ -634,7 +634,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="cuaderno"] .tool .tstat{font-family:"Kalam",cursive;font-size:16px}
 [data-skin="cuaderno"] .toast{background:#e9cf55;color:#1a1a12;border:0;border-radius:2px;box-shadow:0 8px 22px rgb(0 0 0/.45);font-family:"Kalam",cursive;font-size:17px}
 [data-skin="cuaderno"] .log li.round{font-family:"Kalam",cursive;font-size:18px;color:var(--sb-rule)}
-@media (max-width:680px){[data-skin="cuaderno"] body{background-image:repeating-linear-gradient(180deg,transparent 0 31px,var(--cu-rule) 31px 32px);background-attachment:local}}
+@media (max-width:1399px){[data-skin="cuaderno"] body{background-image:none}}
 
 /* ===== Estilo «Arcano»: noche estrellada, vidrio y pan de oro ===== */
 :root[data-skin="arcano"]{
@@ -1511,6 +1511,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <label class="f">Idioma<select id="pf-lang" class="noi18n"></select></label>
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
+      <label class="f">Tema<select id="pf-theme"><option value="">Automático (como el sistema)</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
       <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option><option value="cuaderno">Cuaderno</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
@@ -3113,7 +3114,7 @@ function extraAct(act,b,c,e){
     case 'sumclose':state.summary=null;save();render();break;
     case 'toastundo':$('#toast').classList.remove('show','act');undo();break;
     case 'navtoggle':{const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
-    case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
+    case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
@@ -3481,6 +3482,7 @@ function setPref(k,v){PREFS[k]=v;lsSet(PREFKEY,PREFS);document.querySelectorAll(
 $('#pf-dist').addEventListener('change',e=>setPref('dist',e.target.value));
 $('#pf-peso').addEventListener('change',e=>setPref('peso',e.target.value));
 // las mismas que en la barra: se cambian allí para no duplicar la lógica
+$('#pf-theme').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;try{localStorage.setItem('combat-theme',v);}catch(err){}});
 for(const k of ['view','skin'])$('#pf-'+k).addEventListener('change',e=>{const b=$('#'+k);b.value=e.target.value;b.dispatchEvent(new Event('change'));});
 $('#pf-lang').innerHTML=Object.entries(LANGS).map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
 $('#pf-lang').addEventListener('change',async e=>{

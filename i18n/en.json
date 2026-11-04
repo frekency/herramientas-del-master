@@ -728,5 +728,9 @@
   "Daño (vacío = #)": "Damage (empty = #)",
   "Curar (vacío = #)": "Heal (empty = #)",
   "Maltrecho": "Bloodied",
-  "Cuaderno": "Notebook"
+  "Cuaderno": "Notebook",
+  "Tema": "Theme",
+  "Automático (como el sistema)": "Automatic (same as the system)",
+  "Claro": "Light",
+  "Oscuro": "Dark"
 }

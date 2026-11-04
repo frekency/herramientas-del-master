@@ -728,5 +728,9 @@
   "Daño (vacío = #)": "Schaden (leer = #)",
   "Curar (vacío = #)": "Heilen (leer = #)",
   "Maltrecho": "Blutend",
-  "Cuaderno": "Notizbuch"
+  "Cuaderno": "Notizbuch",
+  "Tema": "Design",
+  "Automático (como el sistema)": "Automatisch (wie das System)",
+  "Claro": "Hell",
+  "Oscuro": "Dunkel"
 }

@@ -728,5 +728,9 @@
   "Daño (vacío = #)": "Dégâts (vide = #)",
   "Curar (vacío = #)": "Soigner (vide = #)",
   "Maltrecho": "En sang",
-  "Cuaderno": "Carnet"
+  "Cuaderno": "Carnet",
+  "Tema": "Thème",
+  "Automático (como el sistema)": "Automatique (comme le système)",
+  "Claro": "Clair",
+  "Oscuro": "Sombre"
 }

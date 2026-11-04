@@ -728,5 +728,9 @@
   "Daño (vacío = #)": "Dano (vazio = #)",
   "Curar (vacío = #)": "Curar (vazio = #)",
   "Maltrecho": "Sangrando",
-  "Cuaderno": "Caderno"
+  "Cuaderno": "Caderno",
+  "Tema": "Tema",
+  "Automático (como el sistema)": "Automático (como o sistema)",
+  "Claro": "Claro",
+  "Oscuro": "Escuro"
 }
