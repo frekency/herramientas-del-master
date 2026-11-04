@@ -689,6 +689,49 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="taberna"] .toast{background:linear-gradient(180deg,#3a2718,#24170e);color:var(--fg);border:2px solid var(--brass);box-shadow:0 0 30px var(--candle)}
 [data-skin="taberna"] .modal{background:rgb(8 4 2/.72)}
 
+/* ===== Móvil, tablet y pantallas táctiles ===== */
+.mob-only{display:none}
+.chip,.turnflag{white-space:nowrap}
+/* tablet y portátil pequeño: la vida baja bajo el nombre para que el nombre respire */
+@media (max-width:1180px) and (min-width:681px){
+  .rmain{grid-template-columns:52px minmax(0,1fr) 54px auto;grid-template-areas:"i n a q" "i h a q";row-gap:6px}
+  .c-init{grid-area:i}.c-name{grid-area:n}.c-ac{grid-area:a}.c-hp{grid-area:h}.c-quick{grid-area:q}
+  :root[data-view="mini"] .rmain{grid-template-columns:42px minmax(0,1fr) 40px auto}
+}
+/* móvil: barra de combate arriba solo con el estado, acciones abajo al alcance del pulgar */
+@media (max-width:680px){
+  .pagenav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .pagenav::-webkit-scrollbar{display:none}
+  .pagenav a,.pagenav .navsep,.pagenav .btn{flex:none;white-space:nowrap}
+  .factions{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .factions::-webkit-scrollbar{display:none}
+  .fsum{flex:none}
+  :root[data-page="combate"] .brand,:root[data-page="combate"] .c-total{display:none}
+  :root[data-page="combate"] .bar-in{flex-wrap:nowrap;gap:14px;padding-block:8px}
+  :root[data-page="combate"] .counters{gap:12px}
+  :root[data-page="combate"] .counter b{font-size:19px}
+  :root[data-page="combate"] .now .who{font-size:18px}
+  :root[data-page="combate"] .bar .nav{position:fixed;left:0;right:0;bottom:0;z-index:6;flex-wrap:nowrap;gap:6px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgb(0 0 0/.18);padding:8px max(12px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+  :root[data-page="combate"] .bar .nav .skin,:root[data-page="combate"] .bar .nav [data-act="openparty"],:root[data-page="combate"] .bl{display:none}
+  :root[data-page="combate"] .bar .nav .btn{min-height:48px;min-width:48px;justify-content:center;font-size:18px}
+  :root[data-page="combate"] #next{flex:1;font-size:17px}
+  :root[data-page="combate"] .mob-only:not([hidden]){display:inline-flex}
+  :root[data-page="combate"] .lastroll{position:absolute;bottom:calc(100% + 8px);right:12px;background:var(--surface);box-shadow:var(--shadow)}
+  :root[data-page="combate"] .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  :root[data-page="combate"] #curpanel{scroll-margin-top:80px}
+  .c-quick input{flex:1;min-width:0}
+  [data-skin="arcano"] .bar{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--surface)}
+}
+/* dedos, no ratón: objetivos de al menos 44 px en lo que más se toca durante el combate */
+@media (pointer:coarse){
+  .qb,:root[data-view="mini"] .qb{min-width:44px;min-height:44px}
+  .more{min-width:44px;min-height:44px}
+  .c-quick input,:root[data-view="mini"] .c-quick input{min-height:44px}
+  .meta button.chip{min-height:32px;padding:3px 10px}
+  .cb{min-height:40px;padding:6px 12px}
+  .btn,.btn.sm{min-height:40px}
+  .c-init input{min-height:44px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 #loading{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--bg);transition:opacity .25s}
 #loading.out{opacity:0;pointer-events:none}
@@ -722,10 +765,11 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false">⚙ Ajustes</button>
       <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="pergamino">Pergamino</option><option value="taberna">Taberna</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores">🛡 Grupo</button>
-      <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)">🔎 Buscar</button>
-      <button class="btn" id="prev" title="Turno anterior (←)">◀ Anterior</button>
+      <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar">🔎 <span class="bl">Buscar</span></button>
+      <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior">◀ <span class="bl">Anterior</span></button>
       <button class="btn primary big" id="next" title="Siguiente turno (→ o espacio)">Empezar ▶</button>
-      <button class="btn ghost" id="undo" title="Deshacer (Ctrl+Z)">↶</button>
+      <button class="btn ghost" id="undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
+      <button class="btn mob-only" data-act="gosheet" id="gosheet" title="Ir a la ficha del turno" aria-label="Ficha del turno" hidden>📖</button>
     </div>
   </div>
 </header>
@@ -1310,6 +1354,8 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
     <div class="mbody" style="display:grid;gap:12px">
       <label class="f">Idioma<select id="pf-lang" class="noi18n"></select></label>
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
+      <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="pergamino">Pergamino</option><option value="taberna">Taberna</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
@@ -1761,7 +1807,7 @@ function render(){
 
   // ficha del turno
   const m=cur&&tpl(cur.tpl);
-  $('#curpanel').hidden=!m;
+  $('#curpanel').hidden=!m;$('#gosheet').hidden=!m;
   if(m){$('#curtitle').textContent=`Ficha del turno · ${cur.name}`;$('#cursb').innerHTML=sbHTML(m,cur,{compact:true});}
 
   $('#fsum').innerHTML=s.factions.map(f=>{
@@ -1814,10 +1860,10 @@ function rowHTML(c,idx,isCur){
     <div class="c-ac"><div class="shield">${c.ac??'–'}</div><small>CA</small></div>
     <div class="c-quick">
       <input id="amt-${c.id}" placeholder="${ph}" aria-label="Cantidad" data-amt>
-      <button class="qb d" data-act="dmg" title="Daño${state.lastRoll?` (vacío = ${state.lastRoll.v})`:''}">−</button>
-      <button class="qb h" data-act="heal" title="Curar">+</button>
-      <button class="qb t" data-act="temp" title="PG temporales">T</button>
-      <button class="more" data-act="toggle" aria-expanded="${open}" title="Detalles">${open?'▴':'▾'}</button>
+      <button class="qb d" data-act="dmg" aria-label="Daño" title="Daño${state.lastRoll?` (vacío = ${state.lastRoll.v})`:''}">−</button>
+      <button class="qb h" data-act="heal" aria-label="Curar" title="Curar">+</button>
+      <button class="qb t" data-act="temp" aria-label="PG temporales" title="PG temporales">T</button>
+      <button class="more" data-act="toggle" aria-expanded="${open}" aria-label="Detalles" title="Detalles">${open?'▴':'▾'}</button>
     </div>
   </div>
   ${open?detHTML(c,m):''}
@@ -2133,6 +2179,7 @@ document.addEventListener('click',e=>{
       if(m.id)openEditor(m);else openEditor(m,{asNew:true,relink:same});break;}
     case 'mkfromrow':openEditor({n:c.name.replace(/ \d+$/,''),sz:'Medium',ty:'Humanoid',ac:c.ac,hp:c.maxHp,in:c.initBonus,ab:[10,10,10,10,10,10]},{asNew:true,relink:[c.id]});break;
     // bestiario
+    case 'gosheet':$('#curpanel').scrollIntoView({behavior:'smooth',block:'start'});break;
     case 'openbest':openBest();break;
     case 'closemodal':closeModals();break;
     case 'bpick':bSel=b.dataset.k;renderBest();if(matchMedia('(max-width:760px)').matches)$('#bview').scrollIntoView({behavior:'smooth'});break;
@@ -2836,7 +2883,7 @@ function extraAct(act,b,c,e){
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
     case 'openparty':location.hash='jugadores';break;
-    case 'pfopen':$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
+    case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
@@ -3202,6 +3249,8 @@ new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n.nod
 function setPref(k,v){PREFS[k]=v;lsSet(PREFKEY,PREFS);document.querySelectorAll('.u').forEach(uPaint);toast('Preferencias guardadas');}
 $('#pf-dist').addEventListener('change',e=>setPref('dist',e.target.value));
 $('#pf-peso').addEventListener('change',e=>setPref('peso',e.target.value));
+// las mismas que en la barra: se cambian allí para no duplicar la lógica
+for(const k of ['view','skin'])$('#pf-'+k).addEventListener('change',e=>{const b=$('#'+k);b.value=e.target.value;b.dispatchEvent(new Event('change'));});
 $('#pf-lang').innerHTML=Object.entries(LANGS).map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
 $('#pf-lang').addEventListener('change',async e=>{
   const l=e.target.value in LANGS?e.target.value:'es',d0=PREF_DEF(LANG);

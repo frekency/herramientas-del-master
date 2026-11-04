@@ -696,5 +696,9 @@
   "✓ Incluido siempre": "✓ Immer enthalten",
   "Incluido siempre": "Immer enthalten",
   "Activo siempre": "Immer aktiv",
-  "Datos en": "Daten auf"
+  "Datos en": "Daten auf",
+  "Vista del combate": "Kampfansicht",
+  "Ir a la ficha del turno": "Zum Werteblock des Zugs",
+  "Turno anterior": "Vorheriger Zug",
+  "Deshacer": "Rückgängig"
 }

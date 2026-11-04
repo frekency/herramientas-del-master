@@ -696,5 +696,9 @@
   "✓ Incluido siempre": "✓ Always included",
   "Incluido siempre": "Always included",
   "Activo siempre": "Always on",
-  "Datos en": "Data in"
+  "Datos en": "Data in",
+  "Vista del combate": "Combat view",
+  "Ir a la ficha del turno": "Go to the current stat block",
+  "Turno anterior": "Previous turn",
+  "Deshacer": "Undo"
 }
