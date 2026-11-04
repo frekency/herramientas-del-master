@@ -18,6 +18,8 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 | `libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`). **Uso personal**: ignorado por git. |
 | `tools/build_spells.py` | Convierte el CSV de conjuros a `conjuros.json`. |
 | `tools/build_srd_spells.py` | Extrae los conjuros del PDF oficial en español (`pdftotext`) y les pone el nombre en inglés de Open5e. |
+| `srd2024_fr.json`, `conjuros_srd_fr.json`, `compendio_srd_fr.json` | Bestiario, conjuros y compendio del SRD 5.2.1 en francés (CC-BY-4.0), con el nombre inglés de cada criatura y conjuro. |
+| `tools/build_fr.py`, `tools/build_spells_fr.py`, `tools/build_compendio_fr.py` | Extraen el SRD 5.2.1 en francés del PDF oficial (`pdftotext -enc UTF-8` para criaturas y conjuros, `stream.py` para el compendio) y lo emparejan con los datos en inglés. |
 
 ## Contenido libre y libros opcionales
 - De serie solo va contenido del **SRD 5.2.1** (CC-BY-4.0): bestiario y conjuros. Es lo único que se publica en abierto.
