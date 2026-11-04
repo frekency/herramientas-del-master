@@ -724,5 +724,7 @@
   "ronda": "rodada",
   "rondas": "rodadas",
   "turno": "turno",
-  "turnos": "turnos"
+  "turnos": "turnos",
+  "Daño (vacío = #)": "Dano (vazio = #)",
+  "Curar (vacío = #)": "Curar (vazio = #)"
 }

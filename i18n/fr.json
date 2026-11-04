@@ -724,5 +724,7 @@
   "ronda": "round",
   "rondas": "rounds",
   "turno": "tour",
-  "turnos": "tours"
+  "turnos": "tours",
+  "Daño (vacío = #)": "Dégâts (vide = #)",
+  "Curar (vacío = #)": "Soigner (vide = #)"
 }

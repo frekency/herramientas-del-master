@@ -724,5 +724,7 @@
   "ronda": "round",
   "rondas": "rounds",
   "turno": "turn",
-  "turnos": "turns"
+  "turnos": "turns",
+  "Daño (vacío = #)": "Damage (empty = #)",
+  "Curar (vacío = #)": "Heal (empty = #)"
 }

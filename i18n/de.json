@@ -724,5 +724,7 @@
   "ronda": "Runde",
   "rondas": "Runden",
   "turno": "Zug",
-  "turnos": "Züge"
+  "turnos": "Züge",
+  "Daño (vacío = #)": "Schaden (leer = #)",
+  "Curar (vacío = #)": "Heilen (leer = #)"
 }

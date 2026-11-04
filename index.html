@@ -700,6 +700,13 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .espc .hpbar{grid-column:1/-1;height:5px}
 .esact{margin-top:6px;flex-wrap:wrap}
 @media (prefers-reduced-motion:no-preference){.endsum{animation:esin .35s cubic-bezier(.2,.8,.2,1)}@keyframes esin{from{opacity:0;transform:translateY(-6px)}}}
+/* ventanita de confirmación */
+.cpop{position:fixed;z-index:60;width:min(300px,calc(100vw - 24px));background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgb(0 0 0/.35);padding:12px 14px;display:grid;gap:10px}
+.cpop[hidden]{display:none}
+.cpop .cq{margin:0;font-size:15px;line-height:1.35}
+.cpop .inline{justify-content:flex-end;gap:8px}
+.cpop .btn{min-height:44px;padding-inline:16px}
+@media (prefers-reduced-motion:no-preference){.cpop:not([hidden]){animation:cpin .14s ease-out}@keyframes cpin{from{opacity:0;transform:scale(.97)}}}
 /* aviso con «Deshacer»: se puede pulsar */
 .toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px;width:max-content}
 .tundo{border:none;background:none;color:inherit;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:6px 4px;cursor:pointer;white-space:nowrap}
@@ -1442,6 +1449,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<div class="cpop" id="cpop" role="alertdialog" aria-labelledby="cpop-q" hidden><p class="cq" id="cpop-q"><b>¿Seguro?</b> <span></span></p><div class="inline"><button type="button" class="btn" data-cp="no">Cancelar</button><button type="button" class="btn danger" data-cp="yes">Sí</button></div></div>
 
 <script>
 /* ---------- idioma ----------
@@ -1740,7 +1748,8 @@ function prev(){
 
 /* ---------- PG ---------- */
 function applyHP(c,kind,raw){
-  if(String(raw).trim()===''&&kind==='dmg'&&state.lastRoll)raw=String(state.lastRoll.v);
+  // casilla vacía: el daño usa la última tirada si la hay; si no, − y + quitan o suman 1
+  if(String(raw).trim()===''&&kind!=='temp')raw=kind==='dmg'&&state.lastRoll?String(state.lastRoll.v):'1';
   const r=roll(raw);if(!r||r.v<=0){toast('Escribe una cantidad (p. ej. 8 o 2d6+3) o tira el daño desde una ficha');return;}
   const amt=r.v,dice=/d/.test(raw)?` (${r.txt})`:'';
   commit(()=>{
@@ -1960,7 +1969,7 @@ function rowHTML(c,idx,isCur){
     const lbl=x.key==='agotamiento'?`Agotamiento ${x.lvl||1}`:(CLABEL[x.key]||x.label)+(x.sp?`: ${x.sp}`:'');
     return `<button class="chip ${x.key==='concentracion'?'conc':''}" data-act="rmcond" data-i="${i}" title="Quitar">${esc(lbl)}${x.rounds!=null?` <span class="r">${x.rounds}r</span>`:''} ×</button>`;}).join('');
   const down=c.hp<=0;
-  const ph=state.lastRoll?String(state.lastRoll.v):'0';
+  const ph=state.lastRoll?String(state.lastRoll.v):'1';
   return `<li class="row ${isCur?'cur':''} ${down&&!isPC(c)?'down':''}" style="--fc:${f.color}" data-id="${c.id}">
   <div class="rmain">
     <div class="c-init"><input id="init-${c.id}" data-field="init" value="${c.init??''}" inputmode="numeric" aria-label="Iniciativa" title="Iniciativa (bonif. ${sgn(c.initBonus||0)})"></div>
@@ -1975,8 +1984,8 @@ function rowHTML(c,idx,isCur){
     <div class="c-ac"><div class="shield">${c.ac??'–'}</div><small>CA</small></div>
     <div class="c-quick">
       <input id="amt-${c.id}" placeholder="${ph}" aria-label="Cantidad" data-amt>
-      <button class="qb d" data-act="dmg" aria-label="Daño" title="Daño${state.lastRoll?` (vacío = ${state.lastRoll.v})`:''}">−</button>
-      <button class="qb h" data-act="heal" aria-label="Curar" title="Curar">+</button>
+      <button class="qb d" data-act="dmg" aria-label="Daño" title="Daño (vacío = ${state.lastRoll?state.lastRoll.v:1})">−</button>
+      <button class="qb h" data-act="heal" aria-label="Curar" title="Curar (vacío = 1)">+</button>
       <button class="qb t" data-act="temp" aria-label="PG temporales" title="PG temporales">T</button>
       <button class="more" data-act="toggle" aria-expanded="${open}" aria-label="Detalles" title="Detalles">${open?'▴':'▾'}</button>
     </div>
@@ -2235,11 +2244,25 @@ $('#editform').addEventListener('submit',e=>{
 /* ---------- acciones ---------- */
 function armed(btn){
   if(!btn.hasAttribute('data-confirm'))return true;
-  if(btn.dataset.armed)return true;
-  btn.dataset.armed='1';btn.dataset.orig=btn.innerHTML;btn.textContent=T('¿Seguro? Pulsa otra vez');
-  setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.innerHTML=btn.dataset.orig;}},3000);
-  return false;
+  if(btn.dataset.armed){delete btn.dataset.armed;return true;}
+  confirmPop(btn);return false;
 }
+/* confirmación en una ventanita junto al botón: no depende de lo que mida el botón */
+let cpBtn=null;
+function confirmPop(btn){
+  const p=$('#cpop'),lbl=(btn.getAttribute('aria-label')||btn.title||btn.textContent).trim();
+  cpBtn=btn;p.querySelector('.cq span').textContent=lbl;p.hidden=false;
+  const r=btn.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,vw=innerWidth;
+  p.style.left=Math.max(12,Math.min(r.left+r.width/2-w/2,vw-w-12))+'px';
+  p.style.top=(r.top-h-10>=8?r.top-h-10:Math.min(r.bottom+10,innerHeight-h-8))+'px';
+  p.querySelector('[data-cp="yes"]').focus({preventScroll:true});
+}
+function cpClose(back=true){const p=$('#cpop');if(p.hidden)return;p.hidden=true;if(back&&cpBtn?.isConnected)cpBtn.focus({preventScroll:true});cpBtn=null;}
+document.addEventListener('click',e=>{const p=$('#cpop');if(p.hidden)return;const k=e.target.closest('[data-cp]');
+  if(k){const b=cpBtn;cpClose(false);if(k.dataset.cp==='yes'&&b?.isConnected){b.dataset.armed='1';b.click();}return;}
+  if(!e.target.closest("#cpop")&&!cpBtn?.contains(e.target))cpClose(false);},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#cpop').hidden){e.stopPropagation();cpClose();}},true);
+addEventListener('scroll',()=>cpClose(false),{passive:true});addEventListener('resize',()=>cpClose(false));
 function addCreature(c){
   state.creatures.push(c);
   if(state.active&&c.init!=null){
