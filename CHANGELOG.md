@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.33.0] - 2026-11-04
+### Cambiado
+- Referencia rápida: iconos SVG del sprite (49 símbolos nuevos) en lugar de emojis en `QR_SECS` y `QR_ICON`; el desplegable de categorías va sin iconos.
+- Tarjetas de la referencia sin franja lateral de color; el color de la categoría lo lleva el icono. Cuaderno y Libro de reglas las muestran como entradas sin caja.
+
 ## [1.32.0] - 2026-11-04
 ### Añadido
 - Estilo «Cuaderno» (claro y oscuro), ahora el de serie: letra a mano, fluorescente en el turno, renglones como separadores y PG anteriores tachados (se guardan los tres últimos en `hph`; se borran al empezar un encuentro nuevo).
