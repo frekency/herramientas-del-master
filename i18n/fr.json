@@ -716,5 +716,13 @@
   "Vaciar el combate": "Vider le combat",
   "Deshecho": "Annulé",
   "Quitar del combate": "Retirer du combat",
-  "Listo para el siguiente encuentro": "Prêt pour la prochaine rencontre"
+  "Listo para el siguiente encuentro": "Prêt pour la prochaine rencontre",
+  "Fin del combate": "Fin du combat",
+  "Caídos": "Tombés",
+  "Siguen en pie": "Encore debout",
+  "Nadie": "Personne",
+  "ronda": "round",
+  "rondas": "rounds",
+  "turno": "tour",
+  "turnos": "tours"
 }

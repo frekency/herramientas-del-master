@@ -716,5 +716,13 @@
   "Vaciar el combate": "Clear the combat",
   "Deshecho": "Undone",
   "Quitar del combate": "Remove from combat",
-  "Listo para el siguiente encuentro": "Ready for the next encounter"
+  "Listo para el siguiente encuentro": "Ready for the next encounter",
+  "Fin del combate": "End of combat",
+  "Caídos": "Fallen",
+  "Siguen en pie": "Still standing",
+  "Nadie": "Nobody",
+  "ronda": "round",
+  "rondas": "rounds",
+  "turno": "turn",
+  "turnos": "turns"
 }
