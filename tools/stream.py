@@ -4,7 +4,7 @@
 #   ('row', [celdas], página)         filas de tabla (texto en GillSans pequeño, agrupado por altura)
 import pymupdf,re,html,json,sys
 
-HEAD={26.0:1,18.0:2,14.0:3,12.0:4,10.5:5}
+HEAD={26.0:1,23.0:1,18.0:2,14.0:3,12.0:4,10.5:5}
 def kind(s):
     f,z=s['font'],round(s['size'],1)
     if 'SemiBold' in f and 'SC700' not in f and z in HEAD:return 'h',HEAD[z]

@@ -9,10 +9,12 @@ def ct(x):
     v=x['casting_time'];t=CT.get(v) or re.sub(r'^(\d+)(\D+)$',lambda m:f"{m[1]} {m[2].rstrip('s')}{'s' if m[1]!='1' else ''}",v)
     if v=='reaction' and x.get('reaction_condition') not in (None,'None',''):t+=', '+x['reaction_condition']
     return t
+# Descripciones que faltan en Open5e, copiadas del PDF oficial del SRD 5.2.1
+DESC_FIX={'Greater Invisibility':'A creature you touch has the Invisible condition until the spell ends.'}
 out=[]
 for x in R:
     comp=', '.join([c for c,k in (('V','verbal'),('S','somatic')) if x.get(k)]+([f"M ({x['material_specified']})" if x.get('material_specified') else 'M'] if x.get('material') else []))
-    d=x['desc'].strip()
+    d=x['desc'].strip() or DESC_FIX.get(x['name'],'')
     if x.get('higher_level'):d+=f"\n\n**{'Cantrip Upgrade' if int(x['level'])==0 else 'Using a Higher-Level Spell Slot'}.** {x['higher_level'].strip()}"
     dur=x['duration'];dur=dur[:1].upper()+dur[1:]
     if x.get('concentration'):dur='Concentration, up to '+x['duration']

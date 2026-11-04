@@ -20,6 +20,10 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 | `tools/build_srd_spells.py` | Extrae los conjuros del PDF oficial en español (`pdftotext`) y les pone el nombre en inglés de Open5e. |
 | `srd2024_fr.json`, `conjuros_srd_fr.json`, `compendio_srd_fr.json` | Bestiario, conjuros y compendio del SRD 5.2.1 en francés (CC-BY-4.0), con el nombre inglés de cada criatura y conjuro. |
 | `tools/build_fr.py`, `tools/build_spells_fr.py`, `tools/build_compendio_fr.py` | Extraen el SRD 5.2.1 en francés del PDF oficial (`pdftotext -enc UTF-8` para criaturas y conjuros, `stream.py` para el compendio) y lo emparejan con los datos en inglés. |
+| `srd2024_de.json`, `conjuros_srd_de.json`, `compendio_srd_de.json` | Lo mismo en alemán (CC-BY-4.0). |
+| `tools/build_de.py`, `tools/build_spells_de.py`, `tools/build_compendio_de.py` | Extraen el SRD 5.2.1 en alemán. Las criaturas combinan dos lecturas de `pdftotext` (normal y `-raw`, guardada como `r_raw.txt`); conjuros y compendio salen de `stream.py`. |
+| `srd2024_it.json`, `conjuros_srd_it.json`, `compendio_srd_it.json` | Lo mismo en italiano (CC-BY-4.0). |
+| `tools/build_it.py`, `tools/build_spells_it.py`, `tools/build_compendio_it.py` | Extraen el SRD 5.2.1 en italiano con el mismo método que la versión alemana. |
 
 ## Contenido libre y libros opcionales
 - De serie solo va contenido del **SRD 5.2.1** (CC-BY-4.0): bestiario y conjuros. Es lo único que se publica en abierto.
@@ -32,6 +36,18 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 python -m http.server 8000
 ```
 y abre http://localhost:8000. Los datos (combate, grupo, encuentros, criaturas propias) se guardan en el navegador.
+
+## Tests
+Sin dependencias: usan el ejecutor de tests de Node (`node --test`). Se lanzan con `npm test` o `node --test tests/`.
+
+| Archivo | Qué comprueba |
+|---|---|
+| `tests/datos.test.mjs` | Criaturas, conjuros y compendio de cada idioma: mismo contenido que el inglés, campos obligatorios, sin caracteres basura del PDF. |
+| `tests/i18n.test.mjs` | Los cinco diccionarios con las mismas claves, los textos de `T('…')` traducidos y la versión igual en `VERSION`, `CHANGELOG.md`, el menú y los changelogs. |
+| `tests/seguridad.test.mjs` | Sin secretos en git, clave publicable de Supabase, manuales fuera del repositorio, scripts externos con versión e integridad (SRI), RLS y límites en `supabase/schema.sql`. |
+| `tests/navegador.test.mjs` | Abre la página en Edge o Chrome sin ventana con módulos, grupo, bestiario y copia de seguridad maliciosos (código en todos los campos) y con datos de tipos absurdos; recorre todas las vistas y comprueba que nada se ejecuta ni rompe la página. También prueba las tiradas y las rarezas en todos los idiomas. Se salta si no hay navegador (`BROWSER=ruta` para indicar otro). |
+
+El hook `.githooks/pre-push` pasa los tests antes de cada `git push` y no deja subir si alguno falla. Se activa una vez por clon con `git config core.hooksPath .githooks`.
 
 ## Versionado
 Versionado semántico. Cada cambio actualiza `VERSION`, `CHANGELOG.md`, el historial de la página principal y crea una etiqueta git `vX.Y.Z`.

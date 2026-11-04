@@ -1,0 +1,51 @@
+// Datos del SRD: que cada idioma tenga el mismo contenido que el inglés y con los campos que usa la página.
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {json,read,DATA_LANGS,BEST} from './lib.mjs';
+
+const SCHOOLS=new Set(['abjuracion','adivinacion','conjuracion','encantamiento','evocacion','ilusionismo','nigromancia','transmutacion']);
+const EN_SPELLS=json('conjuros_srd_en.json'),EN_NAMES=new Set(EN_SPELLS.map(s=>s.n));
+const EN_BEST=json('srd2024.json'),EN_COMP=json('compendio_srd_en.json');
+
+for(const [l,suf] of Object.entries(DATA_LANGS)){
+  test(`criaturas ${l}: mismas que en inglés y con los campos básicos`,()=>{
+    const b=json(BEST[l]);
+    assert.equal(b.length,EN_BEST.length);
+    for(const m of b){
+      assert.ok(m.n&&typeof m.n==='string',`sin nombre: ${JSON.stringify(m).slice(0,80)}`);
+      assert.ok(Number.isFinite(+m.ac)&&Number.isFinite(+m.hp),`${m.n}: CA/PG`);
+      assert.equal(m.ab?.length,6,`${m.n}: características`);
+      for(const k of 'tabrl')for(const e of m[k]||[])assert.ok(Array.isArray(e)&&typeof e[1]==='string',`${m.n}: sección ${k}`);
+    }
+  });
+  test(`conjuros ${l}: 339, todos con nombre inglés único`,()=>{
+    const s=json(`conjuros_srd${suf}.json`);
+    assert.equal(s.length,EN_SPELLS.length);
+    const seen=new Set();
+    for(const x of s){
+      assert.ok(EN_NAMES.has(x.en),`${x.n}: nombre inglés desconocido «${x.en}»`);
+      assert.ok(!seen.has(x.en),`${x.en} repetido`);seen.add(x.en);
+      assert.ok(Number.isInteger(x.lv)&&x.lv>=0&&x.lv<=9,`${x.n}: nivel`);
+      assert.ok(SCHOOLS.has(x.sch),`${x.n}: escuela «${x.sch}»`);
+      for(const k of ['ct','rg','dur','comp'])assert.ok(x[k],`${x.n}: falta ${k}`);
+      assert.ok(x.d&&x.d.length>20,`${x.n}: sin descripción`);
+    }
+  });
+  test(`compendio ${l}: mismas secciones y recuentos parecidos al inglés`,()=>{
+    const c=json(`compendio_srd${suf}.json`);
+    for(const [k,v] of Object.entries(EN_COMP)){
+      assert.ok(Array.isArray(c[k]),`falta ${k}`);
+      assert.ok(Math.abs(c[k].length-v.length)<=2,`${k}: ${c[k].length} frente a ${v.length} en inglés`);
+      for(const x of c[k])assert.ok(x.n&&typeof x.n==='string',`${k}: entrada sin nombre`);
+    }
+    for(const o of c.objetos.filter(o=>o.k==='magico'))
+      assert.ok(String(o.r).length<90,`${o.n}: la rareza lleva texto pegado («${o.r.slice(0,60)}…»)`);
+  });
+}
+
+test('sin caracteres basura de la extracción del PDF (guion blando, carácter de sustitución)',()=>{
+  const files=[...Object.values(BEST),...Object.values(DATA_LANGS).flatMap(s=>[`conjuros_srd${s}.json`,`compendio_srd${s}.json`])];
+  for(const f of files){const t=read(f);
+    assert.ok(!t.includes('­'),`${f}: guion blando`);
+    assert.ok(!t.includes('�'),`${f}: carácter de sustitución`);}
+});

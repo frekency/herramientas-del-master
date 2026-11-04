@@ -1135,7 +1135,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Jugadores</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.34</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Jugadores</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.35</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -1287,6 +1287,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.35 <span>4 nov 2026</span></h3><ul>
+      <li>Contenido del SRD 5.2.1 en <b>alemán</b> e <b>italiano</b>: con la página en uno de esos idiomas, las criaturas, los conjuros y todo el compendio salen del SRD oficial correspondiente.</li>
+      <li>Más seguridad: los módulos del catálogo ya no pueden meter código en la página y un dato o una copia de seguridad mal formados ya no la dejan rota.</li></ul></li>
     <li><h3>v1.34 <span>4 nov 2026</span></h3><ul>
       <li>Contenido del SRD 5.2.1 en <b>francés</b>: con el idioma en francés, las criaturas, los conjuros y todo el compendio salen del SRD oficial francés en lugar del inglés.</li>
       <li>Los iconos de la referencia rápida también aparecen con los nombres de las reglas en inglés y francés.</li></ul></li>
@@ -1820,10 +1823,12 @@ if(LANG!=='es')try{
 }catch(e){}
 whenReady(()=>requestAnimationFrame(loadDone));
 // Idioma de los datos: el del SRD oficial si existe; si no, inglés.
-const DATA_LANG={es:'es',en:'en',fr:'fr'}[LANG]||'en';
+const DATA_LANG={es:'es',en:'en',fr:'fr',de:'de',it:'it'}[LANG]||'en';
 const DATA_FILES={es:{best:'srd2024_es.json',spells:'conjuros_srd.json',comp:'compendio_srd.json'},
   en:{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'},
-  fr:{best:'srd2024_fr.json',spells:'conjuros_srd_fr.json',comp:'compendio_srd_fr.json'}}[DATA_LANG];
+  fr:{best:'srd2024_fr.json',spells:'conjuros_srd_fr.json',comp:'compendio_srd_fr.json'},
+  de:{best:'srd2024_de.json',spells:'conjuros_srd_de.json',comp:'compendio_srd_de.json'},
+  it:{best:'srd2024_it.json',spells:'conjuros_srd_it.json',comp:'compendio_srd_it.json'}}[DATA_LANG];
 </script>
 <script>
 const COND=[['agarrado','Agarrado'],['apresado','Apresado'],['asustado','Asustado'],['aturdido','Aturdido'],['cegado','Cegado'],['derribado','Derribado'],['ensordecido','Ensordecido'],['envenenado','Envenenado'],['hechizado','Hechizado'],['incapacitado','Incapacitado'],['inconsciente','Inconsciente'],['invisible','Invisible'],['paralizado','Paralizado'],['petrificado','Petrificado'],['concentracion','Concentración'],['agotamiento','Agotamiento']];
@@ -1845,7 +1850,24 @@ const tr=(m,k)=>LANG==='es'?(m[k]||k):(m[k]&&I18N[m[k]])||k;
 
 /* ---------- bestiario ---------- */
 let SRD=[], SRD_ALL=[], MY=[];   // SRD = lo visible (solo si el módulo está activado); SRD_ALL = todo lo descargado
-try{MY=JSON.parse(localStorage.getItem(BKEY)||'[]');}catch(e){MY=[];}
+// Datos guardados o importados con otra forma (archivos ajenos, módulos del catálogo): solo objetos y con nombre de texto
+const cleanList=(a,named=true)=>(Array.isArray(a)?a:[]).filter(x=>x&&typeof x==='object'&&!Array.isArray(x)&&(!named||String(x.n??'').trim())).map(x=>named||x.n!=null?{...x,n:String(x.n??'')}:x);
+// Cada campo con el tipo que espera la página: los textos como texto y las listas como listas
+const ITEM_STR={objetos:'t r s k d precio',dotes:'cat req d',clases:'d',especies:'tipo tam vel d',trasfondos:'car dote hab herr equipo d',reglas:'cat tag d',
+  conjuros:'d dur rg ct comp sch en fl',criaturas:'ty sz al cr sp sk se la im re vu tyl hd en'};
+const txt=v=>v==null||typeof v==='string'?v:typeof v==='object'?'':String(v);
+function normItem(k,x){
+  for(const f of (ITEM_STR[k]||'').split(' '))if(f&&f in x)x[f]=txt(x[f]);
+  if(k==='clases'){x.sub=(Array.isArray(x.sub)?x.sub:[]).map(String);if(x.info!=null&&(typeof x.info!=='object'||Array.isArray(x.info)))x.info={};
+    else if(x.info)for(const i in x.info)x.info[i]=txt(x.info[i])??'';}
+  if(k==='conjuros'){x.cls=(Array.isArray(x.cls)?x.cls:x.cls?[x.cls]:[]).map(String);x.lv=Math.max(0,Math.min(9,parseInt(x.lv)||0));}
+  if(k==='criaturas'){
+    for(const f of ['ab','sv'])if(f in x)x[f]=Array.isArray(x[f])?Array.from({length:6},(_,i)=>Number.isFinite(+x[f][i])&&x[f][i]!==null?+x[f][i]:f==='ab'?10:0):undefined;
+    for(const f of 'tabrl')if(f in x)x[f]=(Array.isArray(x[f])?x[f]:[]).filter(Array.isArray).map(e=>e.map(v=>txt(v)??''));
+    for(const f of ['ac','hp'])if(f in x&&!Number.isFinite(+x[f]))x[f]=f==='ac'?10:1;}
+  return x;
+}
+try{MY=cleanList(JSON.parse(localStorage.getItem(BKEY)||'[]')).map(x=>normItem('criaturas',x));}catch(e){MY=[];}
 function saveBest(){try{localStorage.setItem(BKEY,JSON.stringify(MY));}catch(e){}}
 function tpl(key){
   if(!key)return null;
@@ -1898,6 +1920,8 @@ function examplePCs(){
     t:[[T('Recuperación arcana (1/día)'),T('Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.')]],
     spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[0,1],
       list:DATA_LANG==='es'?['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']
+        :DATA_LANG==='it'?['Mano magica','Raggio di gelo','Armatura magica','Scudo','Dardo incantato','Passo velato','Ragnatela','Palla di fuoco']
+        :DATA_LANG==='de'?['Magierhand','Kältestrahl','Magierrüstung','Schild','Magisches Geschoss','Nebelschritt','Spinnennetz','Feuerball']
         :DATA_LANG==='fr'?['Main du mage','Rayon de givre','Armure du mage','Bouclier','Projectile magique','Foulée brumeuse','Toile d’araignée','Boule de feu']
         :['Mage Hand','Ray of Frost','Mage Armor','Shield','Magic Missile','Misty Step','Web','Fireball']}};
   const thorin={id:uid(),ex:true,n:T('Thorin (guerrero)'),cls:T('Guerrero 5'),ac:18,hp:44,cur:44,temp:5,in:1,sp:'9 m',pp:14,
@@ -1941,7 +1965,11 @@ function removeExamples(){
 
 let state, undoStack=[];
 function load(){
-  try{const raw=localStorage.getItem(KEY); if(raw){const s=JSON.parse(raw); if(s.example!==true) return s;}}catch(e){}
+  try{const raw=localStorage.getItem(KEY); if(raw){const s=JSON.parse(raw); if(s&&typeof s==='object'&&!Array.isArray(s)&&s.example!==true){
+    // un combate guardado con otra forma: cada campo que no encaja vuelve a su valor inicial
+    const e=emptyState();
+    for(const k in e)if(e[k]!==null&&(Array.isArray(e[k])!==Array.isArray(s[k])||typeof e[k]!==typeof s[k]))s[k]=e[k];
+    s.creatures=cleanList(s.creatures,false);return s;}}}catch(e){}
   return emptyState();
 }
 function save(){
@@ -1988,7 +2016,7 @@ function sortInto(s){
 function roll(expr,crit=false){
   const t=String(expr??'').replace(/\s/g,'').replace(/−/g,'-').toLowerCase();
   if(t==='') return null;
-  const m=t.match(/^(\d*)d(\d+)([+-]\d+)?$/);
+  const m=t.match(/^(\d*)[dw](\d+)([+-]\d+)?$/);
   if(m){let n=+(m[1]||1);if(crit)n*=2;const d=+m[2],k=+(m[3]||0);let s=0;const rs=[];for(let i=0;i<Math.min(n,200);i++){const r=1+Math.floor(Math.random()*d);rs.push(r);s+=r;}return {v:Math.max(0,s+k),txt:`${n}d${d}${k?sgn(k):''} → [${rs.join(', ')}]${k?sgn(k):''} = ${s+k}`};}
   const v=parseInt(t,10); return isNaN(v)?null:{v,txt:String(v)};
 }
@@ -2088,14 +2116,14 @@ function applyHP(c,kind,raw){
 // Convierte en botones de tirada los ataques, dados y CD de un texto ya escapado
 function diceify(h){
   h=h.replace(/−/g,'-');
-  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance)\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
-  h=h.replace(/(\d+) \((\d+d\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es,fr)=>{
-    const ty=(en||es||fr||'').toLowerCase();
-    return `${avg} (<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${esc(ty)}" title="Tirar daño">${ex}</button>)${tail||''}`;});
+  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance|(?:Nah|Fern)kampfangriffswurf|Nah- oder Fernkampfangriffswurf|Tiro per colpire (?:in mischia(?: o a distanza)?|a distanza))\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
+  h=h.replace(/(\d+) \((\d+[dW]\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)|(\p{L}+schaden|\p{L}+ Schaden)|danni (?:da |del )?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es,fr,de,it)=>{
+    const ty=(en||es||fr||de||it||'').toLowerCase();
+    return `${avg} (<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${esc(ty)}" title="Tirar daño">${ex}</button>)${tail||''}`;});
   // dados sueltos (fichas de jugador y conjuros): «1d8 + 4 de daño cortante», «8d6 de daño de fuego»
-  h=h.replace(/(?<![\w"(=>+-])(\d+d\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre))?/gu,
-    (all,ex,tail,ty,tyfr)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${ty||tyfr||''}" title="Tirar">${ex}</button>${tail||''}`);
-  h=h.replace(/\b(DC|CD|DD) (\d+)/g,(_,l,n)=>`<span class="dc">${l==='DD'?'DD':'CD'} ${n}</span>`);
+  h=h.replace(/(?<![\w"(=>+-])(\d+[dW]\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre)|\s+(\p{L}+schaden|\p{L}+ Schaden)|\s+danni\s+(?:da |del )?(perforanti|taglienti|contundenti|fuoco|veleno|necrotici|forza|radiosi|acido|freddo|psichici|fulmine|tuono))?/gu,
+    (all,ex,tail,ty,tyfr,tyde,tyit)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${ty||tyfr||tyde||tyit||''}" title="Tirar">${ex}</button>${tail||''}`);
+  h=h.replace(/\b(DC|CD|DD|SG)[ -](\d+)/g,(_,l,n)=>`<span class="dc">${l==='DD'||l==='SG'?l:'CD'} ${n}</span>`);
   return h;
 }
 // Texto con formato propio (fichas de jugador, conjuros y módulos): se escapa y admite **negrita**, *cursiva* y listas
@@ -2472,10 +2500,10 @@ function giveTo(p,ty,n){
 }
 function newPcFromClass(x){
   if(!x)return;
-  const die=+((x.info?.['Dado de puntos de golpe']||'').match(/d(\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
+  const die=+((x.info?.['Dado de puntos de golpe']||'').match(/[dw](\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
   openPC(null);
   $('#pc-cls').value=`${x.n} 1`;$('#pc-hp').value=$('#pc-cur').value=die;
-  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
+  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme'],de:['starke','geschicklichkeit','konstitution','intelligenz','weisheit','charisma'],it:['forza','destrezza','costituzione','intelligenza','saggezza','carisma']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
   toast(T(`Nivel 1: ${die} PG más tu modificador por Constitución. Las salvaciones de la clase ya llevan +2`),5200);
 }
 function invHTML(p){
@@ -2658,11 +2686,14 @@ document.addEventListener('click',e=>{
     case 'closeio':$('#iomodal').hidden=true;syncModalOpen();break;
     case 'iocopy':{const t=JSON.stringify(backupData());$('#io-text').value=t;navigator.clipboard?.writeText(t).then(()=>toast('Copiado. Pégalo en un archivo de texto para guardarlo')).catch(()=>{$('#io-text').select();toast('Selecciona el texto y cópialo a mano');});break;}
     case 'ioimport':{try{const d=JSON.parse($('#io-text').value);
-      const best=Array.isArray(d)?d:(d.bestiario||[]),grp=Array.isArray(d)?[]:(d.grupo||[]),enc=Array.isArray(d)?[]:(d.encuentros||[]),tbs=Array.isArray(d)?[]:(d.tablas||[]);
+      const best=cleanList(Array.isArray(d)?d:(d.bestiario||[])).map(x=>normItem('criaturas',x)),grp=Array.isArray(d)?[]:(d.grupo||[]),enc=Array.isArray(d)?[]:(d.encuentros||[]),tbs=Array.isArray(d)?[]:(d.tablas||[]);
       if(!Array.isArray(best)||!Array.isArray(grp)||!Array.isArray(enc))throw 0;
       const up=(arr,list)=>{let k=0;for(const m of list){if(!m||!m.n)continue;m.id=m.id||uid();const i=arr.findIndex(x=>x.id===m.id);if(i>=0)arr[i]=m;else arr.push(m);k++;}return k;};
       const a=up(MY,best),g=up(PARTY,grp),e2=up(PRESETS,enc),tb2=up(TABLES,tbs.filter(x=>x&&Array.isArray(x.cols)));saveTables();
-      if(d.modulos&&Array.isArray(d.modulos.list)){const M=mods();Object.assign(M.on,d.modulos.on||{});for(const m of d.modulos.list){if(!m||!m.id)continue;const i=M.list.findIndex(x=>x.id===m.id);if(i>=0)M.list[i]=m;else M.list.push(m);}saveMods();refreshMods();}
+      if(d.modulos&&Array.isArray(d.modulos.list)){const M=mods();
+        // solo interruptores sí/no y sin claves especiales: «__proto__» en el archivo cambiaría el prototipo de M.on
+        for(const[k,v] of Object.entries(d.modulos.on||{}))if(typeof v==='boolean'&&k!=='__proto__'&&k!=='constructor')M.on[k]=v;
+        for(const m of cleanMods(d.modulos.list)){if(!m||!m.id)continue;const i=M.list.findIndex(x=>x.id===m.id);if(i>=0)M.list[i]=m;else M.list.push(m);}saveMods();refreshMods();}
       saveBest();saveParty();savePresets();if(!$('#bestmodal').hidden)renderBest();renderParty();render();$('#iomodal').hidden=true;syncModalOpen();
       toast(`Importado: ${a} criaturas, ${g} personajes, ${e2} encuentros y ${tb2} tablas`);}catch(err){toast('El texto pegado no es una copia de seguridad válida');}break;}
     case 'unlink':formTpl=null;renderLinked();break;
@@ -2783,7 +2814,7 @@ const OFFICIAL_BYO=[
   {id:'ctt',n:'Caldero de Tasha para todo',ab:'CTT',k:'tasha'}];
 let MODS=null,MODCR=[],MODTB=[];
 function loadMods(){
-  let m=lsGet(MKEY);if(m&&m.on&&Array.isArray(m.list))return m;
+  let m=lsGet(MKEY);if(m&&m.on&&typeof m.on==='object'&&Array.isArray(m.list)){m.list=cleanMods(m.list);return m;}
   // Primera vez: quien ya usaba la herramienta conserva el SRD activado y sus libros pasan a ser módulos.
   const used=['combat-tracker-v1','combat-bestiary-v1','combat-party-v1','combat-tables-v1',LBKEY,SKEY].some(k=>{try{return !!localStorage.getItem(k);}catch{return false;}});
   m={on:{srd521:used},list:[]};
@@ -2791,6 +2822,7 @@ function loadMods(){
     m.list.push({id:o?o.id:modSlug(bk.n),n:o?o.n:bk.n,ab:o?o.ab:bk.ab,ref:o?o.id:'',on:true,conjuros:bk.spells});}
   lsSet(MKEY,m);return m;
 }
+function cleanMods(list){return cleanList(list).map(md=>{for(const[k] of MOD_TYPES)if(k in md)md[k]=cleanList(md[k]).map(x=>normItem(k,x));return md;});}
 const mods=()=>MODS||(MODS=loadMods());
 const modOn=id=>id==='srd521'||(id in mods().on?!!mods().on[id]:!!mods().list.find(m=>m.id===id)?.on);
 const activeMods=()=>mods().list.filter(m=>m.on);
@@ -2826,11 +2858,11 @@ function parseModule(text,fileName,ref=''){
   const o=OFFICIAL_BYO.find(x=>x.id===ref)||OFFICIAL_BYO.find(x=>fold(n).includes(x.k));
   const main={id:o?o.id:modSlug(n),n:o?o.n:n,ab:o?o.ab:String(d.abrev||d.abreviatura||'').trim()||modAbbr(n),ref:o?o.id:'',
     autor:String(d.autor||'').trim(),version:String(d.version||'').trim(),lic:String(d.licencia||d.license||'').trim(),desc:String(d.descripcion||'').trim(),on:true};
-  for(const[k] of MOD_TYPES)if(Array.isArray(d[k])&&k!=='conjuros')main[k]=d[k].filter(x=>x&&x.n);
+  for(const[k] of MOD_TYPES)if(Array.isArray(d[k])&&k!=='conjuros')main[k]=cleanList(d[k]);
   const out=[main];
   for(const g of groups){if(fold(g.n)===fold(n)||groups.length===1)main.conjuros=g.spells;
     else out.push({id:modSlug(g.n),n:g.n,ab:g.ab,ref:'',on:true,conjuros:g.spells});}
-  return out;
+  return cleanMods(out);
 }
 function importModule(text,fileName,ref=''){
   const add=parseModule(text,fileName,ref),M=mods();
@@ -2841,8 +2873,7 @@ function importModule(text,fileName,ref=''){
 }
 const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
 let PARTY=lsGet(PKEY), PRESETS=lsGet(EKEY), SPELLS={}, SPELL_LIST=[];
-if(!Array.isArray(PARTY))PARTY=[];
-if(!Array.isArray(PRESETS))PRESETS=[];
+PARTY=cleanList(PARTY,false);PRESETS=cleanList(PRESETS,false);
 for(const p of PARTY)p.tyl=pcSub(p);
 function pcSub(p){return [p.cls,p.esp,p.tf,p.jug].filter(Boolean).join(' · ')||'Personaje';}
 function saveParty(){lsSet(PKEY,PARTY);}
@@ -3104,7 +3135,7 @@ function loadEncounter(p){
 /* ---------- tablas aleatorias ---------- */
 // Tabla: {id,n,rows,mode:'col'|'row',fmt,cols:[{id,n}],cells:{colId:[texto por fila]}}. Las filas que sobran al reducir se conservan.
 const TKEY='combat-tables-v1';
-let TABLES=lsGet(TKEY)||[],tbSel=TABLES[0]?.id||null,tbHist=[],tbT;
+let TABLES=cleanList(lsGet(TKEY),false),tbSel=TABLES[0]?.id||null,tbHist=[],tbT;
 const saveTables=()=>{clearTimeout(tbT);if(!lsSet(TKEY,TABLES))toast('No se han podido guardar las tablas en este navegador');};
 const saveTablesSoon=()=>{clearTimeout(tbT);tbT=setTimeout(saveTables,300);};
 const curTable=()=>TABLES.find(x=>x.id===tbSel)||MODTB.find(x=>x.id===tbSel);
@@ -3277,11 +3308,15 @@ const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote',
 const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herramienta:'Herramientas',equipo:'Equipo de aventurero'};
 // Las fichas de clase del SRD en inglés traen los campos con su nombre en inglés: se copian a los nombres que usa la página.
 const CLS_INFO={'Hit Point Die':'Dado de puntos de golpe','Primary Ability':'Característica principal','Saving Throw Proficiencies':'Competencias en tiradas de salvación',
-  'Dé de vie':'Dado de puntos de golpe','Caractéristique principale':'Característica principal','Maîtrise des jets de sauvegarde':'Competencias en tiradas de salvación'};
+  'Dé de vie':'Dado de puntos de golpe','Caractéristique principale':'Característica principal','Maîtrise des jets de sauvegarde':'Competencias en tiradas de salvación',
+  'Trefferpunktewürfel':'Dado de puntos de golpe','Hauptattribut':'Característica principal','Rettungswürfe, in denen du geübt bist':'Competencias en tiradas de salvación',
+  'Dado Vita':'Dado de puntos de golpe','Caratteristiche primarie':'Característica principal','Competenze nei tiri salvezza':'Competencias en tiradas de salvación'};
 function normClasses(d){for(const x of d.clases||[])if(x.info)for(const[en,es]of Object.entries(CLS_INFO))if(x.info[en]&&!(es in x.info))Object.defineProperty(x.info,es,{value:x.info[en],enumerable:false});}
 const RARITY=['común','infrecuente','raro','muy raro','legendario','artefacto'];
 const RAR_EN={'very rare':'muy raro',uncommon:'infrecuente',common:'comun',rare:'raro',legendary:'legendario',artifact:'artefacto',
-  'tres rare':'muy raro','peu courant':'infrecuente',courant:'comun',legendaire:'legendario',artefact:'artefacto'};
+  'tres rare':'muy raro','peu courant':'infrecuente',courant:'comun',legendaire:'legendario',artefact:'artefacto',
+  'sehr selten':'muy raro',ungewohnlich:'infrecuente',gewohnlich:'comun',selten:'raro',legendar:'legendario',artefakt:'artefacto',
+  'molto rar':'muy raro','non comune':'infrecuente',comune:'comun',leggendari:'legendario',manufatto:'artefacto','rarita variabile':'variable'};
 const rarKey=r=>{let f=fold(r);for(const[e,k]of Object.entries(RAR_EN))if(f.startsWith(e)){f=k;break;}f=f.replace(/a\b/g,'o');return RARITY.find(k=>f.startsWith(fold(k)))||(f?'variable':'');};
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
@@ -3289,7 +3324,7 @@ function compLoad(){
 }
 function compList(tab){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
-  const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mine:!!md.mine})));
+  const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   const by=new Map();for(const x of [...srd,...mod])by.set(fold(x.n),x);
   return [...by.values()].sort((a,b)=>a.n.localeCompare(b.n,'es'));
 }
@@ -3568,8 +3603,8 @@ function ruleLinks(h){
 }
 const QR_SECS=[['Acciones','sword','#c0392b'],['Turno y reacciones','hourglass','#d35400'],['Estados','spiral','#8e44ad'],['Combate','target','#b03a2e'],['Daño y curación','heart','#c2185b'],['Movimiento','move','#2e86c1'],['Visión y luz','eye','#b7950b'],['Áreas de efecto','area','#16a085'],['Exploración','compass','#27ae60'],['Peligros','warn','#ca6f1e'],['Pruebas y tiradas','d20','#5d6d7e'],['Magia','sparkle','#6c3483'],['Interacción social','speech','#117a65']];
 const QR_ICON={Atacar:'sword','Acción':'focus',Iniciativa:'d20',Sorpresa:'burst','Tu turno':'hourglass','Dividir el movimiento':'move',Ayudar:'people',Buscar:'search',Correr:'wind',Destrabarse:'disengage',Esconderse:'fog',Esquivar:'shield',Estudiar:'book',Influir:'speech',Magia:'sparkle','Preparar una acción':'hourglass',Utilizar:'tool',Agarrado:'grab',Apresado:'chain',Asustado:'scared',Aturdido:'daze',Cansancio:'battery',Cegado:'eyeoff',Derribado:'down',Ensordecido:'mute',Envenenado:'flask',Hechizado:'heart',Incapacitado:'ban',Inconsciente:'zzz',Invisible:'ghost',Paralizado:'snow',Petrificado:'rock','Acción adicional':'plusc',Reacción:'undo','Ataques de oportunidad':'bolt',Cobertura:'wall',Crítico:'burst',Concentración:'focus','Descanso corto':'cup','Descanso largo':'moon',Ventaja:'up',Desventaja:'down',Cono:'cone',Esfera:'sphere',Cubo:'box',Cilindro:'cyl',Línea:'line',Emanación:'emanate',Saltar:'jump',Trepar:'ladder',Nadar:'wave',Volar:'feather','Terreno difícil':'rubble','Ritmo de viaje':'map',Fuego:'fire',Asfixia:'bubbles',Caídas:'fall'};
-// Mismos iconos para los nombres de las reglas en inglés y francés
-Object.assign(QR_ICON,{Attack:'sword',Attaque:'sword',Action:'focus',Initiative:'d20',Surprise:'burst','Your Turn':'hourglass','Votre tour':'hourglass','Breaking Up Your Move':'move','Scinder son déplacement':'move',Help:'people',Soutien:'people',Search:'search',Observation:'search',Dash:'wind',Pointe:'wind',Disengage:'disengage',Désengagement:'disengage',Hide:'fog',Furtivité:'fog',Dodge:'shield',Esquive:'shield',Study:'book',Étude:'book',Influence:'speech',Magic:'sparkle',Magie:'sparkle',Ready:'hourglass',Intention:'hourglass',Utilize:'tool',Utilisation:'tool',Grappled:'grab',Agrippé:'grab',Restrained:'chain',Entravé:'chain',Frightened:'scared',Effrayé:'scared',Stunned:'daze',Étourdi:'daze',Exhaustion:'battery',Épuisement:'battery',Blinded:'eyeoff',Aveuglé:'eyeoff',Prone:'down','À terre':'down',Deafened:'mute',Assourdi:'mute',Poisoned:'flask',Empoisonné:'flask',Charmed:'heart',Charmé:'heart',Incapacitated:'ban',Neutralisé:'ban',Unconscious:'zzz',Inconscient:'zzz',Paralyzed:'snow',Paralysé:'snow',Petrified:'rock',Pétrifié:'rock','Bonus Action':'plusc','Action Bonus':'plusc',Reaction:'undo',Réaction:'undo','Opportunity Attacks':'bolt','Attaques d’Opportunité':'bolt',Cover:'wall',Abris:'wall','Critical Hit':'burst','Coup critique':'burst',Concentration:'focus','Short Rest':'cup','Repos court':'cup','Long Rest':'moon','Repos long':'moon',Advantage:'up',Avantage:'up',Disadvantage:'down',Désavantage:'down',Cone:'cone',Cône:'cone',Sphere:'sphere',Sphère:'sphere',Cube:'box',Cylinder:'cyl',Cylindre:'cyl',Line:'line',Ligne:'line',Emanation:'emanate',Émanation:'emanate',Jumping:'jump',Saut:'jump',Climbing:'ladder',Escalade:'ladder',Swimming:'wave',Nage:'wave',Flying:'feather',Vol:'feather','Difficult Terrain':'rubble','Terrain difficile':'rubble','Travel Pace':'map','Allure de voyage':'map',Burning:'fire',Embrasement:'fire',Suffocation:'bubbles',Asphyxie:'bubbles',Falling:'fall',Chute:'fall'});
+// Mismos iconos para los nombres de las reglas en inglés, francés, alemán e italiano
+Object.assign(QR_ICON,{Attack:'sword',Attaque:'sword',Action:'focus',Initiative:'d20',Surprise:'burst','Your Turn':'hourglass','Votre tour':'hourglass','Breaking Up Your Move':'move','Scinder son déplacement':'move',Help:'people',Soutien:'people',Search:'search',Observation:'search',Dash:'wind',Pointe:'wind',Disengage:'disengage',Désengagement:'disengage',Hide:'fog',Furtivité:'fog',Dodge:'shield',Esquive:'shield',Study:'book',Étude:'book',Influence:'speech',Magic:'sparkle',Magie:'sparkle',Ready:'hourglass',Intention:'hourglass',Utilize:'tool',Utilisation:'tool',Grappled:'grab',Agrippé:'grab',Restrained:'chain',Entravé:'chain',Frightened:'scared',Effrayé:'scared',Stunned:'daze',Étourdi:'daze',Exhaustion:'battery',Épuisement:'battery',Blinded:'eyeoff',Aveuglé:'eyeoff',Prone:'down','À terre':'down',Deafened:'mute',Assourdi:'mute',Poisoned:'flask',Empoisonné:'flask',Charmed:'heart',Charmé:'heart',Incapacitated:'ban',Neutralisé:'ban',Unconscious:'zzz',Inconscient:'zzz',Paralyzed:'snow',Paralysé:'snow',Petrified:'rock',Pétrifié:'rock','Bonus Action':'plusc','Action Bonus':'plusc',Reaction:'undo',Réaction:'undo','Opportunity Attacks':'bolt','Attaques d’Opportunité':'bolt',Cover:'wall',Abris:'wall','Critical Hit':'burst','Coup critique':'burst',Concentration:'focus','Short Rest':'cup','Repos court':'cup','Long Rest':'moon','Repos long':'moon',Advantage:'up',Avantage:'up',Disadvantage:'down',Désavantage:'down',Cone:'cone',Cône:'cone',Sphere:'sphere',Sphère:'sphere',Cube:'box',Cylinder:'cyl',Cylindre:'cyl',Line:'line',Ligne:'line',Emanation:'emanate',Émanation:'emanate',Jumping:'jump',Saut:'jump',Climbing:'ladder',Escalade:'ladder',Swimming:'wave',Nage:'wave',Flying:'feather',Vol:'feather','Difficult Terrain':'rubble','Terrain difficile':'rubble','Travel Pace':'map','Allure de voyage':'map',Burning:'fire',Embrasement:'fire',Suffocation:'bubbles',Asphyxie:'bubbles',Falling:'fall',Chute:'fall',Angriff:'sword',Aktion:'focus',Überraschung:'burst','Dein Zug':'hourglass','Deine Bewegung aufteilen':'move',Helfen:'people',Suchen:'search',Spurt:'wind',Rückzug:'disengage',Verstecken:'fog',Ausweichen:'shield',Studieren:'book',Beeinflussen:'speech',Vorbereiten:'hourglass',Verwenden:'tool',Gepackt:'grab',Festgesetzt:'chain',Verängstigt:'scared',Betäubt:'daze',Erschöpfung:'battery',Blind:'eyeoff',Liegend:'down',Taub:'mute',Vergiftet:'flask',Bezaubert:'heart',Kampfunfähig:'ban',Bewusstlos:'zzz',Unsichtbar:'ghost',Gelähmt:'snow',Versteinert:'rock',Bonusaktion:'plusc',Reaktion:'undo',Gelegenheitsangriffe:'bolt',Deckung:'wall','Kritischer Treffer':'burst',Konzentration:'focus','Kurze Rast':'cup','Lange Rast':'moon',Vorteil:'up',Nachteil:'down',Kegel:'cone',Kugel:'sphere',Würfel:'box',Zylinder:'cyl',Linie:'line',Ausströmung:'emanate',Springen:'jump',Klettern:'ladder',Schwimmen:'wave',Fliegen:'feather','Schwieriges Gelände':'rubble',Reisegeschwindigkeit:'map',Brand:'fire',Erstickung:'bubbles',Sturz:'fall',Attacco:'sword',Azione:'focus',Iniziativa:'d20','Il turno di un personaggio':'hourglass','Spezzare il proprio movimento':'move',Aiuto:'people',Ricerca:'search',Scatto:'wind',Disimpegno:'disengage',Nascondersi:'fog',Schivata:'shield',Studio:'book',Influenza:'speech',Prepararsi:'hourglass',Utilizzo:'tool',Afferrato:'grab',Trattenuto:'chain',Spaventato:'scared',Stordito:'daze',Indebolimento:'battery',Accecato:'eyeoff',Prono:'down',Assordato:'mute',Avvelenato:'flask',Affascinato:'heart',Incapacitato:'ban','Privo di sensi':'zzz',Invisibile:'ghost',Paralizzato:'snow',Pietrificato:'rock','Azione bonus':'plusc',Reazione:'undo','Attacchi di opportunità':'bolt',Copertura:'wall','Colpo critico':'burst',Concentrazione:'focus','Riposo breve':'cup','Riposo lungo':'moon',Vantaggio:'up',Svantaggio:'down',Sfera:'sphere',Linea:'line',Emanazione:'emanate',Saltare:'jump',Scalare:'ladder',Nuotare:'wave',Volare:'feather','Terreno difficile':'rubble','Passo di viaggio':'map','In fiamme':'fire',Soffocamento:'bubbles',Caduta:'fall'});
 function renderRef(){
   compLoad();
   const all=compList('reglas'),sel=$('#qr-cat');
@@ -3770,7 +3805,7 @@ function renderAcct(){
 const acStatus=t=>{$('#ac-sync').textContent=t;};
 async function sbInit(){
   if(window.claude)return;
-  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
+  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.integrity='sha384-2zrRDgDHSYB/GN3nFW3fsZXoxEhKIr3N2h63Tc6DEOB9JJdFIu8xMJT2Cph/gBil';s.crossOrigin='anonymous';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
   SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true}});
   if(new URLSearchParams(location.search).has('error_description')){const m=new URLSearchParams(location.search).get('error_description');history.replaceState(null,'',location.pathname+location.hash);toast('No se ha podido entrar: '+m);}
   renderAcct();if(location.hash==='#modulos'){renderMods();loadCatalog();}
