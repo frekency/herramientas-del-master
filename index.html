@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Grenze:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
 <script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.setItem('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;const t=localStorage.getItem('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
@@ -739,6 +739,102 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 @media (max-width:680px){[data-skin="libro"] .pagenav .btn{font-variant:normal;letter-spacing:0;font-size:15px}}
 [data-skin="libro"] .log li.round{font-variant:small-caps;letter-spacing:.05em;color:var(--sb-rule)}
 
+/* ===== Estilo «Pantalla del máster»: la pantalla plegable sobre la mesa, de noche; raíl de fichas ===== */
+.rail{display:none}
+:root[data-skin="pantalla"]{
+  --bg:#15120e; --surface:#211c16; --surface-2:#2c251d; --line:#3d3328;
+  --fg:#efe5d3; --muted:#ab9c86; --accent:#d6a85c; --accent-fg:#21180c;
+  --sb:#211c16; --sb-rule:#d6a85c; --brass:#d6a85c;
+  --ok:#6fbf84; --warn:#e6b45a; --crit:#e2654c;
+  --shadow:0 2px 4px rgb(0 0 0/.45),0 12px 28px rgb(0 0 0/.4);
+  --f-display:"Grenze","Alegreya SC",Georgia,serif; --f-body:"Alegreya Sans",system-ui,sans-serif; --f-sb:"Alegreya Sans",system-ui,sans-serif; --f-num:"Alegreya Sans",system-ui,sans-serif;
+  color-scheme:dark; scrollbar-color:#4a3e30 transparent}
+[data-skin="pantalla"] body{background:radial-gradient(1100px 600px at 50% -10%,#2b2219,transparent 70%),var(--bg);background-attachment:fixed}
+[data-skin="pantalla"] body::before{background:var(--bg)}
+[data-skin="pantalla"] ::selection{background:rgb(214 168 92/.38)}
+[data-skin="pantalla"] .brand::first-letter,[data-skin="pantalla"] .htitle::first-letter{color:inherit}
+[data-skin="pantalla"] .bar{background:linear-gradient(180deg,#261f18,#1b1611);border-bottom:2px solid var(--brass);box-shadow:0 8px 22px rgb(0 0 0/.45)}
+[data-skin="pantalla"] .brand{font-weight:700;font-size:26px;letter-spacing:.01em;color:var(--brass)}
+[data-skin="pantalla"] .counter b{font-family:"Grenze",serif;font-size:28px;font-weight:600;color:var(--brass)}
+[data-skin="pantalla"] .now .who{font-size:26px;font-weight:600}
+[data-skin="pantalla"] h2,[data-skin="pantalla"] .panel>h2,[data-skin="pantalla"] .listhead h2,[data-skin="pantalla"] .vhead h2{font-weight:600;font-size:23px;letter-spacing:.01em;color:var(--brass);border-bottom:0;padding-bottom:0}
+[data-skin="pantalla"] .pagenav a{border-radius:6px}
+[data-skin="pantalla"] .pagenav a.on{background:var(--surface-2);border-color:transparent;color:var(--fg)}
+/* hojas de la pantalla */
+[data-skin="pantalla"] .panel{background:linear-gradient(180deg,#251f18,#1e1913);border:1px solid #0e0b08;border-radius:4px;box-shadow:inset 0 1px 0 rgb(255 235 200/.05),var(--shadow)}
+[data-skin="pantalla"] .panel::before{left:0;right:0;top:0;height:2px;opacity:.55}
+@media (min-width:981px){
+  [data-skin="pantalla"] .side{position:relative}
+  [data-skin="pantalla"] .side::before{content:"";position:absolute;left:-15px;top:6px;bottom:6px;width:10px;border-radius:2px;
+    background:radial-gradient(circle at 50% 60px,#6a5639 0 3px,transparent 3.5px),radial-gradient(circle at 50% calc(100% - 60px),#6a5639 0 3px,transparent 3.5px),linear-gradient(90deg,#0e0b08,#2b231a 50%,#0e0b08)}
+}
+[data-skin="pantalla"] .btn{border-radius:8px;background:var(--surface-2);border-color:var(--line)}
+[data-skin="pantalla"] .btn:hover{border-color:var(--brass);background:#342b21}
+[data-skin="pantalla"] .btn.primary{background:linear-gradient(180deg,#e4bb6e,#b98a3f);color:#21180c;border-color:#e8c682;box-shadow:0 3px 0 #6f5023,0 6px 14px rgb(0 0 0/.4)}
+[data-skin="pantalla"] .btn.primary:hover{filter:brightness(1.06)}
+[data-skin="pantalla"] .btn.primary:active{transform:translateY(2px);box-shadow:0 1px 0 #6f5023}
+[data-skin="pantalla"] .btn.ghost{background:transparent;border-color:transparent}
+[data-skin="pantalla"] label.f input,[data-skin="pantalla"] label.f select,[data-skin="pantalla"] label.f textarea,[data-skin="pantalla"] .skin select,[data-skin="pantalla"] .bfilters input,[data-skin="pantalla"] .bfilters select,[data-skin="pantalla"] .c-quick input,[data-skin="pantalla"] .frow input[type=text]{background:#120f0b;border-color:var(--line);box-shadow:inset 0 1px 2px rgb(0 0 0/.6)}
+/* criaturas: fichas en la mesa */
+[data-skin="pantalla"] .list{gap:6px}
+[data-skin="pantalla"] .row{background:var(--surface);border:1px solid #0e0b08;border-radius:6px;box-shadow:inset 0 1px 0 rgb(255 235 200/.04)}
+[data-skin="pantalla"] .row.cur{border-color:#0e0b08;box-shadow:0 0 0 2px var(--brass),0 8px 20px rgb(0 0 0/.45);background:var(--surface-2)}
+[data-skin="pantalla"] .row.flash{animation:pn-flash .9s ease-out}
+@keyframes pn-flash{from{box-shadow:0 0 0 3px var(--brass),0 0 24px rgb(214 168 92/.5)}}
+[data-skin="pantalla"] .c-init input{width:50px;height:50px;border-radius:50%;border:3px solid var(--fc);background:radial-gradient(circle at 50% 30%,#3b3227,#1d1813);font-family:"Grenze",serif;font-size:22px;font-weight:600;box-shadow:0 3px 6px rgb(0 0 0/.55)}
+[data-skin="pantalla"] .row.cur .c-init input{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--brass),0 6px 12px rgb(0 0 0/.6)}
+[data-skin="pantalla"] .turnflag{background:var(--brass);color:#21180c}
+[data-skin="pantalla"] .hptext b{font-family:"Grenze",serif;font-size:21px}
+[data-skin="pantalla"] .hpbar{height:8px;background:#120f0b;box-shadow:inset 0 1px 2px rgb(0 0 0/.6)}
+[data-skin="pantalla"] .shield{background:linear-gradient(160deg,#3a3024,#231d16);color:var(--brass);font-family:"Grenze",serif;font-size:19px;position:relative}
+[data-skin="pantalla"] .c-ac small{color:var(--muted)}
+[data-skin="pantalla"] .qb{border-radius:8px;background:var(--surface-2);border-color:var(--line);min-width:40px;height:40px}
+[data-skin="pantalla"] .qb.d{background:#3a1d17;border-color:#6b2e22;color:#ffd6cb}
+[data-skin="pantalla"] .qb.h{background:#1b3022;border-color:#2f5a3c;color:#cdf0d6}
+[data-skin="pantalla"] .qb.t{color:var(--brass)}
+[data-skin="pantalla"] .chip{background:#171310;border-color:var(--line)}
+[data-skin="pantalla"] .fsum{background:#171310;border-color:color-mix(in srgb,var(--fc) 45%,#0e0b08)}
+/* la ficha */
+[data-skin="pantalla"] .sb{background:var(--surface);border:1px solid #0e0b08;border-radius:4px;box-shadow:inset 0 1px 0 rgb(255 235 200/.05)}
+[data-skin="pantalla"] .sb h3{font-weight:700;font-size:30px;color:var(--fg)}
+[data-skin="pantalla"] .sb h4{font-weight:600;font-size:20px;color:var(--brass);border-bottom-color:var(--line)}
+[data-skin="pantalla"] .sb hr{background:linear-gradient(90deg,var(--brass),transparent)}
+[data-skin="pantalla"] .sb .ln b{color:var(--brass)}
+[data-skin="pantalla"] .sb .abil div{background:var(--surface-2);font-family:var(--f-body);font-size:14px}
+[data-skin="pantalla"] .sb .abil b{font-family:var(--f-body);font-weight:800;font-size:11px;letter-spacing:.06em;color:var(--muted)}
+[data-skin="pantalla"] .rl{background:#171310;border-color:var(--brass);color:var(--brass);font-family:var(--f-body);border-radius:6px}
+[data-skin="pantalla"] .rl:hover{background:var(--brass);color:#21180c}
+[data-skin="pantalla"] .dc{background:rgb(214 168 92/.16);color:var(--brass);font-family:var(--f-body)}
+[data-skin="pantalla"] .tag{background:#171310;border-color:var(--brass);color:var(--brass)}
+[data-skin="pantalla"] .tool{background:linear-gradient(180deg,#251f18,#1e1913);border:1px solid #0e0b08;border-radius:4px;box-shadow:var(--shadow)}
+[data-skin="pantalla"] .tool::before{left:0;right:0;top:0;opacity:.55}
+[data-skin="pantalla"] .tool .tn{font-weight:600;font-size:22px;color:var(--brass)}
+[data-skin="pantalla"] .tool .ti .ic{color:var(--brass)}
+[data-skin="pantalla"] .htitle{font-weight:700}
+[data-skin="pantalla"] .toast{background:#241d16;color:var(--fg);border:1px solid var(--brass);box-shadow:0 10px 30px rgb(0 0 0/.55)}
+/* el raíl */
+[data-skin="pantalla"] .rail{display:flex;align-items:center;gap:14px;margin:0 0 14px;padding:10px 14px 12px;background:linear-gradient(180deg,#1f1a14,#18140f);border:1px solid #0e0b08;border-radius:8px;box-shadow:inset 0 1px 0 rgb(255 235 200/.05),var(--shadow)}
+[data-skin="pantalla"] .rail[hidden]{display:none}
+[data-skin="pantalla"] .nextup{display:none}
+[data-skin="pantalla"] .rail .dial{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 50% 35%,#3a3024,#1d1813);border:2px solid var(--brass);box-shadow:0 3px 8px rgb(0 0 0/.5),inset 0 0 0 4px #1d1813,inset 0 0 0 5px rgb(214 168 92/.4)}
+[data-skin="pantalla"] .rail .dial b{font-family:"Grenze",serif;font-size:30px;line-height:.9;color:var(--brass)}
+[data-skin="pantalla"] .rail .dial small{font-size:12px;color:var(--muted)}
+[data-skin="pantalla"] .rail .track{position:relative;flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;padding:10px 4px 6px;scrollbar-width:thin;scroll-behavior:smooth}
+[data-skin="pantalla"] .rail .track::before{content:"";position:absolute;left:0;right:0;top:41px;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px);pointer-events:none}
+[data-skin="pantalla"] .tok{position:relative;flex:none;width:78px;padding:0;border:0;background:none;color:var(--fg);text-align:center;cursor:pointer}
+[data-skin="pantalla"] .tok .disc{position:relative;display:grid;place-items:center;width:58px;height:58px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 30%,#3b3227,#221c16);border:3px solid var(--fc);box-shadow:0 3px 6px rgb(0 0 0/.55);font-family:"Grenze",serif;font-size:20px;font-weight:600;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+[data-skin="pantalla"] .tok .disc em{position:absolute;right:-6px;bottom:-7px;min-width:24px;height:24px;border-radius:12px;background:var(--bg);border:1.5px solid var(--brass);color:var(--brass);font:700 13px/21px "Alegreya Sans",sans-serif;font-style:normal;padding:0 3px}
+[data-skin="pantalla"] .tok .hpl{display:block;width:44px;height:3px;margin:8px auto 0;border-radius:2px;background:#3d3328;overflow:hidden}
+[data-skin="pantalla"] .tok .hpl i{display:block;height:100%}
+[data-skin="pantalla"] .tok .tn{display:block;margin-top:5px;font-size:13px;line-height:1.15;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+[data-skin="pantalla"] .tok:hover .disc{transform:translateY(-2px)}
+[data-skin="pantalla"] .tok.cur .disc{transform:translateY(-6px) scale(1.1);box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--brass),0 10px 18px rgb(0 0 0/.6)}
+[data-skin="pantalla"] .tok.cur .tn{color:var(--fg);font-weight:700}
+[data-skin="pantalla"] .tok.down .disc{filter:grayscale(1) brightness(.55)}
+[data-skin="pantalla"] .tok.down .disc::after{content:"";position:absolute;inset:9px;background:linear-gradient(45deg,transparent 45%,var(--crit) 45% 55%,transparent 55%),linear-gradient(-45deg,transparent 45%,var(--crit) 45% 55%,transparent 55%)}
+@media (max-width:680px){[data-skin="pantalla"] .rail{padding:8px 10px;gap:10px}[data-skin="pantalla"] .rail .dial{width:54px;height:54px}[data-skin="pantalla"] .rail .dial b{font-size:24px}}
+@media (prefers-reduced-motion:reduce){[data-skin="pantalla"] .tok .disc{transition:none}[data-skin="pantalla"] .rail .track{scroll-behavior:auto}}
+
 /* ===== Estilo «Arcano»: noche estrellada, vidrio y pan de oro ===== */
 :root[data-skin="arcano"]{
   --bg:#09081a; --surface:rgb(24 19 46/.72); --surface-2:rgb(58 46 102/.42); --line:rgb(178 146 255/.22);
@@ -1020,7 +1116,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Ajustes</button>
-      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Grupo</button>
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior"><svg class="ic" aria-hidden="true"><use href="#i-prev"/></svg> <span class="bl">Anterior</span></button>
@@ -1363,6 +1459,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <span>Esto es un <b>combate de ejemplo</b> para que veas cómo funciona.</span>
       <button type="button" class="linkbtn" data-act="clearall" data-confirm>Vaciar y empezar el mío</button>
     </p>
+    <div class="rail" id="rail" aria-label="Orden de iniciativa" hidden></div>
     <div id="endsum" hidden></div>
     <div class="factions" id="fsum"></div>
     <div class="listhead">
@@ -1622,7 +1719,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <label class="f">Tema<select id="pf-theme"><option value="">Automático (como el sistema)</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
-      <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
@@ -2069,6 +2166,7 @@ let critFor=null;
 function render(){
   const s=state, n=s.order.length, cur=s.active?get(s.order[s.turnIdx]):null;
   $('#example').hidden=!s.example;
+  {const r=$('#rail');r.hidden=!s.order.length;if(s.order.length){r.innerHTML=railHTML(s);const tr=r.querySelector('.track'),t=r.querySelector('.tok.cur');if(t&&tr.clientWidth)tr.scrollLeft=t.offsetLeft-tr.clientWidth/2+t.offsetWidth/2;}}
   {const e=$('#endsum'),x=!s.active&&s.summary;e.hidden=!x;e.innerHTML=x?sumHTML(x):'';}
   document.documentElement.toggleAttribute('data-mesa',!!s.active);
   $('#round').textContent=s.active?s.round:'–';
@@ -2135,6 +2233,15 @@ function render(){
 }
 
 let lastTurnKey=null;
+/* raíl de fichas de la «Pantalla del máster»: una ficha por criatura, la del turno levantada */
+function railHTML(s){
+  const cur=s.active?s.order[s.turnIdx]:null;
+  const toks=s.order.map(id=>{const c=s.creatures.find(x=>x.id===id);if(!c)return '';
+    const f=fac(c.factionId),pc=c.maxHp?c.hp/c.maxHp:0,col=c.hp<=0||pc<=.25?'var(--crit)':pc<=.5?'var(--warn)':'var(--ok)';
+    const ini=c.name.split(/\s+/).filter(w=>/^[\p{Lu}\d]/u.test(w)).map(w=>w[0]).join('').slice(0,2)||c.name.slice(0,1);
+    return `<button type="button" class="tok${id===cur?' cur':''}${c.hp<=0&&!isPC(c)?' down':''}" style="--fc:${f.color}" data-act="railgo" data-id="${id}" title="${esc(c.name)}"><span class="disc">${esc(ini)}<em>${c.init??'–'}</em></span><span class="hpl"><i style="width:${Math.max(0,Math.min(100,pc*100))}%;background:${col}"></i></span><span class="tn">${esc(c.name)}</span></button>`;}).join('');
+  return `<div class="dial"><b>${s.active?s.round:'–'}</b><small>${T('Ronda')}</small></div><div class="track">${toks}</div>`;
+}
 function mkSummary(){
   const cs=state.creatures,np=cs.filter(c=>!isPC(c));
   return {r:state.round,t:state.total,fallen:np.filter(c=>c.hp<=0).map(c=>c.name),standing:np.filter(c=>c.hp>0).map(c=>({n:c.name,f:fac(c.factionId).color})),
@@ -2515,6 +2622,7 @@ document.addEventListener('click',e=>{
     case 'mkfromrow':openEditor({n:c.name.replace(/ \d+$/,''),sz:'Medium',ty:'Humanoid',ac:c.ac,hp:c.maxHp,in:c.initBonus,ab:[10,10,10,10,10,10]},{asNew:true,relink:[c.id]});break;
     // bestiario
     case 'sheetfold':if(!MOB.matches)break;{const p=$('#curpanel'),c=p.classList.toggle('folded');try{localStorage.setItem('combat-sheet-folded',c?'1':'');}catch(e){}}break;
+    case 'railgo':{const el=document.querySelector(`.row[data-id="${b.dataset.id}"]`);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}}break;
     case 'gosheet':$('#curpanel').classList.remove('folded');$('#curpanel').scrollIntoView({behavior:'smooth',block:'start'});break;
     case 'openbest':openBest();break;
     case 'closemodal':closeModals();break;
