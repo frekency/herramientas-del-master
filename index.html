@@ -1848,7 +1848,7 @@ function render(){
   }).join('');
 
   const L=$('#list');
-  if(!n){L.innerHTML=`<li class="empty">No hay nadie en el combate. Añade jugadores, aliados y enemigos desde el panel «Añadir criatura» o desde 🔎 Buscar.</li>`;}
+  if(!n){L.innerHTML=`<li class="empty">No hay nadie en el combate. Añade jugadores, aliados y enemigos desde el panel «Añadir criatura» o desde 🔎 Buscar.<br><button type="button" class="btn" data-act="acexample" style="margin-top:12px">Insertar datos de ejemplo</button></li>`;}
   else L.innerHTML=s.order.map((id,idx)=>rowHTML(get(id),idx,cur&&cur.id===id)).join('');
 
   const sel=$('#a-fac'),v=sel.value;
