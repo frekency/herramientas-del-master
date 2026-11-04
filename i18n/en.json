@@ -726,5 +726,6 @@
   "turno": "turn",
   "turnos": "turns",
   "Daño (vacío = #)": "Damage (empty = #)",
-  "Curar (vacío = #)": "Heal (empty = #)"
+  "Curar (vacío = #)": "Heal (empty = #)",
+  "Maltrecho": "Bloodied"
 }

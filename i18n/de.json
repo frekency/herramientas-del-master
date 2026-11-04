@@ -726,5 +726,6 @@
   "turno": "Zug",
   "turnos": "Züge",
   "Daño (vacío = #)": "Schaden (leer = #)",
-  "Curar (vacío = #)": "Heilen (leer = #)"
+  "Curar (vacío = #)": "Heilen (leer = #)",
+  "Maltrecho": "Blutend"
 }

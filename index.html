@@ -182,7 +182,8 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 /* lateral */
 .addgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .addgrid .full{grid-column:1/-1}
-.hint{font-size:12px;color:var(--muted);margin:0}
+.hint{font-size:12px;color:var(--muted);margin:0;max-width:62ch;text-wrap:pretty}
+#changelog-home li{max-width:68ch;text-wrap:pretty}
 .sugg-wrap{position:relative}
 .sugg{position:absolute;left:0;right:0;top:100%;z-index:4;margin:2px 0 0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);max-height:280px;overflow:auto}
 .sugg li button{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;border:none;background:none;padding:6px 8px;border-radius:6px;color:var(--fg)}
@@ -376,8 +377,8 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .mdh{font-family:var(--f-display);font-size:18px;margin:22px 0 8px}
 .mdgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px}
 .mdcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
-.mdcard.on{border-color:var(--sb-rule);box-shadow:inset 3px 0 0 var(--sb-rule)}
-.mdcard.soon{opacity:.6}
+.mdcard.on{border-color:var(--sb-rule);background:color-mix(in srgb,var(--sb-rule) 6%,var(--surface))}
+.mdcard.soon{background:var(--surface-2);border-style:dashed;box-shadow:none}
 .mdcard .mdt{font-weight:700;font-size:15px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .mdcard p{margin:0;font-size:13px;line-height:1.4}
 .mdcard .mdc{font-size:12px;color:var(--muted)}
@@ -412,7 +413,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .vbody select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
 :root[data-view="mini"] .pagenav{padding-block:6px 0}
 .pagenav .navver{margin-left:auto;font-size:12px}
-.pagenav .navsep{align-self:center;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);opacity:.75;margin:0 2px 0 10px}
+.pagenav .navsep{align-self:center;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 2px 0 10px}
 .pagenav .pfbtn{margin-left:6px}
 .pagenav .navtoggle{display:none}
 .cmtabs a{font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 14px;text-decoration:none}
@@ -517,12 +518,12 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 /* ===== Recursos de manual: rúbricas rojas, filetes y sello de iniciativa ===== */
 .brand::first-letter,.htitle::first-letter{color:var(--sb-rule)}
 .bar{border-bottom:3px double color-mix(in srgb,var(--sb-rule) 55%,var(--line))}
-.panel{border-top:2px solid var(--sb-rule)}
+.panel,.tool{position:relative}
+.panel::before,.tool::before{content:"";position:absolute;top:-1px;left:14px;right:14px;height:2px;background:var(--sb-rule);pointer-events:none}
 .panel>h2,.panel>.inline>h2,.listhead h2,.vhead h2{color:var(--sb-rule)}
 .panel>h2{padding-bottom:6px;border-bottom:1px solid color-mix(in srgb,var(--sb-rule) 35%,transparent)}
 .c-init input{border-radius:50%;aspect-ratio:1;width:46px;max-width:100%;padding:0;margin:auto;display:block;border:1.5px solid color-mix(in srgb,var(--sb-rule) 55%,transparent);background:var(--surface-2)}
 :root:not([data-skin]) .row.cur .c-init input,:root[data-skin=""] .row.cur .c-init input{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface))}
-.tool{border-top:2px solid var(--sb-rule)}
 .tool .tn{color:var(--sb-rule)}
 .tool .tstat{border-top-style:dotted}
 .rsep{color:var(--sb-rule)}
@@ -671,6 +672,12 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .cpop .inline{justify-content:flex-end;gap:8px}
 .cpop .btn{min-height:44px;padding-inline:16px}
 @media (prefers-reduced-motion:no-preference){.cpop:not([hidden]){animation:cpin .14s ease-out}@keyframes cpin{from{opacity:0;transform:scale(.97)}}}
+/* textos de ejemplo de los campos: legibles en todos los estilos */
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
+/* estado «Maltrecho» escrito, no solo por el color de la barra */
+.hpst{font-weight:600;color:var(--fg);margin-left:6px;white-space:nowrap}
+.hpst::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--hc);margin-right:4px;vertical-align:1px}
+.srl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* aviso con «Deshacer»: se puede pulsar */
 .toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px;width:max-content}
 .tundo{border:none;background:none;color:inherit;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:6px 4px;cursor:pointer;white-space:nowrap}
@@ -866,11 +873,11 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 
 <section class="vpage" id="view-modulos" hidden>
   <div class="vhead"><h2>Módulos</h2><span class="pcsub" id="md-count"></span></div>
-  <p class="hint" style="display:block;max-width:760px">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. El SRD 5.2.1 viene siempre incluido; el resto lo eliges tú. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
+  <p class="hint" style="display:block">Los módulos añaden contenido a la herramienta: criaturas, conjuros, tablas, objetos, dotes, clases, especies y trasfondos. El SRD 5.2.1 viene siempre incluido; el resto lo eliges tú. Se guardan en este navegador y, si entras con tu cuenta, también en ella.</p>
   <h3 class="mdh">Oficiales libres</h3>
   <div class="mdgrid" id="md-free"></div>
   <h3 class="mdh">Oficiales · trae tu copia</h3>
-  <p class="hint" style="display:block;max-width:760px">Estos manuales no se pueden alojar aquí. Si tienes el tuyo, añade tu copia (un JSON con el formato de módulo o el CSV de tu hoja de conjuros): se guarda solo para ti y sustituye a las entradas del SRD equivalentes.</p>
+  <p class="hint" style="display:block">Estos manuales no se pueden alojar aquí. Si tienes el tuyo, añade tu copia (un JSON con el formato de módulo o el CSV de tu hoja de conjuros): se guarda solo para ti y sustituye a las entradas del SRD equivalentes.</p>
   <input type="file" id="md-byofile" accept=".csv,.json,text/csv,application/json" hidden>
   <div class="mdgrid" id="md-byo"></div>
   <h3 class="mdh">Homebrew y otros</h3>
@@ -880,7 +887,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
   <div class="mdgrid" id="md-hb"></div>
   <h3 class="mdh">Catálogo de la comunidad</h3>
-  <p class="hint" style="display:block;max-width:760px">Módulos homebrew publicados por otros usuarios, con su autor y su licencia. Añádelos a tus módulos con un clic. Solo se admite contenido propio o con licencia abierta: si ves un manual oficial, denúncialo.</p>
+  <p class="hint" style="display:block">Módulos homebrew publicados por otros usuarios, con su autor y su licencia. Añádelos a tus módulos con un clic. Solo se admite contenido propio o con licencia abierta: si ves un manual oficial, denúncialo.</p>
   <div id="md-cat"><div class="inline" id="cat-tools"><input id="cat-q" type="search" placeholder="Buscar por nombre, autor o descripción" aria-label="Buscar en el catálogo" style="flex:1 1 260px;max-width:420px"></div>
     <p class="hint" id="cat-msg" style="display:block"></p><div class="mdgrid" id="cat-grid"></div></div>
   <details class="mdexp" id="md-exp">
@@ -1413,6 +1420,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<div class="srl" id="turnlive" aria-live="polite"></div>
 <div class="cpop" id="cpop" role="alertdialog" aria-labelledby="cpop-q" hidden><p class="cq" id="cpop-q"><b>¿Seguro?</b> <span></span></p><div class="inline"><button type="button" class="btn" data-cp="no">Cancelar</button><button type="button" class="btn danger" data-cp="yes">Sí</button></div></div>
 
 <script>
@@ -1882,6 +1890,7 @@ function render(){
     // al pasar turno, si la lista quedó fuera de la vista, se vuelve a su principio
     const key=s.active?`${s.round}:${s.turnIdx}`:'';
     if(s.active&&s.rotate!==false&&key!==lastTurnKey&&lastTurnKey!==null){const h=document.querySelector('main.wrap .listhead'),r=h&&h.getBoundingClientRect();if(r&&(r.top<0||r.top>innerHeight*.6))h.scrollIntoView({behavior:'smooth',block:'start'});}
+    if(s.active&&key!==lastTurnKey&&lastTurnKey!==null){const c=s.creatures.find(x=>x.id===s.order[s.turnIdx]);if(c)$('#turnlive').textContent=`${T('Ronda')} ${s.round}: ${c.name}`;}
     lastTurnKey=key;
   }
 
@@ -1942,7 +1951,7 @@ function rowHTML(c,idx,isCur){
       <div class="meta">${isCur?'<span class="turnflag">En turno</span>':''}<span class="chip fchip" style="border-color:color-mix(in srgb,${f.color} 50%,var(--line))"><span class="dot" style="--fc:${f.color}"></span>${esc(f.name)}</span>${m?'<span class="chip bchip" title="Tiene ficha">📖</span>':''}${chips}${isPC(c)&&down?`<span class="chip">Salv. ✓${c.ds} ✗${c.df}</span>`:''}</div>
     </div>
     <div class="c-hp">
-      <div class="hptext"><span><b>${c.hp}</b> / ${c.maxHp} PG</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}</div>
+      <div class="hptext"><span><b>${c.hp}</b> / ${c.maxHp} PG${c.hp>0&&pct<=.5?`<span class="hpst" style="--hc:${col}">${T('Maltrecho')}</span>`:''}</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}</div>
       <div class="hpbar" title="${c.hp}/${c.maxHp}"><i style="width:${c.hp/tot*100}%;background:${col}"></i><i class="t" style="width:${c.temp/tot*100}%"></i></div>
     </div>
     <div class="c-ac"><div class="shield">${c.ac??'–'}</div><small>CA</small></div>

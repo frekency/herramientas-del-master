@@ -726,5 +726,6 @@
   "turno": "tour",
   "turnos": "tours",
   "Daño (vacío = #)": "Dégâts (vide = #)",
-  "Curar (vacío = #)": "Soigner (vide = #)"
+  "Curar (vacío = #)": "Soigner (vide = #)",
+  "Maltrecho": "En sang"
 }
