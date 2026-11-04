@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
 <script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.setItem('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;const t=localStorage.getItem('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
@@ -636,6 +636,109 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="cuaderno"] .log li.round{font-family:"Kalam",cursive;font-size:18px;color:var(--sb-rule)}
 @media (max-width:1399px){[data-skin="cuaderno"] body{background-image:none}}
 
+/* ===== Estilo «Libro de reglas»: tinta, filetes y rúbricas; sin tarjetas ===== */
+:root[data-skin="libro"]{
+  --bg:#f4eddf; --surface:#f8f2e6; --surface-2:#ebe2d0; --line:#cdbd9f;
+  --fg:#1f1a14; --muted:#6b5c49; --accent:#9a2b1d; --accent-fg:#fff8ee;
+  --sb:#f4eddf; --sb-rule:#9a2b1d;
+  --ok:#2f7d4a; --warn:#9a6a0c; --crit:#a8301f;
+  --shadow:0 1px 2px rgb(40 28 12/.08),0 8px 20px rgb(40 28 12/.08);
+  --f-display:"EB Garamond",Georgia,serif; --f-body:"EB Garamond",Georgia,serif; --f-sb:"EB Garamond",Georgia,serif; --f-num:"EB Garamond",Georgia,serif;
+  color-scheme:light}
+@media (prefers-color-scheme:dark){:root[data-skin="libro"]:not([data-theme="light"]){
+  --bg:#16130f; --surface:#1d1914; --surface-2:#28221b; --line:#3d342a;
+  --fg:#ece2cf; --muted:#ab9c86; --accent:#e0715c; --accent-fg:#1a0f0b;
+  --sb:#16130f; --sb-rule:#e0715c; --ok:#6fbf84; --warn:#e2b25a; --crit:#ef7562;
+  --shadow:0 2px 4px rgb(0 0 0/.4),0 10px 24px rgb(0 0 0/.35); color-scheme:dark}}
+:root[data-skin="libro"][data-theme="dark"]{
+  --bg:#16130f; --surface:#1d1914; --surface-2:#28221b; --line:#3d342a;
+  --fg:#ece2cf; --muted:#ab9c86; --accent:#e0715c; --accent-fg:#1a0f0b;
+  --sb:#16130f; --sb-rule:#e0715c; --ok:#6fbf84; --warn:#e2b25a; --crit:#ef7562;
+  --shadow:0 2px 4px rgb(0 0 0/.4),0 10px 24px rgb(0 0 0/.35); color-scheme:dark}
+[data-skin="libro"] body{font-size:16.5px;line-height:1.42;font-variant-numeric:oldstyle-nums}
+[data-skin="libro"] ::selection{background:color-mix(in srgb,var(--sb-rule) 25%,transparent)}
+[data-skin="libro"] .ic{stroke-width:1.5}
+/* cabecera: filete simple y doble, como la cabecera de una página */
+[data-skin="libro"] .bar{background:var(--bg);box-shadow:none;border-bottom:3px double var(--fg)}
+[data-skin="libro"] .brand{font-weight:600;font-size:22px;font-variant:small-caps;letter-spacing:.05em}
+[data-skin="libro"] .counter small,[data-skin="libro"] .now small{text-transform:none;letter-spacing:.06em;font-variant:small-caps;font-size:14px}
+[data-skin="libro"] .counter b{font-size:26px;font-weight:500;font-variant-numeric:lining-nums}
+[data-skin="libro"] .now .who{font-size:26px;font-weight:500}
+[data-skin="libro"] .now .nx{font-style:italic;font-size:15px}
+[data-skin="libro"] h2,[data-skin="libro"] .panel>h2,[data-skin="libro"] .listhead h2,[data-skin="libro"] .vhead h2{font-weight:600;font-size:21px;font-variant:small-caps;letter-spacing:.05em;color:var(--sb-rule);border-bottom:0;padding-bottom:0}
+[data-skin="libro"] .pagenav a{border-radius:0;border:0;border-bottom:2px solid transparent;font-variant:small-caps;letter-spacing:.05em;font-size:16px}
+[data-skin="libro"] .pagenav a:hover{background:none;color:var(--fg)}
+[data-skin="libro"] .pagenav a.on{background:none;color:var(--sb-rule);border-bottom-color:var(--sb-rule)}
+[data-skin="libro"] .pagenav .navsep{letter-spacing:.06em;text-transform:none;font-variant:small-caps;font-size:14px}
+/* botones: rectos, de tinta */
+[data-skin="libro"] .btn{border-radius:0;border:1px solid var(--fg);background:transparent;font-variant:small-caps;letter-spacing:.05em;font-size:16px}
+[data-skin="libro"] .btn:hover{background:color-mix(in srgb,var(--fg) 7%,transparent)}
+[data-skin="libro"] .btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+[data-skin="libro"] .btn.primary:hover{background:var(--sb-rule);border-color:var(--sb-rule);filter:none}
+[data-skin="libro"] .btn.ghost{border-color:transparent}
+[data-skin="libro"] .btn.danger{color:var(--crit)}
+[data-skin="libro"] label.f input,[data-skin="libro"] label.f select,[data-skin="libro"] label.f textarea,[data-skin="libro"] .skin select,[data-skin="libro"] .bfilters input,[data-skin="libro"] .bfilters select,[data-skin="libro"] .frow input[type=text]{border-radius:0;background:var(--surface)}
+[data-skin="libro"] label.f textarea{font-family:"IBM Plex Mono",ui-monospace,monospace}
+/* paneles: sin caja, separados por un filete */
+[data-skin="libro"] .panel::before{display:none}
+[data-skin="libro"] .panel{background:transparent;border:0;border-top:1px solid var(--fg);border-radius:0;box-shadow:none;padding:12px 2px}
+[data-skin="libro"] .fsum{background:none;border:0;border-radius:0;padding:2px 6px 2px 0;font-style:italic;font-size:15px}
+[data-skin="libro"] .fsum .dot{border-radius:0;transform:rotate(45deg);width:8px;height:8px}
+[data-skin="libro"] .fsum .mini{border-radius:0;height:3px}
+/* la iniciativa como tabla: número en el margen, filetes entre renglones */
+[data-skin="libro"] .list{gap:0;border-top:1px solid var(--line)}
+[data-skin="libro"] .row{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none}
+[data-skin="libro"] .row.cur{box-shadow:none;background:color-mix(in srgb,var(--sb-rule) 7%,transparent)}
+@media (min-width:681px){[data-skin="libro"] .row.cur::before{content:"";position:absolute;left:-14px;top:50%;width:8px;height:13px;background:var(--sb-rule);clip-path:polygon(0 0,100% 50%,0 100%);transform:translateY(-50%)}}
+[data-skin="libro"] .row.down .name{text-decoration-thickness:1px}
+[data-skin="libro"] .c-init input{width:56px;height:auto;aspect-ratio:auto;border:0;border-radius:0;background:transparent;font-size:36px;font-weight:400;line-height:1;color:var(--muted);text-align:right;padding:0 6px 0 0;font-variant-numeric:lining-nums}
+[data-skin="libro"] .row.cur .c-init input{color:var(--sb-rule)}
+[data-skin="libro"] .name{font-size:19px;font-weight:600}
+[data-skin="libro"] .name .book{font-style:italic;font-weight:400;font-size:15px}
+[data-skin="libro"] .meta{font-size:14px}
+[data-skin="libro"] .turnflag{background:none;color:var(--sb-rule);font-size:14px;font-weight:600;text-transform:none;letter-spacing:.05em;font-variant:small-caps;padding:0}
+[data-skin="libro"] .chip{background:none;border:0;border-radius:0;padding:0 2px;font-size:14px;font-style:italic;color:var(--sb-rule)}
+[data-skin="libro"] .chip.fchip{font-style:normal;color:var(--muted)}
+[data-skin="libro"] .chip.fchip .dot{border-radius:0;transform:rotate(45deg);width:7px;height:7px}
+[data-skin="libro"] .chip.bchip{color:var(--muted)}
+[data-skin="libro"] .hptext b{font-size:22px;font-weight:600;font-variant-numeric:lining-nums tabular-nums}
+[data-skin="libro"] .hptext{font-size:14px}
+[data-skin="libro"] .hpbar{height:3px;border-radius:0}
+[data-skin="libro"] .shield{clip-path:none;background:none;width:auto;height:auto;font-size:23px;font-weight:600;line-height:1;font-variant-numeric:lining-nums}
+[data-skin="libro"] .c-ac small{text-transform:none;font-variant:small-caps;letter-spacing:.08em;font-size:13px}
+[data-skin="libro"] .c-quick input{background:transparent;border:0;border-bottom:1px solid var(--fg);border-radius:0;font-size:19px;text-align:center;font-variant-numeric:lining-nums}
+[data-skin="libro"] .qb{border-radius:0;border:1px solid var(--line);background:transparent;min-width:40px;height:40px;font-variant:small-caps;letter-spacing:.05em;font-size:16px}
+[data-skin="libro"] .qb:hover{border-color:var(--fg);background:none}
+/* la ficha: bloque de estadísticas clásico, filetes rojos que se afilan */
+[data-skin="libro"] .sb{background:transparent;border:0;border-radius:0;padding:4px 0;font-size:16px}
+[data-skin="libro"] .sb h3{font-weight:600;font-size:30px;font-variant:small-caps;letter-spacing:.05em;color:var(--sb-rule)}
+[data-skin="libro"] .sb .sub{font-size:16px}
+[data-skin="libro"] .sb hr{height:5px;background:var(--sb-rule);clip-path:polygon(0 0,100% 50%,0 100%);margin:9px 0}
+[data-skin="libro"] .sb .ln b{color:var(--sb-rule);font-weight:600}
+[data-skin="libro"] .sb .abil div{background:none;border-radius:0;font-family:var(--f-body);font-size:15px;font-variant-numeric:lining-nums}
+[data-skin="libro"] .sb .abil b{font-family:var(--f-body);font-weight:600;font-size:14px;font-variant:small-caps;letter-spacing:.05em}
+[data-skin="libro"] .sb .abil button{font-family:var(--f-body);font-size:15px}
+[data-skin="libro"] .sb h4{font-weight:600;font-size:20px;font-variant:small-caps;letter-spacing:.05em;border-bottom:1px solid var(--sb-rule)}
+[data-skin="libro"] .rl{border:0;background:none;color:var(--sb-rule);font-family:var(--f-body);font-size:16px;font-weight:600;padding:0 1px;text-decoration:underline dotted;text-underline-offset:3px;font-variant-numeric:lining-nums}
+[data-skin="libro"] .rl:hover{background:var(--sb-rule);color:var(--bg)}
+[data-skin="libro"] .dc{background:none;border:1px solid var(--sb-rule);border-radius:0;font-family:var(--f-body);font-size:15px;font-variant-numeric:lining-nums}
+[data-skin="libro"] .tag{border-radius:0;background:transparent;font-family:var(--f-body)}
+[data-skin="libro"] .advsel{border-radius:0}
+[data-skin="libro"] .advsel button.on{background:var(--fg);color:var(--bg)}
+[data-skin="libro"] .pip.u{border-radius:0;transform:rotate(45deg) scale(.8)}
+/* inicio: sin tarjetas, columnas separadas por filetes */
+[data-skin="libro"] .htitle{font-weight:500;font-size:clamp(32px,5vw,50px)}
+[data-skin="libro"] .tool::before{display:none}
+[data-skin="libro"] .tool{background:transparent;border:0;border-top:1px solid var(--fg);border-radius:0;box-shadow:none;padding:14px 4px}
+[data-skin="libro"] .tool:hover{transform:none;background:color-mix(in srgb,var(--fg) 4%,transparent)}
+[data-skin="libro"] .tool .tn{font-weight:600;font-size:21px;font-variant:small-caps;letter-spacing:.05em}
+[data-skin="libro"] .tool .tstat{font-style:italic;font-family:var(--f-body)}
+[data-skin="libro"] .toast{background:var(--fg);color:var(--bg);border-radius:0;box-shadow:var(--shadow)}
+[data-skin="libro"] .mbox,[data-skin="libro"] .cpop{border-radius:0}
+[data-skin="libro"] .nextup{border-radius:0;background:transparent;border-color:var(--line)}
+@media (max-width:680px){[data-skin="libro"] .pagenav .btn{font-variant:normal;letter-spacing:0;font-size:15px}}
+[data-skin="libro"] .log li.round{font-variant:small-caps;letter-spacing:.05em;color:var(--sb-rule)}
+
 /* ===== Estilo «Arcano»: noche estrellada, vidrio y pan de oro ===== */
 :root[data-skin="arcano"]{
   --bg:#09081a; --surface:rgb(24 19 46/.72); --surface-2:rgb(58 46 102/.42); --line:rgb(178 146 255/.22);
@@ -917,7 +1020,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Ajustes</button>
-      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Grupo</button>
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior"><svg class="ic" aria-hidden="true"><use href="#i-prev"/></svg> <span class="bl">Anterior</span></button>
@@ -1519,7 +1622,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <label class="f">Tema<select id="pf-theme"><option value="">Automático (como el sistema)</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
-      <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
