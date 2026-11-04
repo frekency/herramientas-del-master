@@ -690,6 +690,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="taberna"] .toast{background:linear-gradient(180deg,#3a2718,#24170e);color:var(--fg);border:2px solid var(--brass);box-shadow:0 0 30px var(--candle)}
 [data-skin="taberna"] .modal{background:rgb(8 4 2/.72)}
 
+/* separador de la lista rotatoria */
+.rsep{display:flex;align-items:center;gap:10px;margin:4px 0;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rsep::before,.rsep::after{content:'';flex:1;height:1px;background:var(--line)}
+main.wrap .listhead{scroll-margin-top:100px}
 /* notas discretas: avisan sin quitarle el sitio a la partida */
 .quietnote{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:0 0 12px;padding:6px 4px 6px 12px;border-left:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.4}
 .quietnote b{color:var(--fg);font-weight:600}
@@ -1184,6 +1188,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
         <label><input type="checkbox" id="o-dur"> Restar duración de estados al inicio del turno de la criatura</label>
         <label><input type="checkbox" id="o-hproll"> Tirar los dados de golpe de los monstruos (si no, PG medios)</label>
         <label><input type="checkbox" id="o-recharge"> Tirar recargas automáticamente al inicio de su turno</label>
+        <label><input type="checkbox" id="o-rotate"> Poner arriba a quien tiene el turno (la lista va rotando)</label>
       </div>
       <div class="inline">
         <button class="btn danger" data-act="newenc" data-confirm>Nuevo encuentro</button>
@@ -1832,7 +1837,7 @@ function render(){
   $('#next').innerHTML=s.active?'Siguiente ▶':'Empezar ▶';
   $('#prev').disabled=!s.active;
   $('#undo').disabled=!undoStack.length;
-  $('#o-skip').checked=s.skipDead;$('#o-dur').checked=s.tickDur;$('#o-hproll').checked=s.hpRoll;$('#o-recharge').checked=s.autoRecharge;
+  $('#o-skip').checked=s.skipDead;$('#o-dur').checked=s.tickDur;$('#o-hproll').checked=s.hpRoll;$('#o-recharge').checked=s.autoRecharge;$('#o-rotate').checked=s.rotate!==false;
   const lr=$('#lastroll');lr.hidden=!s.lastRoll;
   if(s.lastRoll)lr.innerHTML=`<b>${s.lastRoll.v}</b><span>${esc(s.lastRoll.lbl)}</span><button class="more" data-act="clearroll" aria-label="Descartar tirada" style="font-size:14px;padding:2px 6px">✕</button>`;
 
@@ -1849,7 +1854,15 @@ function render(){
 
   const L=$('#list');
   if(!n){L.innerHTML=`<li class="empty">No hay nadie en el combate. Añade jugadores, aliados y enemigos desde el panel «Añadir criatura» o desde 🔎 Buscar.<br><button type="button" class="btn" data-act="acexample" style="margin-top:12px">Insertar datos de ejemplo</button></li>`;}
-  else L.innerHTML=s.order.map((id,idx)=>rowHTML(get(id),idx,cur&&cur.id===id)).join('');
+  else{
+    const rows=s.order.map((id,idx)=>rowHTML(get(id),idx,cur&&cur.id===id));
+    const rot=s.active&&s.rotate!==false&&s.turnIdx>0;
+    L.innerHTML=rot?rows.slice(s.turnIdx).join('')+`<li class="rsep" role="separator"><span>${T('Ronda')} ${s.round+1}</span></li>`+rows.slice(0,s.turnIdx).join(''):rows.join('');
+    // al pasar turno, si la lista quedó fuera de la vista, se vuelve a su principio
+    const key=s.active?`${s.round}:${s.turnIdx}`:'';
+    if(s.active&&s.rotate!==false&&key!==lastTurnKey&&lastTurnKey!==null){const h=document.querySelector('main.wrap .listhead'),r=h&&h.getBoundingClientRect();if(r&&(r.top<0||r.top>innerHeight*.6))h.scrollIntoView({behavior:'smooth',block:'start'});}
+    lastTurnKey=key;
+  }
 
   const sel=$('#a-fac'),v=sel.value;
   sel.innerHTML=s.factions.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
@@ -1867,6 +1880,7 @@ function render(){
   if(!$('#view-inicio').hidden)renderHome();
 }
 
+let lastTurnKey=null;
 function rowHTML(c,idx,isCur){
   const f=fac(c.factionId),pct=c.maxHp?c.hp/c.maxHp:0;
   const col=c.hp<=0?'var(--crit)':pct<=.25?'var(--crit)':pct<=.5?'var(--warn)':'var(--ok)';
@@ -2254,6 +2268,7 @@ document.addEventListener('change',e=>{
   if(el.id==='o-dur')commit(()=>state.tickDur=el.checked);
   if(el.id==='o-hproll')commit(()=>state.hpRoll=el.checked);
   if(el.id==='o-recharge')commit(()=>state.autoRecharge=el.checked);
+  if(el.id==='o-rotate')commit(()=>state.rotate=el.checked);
 });
 document.addEventListener('click',e=>{const b=e.target.closest('[data-fact="del"]');if(!b||b.disabled)return;const id=b.closest('.frow').dataset.fid;commit(()=>{state.factions=state.factions.filter(f=>f.id!==id);});});
 
