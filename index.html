@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
-<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.removeItem('combat-skin');}if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;const t=localStorage.getItem('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.setItem('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;const t=localStorage.getItem('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
@@ -910,7 +910,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false">⚙ Ajustes</button>
-      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option><option value="cuaderno">Cuaderno</option></select></label>
+      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores">🛡 Grupo</button>
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar">🔎 <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior">◀ <span class="bl">Anterior</span></button>
@@ -1512,7 +1512,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <label class="f">Tema<select id="pf-theme"><option value="">Automático (como el sistema)</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
-      <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option><option value="cuaderno">Cuaderno</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
