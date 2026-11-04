@@ -4,6 +4,17 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.35.0] - 2026-11-04
+### Añadido
+- SRD 5.2.1 en alemán e italiano: `srd2024_de/it.json`, `conjuros_srd_de/it.json` y `compendio_srd_de/it.json`, con sus generadores en `tools/`; `DATA_LANG` admite `de` e `it`. Las tiradas reconocen los formatos alemán e italiano.
+- Tests automáticos (`npm test`, `node --test tests/`): datos de cada idioma, traducciones, versión, seguridad estática y ataque real en Edge sin ventana. El hook `.githooks/pre-push` los pasa antes de cada subida.
+- `_headers` para Netlify con cabeceras de seguridad.
+### Corregido
+- Seguridad: los módulos del catálogo ya no pueden colar HTML ni código en objetos, dotes, clases, especies, trasfondos y reglas; los datos guardados, los módulos y las copias de seguridad se sanean al cargarlos (antes un dato mal formado dejaba la página rota) y la copia no puede tocar el prototipo de los interruptores de módulos.
+- supabase-js se carga con integridad (SRI).
+- Supabase: solo las claves que sincroniza la página y 5 MB por fila en `datos_usuario`, 30 módulos por autor y una descarga por cuenta y módulo.
+- Datos: descripción de Greater Invisibility, ficha de Kalte Hand, Evoca creature boschive, guiones blandos en las criaturas alemanas y rareza de dos objetos italianos.
+
 ## [1.34.0] - 2026-11-04
 ### Añadido
 - SRD 5.2.1 en francés: `srd2024_fr.json`, `conjuros_srd_fr.json` y `compendio_srd_fr.json`, extraídos del PDF oficial con `tools/build_fr.py`, `tools/build_spells_fr.py` y `tools/build_compendio_fr.py`; `DATA_LANG` admite `fr`.
