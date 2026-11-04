@@ -47,7 +47,7 @@ button{cursor:pointer}
 .brand{font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:.02em;margin:0;white-space:nowrap}
 .brand a{color:inherit;text-decoration:none}
 /* fuera del tracker de combate la barra solo lleva el nombre y los ajustes de vista */
-:root:not([data-page="combate"]) .bar .counters,:root:not([data-page="combate"]) .bar .now,:root:not([data-page="combate"]) #prev,:root:not([data-page="combate"]) #next,:root:not([data-page="combate"]) #undo,:root:not([data-page="combate"]) #lastroll{display:none!important}
+:root:not([data-page="combate"]) .bar .counters,:root:not([data-page="combate"]) .bar .now,:root:not([data-page="combate"]) #prev,:root:not([data-page="combate"]) #next,:root:not([data-page="combate"]) #undo,:root:not([data-page="combate"]) #endbtn,:root:not([data-page="combate"]) #lastroll{display:none!important}
 :root:not([data-page="combate"]) .bar .nav{margin-left:auto}
 :root[data-view="mini"]:not([data-page="combate"]) .brand{display:block!important}
 .counters{display:flex;gap:18px}
@@ -690,6 +690,19 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="taberna"] .toast{background:linear-gradient(180deg,#3a2718,#24170e);color:var(--fg);border:2px solid var(--brass);box-shadow:0 0 30px var(--candle)}
 [data-skin="taberna"] .modal{background:rgb(8 4 2/.72)}
 
+/* notas discretas: avisan sin quitarle el sitio a la partida */
+.quietnote{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:0 0 12px;padding:6px 4px 6px 12px;border-left:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.4}
+.quietnote b{color:var(--fg);font-weight:600}
+.linkbtn{border:none;background:none;padding:4px 2px;color:var(--accent);font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:hover{color:var(--fg)}
+.qclose{margin-left:auto;border:none;background:none;color:var(--muted);padding:4px 8px;border-radius:6px;font-size:13px;line-height:1;cursor:pointer}
+.qclose:hover{background:var(--surface-2);color:var(--fg)}
+@media (pointer:coarse){.linkbtn,.qclose{min-height:40px;min-width:40px}}
+/* modo mesa: combate en marcha → encuentros, bandos, opciones y textos de ayuda se pliegan */
+:root:not([data-mesa]) #endbtn,.mesatoggle{display:none}
+:root[data-mesa] .mesatoggle{display:inline-flex;justify-content:center}
+:root[data-mesa]:not([data-cfg="1"]) .cfg,:root[data-mesa] .wrap .hint{display:none}
+:root[data-mesa]:not([data-cfg="1"]) .m-hide,:root[data-mesa][data-cfg="1"] .m-show{display:none}
 /* ===== Móvil, tablet y pantallas táctiles ===== */
 .mob-only{display:none}
 .chip,.turnflag{white-space:nowrap}
@@ -723,13 +736,13 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   :root[data-page="combate"] .counters{gap:12px}
   :root[data-page="combate"] .counter b{font-size:19px}
   :root[data-page="combate"] .now .who{font-size:18px}
-  :root[data-page="combate"] .bar .nav{position:fixed;left:0;right:0;bottom:0;z-index:6;flex-wrap:nowrap;gap:6px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgb(0 0 0/.18);padding:8px max(12px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+  :root[data-page="combate"] .bar .nav{position:fixed;left:0;right:0;bottom:0;z-index:6;flex-wrap:nowrap;gap:4px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgb(0 0 0/.18);padding:8px max(12px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
   /* Vista y Estilo están en Preferencias y Grupo en el menú: la barra cabe en una fila */
   .bar .nav .skin,.bar .nav [data-act="openparty"],.bl{display:none}
   .bar-in{flex-wrap:nowrap}
   .brand{font-size:18px;overflow:hidden;text-overflow:ellipsis}
   .bar .nav .btn{min-height:44px;min-width:44px;justify-content:center}
-  :root[data-page="combate"] .bar .nav .btn{min-height:48px;min-width:48px;justify-content:center;font-size:18px}
+  :root[data-page="combate"] .bar .nav .btn{min-height:48px;min-width:44px;padding-inline:8px;justify-content:center;font-size:18px;white-space:nowrap}
   :root[data-page="combate"] #next{flex:1;font-size:17px}
   :root[data-page="combate"] .mob-only:not([hidden]){display:inline-flex}
   :root[data-page="combate"] .lastroll{position:absolute;bottom:calc(100% + 8px);right:12px;background:var(--surface);box-shadow:var(--shadow)}
@@ -784,6 +797,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar">🔎 <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior">◀ <span class="bl">Anterior</span></button>
       <button class="btn primary big" id="next" title="Siguiente turno (→ o espacio)">Empezar ▶</button>
+      <button class="btn" id="endbtn" data-act="end" data-confirm title="Terminar combate" aria-label="Terminar combate">⏹ <span class="bl">Terminar</span></button>
       <button class="btn ghost" id="undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
       <button class="btn mob-only" data-act="gosheet" id="gosheet" title="Ir a la ficha del turno" aria-label="Ficha del turno" hidden>📖</button>
     </div>
@@ -1048,7 +1062,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <button class="btn" data-act="openio">Copias de seguridad</button>
     </div>
   </div>
-  <div class="mdbanner localwarn" hidden><span>Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.</span><button type="button" class="btn primary" data-act="acopen">👤 Entrar</button></div>
+  <p class="quietnote localwarn" hidden><span>Sin cuenta, lo que creas se guarda solo en este navegador.</span> <button type="button" class="linkbtn" data-act="acopen">Entrar para guardarlo</button><button type="button" class="qclose" data-act="lwhide" title="Ocultar aviso" aria-label="Ocultar aviso">✕</button></p>
   <div style="display:grid;gap:14px">
       <div class="inline" style="justify-content:space-between">
         <div class="inline">
@@ -1069,7 +1083,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="vhead"><h2>Tablas aleatorias</h2><span class="pcsub" id="tb-count"></span>
     <div class="inline" style="margin-left:auto"><button class="btn" data-act="tbnew">+ Nueva tabla</button></div>
   </div>
-  <div class="mdbanner localwarn" hidden><span>Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.</span><button type="button" class="btn primary" data-act="acopen">👤 Entrar</button></div>
+  <p class="quietnote localwarn" hidden><span>Sin cuenta, lo que creas se guarda solo en este navegador.</span> <button type="button" class="linkbtn" data-act="acopen">Entrar para guardarlo</button><button type="button" class="qclose" data-act="lwhide" title="Ocultar aviso" aria-label="Ocultar aviso">✕</button></p>
   <div class="tbwrap">
     <nav class="tblist" id="tb-list" aria-label="Tus tablas"></nav>
     <div class="tbmain" id="tb-main"></div>
@@ -1110,11 +1124,11 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 
 <main class="wrap">
   <section style="min-width:0">
-    <div class="mdbanner localwarn" hidden><span>Sin cuenta, tus personajes, encuentros, tablas y criaturas se guardan solo en este navegador: si borras sus datos o cambias de dispositivo, se pierden. Entra con tu cuenta para guardarlos.</span><button type="button" class="btn primary" data-act="acopen">👤 Entrar</button></div>
-    <div class="example" id="example" hidden>
+    <p class="quietnote localwarn" hidden><span>Sin cuenta, lo que creas se guarda solo en este navegador.</span> <button type="button" class="linkbtn" data-act="acopen">Entrar para guardarlo</button><button type="button" class="qclose" data-act="lwhide" title="Ocultar aviso" aria-label="Ocultar aviso">✕</button></p>
+    <p class="quietnote" id="example" hidden>
       <span>Esto es un <b>combate de ejemplo</b> para que veas cómo funciona.</span>
-      <button class="btn" data-act="clearall">Vaciar y empezar el mío</button>
-    </div>
+      <button type="button" class="linkbtn" data-act="clearall" data-confirm>Vaciar y empezar el mío</button>
+    </p>
     <div class="factions" id="fsum"></div>
     <div class="listhead">
       <h2>Orden de iniciativa</h2>
@@ -1148,7 +1162,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <p class="hint">Escribe para buscar en el SRD 5.2.1 en español (también vale el nombre en inglés) y en tus criaturas: se rellenan PG, CA e iniciativa y la ficha queda vinculada. PG acepta dados (2d6+2).</p>
     </form>
 
-    <div class="panel" id="encpanel">
+    <div class="panel cfg" id="encpanel">
       <h2>Encuentros guardados</h2>
       <div class="inline"><input id="enc-name" class="txt" placeholder="Emboscada en el camino" aria-label="Nombre del encuentro" style="flex:1 1 150px"><button class="btn" data-act="encsave">Guardar el actual</button></div>
       <label class="opts" style="flex-direction:row;gap:8px;font-size:13px"><input type="checkbox" id="enc-replace" checked> Al cargar, sustituir a los que no son jugadores</label>
@@ -1172,12 +1186,12 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
         <label><input type="checkbox" id="o-recharge"> Tirar recargas automáticamente al inicio de su turno</label>
       </div>
       <div class="inline">
-        <button class="btn" data-act="end">Terminar combate</button>
         <button class="btn danger" data-act="newenc" data-confirm>Nuevo encuentro</button>
       </div>
       <p class="hint">«Nuevo encuentro» quita a todos menos a los PJ y reinicia rondas. Tus criaturas del bestiario no se borran.</p>
     </div>
 
+    <button type="button" class="btn ghost mesatoggle" data-act="cfgtoggle"><span class="m-show">Mostrar encuentros, bandos y opciones</span><span class="m-hide">Ocultar encuentros, bandos y opciones</span></button>
     <div class="panel logpanel">
       <h2>Registro</h2>
       <ul class="log" id="log"></ul>
@@ -1807,6 +1821,7 @@ let critFor=null;
 function render(){
   const s=state, n=s.order.length, cur=s.active?get(s.order[s.turnIdx]):null;
   $('#example').hidden=!s.example;
+  document.documentElement.toggleAttribute('data-mesa',!!s.active);
   $('#round').textContent=s.active?s.round:'–';
   $('#turn').textContent=s.active?`${s.order.slice(0,s.turnIdx+1).filter(id=>!skipped(get(id))||id===s.order[s.turnIdx]).length}/${s.order.filter(id=>!skipped(get(id))).length}`:'–';
   $('#total').textContent=s.total||0;
@@ -2137,8 +2152,8 @@ $('#editform').addEventListener('submit',e=>{
 function armed(btn){
   if(!btn.hasAttribute('data-confirm'))return true;
   if(btn.dataset.armed)return true;
-  btn.dataset.armed='1';btn.dataset.orig=btn.textContent;btn.textContent='¿Seguro? Pulsa otra vez';
-  setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.textContent=btn.dataset.orig;}},3000);
+  btn.dataset.armed='1';btn.dataset.orig=btn.innerHTML;btn.textContent=T('¿Seguro? Pulsa otra vez');
+  setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.innerHTML=btn.dataset.orig;}},3000);
   return false;
 }
 function addCreature(c){
@@ -2307,7 +2322,7 @@ $('#next').onclick=next;$('#prev').onclick=prev;$('#undo').onclick=undo;
 $('#skin').value=document.documentElement.dataset.skin||'';
 $('#view').value=document.documentElement.dataset.view||'';
 $('#view').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.view=v;else delete document.documentElement.dataset.view;try{localStorage.setItem('combat-view',v);}catch(err){}});
-$('#cfgbtn').addEventListener('click',e=>{const r=document.documentElement,on=r.dataset.cfg!=='1';if(on)r.dataset.cfg='1';else delete r.dataset.cfg;e.currentTarget.setAttribute('aria-expanded',on);if(on)document.querySelector('.cfg').scrollIntoView({behavior:'smooth',block:'start'});});
+$('#cfgbtn').addEventListener('click',e=>{const r=document.documentElement,on=r.dataset.cfg!=='1';if(on)r.dataset.cfg='1';else delete r.dataset.cfg;e.currentTarget.setAttribute('aria-expanded',on);if(on&&!document.documentElement.hasAttribute('data-mesa'))document.querySelector('.cfg').scrollIntoView({behavior:'smooth',block:'start'});});
 $('#skin').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.skin=v;else delete document.documentElement.dataset.skin;try{localStorage.setItem('combat-skin',v);}catch(err){}});
 
 /* ---------- grupo, encuentros y conjuros ---------- */
@@ -2899,6 +2914,8 @@ function extraAct(act,b,c,e){
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
     case 'openparty':location.hash='jugadores';break;
+    case 'cfgtoggle':$('#cfgbtn').click();break;
+    case 'lwhide':try{localStorage.setItem('combat-localwarn-off','1');}catch(e){}renderAcct();break;
     case 'navtoggle':{const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
     case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
@@ -3308,7 +3325,8 @@ function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_US
 function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
 const SB_STORED=()=>{try{return !!localStorage.getItem('sb-uigkelicqmhiqaokndvo-auth-token');}catch(e){return false;}};
 function renderAcct(){
-  document.querySelectorAll('.localwarn').forEach(el=>el.hidden=!(SB&&!SB_USER&&!SB_STORED()));
+  const lwOff=(()=>{try{return localStorage.getItem('combat-localwarn-off')==='1';}catch(e){return false;}})();
+  document.querySelectorAll('.localwarn').forEach(el=>el.hidden=lwOff||!(SB&&!SB_USER&&!SB_STORED()));
   const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
   $('#ac-user').textContent=SB_NAME||'—';
 }

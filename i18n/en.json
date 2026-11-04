@@ -701,5 +701,11 @@
   "Ir a la ficha del turno": "Go to the current stat block",
   "Turno anterior": "Previous turn",
   "Deshacer": "Undo",
-  "Menú": "Menu"
+  "Menú": "Menu",
+  "Sin cuenta, lo que creas se guarda solo en este navegador.": "Without an account, what you create is saved only in this browser.",
+  "Entrar para guardarlo": "Sign in to keep it",
+  "Ocultar aviso": "Hide notice",
+  "Terminar": "End",
+  "Mostrar encuentros, bandos y opciones": "Show encounters, sides and options",
+  "Ocultar encuentros, bandos y opciones": "Hide encounters, sides and options"
 }

@@ -701,5 +701,11 @@
   "Ir a la ficha del turno": "Zum Werteblock des Zugs",
   "Turno anterior": "Vorheriger Zug",
   "Deshacer": "Rückgängig",
-  "Menú": "Menü"
+  "Menú": "Menü",
+  "Sin cuenta, lo que creas se guarda solo en este navegador.": "Ohne Konto wird, was du erstellst, nur in diesem Browser gespeichert.",
+  "Entrar para guardarlo": "Anmelden, um es zu behalten",
+  "Ocultar aviso": "Hinweis ausblenden",
+  "Terminar": "Beenden",
+  "Mostrar encuentros, bandos y opciones": "Begegnungen, Seiten und Optionen zeigen",
+  "Ocultar encuentros, bandos y opciones": "Begegnungen, Seiten und Optionen ausblenden"
 }

@@ -701,5 +701,11 @@
   "Ir a la ficha del turno": "Aller à la fiche du tour",
   "Turno anterior": "Tour précédent",
   "Deshacer": "Annuler",
-  "Menú": "Menu"
+  "Menú": "Menu",
+  "Sin cuenta, lo que creas se guarda solo en este navegador.": "Sans compte, ce que vous créez est enregistré uniquement dans ce navigateur.",
+  "Entrar para guardarlo": "Se connecter pour le conserver",
+  "Ocultar aviso": "Masquer l’avis",
+  "Terminar": "Terminer",
+  "Mostrar encuentros, bandos y opciones": "Afficher rencontres, camps et options",
+  "Ocultar encuentros, bandos y opciones": "Masquer rencontres, camps et options"
 }

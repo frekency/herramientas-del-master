@@ -701,5 +701,11 @@
   "Ir a la ficha del turno": "Vai alla scheda del turno",
   "Turno anterior": "Turno precedente",
   "Deshacer": "Annulla",
-  "Menú": "Menu"
+  "Menú": "Menu",
+  "Sin cuenta, lo que creas se guarda solo en este navegador.": "Senza account, ciò che crei viene salvato solo in questo browser.",
+  "Entrar para guardarlo": "Accedi per conservarlo",
+  "Ocultar aviso": "Nascondi l’avviso",
+  "Terminar": "Termina",
+  "Mostrar encuentros, bandos y opciones": "Mostra incontri, fazioni e opzioni",
+  "Ocultar encuentros, bandos y opciones": "Nascondi incontri, fazioni e opzioni"
 }
