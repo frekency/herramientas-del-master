@@ -1592,7 +1592,7 @@ function insertExamples(){
   const ids={lyra:PARTY.find(p=>p.n===T('Lyra (maga)'))?.id,thorin:PARTY.find(p=>p.n===T('Thorin (guerrero)'))?.id};
   const pr=examplePreset();if(!PRESETS.some(x=>x.n===pr.n)){PRESETS.push(pr);savePresets();}
   const tbs=exampleTables().filter(x=>!TABLES.some(y=>y.n===x.n));TABLES.push(...tbs);if(tbs.length){tbSel=tbs[0].id;saveTables();}
-  undoStack.push(JSON.stringify(state));state=sample(ids);sortInto(state);save();render();
+  undoStack.push(JSON.stringify(state));undoLbls.push(T('Insertar datos de ejemplo'));state=sample(ids);sortInto(state);save();render();
 }
 // Quita solo lo marcado como ejemplo (ex); lo que hayas creado tú no se toca.
 const hasExamples=()=>PARTY.some(p=>p.ex)||PRESETS.some(x=>x.ex)||TABLES.some(x=>x.ex)||state.creatures.some(c=>c.ex);
@@ -1600,7 +1600,7 @@ function removeExamples(){
   const gone=new Set(PARTY.filter(p=>p.ex).map(p=>p.id));
   PARTY=PARTY.filter(p=>!p.ex);saveParty();PRESETS=PRESETS.filter(x=>!x.ex);savePresets();
   TABLES=TABLES.filter(x=>!x.ex);if(!TABLES.some(x=>x.id===tbSel))tbSel=TABLES[0]?.id||null;tbHist=[];saveTables();
-  undoStack.push(JSON.stringify(state));
+  undoStack.push(JSON.stringify(state));undoLbls.push(T('Eliminar datos de ejemplo'));
   state.creatures=state.creatures.filter(c=>!c.ex&&!gone.has(c.pcId));
   if(!state.creatures.length){state=emptyState();}else{state.example=false;state.factions=state.factions.filter(f=>f.id!=='cu'||state.creatures.some(c=>c.factionId==='cu'));}
   sortInto(state);save();render();
@@ -1662,7 +1662,11 @@ function roll(expr,crit=false){
 const d20=()=>1+Math.floor(Math.random()*20);
 function log(msg,round=false){state.log.unshift({r:state.active?state.round:0,msg,round});state.log=state.log.slice(0,150);}
 const undoLbls=[];
-function commit(fn,lbl=''){undoStack.push(JSON.stringify(state));undoLbls.push(lbl);if(undoStack.length>80){undoStack.shift();undoLbls.shift();}fn();fixOrder();save();render();}
+function commit(fn,lbl=''){undoStack.push(JSON.stringify(state));undoLbls.push(lbl);if(undoStack.length>80){undoStack.shift();undoLbls.shift();}
+  const top=state.log[0];fn();
+  // sin etiqueta propia, «Deshecho» cuenta lo primero que la acción apuntó en el registro (p. ej. «Goblin 1 recibe 5 de daño»)
+  if(!lbl){const i=state.log.indexOf(top),nw=i<0?state.log:state.log.slice(0,i);if(nw.length)undoLbls[undoLbls.length-1]=nw[nw.length-1].msg;}
+  fixOrder();save();render();}
 let toastT;function toast(msg,ms=3200,canUndo=false){const t=$('#toast');t.textContent=msg;t.classList.toggle('act',canUndo);
   if(canUndo){const b=document.createElement('button');b.type='button';b.className='tundo';b.dataset.act='toastundo';b.textContent=T('Deshacer');t.append(' ',b);ms=Math.max(ms,6000);}
   t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show','act'),ms);}
@@ -2241,7 +2245,7 @@ document.addEventListener('click',e=>{
     case 'del':commit(()=>{const i=state.order.indexOf(c.id);const curId=state.order[state.turnIdx];state.creatures=state.creatures.filter(x=>x!==c);state.order.splice(i,1);
       if(state.active){if(curId===c.id)state.turnIdx=i>=state.order.length?0:i;else state.turnIdx=state.order.indexOf(curId);}log(`${c.name} sale del combate`);},T('Quitar del combate'));toast(`${c.name} ${T('sale del combate')}`,6000,true);break;
     case 'rollnpc':commit(()=>{let k=0;for(const x of state.creatures)if(!isPC(x)){const r=d20();x.init=r+(x.initBonus||0);k++;}log(`Iniciativa tirada para ${k} PNJ`);sortInto(state);});break;
-    case 'sort':commit(()=>{sortInto(state);});break;
+    case 'sort':commit(()=>{sortInto(state);},T('Ordenar'));break;
     case 'end':commit(()=>{state.active=false;state.turnIdx=0;log(`Fin del combate tras ${state.round} rondas`);},T('Terminar combate'));toast(T('Combate terminado'),6000,true);break;
     case 'newenc':commit(()=>{state.creatures=state.creatures.filter(isPC);state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.log=[];state.example=false;state.lastRoll=null;sortInto(state);},T('Nuevo encuentro'));toast(T('Listo para el siguiente encuentro'),6000,true);break;
     case 'clearall':commit(()=>{state.creatures=[];state.order=[];state.active=false;state.round=1;state.total=0;state.log=[];state.example=false;state.lastRoll=null;state.factions=state.factions.slice(0,3);},T('Vaciar el combate'));toast(T('Combate vaciado'),6000,true);break;
