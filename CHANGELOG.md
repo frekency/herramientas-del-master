@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.34.0] - 2026-11-04
+### Añadido
+- SRD 5.2.1 en francés: `srd2024_fr.json`, `conjuros_srd_fr.json` y `compendio_srd_fr.json`, extraídos del PDF oficial con `tools/build_fr.py`, `tools/build_spells_fr.py` y `tools/build_compendio_fr.py`; `DATA_LANG` admite `fr`.
+- Las tiradas reconocen el formato francés («Corps à corps : +9», «dégâts de feu», «DD 14»).
+### Corregido
+- Iconos de la referencia rápida para los nombres de reglas en inglés y francés.
+- El tipo de entrada («Clase», «Objeto»…) del subtítulo de las fichas del compendio salía sin traducir; también el título «Tirar ataque».
+
 ## [1.33.0] - 2026-11-04
 ### Cambiado
 - Referencia rápida: iconos SVG del sprite (49 símbolos nuevos) en lugar de emojis en `QR_SECS` y `QR_ICON`; el desplegable de categorías va sin iconos.
