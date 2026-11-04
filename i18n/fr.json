@@ -727,5 +727,6 @@
   "turnos": "tours",
   "Daño (vacío = #)": "Dégâts (vide = #)",
   "Curar (vacío = #)": "Soigner (vide = #)",
-  "Maltrecho": "En sang"
+  "Maltrecho": "En sang",
+  "Cuaderno": "Carnet"
 }

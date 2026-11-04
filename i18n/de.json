@@ -727,5 +727,6 @@
   "turnos": "Züge",
   "Daño (vacío = #)": "Schaden (leer = #)",
   "Curar (vacío = #)": "Heilen (leer = #)",
-  "Maltrecho": "Blutend"
+  "Maltrecho": "Blutend",
+  "Cuaderno": "Notizbuch"
 }

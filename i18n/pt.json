@@ -727,5 +727,6 @@
   "turnos": "turnos",
   "Daño (vacío = #)": "Dano (vazio = #)",
   "Curar (vacío = #)": "Curar (vazio = #)",
-  "Maltrecho": "Sangrando"
+  "Maltrecho": "Sangrando",
+  "Cuaderno": "Caderno"
 }

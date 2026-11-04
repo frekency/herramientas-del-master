@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Pirata+One&family=Bitter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
 <script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.removeItem('combat-skin');}if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
@@ -530,6 +530,112 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .rsep::before,.rsep::after{background:color-mix(in srgb,var(--sb-rule) 40%,transparent)}
 ::selection{background:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--fg)}
 
+/* ===== Estilo «Cuaderno»: libreta de hojas negras, bolígrafo de gel, boli rojo y fluorescente ===== */
+.hph{display:none}
+:root[data-skin="cuaderno"]{
+  --bg:#fbf8ef; --surface:#fffdf7; --surface-2:#f1ece0; --line:#cfd4df;
+  --fg:#1c2740; --muted:#566079; --accent:#2e4a8a; --accent-fg:#ffffff;
+  --sb:#fffdf8; --sb-rule:#b8342a; --hl:rgb(250 214 70/.55); --hl-solid:#9a5f00;
+  --ok:#2f7d4a; --warn:#a0680a; --crit:#b8342a;
+  --cu-rule:rgb(110 145 210/.26); --cu-marg:rgb(210 100 100/.5); --cu-tape:rgb(226 204 140/.55); --cu-edge:#e2dccd; --cu-hlrow:rgb(250 214 70/.12);
+  --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%232e4a8a' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23b8342a' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%231c2740' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
+  --shadow:0 2px 3px rgb(30 30 50/.08),0 12px 26px rgb(30 30 50/.09);
+  --f-display:"Kalam","Literata",cursive; --f-body:"Literata",Georgia,serif; --f-sb:"Literata",Georgia,serif; --f-num:"Kalam","Literata",cursive;
+  color-scheme:light; scrollbar-color:#b9c0cf transparent}
+@media (prefers-color-scheme:dark){:root[data-skin="cuaderno"]:not([data-theme="light"]){
+  --bg:#17181c; --surface:#1e2025; --surface-2:#282a31; --line:#3a3d47;
+  --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
+  --sb:#202227; --sb-rule:#ff8a78; --hl:rgb(240 214 80/.30); --hl-solid:#e9cf55;
+  --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
+  --cu-rule:rgb(150 170 215/.09); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
+  --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%239db8ff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23ff8a78' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%23d9d4c7' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
+  --shadow:0 2px 4px rgb(0 0 0/.35),0 12px 28px rgb(0 0 0/.35);
+  color-scheme:dark; scrollbar-color:#4a4e5a transparent}}
+:root[data-skin="cuaderno"][data-theme="dark"]{
+  --bg:#17181c; --surface:#1e2025; --surface-2:#282a31; --line:#3a3d47;
+  --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
+  --sb:#202227; --sb-rule:#ff8a78; --hl:rgb(240 214 80/.30); --hl-solid:#e9cf55;
+  --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
+  --cu-rule:rgb(150 170 215/.09); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
+  --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%239db8ff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23ff8a78' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%23d9d4c7' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
+  --shadow:0 2px 4px rgb(0 0 0/.35),0 12px 28px rgb(0 0 0/.35);
+  color-scheme:dark; scrollbar-color:#4a4e5a transparent}
+[data-skin="cuaderno"] body{background-color:var(--bg);background-image:linear-gradient(90deg,transparent 40px,var(--cu-marg) 40px 41.5px,transparent 41.5px),repeating-linear-gradient(180deg,transparent 0 31px,var(--cu-rule) 31px 32px);background-attachment:fixed,local}
+[data-skin="cuaderno"] body::before{background:var(--bg)}
+[data-skin="cuaderno"] ::selection{background:var(--hl);color:var(--fg)}
+[data-skin="cuaderno"] .brand::first-letter,[data-skin="cuaderno"] .htitle::first-letter{color:inherit}
+[data-skin="cuaderno"] .bar{background:color-mix(in srgb,var(--bg) 94%,transparent);border-bottom:1.5px dashed color-mix(in srgb,var(--fg) 22%,transparent);box-shadow:var(--shadow)}
+[data-skin="cuaderno"] .brand{font-weight:700;font-size:26px;letter-spacing:0;color:var(--accent)}
+[data-skin="cuaderno"] .counter small,[data-skin="cuaderno"] .now small{font-family:"Kalam",cursive;text-transform:none;letter-spacing:0;font-size:15px}
+[data-skin="cuaderno"] .counter b{font-size:26px;font-weight:700}
+[data-skin="cuaderno"] .now .who{font-size:26px;display:inline-block;max-width:100%;padding:0 8px;background:linear-gradient(100deg,transparent 1%,var(--hl) 3%,var(--hl) 96%,transparent 99%);border-radius:3px}
+[data-skin="cuaderno"] .now .nx{font-family:"Kalam",cursive;font-size:15px}
+[data-skin="cuaderno"] h2,[data-skin="cuaderno"] .panel>h2,[data-skin="cuaderno"] .listhead h2,[data-skin="cuaderno"] .vhead h2{font-weight:700;font-size:24px;letter-spacing:0;color:var(--sb-rule);border-bottom:0;padding-bottom:0}
+[data-skin="cuaderno"] .panel,[data-skin="cuaderno"] .tool{position:relative}
+[data-skin="cuaderno"] .panel::before{display:none}
+[data-skin="cuaderno"] .panel{background:transparent;border:0;border-top:1.5px dashed color-mix(in srgb,var(--fg) 20%,transparent);border-radius:0;box-shadow:none;padding:14px 4px}
+[data-skin="cuaderno"] .btn{border:1.5px solid color-mix(in srgb,var(--fg) 60%,transparent);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;background:var(--surface)}
+[data-skin="cuaderno"] .btn:hover{background:var(--surface-2);border-color:var(--fg)}
+[data-skin="cuaderno"] .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+[data-skin="cuaderno"] .btn.ghost{border-color:transparent;background:transparent}
+[data-skin="cuaderno"] .btn.danger{color:var(--crit)}
+[data-skin="cuaderno"] .pagenav a{border-radius:3px}
+[data-skin="cuaderno"] .pagenav a.on{border-color:transparent;color:var(--fg);background:var(--hl)}
+[data-skin="cuaderno"] .pagenav .navsep{font-family:"Kalam",cursive;text-transform:none;letter-spacing:0;font-size:14px}
+/* lista de iniciativa: renglones, no tarjetas */
+[data-skin="cuaderno"] .list{gap:0}
+[data-skin="cuaderno"] .row{background:transparent;border:0;border-bottom:1.5px dashed color-mix(in srgb,var(--fg) 18%,transparent);border-radius:0;box-shadow:none}
+[data-skin="cuaderno"] .row.cur{box-shadow:none;background:linear-gradient(90deg,var(--cu-hlrow),transparent 60%)}
+[data-skin="cuaderno"] .row.cur .name{display:inline-block;max-width:100%;padding:0 5px;background:linear-gradient(100deg,transparent 1%,var(--hl) 3%,var(--hl) 96%,transparent 99%)}
+[data-skin="cuaderno"] .row.down{opacity:.6}
+[data-skin="cuaderno"] .row.down .name{text-decoration-color:var(--crit);text-decoration-thickness:2.5px}
+[data-skin="cuaderno"] .name{font-size:17px}
+[data-skin="cuaderno"] .c-init input{width:54px;height:48px;aspect-ratio:auto;border:0;border-radius:0;background:var(--cu-ring) center/100% 100% no-repeat;font-family:"Kalam",cursive;font-weight:700;font-size:25px;color:var(--accent)}
+[data-skin="cuaderno"] .row.cur .c-init input{background-image:var(--cu-ring-cur);color:var(--sb-rule)}
+[data-skin="cuaderno"] .turnflag{background:none;color:var(--hl-solid);font-family:"Kalam",cursive;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;padding:0 2px}
+[data-skin="cuaderno"] .chip{background:var(--cu-tape);border:0;border-radius:1px;font-family:"Kalam",cursive;font-size:14px;transform:rotate(-1.2deg)}
+[data-skin="cuaderno"] .chip.fchip{background:none;transform:none;padding:0;font-weight:700;color:color-mix(in srgb,var(--fc) 72%,var(--fg))}
+[data-skin="cuaderno"] .chip.fchip .dot{display:none}
+[data-skin="cuaderno"] .hptext b{font-family:"Kalam",cursive;font-size:25px;font-weight:700}
+[data-skin="cuaderno"] .hph{display:inline;font-family:"Kalam",cursive;font-size:16px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--crit);text-decoration-thickness:2px;margin-right:6px}
+[data-skin="cuaderno"] .hpbar{height:7px;border-radius:2px;background:transparent;border:1.2px solid color-mix(in srgb,var(--fg) 35%,transparent)}
+[data-skin="cuaderno"] .hpbar i:first-child{background-image:repeating-linear-gradient(-45deg,transparent 0 3px,color-mix(in srgb,var(--bg) 45%,transparent) 3px 4.5px)!important}
+[data-skin="cuaderno"] .shield{clip-path:none;background:var(--cu-shield) center/contain no-repeat;font-family:"Kalam",cursive;font-weight:700;font-size:19px;padding-bottom:3px}
+[data-skin="cuaderno"] .c-quick input{background:transparent;border:0;border-bottom:1.5px solid color-mix(in srgb,var(--fg) 60%,transparent);border-radius:0;font-family:"Kalam",cursive;font-size:20px;text-align:center}
+[data-skin="cuaderno"] .qb{min-width:40px;height:40px;border:1.5px solid color-mix(in srgb,var(--fg) 60%,transparent);border-radius:50% 45% 52% 48%;background:var(--surface);font-family:"Kalam",cursive;font-size:18px}
+[data-skin="cuaderno"] .qb:hover{background:var(--hl)}
+[data-skin="cuaderno"] .fsum{background:none;border:0;border-radius:0;padding:2px 4px;font-family:"Kalam",cursive;font-size:16px}
+[data-skin="cuaderno"] .fsum .mini{background:none;border:1px solid color-mix(in srgb,var(--fg) 30%,transparent);border-radius:1px}
+[data-skin="cuaderno"] label.f input,[data-skin="cuaderno"] label.f select,[data-skin="cuaderno"] label.f textarea,[data-skin="cuaderno"] .skin select,[data-skin="cuaderno"] .bfilters input,[data-skin="cuaderno"] .bfilters select,[data-skin="cuaderno"] .frow input[type=text]{background:var(--surface);border:1.5px solid color-mix(in srgb,var(--fg) 28%,transparent);border-radius:4px}
+[data-skin="cuaderno"] label.f textarea{font-family:"IBM Plex Mono",ui-monospace,monospace}
+/* la ficha: una cartulina con clip */
+[data-skin="cuaderno"] .sb{background-color:var(--sb);background-image:linear-gradient(180deg,transparent 52px,var(--cu-marg) 52px 53.5px,transparent 53.5px),repeating-linear-gradient(180deg,transparent 0 23px,var(--cu-rule) 23px 24px);border:1px solid var(--cu-edge);border-radius:2px;box-shadow:var(--shadow);padding:16px 18px}
+[data-skin="cuaderno"] #curpanel .sb{transform:rotate(.4deg)}
+[data-skin="cuaderno"] .sb h3{font-weight:700;font-size:30px;color:var(--accent)}
+[data-skin="cuaderno"] .sb h4{font-weight:700;font-size:21px;color:var(--sb-rule);border-bottom:0}
+[data-skin="cuaderno"] .sb hr{height:0;background:none;border-top:1.5px dashed var(--cu-marg)}
+[data-skin="cuaderno"] .sb .ln b{font-family:"Kalam",cursive;font-weight:700;font-size:17px;color:var(--accent)}
+[data-skin="cuaderno"] .sb .abil div{background:none;font-size:18px}
+[data-skin="cuaderno"] .sb .abil b{font-family:"Literata",serif;font-size:11px;letter-spacing:.06em;color:var(--muted)}
+[data-skin="cuaderno"] .sb .abil button{font-size:16px}
+[data-skin="cuaderno"] .rl{border:0;background:none;color:var(--accent);font-family:"Kalam",cursive;font-size:16px;font-weight:700;text-decoration:underline wavy color-mix(in srgb,var(--accent) 50%,transparent);text-underline-offset:4px;padding:0 2px}
+[data-skin="cuaderno"] .rl:hover{background:var(--hl);color:var(--fg)}
+[data-skin="cuaderno"] .dc{background:var(--hl);font-family:"Kalam",cursive;font-size:15px}
+[data-skin="cuaderno"] .tag{background:var(--cu-tape);border:0;border-radius:1px;color:var(--fg);font-family:"Kalam",cursive}
+[data-skin="cuaderno"] button.tag.used{background:none;color:var(--muted);text-decoration-color:var(--crit)}
+[data-skin="cuaderno"] .advsel button.on{background:var(--hl);color:var(--fg)}
+/* inicio: fichas de cartulina */
+[data-skin="cuaderno"] .htitle{font-weight:700;color:var(--accent)}
+[data-skin="cuaderno"] .tool::before{display:none}
+[data-skin="cuaderno"] .tool{background:var(--sb);border:1px solid var(--cu-edge);border-radius:2px;box-shadow:var(--shadow)}
+[data-skin="cuaderno"] .tool:nth-child(odd){transform:rotate(-.5deg)}[data-skin="cuaderno"] .tool:nth-child(even){transform:rotate(.45deg)}
+[data-skin="cuaderno"] .tool:hover{transform:rotate(0) translateY(-2px)}
+[data-skin="cuaderno"] .tool .tn{font-size:22px;color:var(--sb-rule)}
+[data-skin="cuaderno"] .tool .tstat{font-family:"Kalam",cursive;font-size:16px}
+[data-skin="cuaderno"] .toast{background:#e9cf55;color:#1a1a12;border:0;border-radius:2px;box-shadow:0 8px 22px rgb(0 0 0/.45);font-family:"Kalam",cursive;font-size:17px}
+[data-skin="cuaderno"] .log li.round{font-family:"Kalam",cursive;font-size:18px;color:var(--sb-rule)}
+@media (max-width:680px){[data-skin="cuaderno"] body{background-image:repeating-linear-gradient(180deg,transparent 0 31px,var(--cu-rule) 31px 32px);background-attachment:local}}
+
 /* ===== Estilo «Arcano»: noche estrellada, vidrio y pan de oro ===== */
 :root[data-skin="arcano"]{
   --bg:#09081a; --surface:rgb(24 19 46/.72); --surface-2:rgb(58 46 102/.42); --line:rgb(178 146 255/.22);
@@ -804,7 +910,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false">⚙ Ajustes</button>
-      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option><option value="cuaderno">Cuaderno</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores">🛡 Grupo</button>
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar">🔎 <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior">◀ <span class="bl">Anterior</span></button>
@@ -1405,7 +1511,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <label class="f">Idioma<select id="pf-lang" class="noi18n"></select></label>
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
-      <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option><option value="cuaderno">Cuaderno</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
@@ -1733,13 +1839,13 @@ function applyHP(c,kind,raw){
   commit(()=>{
     if(kind==='dmg'){
       let rest=amt;const absorbed=Math.min(c.temp,rest);c.temp-=absorbed;rest-=absorbed;
-      const was=c.hp;c.hp=Math.max(0,c.hp-rest);
+      const was=c.hp;c.hp=Math.max(0,c.hp-rest);if(c.hp!==was)c.hph=[...(c.hph||[]),was].slice(-3);
       log(`${c.name} recibe ${amt} de daño${dice}${absorbed?` (${absorbed} a PG temporales)`:''} → ${c.hp}/${c.maxHp}`);
       if(isPC(c)&&was===0&&amt>0){c.df=Math.min(3,c.df+1);log(`${c.name} suma un fallo de salvación contra muerte`);}
       else if(was>0&&c.hp===0){log(isPC(c)?`${c.name} cae inconsciente`:`${c.name} cae`);if(isPC(c)&&!c.conds.some(x=>x.key==='inconsciente'))c.conds.push({key:'inconsciente',rounds:null});}
       if(c.conds.some(x=>x.key==='concentracion')&&c.hp>0){const cd=Math.min(30,Math.max(10,Math.floor(amt/2)));log(`${c.name}: salvación de Constitución CD ${cd} para mantener la concentración`);toast(`${c.name} concentrado: salvación de CON CD ${cd}`);}
     }else if(kind==='heal'){
-      const was=c.hp;c.hp=Math.min(c.maxHp,c.hp+amt);
+      const was=c.hp;c.hp=Math.min(c.maxHp,c.hp+amt);if(c.hp!==was)c.hph=[...(c.hph||[]),was].slice(-3);
       if(was===0&&c.hp>0){c.ds=0;c.df=0;c.conds=c.conds.filter(x=>x.key!=='inconsciente');}
       log(`${c.name} se cura ${amt}${dice} → ${c.hp}/${c.maxHp}`);
     }else{
@@ -1957,7 +2063,7 @@ function rowHTML(c,idx,isCur){
       <div class="meta">${isCur?'<span class="turnflag">En turno</span>':''}<span class="chip fchip" style="border-color:color-mix(in srgb,${f.color} 50%,var(--line))"><span class="dot" style="--fc:${f.color}"></span>${esc(f.name)}</span>${m?'<span class="chip bchip" title="Tiene ficha">📖</span>':''}${chips}${isPC(c)&&down?`<span class="chip">Salv. ✓${c.ds} ✗${c.df}</span>`:''}</div>
     </div>
     <div class="c-hp">
-      <div class="hptext"><span><b>${c.hp}</b> / ${c.maxHp} PG${c.hp>0&&pct<=.5?`<span class="hpst" style="--hc:${col}">${T('Maltrecho')}</span>`:''}</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}</div>
+      <div class="hptext"><span>${(c.hph||[]).map(v=>`<s class="hph">${v}</s>`).join('')}<b>${c.hp}</b> / ${c.maxHp} PG${c.hp>0&&pct<=.5?`<span class="hpst" style="--hc:${col}">${T('Maltrecho')}</span>`:''}</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}</div>
       <div class="hpbar" title="${c.hp}/${c.maxHp}"><i style="width:${c.hp/tot*100}%;background:${col}"></i><i class="t" style="width:${c.temp/tot*100}%"></i></div>
     </div>
     <div class="c-ac"><div class="shield">${c.ac??'–'}</div><small>CA</small></div>
@@ -2281,7 +2387,7 @@ document.addEventListener('click',e=>{
     case 'rollnpc':commit(()=>{let k=0;for(const x of state.creatures)if(!isPC(x)){const r=d20();x.init=r+(x.initBonus||0);k++;}log(`Iniciativa tirada para ${k} PNJ`);sortInto(state);});break;
     case 'sort':commit(()=>{sortInto(state);},T('Ordenar'));break;
     case 'end':commit(()=>{state.summary=mkSummary();state.active=false;state.turnIdx=0;log(`Fin del combate tras ${state.round} rondas`);},T('Terminar combate'));toast(T('Combate terminado'),6000,true);break;
-    case 'newenc':commit(()=>{state.summary=null;state.creatures=state.creatures.filter(isPC);state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.log=[];state.example=false;state.lastRoll=null;sortInto(state);},T('Nuevo encuentro'));toast(T('Listo para el siguiente encuentro'),6000,true);break;
+    case 'newenc':commit(()=>{state.summary=null;state.creatures=state.creatures.filter(isPC);state.creatures.forEach(c=>delete c.hph);state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.log=[];state.example=false;state.lastRoll=null;sortInto(state);},T('Nuevo encuentro'));toast(T('Listo para el siguiente encuentro'),6000,true);break;
     case 'clearall':commit(()=>{state.summary=null;state.creatures=[];state.order=[];state.active=false;state.round=1;state.total=0;state.log=[];state.example=false;state.lastRoll=null;state.factions=state.factions.slice(0,3);},T('Vaciar el combate'));toast(T('Combate vaciado'),6000,true);break;
     case 'addfac':commit(()=>{const cols=['#d08a2c','#2aa3a3','#c2508f','#7a8a3a','#5f6fd6'];state.factions.push({id:uid(),name:'Nuevo bando',color:cols[state.factions.length%cols.length],pc:false});});break;
     // fichas

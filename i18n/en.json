@@ -727,5 +727,6 @@
   "turnos": "turns",
   "Daño (vacío = #)": "Damage (empty = #)",
   "Curar (vacío = #)": "Heal (empty = #)",
-  "Maltrecho": "Bloodied"
+  "Maltrecho": "Bloodied",
+  "Cuaderno": "Notebook"
 }
