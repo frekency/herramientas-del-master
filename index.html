@@ -1135,7 +1135,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Jugadores</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.33</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Jugadores</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.34</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -1287,6 +1287,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.34 <span>4 nov 2026</span></h3><ul>
+      <li>Contenido del SRD 5.2.1 en <b>francés</b>: con el idioma en francés, las criaturas, los conjuros y todo el compendio salen del SRD oficial francés en lugar del inglés.</li>
+      <li>Los iconos de la referencia rápida también aparecen con los nombres de las reglas en inglés y francés.</li></ul></li>
     <li><h3>v1.33 <span>4 nov 2026</span></h3><ul>
       <li>La referencia rápida usa iconos dibujados en lugar de emojis: uno por categoría y uno propio para cada regla.</li>
       <li>Las tarjetas de la referencia se adaptan al estilo: entradas a mano en Cuaderno, índice de manual en Libro de reglas y fichas en Pantalla del máster.</li></ul></li>
@@ -1817,9 +1820,10 @@ if(LANG!=='es')try{
 }catch(e){}
 whenReady(()=>requestAnimationFrame(loadDone));
 // Idioma de los datos: el del SRD oficial si existe; si no, inglés.
-const DATA_LANG={es:'es',en:'en'}[LANG]||'en';
+const DATA_LANG={es:'es',en:'en',fr:'fr'}[LANG]||'en';
 const DATA_FILES={es:{best:'srd2024_es.json',spells:'conjuros_srd.json',comp:'compendio_srd.json'},
-  en:{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'}}[DATA_LANG];
+  en:{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'},
+  fr:{best:'srd2024_fr.json',spells:'conjuros_srd_fr.json',comp:'compendio_srd_fr.json'}}[DATA_LANG];
 </script>
 <script>
 const COND=[['agarrado','Agarrado'],['apresado','Apresado'],['asustado','Asustado'],['aturdido','Aturdido'],['cegado','Cegado'],['derribado','Derribado'],['ensordecido','Ensordecido'],['envenenado','Envenenado'],['hechizado','Hechizado'],['incapacitado','Incapacitado'],['inconsciente','Inconsciente'],['invisible','Invisible'],['paralizado','Paralizado'],['petrificado','Petrificado'],['concentracion','Concentración'],['agotamiento','Agotamiento']];
@@ -1894,6 +1898,7 @@ function examplePCs(){
     t:[[T('Recuperación arcana (1/día)'),T('Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.')]],
     spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[0,1],
       list:DATA_LANG==='es'?['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']
+        :DATA_LANG==='fr'?['Main du mage','Rayon de givre','Armure du mage','Bouclier','Projectile magique','Foulée brumeuse','Toile d’araignée','Boule de feu']
         :['Mage Hand','Ray of Frost','Mage Armor','Shield','Magic Missile','Misty Step','Web','Fireball']}};
   const thorin={id:uid(),ex:true,n:T('Thorin (guerrero)'),cls:T('Guerrero 5'),ac:18,hp:44,cur:44,temp:5,in:1,sp:'9 m',pp:14,
     ab:[16,12,14,10,13,8],sv:[6,1,5,0,1,-1],sk:T('Atletismo +6, Intimidación +2, Percepción +4'),
@@ -2083,14 +2088,14 @@ function applyHP(c,kind,raw){
 // Convierte en botones de tirada los ataques, dados y CD de un texto ya escapado
 function diceify(h){
   h=h.replace(/−/g,'-');
-  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque):\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
-  h=h.replace(/(\d+) \((\d+d\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es)=>{
-    const ty=en?en.toLowerCase():es?es.toLowerCase():'';
+  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance)\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
+  h=h.replace(/(\d+) \((\d+d\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es,fr)=>{
+    const ty=(en||es||fr||'').toLowerCase();
     return `${avg} (<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${esc(ty)}" title="Tirar daño">${ex}</button>)${tail||''}`;});
   // dados sueltos (fichas de jugador y conjuros): «1d8 + 4 de daño cortante», «8d6 de daño de fuego»
-  h=h.replace(/(?<![\w"(=>+-])(\d+d\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno))?/gu,
-    (all,ex,tail,ty)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${ty||''}" title="Tirar">${ex}</button>${tail||''}`);
-  h=h.replace(/\b(?:DC|CD) (\d+)/g,'<span class="dc">CD $1</span>');
+  h=h.replace(/(?<![\w"(=>+-])(\d+d\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre))?/gu,
+    (all,ex,tail,ty,tyfr)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${ty||tyfr||''}" title="Tirar">${ex}</button>${tail||''}`);
+  h=h.replace(/\b(DC|CD|DD) (\d+)/g,(_,l,n)=>`<span class="dc">${l==='DD'?'DD':'CD'} ${n}</span>`);
   return h;
 }
 // Texto con formato propio (fichas de jugador, conjuros y módulos): se escapa y admite **negrita**, *cursiva* y listas
@@ -2401,7 +2406,7 @@ function renderBestOther(){
 function bOtherView(k,link=true){
   const ty=bTyOf(k),x=bItem(k);
   if(!x)return '<div class="empty">No está en ningún módulo activo.</div>';
-  const sub=ty==='conjuros'?[spLevel(x.lv),SCHOOLS[x.sch]].filter(Boolean).join(' · '):[TY_ONE[ty],cmSub(ty,x)].filter(Boolean).join(' · ');
+  const sub=ty==='conjuros'?[spLevel(x.lv),SCHOOLS[x.sch]].filter(Boolean).join(' · '):[T(TY_ONE[ty]),cmSub(ty,x)].filter(Boolean).join(' · ');
   return `${giveBar(ty,x.n)}${itBar(ty,x)}${link?goP(ty,x.n):''}<div class="sb" data-who="${esc(x.n)}"><h3>${esc(x.n)}</h3><div class="sub">${esc(sub)}</div><hr>${ty==='conjuros'?spellBody(x):cmBody(x,ty)}</div>`;
 }
 /* ---------- herramientas del compendio: dar cosas a un personaje ---------- */
@@ -2470,7 +2475,7 @@ function newPcFromClass(x){
   const die=+((x.info?.['Dado de puntos de golpe']||'').match(/d(\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
   openPC(null);
   $('#pc-cls').value=`${x.n} 1`;$('#pc-hp').value=$('#pc-cur').value=die;
-  (DATA_LANG==='en'?['strength','dexterity','constitution','intelligence','wisdom','charisma']:['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
+  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
   toast(T(`Nivel 1: ${die} PG más tu modificador por Constitución. Las salvaciones de la clase ya llevan +2`),5200);
 }
 function invHTML(p){
@@ -3271,10 +3276,12 @@ let cmTab='objetos';
 const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote','dotes'],['clases','Clases','clase','clases'],['especies','Especies','especie','especies'],['trasfondos','Trasfondos','trasfondo','trasfondos'],['reglas','Reglas','regla','reglas']];
 const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herramienta:'Herramientas',equipo:'Equipo de aventurero'};
 // Las fichas de clase del SRD en inglés traen los campos con su nombre en inglés: se copian a los nombres que usa la página.
-const CLS_INFO={'Hit Point Die':'Dado de puntos de golpe','Primary Ability':'Característica principal','Saving Throw Proficiencies':'Competencias en tiradas de salvación'};
+const CLS_INFO={'Hit Point Die':'Dado de puntos de golpe','Primary Ability':'Característica principal','Saving Throw Proficiencies':'Competencias en tiradas de salvación',
+  'Dé de vie':'Dado de puntos de golpe','Caractéristique principale':'Característica principal','Maîtrise des jets de sauvegarde':'Competencias en tiradas de salvación'};
 function normClasses(d){for(const x of d.clases||[])if(x.info)for(const[en,es]of Object.entries(CLS_INFO))if(x.info[en]&&!(es in x.info))Object.defineProperty(x.info,es,{value:x.info[en],enumerable:false});}
 const RARITY=['común','infrecuente','raro','muy raro','legendario','artefacto'];
-const RAR_EN={'very rare':'muy raro',uncommon:'infrecuente',common:'comun',rare:'raro',legendary:'legendario',artifact:'artefacto'};
+const RAR_EN={'very rare':'muy raro',uncommon:'infrecuente',common:'comun',rare:'raro',legendary:'legendario',artifact:'artefacto',
+  'tres rare':'muy raro','peu courant':'infrecuente',courant:'comun',legendaire:'legendario',artefact:'artefacto'};
 const rarKey=r=>{let f=fold(r);for(const[e,k]of Object.entries(RAR_EN))if(f.startsWith(e)){f=k;break;}f=f.replace(/a\b/g,'o');return RARITY.find(k=>f.startsWith(fold(k)))||(f?'variable':'');};
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
@@ -3561,6 +3568,8 @@ function ruleLinks(h){
 }
 const QR_SECS=[['Acciones','sword','#c0392b'],['Turno y reacciones','hourglass','#d35400'],['Estados','spiral','#8e44ad'],['Combate','target','#b03a2e'],['Daño y curación','heart','#c2185b'],['Movimiento','move','#2e86c1'],['Visión y luz','eye','#b7950b'],['Áreas de efecto','area','#16a085'],['Exploración','compass','#27ae60'],['Peligros','warn','#ca6f1e'],['Pruebas y tiradas','d20','#5d6d7e'],['Magia','sparkle','#6c3483'],['Interacción social','speech','#117a65']];
 const QR_ICON={Atacar:'sword','Acción':'focus',Iniciativa:'d20',Sorpresa:'burst','Tu turno':'hourglass','Dividir el movimiento':'move',Ayudar:'people',Buscar:'search',Correr:'wind',Destrabarse:'disengage',Esconderse:'fog',Esquivar:'shield',Estudiar:'book',Influir:'speech',Magia:'sparkle','Preparar una acción':'hourglass',Utilizar:'tool',Agarrado:'grab',Apresado:'chain',Asustado:'scared',Aturdido:'daze',Cansancio:'battery',Cegado:'eyeoff',Derribado:'down',Ensordecido:'mute',Envenenado:'flask',Hechizado:'heart',Incapacitado:'ban',Inconsciente:'zzz',Invisible:'ghost',Paralizado:'snow',Petrificado:'rock','Acción adicional':'plusc',Reacción:'undo','Ataques de oportunidad':'bolt',Cobertura:'wall',Crítico:'burst',Concentración:'focus','Descanso corto':'cup','Descanso largo':'moon',Ventaja:'up',Desventaja:'down',Cono:'cone',Esfera:'sphere',Cubo:'box',Cilindro:'cyl',Línea:'line',Emanación:'emanate',Saltar:'jump',Trepar:'ladder',Nadar:'wave',Volar:'feather','Terreno difícil':'rubble','Ritmo de viaje':'map',Fuego:'fire',Asfixia:'bubbles',Caídas:'fall'};
+// Mismos iconos para los nombres de las reglas en inglés y francés
+Object.assign(QR_ICON,{Attack:'sword',Attaque:'sword',Action:'focus',Initiative:'d20',Surprise:'burst','Your Turn':'hourglass','Votre tour':'hourglass','Breaking Up Your Move':'move','Scinder son déplacement':'move',Help:'people',Soutien:'people',Search:'search',Observation:'search',Dash:'wind',Pointe:'wind',Disengage:'disengage',Désengagement:'disengage',Hide:'fog',Furtivité:'fog',Dodge:'shield',Esquive:'shield',Study:'book',Étude:'book',Influence:'speech',Magic:'sparkle',Magie:'sparkle',Ready:'hourglass',Intention:'hourglass',Utilize:'tool',Utilisation:'tool',Grappled:'grab',Agrippé:'grab',Restrained:'chain',Entravé:'chain',Frightened:'scared',Effrayé:'scared',Stunned:'daze',Étourdi:'daze',Exhaustion:'battery',Épuisement:'battery',Blinded:'eyeoff',Aveuglé:'eyeoff',Prone:'down','À terre':'down',Deafened:'mute',Assourdi:'mute',Poisoned:'flask',Empoisonné:'flask',Charmed:'heart',Charmé:'heart',Incapacitated:'ban',Neutralisé:'ban',Unconscious:'zzz',Inconscient:'zzz',Paralyzed:'snow',Paralysé:'snow',Petrified:'rock',Pétrifié:'rock','Bonus Action':'plusc','Action Bonus':'plusc',Reaction:'undo',Réaction:'undo','Opportunity Attacks':'bolt','Attaques d’Opportunité':'bolt',Cover:'wall',Abris:'wall','Critical Hit':'burst','Coup critique':'burst',Concentration:'focus','Short Rest':'cup','Repos court':'cup','Long Rest':'moon','Repos long':'moon',Advantage:'up',Avantage:'up',Disadvantage:'down',Désavantage:'down',Cone:'cone',Cône:'cone',Sphere:'sphere',Sphère:'sphere',Cube:'box',Cylinder:'cyl',Cylindre:'cyl',Line:'line',Ligne:'line',Emanation:'emanate',Émanation:'emanate',Jumping:'jump',Saut:'jump',Climbing:'ladder',Escalade:'ladder',Swimming:'wave',Nage:'wave',Flying:'feather',Vol:'feather','Difficult Terrain':'rubble','Terrain difficile':'rubble','Travel Pace':'map','Allure de voyage':'map',Burning:'fire',Embrasement:'fire',Suffocation:'bubbles',Asphyxie:'bubbles',Falling:'fall',Chute:'fall'});
 function renderRef(){
   compLoad();
   const all=compList('reglas'),sel=$('#qr-cat');
