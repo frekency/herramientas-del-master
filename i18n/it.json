@@ -732,5 +732,9 @@
   "Tema": "Tema",
   "Automático (como el sistema)": "Automatico (come il sistema)",
   "Claro": "Chiaro",
-  "Oscuro": "Scuro"
+  "Oscuro": "Scuro",
+  "Sin criaturas: activa un módulo en Módulos o crea las tuyas": "Nessuna creatura: attiva un modulo in Moduli o crea le tue",
+  "No hay contenido: activa el SRD #.#.# u otro módulo en Módulos.": "Nessun contenuto: attiva l’SRD #.#.# o un altro modulo in Moduli.",
+  "Mi cuenta": "Il mio account",
+  "Repetir iniciativa": "Ritira l’iniziativa"
 }

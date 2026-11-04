@@ -732,5 +732,9 @@
   "Tema": "Theme",
   "Automático (como el sistema)": "Automatic (same as the system)",
   "Claro": "Light",
-  "Oscuro": "Dark"
+  "Oscuro": "Dark",
+  "Sin criaturas: activa un módulo en Módulos o crea las tuyas": "No creatures: turn on a module in Modules or create your own",
+  "No hay contenido: activa el SRD #.#.# u otro módulo en Módulos.": "No content: turn on the SRD #.#.# or another module in Modules.",
+  "Mi cuenta": "My account",
+  "Repetir iniciativa": "Reroll initiative"
 }

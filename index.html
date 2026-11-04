@@ -445,7 +445,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .tool{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--fg);text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
 .tool:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow)}
-.tool .ti{font-size:26px;line-height:1}
+.tool .ti{line-height:1}
 .tool .tn{font-family:var(--f-display);font-weight:700;font-size:19px}
 .tool .td{color:var(--muted);font-size:14px;flex:1}
 .tool .tstat{font-size:12px;font-family:var(--f-num);color:var(--accent);border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
@@ -784,6 +784,12 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
 .hpst{font-weight:600;color:var(--fg);margin-left:6px;white-space:nowrap}
 .hpst::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--hc);margin-right:4px;vertical-align:1px}
 .srl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* iconos dibujados: un solo trazo para toda la app; cada estilo los tiñe */
+.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:none;overflow:visible}
+.btn .ic,.pagenav a .ic{opacity:.9}
+.tool .ti .ic{width:30px;height:30px;stroke-width:1.5;color:var(--sb-rule)}
+.acsrd .ti .ic{width:24px;height:24px}
+[data-skin="cuaderno"] .ic{stroke-width:1.9;filter:url(#i-rough)}
 /* aviso con «Deshacer»: se puede pulsar */
 .toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px;width:max-content}
 .tundo{border:none;background:none;color:inherit;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:6px 4px;cursor:pointer;white-space:nowrap}
@@ -891,7 +897,8 @@ main.wrap .listhead{scroll-margin-top:100px}
 html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[lang="en"] #loading [lang="en"],html[lang="fr"] #loading [lang="fr"],html[lang="pt"] #loading [lang="pt"],html[lang="it"] #loading [lang="it"],html[lang="de"] #loading [lang="de"]{display:inline}
 </style>
 
-<div id="loading" class="noi18n" role="status" aria-live="polite"><div class="ld">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="i-rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.3"/></filter><symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol><symbol id="i-sword" viewBox="0 0 24 24"><path d="M14.5 3.5h6v6L9.5 20.5l-6-6z"/><path d="M5.5 12.5l6 6M3 21l3-3"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol><symbol id="i-d20" viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M12 7.5l-5 8.5h10z"/><path d="M12 2.5v5M3.5 7.3L7 16M20.5 7.3L17 16M7 16l5 5.5 5-5.5"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.5M4.5 12h.5M4.5 18h.5"/></symbol><symbol id="i-books" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M15.2 5.6l3.6-.9 3.4 14.6-3.6.9z"/></symbol><symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5L12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5L12 11.5l8.5-4M12 11.5v9"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 012-2h13v14H6a2 2 0 00-2 2.5z"/><path d="M4 19.5A1.5 1.5 0 006 21h13v-4"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.6-3.8 3.6-6 7.5-6s6.9 2.2 7.5 6"/></symbol><symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/><circle cx="12" cy="12" r="6.5"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol><symbol id="i-claw" viewBox="0 0 24 24"><path d="M12 12.5c-3 0-5.5 2.7-5.5 5.1 0 1.7 1.3 2.4 2.9 2.4 1.1 0 1.7-.6 2.6-.6s1.5.6 2.6.6c1.6 0 2.9-.7 2.9-2.4 0-2.4-2.5-5.1-5.5-5.1z"/><ellipse cx="5.6" cy="10" rx="1.7" ry="2.2"/><ellipse cx="9.4" cy="5.9" rx="1.7" ry="2.3"/><ellipse cx="14.6" cy="5.9" rx="1.7" ry="2.3"/><ellipse cx="18.4" cy="10" rx="1.7" ry="2.2"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.5 7.5 0 019.5 4.5a7.5 7.5 0 1010 10z"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></symbol><symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-8 7 8 7"/></symbol><symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l8 7-8 7"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l1 12.5h-15z"/><path d="M9 8V6.5a3 3 0 016 0V8"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></symbol><symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.3-3.4 2.7-5.5 6-5.5s5.7 2.1 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.6.2 4.3 2 4.5 4.9"/></symbol><symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 4h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2z"/><path d="M6 4a2 2 0 00-2 2v1h2M18 4a2 2 0 012 2v1h-2M9 9h6M9 13h6"/></symbol></defs></svg><div id="loading" class="noi18n" role="status" aria-live="polite"><div class="ld">
   <svg class="d20" viewBox="0 0 48 48" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M24 3 43 14v20L24 45 5 34V14Z M24 3 13 30h22Z M5 14l8 16M43 14l-8 16M13 30l11 15 11-15"/></svg>
   <b><span lang="es">Herramientas del Máster</span><span lang="en">Game Master Tools</span><span lang="fr">Outils du MJ</span><span lang="pt">Ferramentas do Mestre</span><span lang="it">Strumenti del Master</span><span lang="de">Spielleiter-Werkzeuge</span></b>
   <span><span lang="es">Cargando…</span><span lang="en">Loading…</span><span lang="fr">Chargement…</span><span lang="pt">Carregando…</span><span lang="it">Caricamento…</span><span lang="de">Wird geladen …</span></span>
@@ -909,20 +916,20 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
     <div class="nav">
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
-      <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false">⚙ Ajustes</button>
+      <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Ajustes</button>
       <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
-      <button class="btn" data-act="openparty" title="Ir a la página de jugadores">🛡 Grupo</button>
-      <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar">🔎 <span class="bl">Buscar</span></button>
-      <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior">◀ <span class="bl">Anterior</span></button>
-      <button class="btn primary big" id="next" title="Siguiente turno (→ o espacio)">Empezar ▶</button>
-      <button class="btn" id="endbtn" data-act="end" data-confirm title="Terminar combate" aria-label="Terminar combate">⏹ <span class="bl">Terminar</span></button>
-      <button class="btn ghost" id="undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
-      <button class="btn mob-only" data-act="gosheet" id="gosheet" title="Ir a la ficha del turno" aria-label="Ficha del turno" hidden>📖</button>
+      <button class="btn" data-act="openparty" title="Ir a la página de jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Grupo</button>
+      <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span class="bl">Buscar</span></button>
+      <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior"><svg class="ic" aria-hidden="true"><use href="#i-prev"/></svg> <span class="bl">Anterior</span></button>
+      <button class="btn primary big" id="next" title="Siguiente turno (→ o espacio)">Empezar <svg class="ic" aria-hidden="true"><use href="#i-next"/></svg></button>
+      <button class="btn" id="endbtn" data-act="end" data-confirm title="Terminar combate" aria-label="Terminar combate"><svg class="ic" aria-hidden="true"><use href="#i-stop"/></svg> <span class="bl">Terminar</span></button>
+      <button class="btn ghost" id="undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg></button>
+      <button class="btn mob-only" data-act="gosheet" id="gosheet" title="Ir a la ficha del turno" aria-label="Ficha del turno" hidden><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></button>
     </div>
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.31</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones">☰ <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Jugadores</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.31</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -933,17 +940,17 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="vhead tools-h"><h2>Herramientas</h2><span class="pcsub">Para llevar la partida</span></div>
   <div class="tools-grid">
-    <a class="tool" href="#combate"><span class="ti">⚔</span><span class="tn">Tracker de combate</span><span class="td">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span><span class="tstat" id="hs-combat"></span></a>
-    <a class="tool" href="#jugadores"><span class="ti">🛡</span><span class="tn">Gestión de jugadores</span><span class="td">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span><span class="tstat" id="hs-party"></span></a>
-    <a class="tool" href="#tablas"><span class="ti">🎲</span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
-    <a class="tool" href="#referencia"><span class="ti">📋</span><span class="tn">Referencia rápida</span><span class="td">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span><span class="tstat" id="hs-ref"></span></a>
+    <a class="tool" href="#combate"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg></span><span class="tn">Tracker de combate</span><span class="td">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span><span class="tstat" id="hs-combat"></span></a>
+    <a class="tool" href="#jugadores"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="tn">Gestión de jugadores</span><span class="td">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span><span class="tstat" id="hs-party"></span></a>
+    <a class="tool" href="#tablas"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg></span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
+    <a class="tool" href="#referencia"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></span><span class="tn">Referencia rápida</span><span class="td">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span><span class="tstat" id="hs-ref"></span></a>
   </div>
   <div class="vhead tools-h"><h2>Compendio</h2><span class="pcsub">Todo el contenido de tus módulos, cada cosa con su página</span></div>
   <div class="tools-grid">
-    <a class="tool" href="#compendio/criaturas"><span class="ti">🐉</span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
-    <a class="tool" href="#compendio/conjuros"><span class="ti">✨</span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
-    <a class="tool" href="#compendio/objetos"><span class="ti">📚</span><span class="tn">Objetos, dotes y más</span><span class="td">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span><span class="tstat" id="hs-comp"></span></a>
-    <a class="tool" href="#modulos"><span class="ti">📦</span><span class="tn">Módulos</span><span class="td">Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
+    <a class="tool" href="#compendio/criaturas"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-claw"/></svg></span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
+    <a class="tool" href="#compendio/conjuros"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-sparkle"/></svg></span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
+    <a class="tool" href="#compendio/objetos"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg></span><span class="tn">Objetos, dotes y más</span><span class="td">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span><span class="tstat" id="hs-comp"></span></a>
+    <a class="tool" href="#modulos"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg></span><span class="tn">Módulos</span><span class="td">Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
   </div>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
   <ol class="changelog" id="changelog-home"></ol>
@@ -953,7 +960,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 <section class="vpage" id="view-compendio" hidden>
   <div class="vhead"><h2>Compendio</h2><span class="pcsub" id="cm-count"></span></div>
   <div class="cmtabs" role="tablist" aria-label="Apartados del compendio" data-cmnav></div>
-  <p class="modline">Contenido de los módulos activos · <a href="#modulos">📦 Gestionar módulos</a></p>
+  <p class="modline">Contenido de los módulos activos · <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Gestionar módulos</a></p>
   <div class="bfilters">
     <input id="cm-q" placeholder="Buscar por nombre" aria-label="Buscar en el compendio">
     <select id="cm-f1" aria-label="Filtro"></select>
@@ -966,7 +973,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 
 <section class="vpage" id="view-referencia" hidden>
   <div class="vhead"><h2>Referencia rápida</h2><span class="pcsub" id="qr-count"></span></div>
-  <p class="modline">Reglas de 2024 (SRD 5.2.1). Pulsa una tarjeta para ver la regla completa. Todas están también en <a href="#compendio/reglas">📚 Compendio › Reglas</a>, con su propia página.</p>
+  <p class="modline">Reglas de 2024 (SRD 5.2.1). Pulsa una tarjeta para ver la regla completa. Todas están también en <a href="#compendio/reglas"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio › Reglas</a>, con su propia página.</p>
   <div class="bfilters"><input id="qr-q" placeholder="Filtrar por nombre o texto" aria-label="Filtrar reglas"><select id="qr-cat" aria-label="Categoría"></select></div>
   <div id="qr-body"></div>
 </section>
@@ -1191,10 +1198,10 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <div class="inline" style="justify-content:space-between">
         <div class="inline">
           <button class="btn primary" data-act="partyadd">Añadir todo el grupo al combate</button>
-          <button class="btn" data-act="longrest" data-confirm title="PG al máximo y espacios de conjuro recuperados">🌙 Descanso largo</button>
+          <button class="btn" data-act="longrest" data-confirm title="PG al máximo y espacios de conjuro recuperados"><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg> Descanso largo</button>
         </div>
         <div class="inline">
-          <a class="btn" href="#modulos">📦 Módulos</a>
+          <a class="btn" href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>
           <span class="spcount" id="spcount"></span>
         </div>
       </div>
@@ -1231,7 +1238,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 <section class="vpage" id="view-conjuros" hidden>
   <div class="vhead"><h2>Compendio</h2><span class="pcsub" id="vs-count"></span></div>
   <div class="cmtabs" role="tablist" aria-label="Apartados del compendio" data-cmnav></div>
-  <p class="modline">Fuentes activas: <span id="bk-count"></span> · <a href="#modulos">📦 Gestionar módulos</a></p>
+  <p class="modline">Fuentes activas: <span id="bk-count"></span> · <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Gestionar módulos</a></p>
   <div class="bfilters">
     <input id="vs-q" placeholder="Buscar por nombre (también en inglés)" aria-label="Buscar conjuro">
     <select id="vs-lv" aria-label="Nivel"><option value="">Cualquier nivel</option><option value="0">Truco</option><option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option><option value="4">Nivel 4</option><option value="5">Nivel 5</option><option value="6">Nivel 6</option><option value="7">Nivel 7</option><option value="8">Nivel 8</option><option value="9">Nivel 9</option></select>
@@ -1258,7 +1265,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
     <div class="listhead">
       <h2>Orden de iniciativa</h2>
       <div class="tools">
-        <button class="btn" data-act="rollnpc" title="Tira d20 + bonificador para todas las criaturas que no son jugadores">🎲 Tirar iniciativa PNJ</button>
+        <button class="btn" data-act="rollnpc" title="Tira d20 + bonificador para todas las criaturas que no son jugadores"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tirar iniciativa PNJ</button>
         <button class="btn" data-act="sort">Ordenar</button>
       </div>
     </div>
@@ -1472,9 +1479,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
         <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub">con Discord</span></p>
         <p class="pcsub" id="ac-sync" style="margin:0"></p>
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
-        <div class="inline"><button type="button" class="btn" data-act="pfopen">⚙ Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
+        <div class="inline"><button type="button" class="btn" data-act="pfopen"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
-      <div class="acsrd"><span class="ti">📚</span><span><b id="ac-srdv">SRD 5.2.1</b> · <span>Activo siempre</span><br><span class="pcsub" id="ac-srdl"></span></span></div>
+      <div class="acsrd"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg></span><span><b id="ac-srdv">SRD 5.2.1</b> · <span>Activo siempre</span><br><span class="pcsub" id="ac-srdl"></span></span></div>
       <div class="acex">
         <h3>Datos de ejemplo</h3>
         <p class="hint" style="display:block;margin:0">Añade dos personajes, un combate, un encuentro guardado y tres tablas para ver cómo funciona todo, con criaturas y conjuros del SRD 5.2.1.</p>
@@ -1609,6 +1616,7 @@ const SECS=[['t','Atributos'],['a','Acciones'],['b','Acciones adicionales'],['r'
 const KEY='combat-tracker-v1', BKEY='combat-bestiary-v1';
 const $=s=>document.querySelector(s);
 const uid=()=>Math.random().toString(36).slice(2,9);
+const ic=n=>`<svg class="ic" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sgn=n=>(n>=0?'+':'')+n;
 const mod=s=>Math.floor((s-10)/2);
@@ -1967,7 +1975,7 @@ function render(){
   $('#who').textContent=cur?cur.name:(n?'Pulsa «Empezar»':'Añade criaturas');
   if(cur){let i=s.turnIdx;let nx=null;for(let k=0;k<n;k++){i=(i+1)%n;if(!skipped(get(s.order[i]))){nx=get(s.order[i]);break;}}$('#nx').textContent=nx&&nx!==cur?`Siguiente: ${nx.name}`:'';}
   else $('#nx').textContent='';
-  $('#next').innerHTML=s.active?'Siguiente ▶':'Empezar ▶';
+  $('#next').innerHTML=(s.active?'Siguiente ':'Empezar ')+ic('next');
   $('#prev').disabled=!s.active;
   $('#undo').disabled=!undoStack.length;
   $('#o-skip').checked=s.skipDead;$('#o-dur').checked=s.tickDur;$('#o-hproll').checked=s.hpRoll;$('#o-recharge').checked=s.autoRecharge;$('#o-rotate').checked=s.rotate!==false;
@@ -1986,7 +1994,7 @@ function render(){
   }).join('');
 
   const L=$('#list');
-  if(!n){L.innerHTML=`<li class="empty">No hay nadie en el combate. Añade jugadores, aliados y enemigos desde el panel «Añadir criatura» o desde 🔎 Buscar.<br><button type="button" class="btn" data-act="acexample" style="margin-top:12px">Insertar datos de ejemplo</button></li>`;}
+  if(!n){L.innerHTML=`<li class="empty">No hay nadie en el combate. Añade jugadores, aliados y enemigos desde el panel «Añadir criatura» o desde ${ic('search')} Buscar.<br><button type="button" class="btn" data-act="acexample" style="margin-top:12px">Insertar datos de ejemplo</button></li>`;}
   else{
     const rows=s.order.map((id,idx)=>rowHTML(get(id),idx,cur&&cur.id===id));
     const rot=s.active&&s.rotate!==false&&s.turnIdx>0;
@@ -2039,7 +2047,7 @@ function sumHTML(x){
     ${x.pcs.length?`<div class="espcs">${x.pcs.map(p=>{const pc=p.max?p.hp/p.max:0,col=p.hp<=0||pc<=.25?'var(--crit)':pc<=.5?'var(--warn)':'var(--ok)';
       return `<div class="espc" style="--fc:${p.f}"><span class="dot"></span><b>${esc(p.n)}</b><span class="num">${p.hp}/${p.max} ${T('PG')}</span><span class="hpbar"><i style="width:${Math.max(0,Math.min(100,pc*100))}%;background:${col}"></i></span></div>`;}).join('')}</div>`:''}
     <div class="inline esact">
-      ${x.pcs.length?`<button type="button" class="btn" data-act="longrest" data-confirm>🌙 ${T('Descanso largo')}</button>`:''}
+      ${x.pcs.length?`<button type="button" class="btn" data-act="longrest" data-confirm>${ic('moon')} ${T('Descanso largo')}</button>`:''}
       <button type="button" class="btn primary" data-act="newenc" data-confirm>${T('Nuevo encuentro')}</button>
     </div>
   </div>`;
@@ -2061,7 +2069,7 @@ function rowHTML(c,idx,isCur){
     <div class="c-init"><input id="init-${c.id}" data-field="init" value="${c.init??''}" inputmode="numeric" aria-label="Iniciativa" title="Iniciativa (bonif. ${sgn(c.initBonus||0)})"></div>
     <div class="c-name" data-act="toggle">
       <div class="name">${esc(c.name)}${m&&m.n!==c.name&&!c.name.startsWith(m.n)?`<span class="book">· ${esc(m.n)}</span>`:''}</div>
-      <div class="meta">${isCur?'<span class="turnflag">En turno</span>':''}<span class="chip fchip" style="border-color:color-mix(in srgb,${f.color} 50%,var(--line))"><span class="dot" style="--fc:${f.color}"></span>${esc(f.name)}</span>${m?'<span class="chip bchip" title="Tiene ficha">📖</span>':''}${chips}${isPC(c)&&down?`<span class="chip">Salv. ✓${c.ds} ✗${c.df}</span>`:''}</div>
+      <div class="meta">${isCur?'<span class="turnflag">En turno</span>':''}<span class="chip fchip" style="border-color:color-mix(in srgb,${f.color} 50%,var(--line))"><span class="dot" style="--fc:${f.color}"></span>${esc(f.name)}</span>${m?`<span class="chip bchip" title="Tiene ficha">${ic('book')}</span>`:''}${chips}${isPC(c)&&down?`<span class="chip">Salv. ✓${c.ds} ✗${c.df}</span>`:''}</div>
     </div>
     <div class="c-hp">
       <div class="hptext"><span>${(c.hph||[]).map(v=>`<s class="hph">${v}</s>`).join('')}<b>${c.hp}</b> / ${c.maxHp} PG${c.hp>0&&pct<=.5?`<span class="hpst" style="--hc:${col}">${T('Maltrecho')}</span>`:''}</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}</div>
@@ -2104,7 +2112,7 @@ function detHTML(c,m){
     <label class="f">Notas<input id="e-notes-${c.id}" data-field="notes" value="${esc(c.notes)}" placeholder="Objetivo marcado, botín, tácticas…"></label>
     <div class="inline">
       <button class="btn" data-act="up">↑ Subir</button><button class="btn" data-act="down">↓ Bajar</button>
-      <button class="btn" data-act="reroll">🎲 Repetir iniciativa</button>
+      <button class="btn" data-act="reroll">${ic('d20')} Repetir iniciativa</button>
       <button class="btn" data-act="dup">Duplicar</button>
       ${m?`<button class="btn" data-act="editfromrow">${m.id?'Editar ficha':'Clonar y editar ficha'}</button>`:`<button class="btn" data-act="mkfromrow">Crear ficha</button>`}
       <button class="btn danger" data-act="del" data-confirm>Quitar del combate</button>
@@ -2115,7 +2123,7 @@ function detHTML(c,m){
 /* ---------- bestiario: vista ---------- */
 let bSel=null;
 // Tipos del buscador: las criaturas usan su clave del bestiario; el resto, «tipo:nombre»
-const BTY=[['todo','Todo'],['criaturas','🐉 Criaturas'],['conjuros','✨ Conjuros'],['objetos','🎒 Objetos'],['dotes','⭐ Dotes'],['clases','🛡 Clases'],['especies','🧝 Especies'],['trasfondos','📜 Trasfondos'],['reglas','📖 Reglas']];
+const BTY=[['todo','Todo'],['criaturas','Criaturas','claw'],['conjuros','Conjuros','sparkle'],['objetos','Objetos','bag'],['dotes','Dotes','star'],['clases','Clases','shield'],['especies','Especies','people'],['trasfondos','Trasfondos','scroll'],['reglas','Reglas','book']];
 const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Dote',clases:'Clase',especies:'Especie',trasfondos:'Trasfondo',reglas:'Regla'};
 let bTy=(()=>{try{return localStorage.getItem('b-ty')||'todo';}catch{return 'todo';}})();
 const bTyOf=k=>{const p=String(k||'').split(':')[0];return TY_ONE[p]&&p!=='criaturas'?p:'criaturas';};
@@ -2139,15 +2147,15 @@ function searchAll(ty,q,cat=''){
 }
 function renderBest(){
   compLoad();
-  $('#b-ty').innerHTML=BTY.map(([k,l])=>`<button type="button" role="tab" data-bty="${k}" aria-selected="${k===bTy}">${l}</button>`).join('');
+  $('#b-ty').innerHTML=BTY.map(([k,l,i])=>`<button type="button" role="tab" data-bty="${k}" aria-selected="${k===bTy}">${i?ic(i)+' ':''}${l}</button>`).join('');
   const cr=bTy==='criaturas';$('#b-src').hidden=$('#b-cr').hidden=!cr;
   {const sel=$('#b-cat'),on=['objetos','dotes','reglas'].includes(bTy);sel.hidden=!on;
    if(on&&sel.dataset.ty!==bTy){const L=compList(bTy),cats=bTy==='objetos'?Object.entries(OBJ_KIND):[...new Set(L.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG)).map(c=>[c,c]);
      sel.innerHTML='<option value="">Cualquier categoría</option>'+cats.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join('');sel.dataset.ty=L.length?bTy:'';}}
-  $('#b-q').placeholder=cr?'Buscar (nombre, en inglés o tipo)':bTy==='todo'?'Buscar en todo el compendio':`Buscar ${BTY.find(x=>x[0]===bTy)[1].replace(/^\S+\s/,'').toLowerCase()} por nombre`;
+  $('#b-q').placeholder=cr?'Buscar (nombre, en inglés o tipo)':bTy==='todo'?'Buscar en todo el compendio':`Buscar ${BTY.find(x=>x[0]===bTy)[1].toLowerCase()} por nombre`;
   if(!cr)renderBestOther();else{
   const res=searchBest($('#b-q').value,$('#b-src').value,$('#b-cr').value);
-  $('#b-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el SRD…':'Sin criaturas: activa un módulo en 📦 Módulos o crea las tuyas';
+  $('#b-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el SRD…':'Sin criaturas: activa un módulo en Módulos o crea las tuyas';
   $('#blist').innerHTML=res.slice(0,400).map(m=>{const k=tkey(m);return `<li><button type="button" data-act="bpick" data-k="${esc(k)}" class="${bSel===k?'on':''}"><span class="bn">${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}</span><span class="bc">VD ${esc(m.cr??'–')}</span><span class="bt">${m.en&&m.en!==m.n?`<i>${esc(m.en)}</i> · `:''}${esc(tr(SIZE,m.sz||''))} · ${esc(tr(TYPE,m.ty||''))} · CA ${m.ac??'–'} · PG ${m.hp??'–'}</span></button></li>`;}).join('')||'<li class="hint" style="padding:12px">Nada coincide. Puedes crearla con «+ Nueva criatura».</li>';}
   if(bSel&&bTyOf(bSel)!=='criaturas'){$('#bview').innerHTML=bOtherView(bSel);return;}
   const m=tpl(bSel);
@@ -2158,7 +2166,7 @@ function renderBestOther(){
   if(bTy==='todo'&&!q){
     const n=[[allBest().length,'criaturas'],[SPELL_LIST.length,'conjuros'],...CM_TABS.map(([k])=>[compList(k).length,k])].filter(x=>x[0]);
     $('#b-count').textContent='';
-    $('#blist').innerHTML=`<li class="hint" style="padding:12px">${n.length?`Escribe para buscar entre ${n.map(([c,l])=>`${c} ${l}`).join(', ')}.`:'No hay contenido: activa el SRD 5.2.1 u otro módulo en 📦 Módulos.'}</li>`;return;
+    $('#blist').innerHTML=`<li class="hint" style="padding:12px">${n.length?`Escribe para buscar entre ${n.map(([c,l])=>`${c} ${l}`).join(', ')}.`:'No hay contenido: activa el SRD 5.2.1 u otro módulo en Módulos.'}</li>`;return;
   }
   const res=searchAll(bTy,q,$('#b-cat').hidden?'':$('#b-cat').value),one=bTy==='todo';
   $('#b-count').textContent=`${res.length} resultado${res.length===1?'':'s'}${res.length>400?' (se muestran 400)':''}`;
@@ -2175,7 +2183,7 @@ function giveBar(ty,n){
   if(ty==='clases')return `<div class="gvbar"><button type="button" class="btn primary" data-act="gvnewpc" data-n="${esc(n)}">Crear personaje de nivel 1</button></div>`;
   const [lbl,btn]={conjuros:['Añadir a los conjuros de','Añadir'],objetos:['Dar a','Dar'],dotes:['Dar la dote a','Dar'],especies:['Aplicar a','Aplicar especie'],trasfondos:['Aplicar a','Aplicar trasfondo']}[ty]||[];
   if(!lbl)return '';
-  if(!PARTY.length)return `<p class="hint gvbar">Crea un personaje en <a href="#jugadores">🛡 Jugadores</a> para dárselo.</p>`;
+  if(!PARTY.length)return `<p class="hint gvbar">Crea un personaje en <a href="#jugadores">${ic('shield')} Jugadores</a> para dárselo.</p>`;
   return `<div class="gvbar"><label class="f">${lbl}<select class="gvpc">${PARTY.map(p=>`<option value="${p.id}">${esc(p.n)}</option>`).join('')}</select></label><button type="button" class="btn primary" data-act="gvgive" data-ty="${ty}" data-n="${esc(n)}">${btn}</button></div>`;
 }
 const ENT={'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#x27;':"'",'&#39;':"'"};
@@ -2456,7 +2464,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fact="del"
 let formTpl=null, suggIdx=-1, suggRes=[];
 function renderLinked(){
   const m=tpl(formTpl),el=$('#a-linked');el.hidden=!m;
-  if(m)el.innerHTML=`<div class="linked"><span>📖 Ficha: <b>${esc(m.n)}</b> · VD ${esc(m.cr??'–')}</span><button type="button" class="more" data-act="unlink" aria-label="Desvincular ficha" style="font-size:14px">✕</button></div>`;
+  if(m)el.innerHTML=`<div class="linked"><span>${ic('book')} Ficha: <b>${esc(m.n)}</b> · VD ${esc(m.cr??'–')}</span><button type="button" class="more" data-act="unlink" aria-label="Desvincular ficha" style="font-size:14px">✕</button></div>`;
 }
 function pickSugg(m){
   formTpl=tkey(m);
@@ -2721,7 +2729,7 @@ $('#md-urlform').addEventListener('submit',e=>{
 });
 const spLevel=lv=>lv?T(`Nivel ${lv}`):T('Truco');
 function spellBody(s,dc){
-  if(!s)return '<p class="hint" style="display:block">Este conjuro no está en ningún módulo activo. Actívalo o añade tu copia del libro en <a href="#modulos">📦 Módulos</a> para ver la descripción.</p>';
+  if(!s)return '<p class="hint" style="display:block">Este conjuro no está en ningún módulo activo. Actívalo o añade tu copia del libro en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a> para ver la descripción.</p>';
   const use=s.use||'',tds=use.match(/TdS\s*(\w+)/i);
   return `${s.fl?`<p class="spfl">${esc(s.fl)}</p>`:''}
     <div class="spmeta">${[['Lanzamiento',s.ct],['Alcance',s.rg],['Duración',s.dur],['Componentes',s.comp],['Escuela',SCHOOLS[s.sch]],['Clases',s.cls.join(', ')],['Fuente',spellSrcFull(s)]].filter(x=>x[1]).map(([l,v])=>`<span><b>${l}</b> ${esc(v)}</span>`).join('')}
@@ -2892,14 +2900,14 @@ function tbRoll(tb,depth=0){
 const tbHistHTML=()=>tbHist.map((h,i)=>`<li><span class="tbout">${esc(h.text)||'<span class="pcsub">(vacío)</span>'}</span><button type="button" class="btn sm ghost" data-act="tbcopy" data-i="${i}" title="Copiar">⧉</button><span class="tbparts">${esc(h.n)} · ${h.parts.map(x=>`${esc(x.c)} d${h.rows}: ${x.r}`).join(' · ')}</span></li>`).join('');
 function renderTables(){
   $('#tb-count').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'';
-  const item=tb=>`<button type="button" class="tbitem${tb.id===tbSel?' on':''}" data-act="tbsel" data-id="${esc(tb.id)}"><b>${esc(tb.n)}</b><span class="pcsub">d${tb.rows} · ${tb.cols.length} columna${tb.cols.length>1?'s':''}</span>${tb._mod?`<span class="pcsub">📦 ${esc(tb._mod)}</span>`:''}</button>`;
+  const item=tb=>`<button type="button" class="tbitem${tb.id===tbSel?' on':''}" data-act="tbsel" data-id="${esc(tb.id)}"><b>${esc(tb.n)}</b><span class="pcsub">d${tb.rows} · ${tb.cols.length} columna${tb.cols.length>1?'s':''}</span>${tb._mod?`<span class="pcsub">${ic('box')} ${esc(tb._mod)}</span>`:''}</button>`;
   $('#tb-list').innerHTML=(TABLES.map(item).join('')
     ||'<p class="hint" style="display:block">Aún no tienes tablas.</p><button type="button" class="btn sm" data-act="tbexamples">Crear tablas de ejemplo</button>')
     +(MODTB.length?`<p class="pcsub" style="margin:10px 0 2px">De módulos</p>${MODTB.map(item).join('')}`:'');
   const tb=curTable();
   if(!tb){$('#tb-main').innerHTML='<div class="empty">Crea una tabla con «+ Nueva tabla» o empieza con las de ejemplo.</div>';return;}
-  if(tb._mod){$('#tb-main').innerHTML=`<div class="tbcard"><h3 class="tbh3">${esc(tb.n)} <span class="tag">📦 ${esc(tb._mod)}</span></h3>
-    <div class="tbroll"><button type="button" class="btn primary" data-act="tbroll" data-k="1">🎲 Tirar d${tb.rows}</button><button type="button" class="btn" data-act="tbroll" data-k="5">×5</button><button type="button" class="btn" data-act="tbroll" data-k="10">×10</button>${tbHist.length?'<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>':''}</div>
+  if(tb._mod){$('#tb-main').innerHTML=`<div class="tbcard"><h3 class="tbh3">${esc(tb.n)} <span class="tag">${ic('box')} ${esc(tb._mod)}</span></h3>
+    <div class="tbroll"><button type="button" class="btn primary" data-act="tbroll" data-k="1">${ic('d20')} Tirar d${tb.rows}</button><button type="button" class="btn" data-act="tbroll" data-k="5">×5</button><button type="button" class="btn" data-act="tbroll" data-k="10">×10</button>${tbHist.length?'<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>':''}</div>
     <ol class="tbres" id="tb-res" aria-live="polite">${tbHistHTML()}</ol></div>
   <div class="tbcard"><div class="inline" style="justify-content:space-between"><h3 class="tbh3">Contenido · d${tb.rows}</h3><button type="button" class="btn sm" data-act="tbdup">Duplicar para editarla</button></div>
     ${tb.fmt?`<p class="hint" style="display:block;margin:0">Formato: <code>${esc(tb.fmt)}</code></p>`:''}
@@ -2915,7 +2923,7 @@ function renderTables(){
       <div class="tbchips">Insertar: ${tb.cols.map(c=>`<button type="button" class="chip" data-act="tbchip" data-v="{${esc(c.n)}}">{${esc(c.n)}}</button>`).join('')}<button type="button" class="chip" data-act="tbchip" data-v="{1d4}">{1d4}</button><button type="button" class="chip" data-act="tbchip" data-v="{@}">{@tabla}</button></div>
       <p class="hint wide" style="display:block;margin:0">Pon <code>{Columna}</code> donde quieras el resultado de esa columna (si lo dejas vacío se unen con espacios). En las celdas y en el formato, <code>{1d4}</code> se tira al salir (<code>{2d6} po</code> → «7 po») y <code>{@Nombre de otra tabla}</code> tira en esa tabla.</p>
     </div>
-    <div class="tbroll"><button type="button" class="btn primary" data-act="tbroll" data-k="1">🎲 Tirar d${tb.rows}</button><button type="button" class="btn" data-act="tbroll" data-k="5">×5</button><button type="button" class="btn" data-act="tbroll" data-k="10">×10</button>${tbHist.length?'<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>':''}</div>
+    <div class="tbroll"><button type="button" class="btn primary" data-act="tbroll" data-k="1">${ic('d20')} Tirar d${tb.rows}</button><button type="button" class="btn" data-act="tbroll" data-k="5">×5</button><button type="button" class="btn" data-act="tbroll" data-k="10">×10</button>${tbHist.length?'<button type="button" class="btn ghost" data-act="tbclearhist">Limpiar</button>':''}</div>
     <ol class="tbres" id="tb-res" aria-live="polite">${tbHistHTML()}</ol>
   </div>
   <div class="tbcard">
@@ -3080,7 +3088,7 @@ function renderCompendio(){
   CM_RES=res;const tb=CM_TABS.find(x=>x[0]===cmTab);
   $('#cm-count').textContent=`${res.length} ${res.length===1?tb[2]:tb[3]}`;
   const cols=CM_COLS[cmTab];$('#cm-new').textContent=IT_NEW[cmTab];$('#cm-new').dataset.ty=cmTab;
-  if(!all.length){$('#cm-list').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando el compendio del SRD…</div>':`<div class="empty">No hay ${tb[3]} en tus módulos activos. Activa el SRD 5.2.1 u otro módulo en <a href="#modulos">📦 Módulos</a>.</div>`;return;}
+  if(!all.length){$('#cm-list').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando el compendio del SRD…</div>':`<div class="empty">No hay ${tb[3]} en tus módulos activos. Activa el SRD 5.2.1 u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>.</div>`;return;}
   $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc(x._src)}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 function cmBody(x,tab=cmTab){
@@ -3200,7 +3208,7 @@ function renderCreatureView(){
   VC_RES=res;
   $('#vc-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el bestiario…':'';
   const th=(k,l,c='')=>`<th${c?` class="${c}"`:''}><button type="button" data-csort="${k}"${sort===k?' aria-sort="ascending"':''}>${l}</button></th>`;
-  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${esc(crSrc(m))||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos">📦 Módulos</a>, o crea las tuyas desde el bestiario.</div>';
+  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${esc(crSrc(m))||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>, o crea las tuyas desde el bestiario.</div>';
 }
 function toggleCreatureRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
@@ -3256,7 +3264,7 @@ addEventListener('hashchange',showView);
 /* ---------- compendio: rutas y páginas propias ----------
    #compendio/<apartado> es el listado; #compendio/<apartado>/<nombre> la página de un elemento.
    #criaturas y #conjuros siguen funcionando como alias. */
-const CTABS=[['criaturas','Criaturas','🐉'],['conjuros','Conjuros','✨'],['objetos','Objetos','🎒'],['dotes','Dotes','⭐'],['clases','Clases','🛡'],['especies','Especies','🧝'],['trasfondos','Trasfondos','📜'],['reglas','Reglas','📖']];
+const CTABS=[['criaturas','Criaturas','claw'],['conjuros','Conjuros','sparkle'],['objetos','Objetos','bag'],['dotes','Dotes','star'],['clases','Clases','shield'],['especies','Especies','people'],['trasfondos','Trasfondos','scroll'],['reglas','Reglas','book']];
 const slugOf=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fichaHref=(tab,n)=>`#compendio/${tab}/${slugOf(n)}`;
 const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="${T('Abrir la página de')} ${esc(n)}">↗</a>`;
@@ -3272,7 +3280,7 @@ const viewOf=r=>r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||
 const curView=()=>viewOf(route());
 function renderCmNav(tab){
   const n={criaturas:allBest().length,conjuros:SPELL_LIST.length};for(const[k] of CM_TABS)n[k]=compList(k).length;
-  const html=CTABS.map(([k,l,i])=>`<a href="#compendio/${k}" role="tab" aria-selected="${k===tab}">${i} ${l}<span class="pcsub">${n[k]||''}</span></a>`).join('');
+  const html=CTABS.map(([k,l,i])=>`<a href="#compendio/${k}" role="tab" aria-selected="${k===tab}">${ic(i)} ${l}<span class="pcsub">${n[k]||''}</span></a>`).join('');
   document.querySelectorAll('[data-cmnav]').forEach(el=>el.innerHTML=html);
 }
 function refreshCompView(){
@@ -3299,10 +3307,10 @@ function crActions(m){
 function renderFicha(tab,slug){
   compLoad();
   const t=CTABS.find(x=>x[0]===tab),x=fichaFind(tab,slug),el=$('#fc-body');
-  $('#fc-crumbs').innerHTML=`<a href="#compendio/${t[0]}">← ${t[2]} ${t[1]}</a>`;
+  $('#fc-crumbs').innerHTML=`<a href="#compendio/${t[0]}">← ${ic(t[2])} ${t[1]}</a>`;
   if(!x){
     const loading=modOn('srd521')&&(tab==='criaturas'?!SRD_ALL.length:tab==='conjuros'?!SPELL_LIST.length:!COMP_SRD);
-    el.innerHTML=`<div class="empty">${loading?'Cargando…':`${T('No encuentro esta entrada en tus módulos activos. Revisa')} <a href="#modulos">📦 ${T('Módulos')}</a> ${T('o vuelve al listado.')}`}</div>`;return;
+    el.innerHTML=`<div class="empty">${loading?'Cargando…':`${T('No encuentro esta entrada en tus módulos activos. Revisa')} <a href="#modulos">${ic('box')} ${T('Módulos')}</a> ${T('o vuelve al listado.')}`}</div>`;return;
   }
   el.innerHTML=tab==='criaturas'?crActions(x)+sbHTML(x,null):bOtherView(tab+':'+x.n,false);
 }
@@ -3334,7 +3342,7 @@ const QR_ICON={Atacar:'⚔',Ayudar:'🤝',Buscar:'🔍',Correr:'💨',Destrabars
 function renderRef(){
   compLoad();
   const all=compList('reglas'),sel=$('#qr-cat');
-  if(!all.length){$('#qr-count').textContent='';$('#qr-body').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando las reglas…</div>':'<div class="empty">Activa el SRD 5.2.1 en <a href="#modulos">📦 Módulos</a> para ver la referencia rápida.</div>';return;}
+  if(!all.length){$('#qr-count').textContent='';$('#qr-body').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando las reglas…</div>':'<div class="empty">Activa el SRD 5.2.1 en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a> para ver la referencia rápida.</div>';return;}
   if(sel.options.length<=1)sel.innerHTML='<option value="">Todas las categorías</option>'+QR_SECS.map(([c,i])=>`<option value="${esc(c)}">${i} ${esc(c)}</option>`).join('');
   const q=fold($('#qr-q').value),cat=sel.value;
   const hit=x=>!q||fold(x.n).includes(q)||fold(ruleSum(x)).includes(q)||fold(String(x.d).replace(/<[^>]+>/g,'')).includes(q);
@@ -3525,7 +3533,7 @@ const SB_STORED=()=>{try{return !!localStorage.getItem('sb-uigkelicqmhiqaokndvo-
 function renderAcct(){
   const lwOff=(()=>{try{return localStorage.getItem('combat-localwarn-off')==='1';}catch(e){return false;}})();
   document.querySelectorAll('.localwarn').forEach(el=>el.hidden=lwOff||!(SB&&!SB_USER&&!SB_STORED()));
-  const b=$('#acct-btn');b.hidden=!SB;b.textContent=SB_USER?`👤 ${SB_NAME||'Mi cuenta'}`:'👤 Entrar';
+  const b=$('#acct-btn');b.hidden=!SB;b.innerHTML=ic('user')+' '+(SB_USER?esc(SB_NAME||T('Mi cuenta')):T('Entrar'));
   $('#ac-user').textContent=SB_NAME||'—';
 }
 const acStatus=t=>{$('#ac-sync').textContent=t;};

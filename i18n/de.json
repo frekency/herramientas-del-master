@@ -732,5 +732,9 @@
   "Tema": "Design",
   "Automático (como el sistema)": "Automatisch (wie das System)",
   "Claro": "Hell",
-  "Oscuro": "Dunkel"
+  "Oscuro": "Dunkel",
+  "Sin criaturas: activa un módulo en Módulos o crea las tuyas": "Keine Kreaturen: Aktiviere ein Modul unter Module oder erstelle eigene",
+  "No hay contenido: activa el SRD #.#.# u otro módulo en Módulos.": "Kein Inhalt: Aktiviere das SRD #.#.# oder ein anderes Modul unter Module.",
+  "Mi cuenta": "Mein Konto",
+  "Repetir iniciativa": "Initiative neu würfeln"
 }
