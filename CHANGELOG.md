@@ -4,6 +4,16 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.32.0] - 2026-11-04
+### Añadido
+- Estilo «Cuaderno» (claro y oscuro), ahora el de serie: letra a mano, fluorescente en el turno, renglones como separadores y PG anteriores tachados (se guardan los tres últimos en `hph`; se borran al empezar un encuentro nuevo).
+- Estilo «Libro de reglas» (claro y oscuro): EB Garamond, versalitas y rúbricas, iniciativa en el margen, sin tarjetas.
+- Estilo «Pantalla del máster» (oscuro): hojas con bisagra y raíl de fichas de iniciativa (`#rail`), con la del turno levantada; pulsar una ficha lleva a su criatura.
+- Ajuste «Tema» en ⚙ Preferencias (automático, claro u oscuro), guardado en `combat-theme`.
+- Juego de iconos SVG propio (sprite `#i-*`, helper `ic()`) en lugar de emojis en menú, portada, barra, cuenta, buscador y compendio.
+### Cambiado
+- Quien no tenía estilo guardado pasa a ver «Cuaderno»; quien eligió otro (Clásico incluido) lo conserva.
+
 ## [1.31.0] - 2026-11-04
 ### Cambiado
 - Nuevo diseño: el estilo Clásico pasa a «Tinta y cuero» (papel crema en modo claro, cuero oscuro en modo oscuro, rúbricas rojas, filetes y sello de iniciativa). Esos recursos de manual se aplican también a Arcano y Taberna.
