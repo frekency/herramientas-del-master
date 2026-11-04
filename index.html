@@ -414,6 +414,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .pagenav .navver{margin-left:auto;font-size:12px}
 .pagenav .navsep{align-self:center;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);opacity:.75;margin:0 2px 0 10px}
 .pagenav .pfbtn{margin-left:6px}
+.pagenav .navtoggle{display:none}
 .cmtabs a{font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 14px;text-decoration:none}
 .cmtabs a:hover{background:var(--surface-2)}
 .cmtabs a[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
@@ -700,9 +701,20 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 }
 /* móvil: barra de combate arriba solo con el estado, acciones abajo al alcance del pulgar */
 @media (max-width:680px){
-  .pagenav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-  .pagenav::-webkit-scrollbar{display:none}
-  .pagenav a,.pagenav .navsep,.pagenav .btn{flex:none;white-space:nowrap}
+  /* menú: cerrado muestra la sección actual y ☰; abierto, todas las secciones en dos columnas */
+  .pagenav{align-items:center;gap:6px}
+  .pagenav .navtoggle{display:inline-flex}
+  .pagenav .btn{order:1;flex:none}
+  .pagenav .pfbtn{margin-left:auto}
+  .pagenav .acct{margin-left:0}
+  .pagenav:not(.open) a:not(.on),.pagenav:not(.open) .navsep{display:none}
+  .pagenav a{white-space:nowrap}
+  .pagenav.open{padding-bottom:8px}
+  .pagenav.open .btn{order:-1}
+  .pagenav.open a{order:0;flex:1 1 calc(50% - 3px);display:flex;align-items:center;min-height:44px;background:var(--surface);border-color:var(--line);border-radius:10px;color:var(--fg)}
+  .pagenav.open a.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+  .pagenav.open .navsep{order:0;flex-basis:100%;margin:8px 0 0 2px}
+  .pagenav.open .navver{flex:0 0 auto;margin:0;min-height:36px;font-size:12px;color:var(--muted)}
   .factions{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
   .factions::-webkit-scrollbar{display:none}
   .fsum{flex:none}
@@ -712,7 +724,11 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
   :root[data-page="combate"] .counter b{font-size:19px}
   :root[data-page="combate"] .now .who{font-size:18px}
   :root[data-page="combate"] .bar .nav{position:fixed;left:0;right:0;bottom:0;z-index:6;flex-wrap:nowrap;gap:6px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgb(0 0 0/.18);padding:8px max(12px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
-  :root[data-page="combate"] .bar .nav .skin,:root[data-page="combate"] .bar .nav [data-act="openparty"],:root[data-page="combate"] .bl{display:none}
+  /* Vista y Estilo están en Preferencias y Grupo en el menú: la barra cabe en una fila */
+  .bar .nav .skin,.bar .nav [data-act="openparty"],.bl{display:none}
+  .bar-in{flex-wrap:nowrap}
+  .brand{font-size:18px;overflow:hidden;text-overflow:ellipsis}
+  .bar .nav .btn{min-height:44px;min-width:44px;justify-content:center}
   :root[data-page="combate"] .bar .nav .btn{min-height:48px;min-width:48px;justify-content:center;font-size:18px}
   :root[data-page="combate"] #next{flex:1;font-size:17px}
   :root[data-page="combate"] .mob-only:not([hidden]){display:inline-flex}
@@ -774,7 +790,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.30</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio">🏠 Inicio</a><span class="navsep">Herramientas</span><a href="#combate">⚔ Combate</a><a href="#jugadores">🛡 Jugadores</a><a href="#tablas">🎲 Tablas</a><a href="#referencia">📋 Referencia</a><span class="navsep">Consulta</span><a href="#compendio">📚 Compendio</a><a href="#modulos">📦 Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.30</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias">⚙</button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden>👤 Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones">☰ <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -2883,6 +2899,7 @@ function extraAct(act,b,c,e){
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
     case 'openparty':location.hash='jugadores';break;
+    case 'navtoggle':{const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
     case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
@@ -2932,6 +2949,7 @@ function showView(){
   $('main.wrap').hidden=isPage;
   const nav=!isPage?'combate':r.page==='compendio'?'compendio':v2;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+nav));
+  {const n=$('.pagenav');n.classList.remove('open');n.querySelector('.navtoggle').setAttribute('aria-expanded','false');}
   document.documentElement.dataset.page=isPage?v2:'combate';
   $('#brand').textContent=isPage?'Herramientas del Máster':'Iniciativa';
   if(v2==='inicio')renderHome();
