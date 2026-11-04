@@ -1820,10 +1820,11 @@ if(LANG!=='es')try{
 }catch(e){}
 whenReady(()=>requestAnimationFrame(loadDone));
 // Idioma de los datos: el del SRD oficial si existe; si no, inglés.
-const DATA_LANG={es:'es',en:'en',fr:'fr'}[LANG]||'en';
+const DATA_LANG={es:'es',en:'en',fr:'fr',de:'de'}[LANG]||'en';
 const DATA_FILES={es:{best:'srd2024_es.json',spells:'conjuros_srd.json',comp:'compendio_srd.json'},
   en:{best:'srd2024.json',spells:'conjuros_srd_en.json',comp:'compendio_srd_en.json'},
-  fr:{best:'srd2024_fr.json',spells:'conjuros_srd_fr.json',comp:'compendio_srd_fr.json'}}[DATA_LANG];
+  fr:{best:'srd2024_fr.json',spells:'conjuros_srd_fr.json',comp:'compendio_srd_fr.json'},
+  de:{best:'srd2024_de.json',spells:'conjuros_srd_de.json',comp:'compendio_srd_de.json'}}[DATA_LANG];
 </script>
 <script>
 const COND=[['agarrado','Agarrado'],['apresado','Apresado'],['asustado','Asustado'],['aturdido','Aturdido'],['cegado','Cegado'],['derribado','Derribado'],['ensordecido','Ensordecido'],['envenenado','Envenenado'],['hechizado','Hechizado'],['incapacitado','Incapacitado'],['inconsciente','Inconsciente'],['invisible','Invisible'],['paralizado','Paralizado'],['petrificado','Petrificado'],['concentracion','Concentración'],['agotamiento','Agotamiento']];
@@ -1898,6 +1899,7 @@ function examplePCs(){
     t:[[T('Recuperación arcana (1/día)'),T('Tras un descanso corto recuperas espacios de conjuro por un total de 3 niveles.')]],
     spc:{ab:'INT',dc:15,atk:7,slots:[4,3,2,0,0,0,0,0,0],used:[0,1],
       list:DATA_LANG==='es'?['Mano de mago','Rayo de escarcha','Armadura de mago','Escudo','Proyectil mágico','Paso brumoso','Telaraña','Bola de fuego']
+        :DATA_LANG==='de'?['Magierhand','Kältestrahl','Magierrüstung','Schild','Magisches Geschoss','Nebelschritt','Spinnennetz','Feuerball']
         :DATA_LANG==='fr'?['Main du mage','Rayon de givre','Armure du mage','Bouclier','Projectile magique','Foulée brumeuse','Toile d’araignée','Boule de feu']
         :['Mage Hand','Ray of Frost','Mage Armor','Shield','Magic Missile','Misty Step','Web','Fireball']}};
   const thorin={id:uid(),ex:true,n:T('Thorin (guerrero)'),cls:T('Guerrero 5'),ac:18,hp:44,cur:44,temp:5,in:1,sp:'9 m',pp:14,
@@ -1988,7 +1990,7 @@ function sortInto(s){
 function roll(expr,crit=false){
   const t=String(expr??'').replace(/\s/g,'').replace(/−/g,'-').toLowerCase();
   if(t==='') return null;
-  const m=t.match(/^(\d*)d(\d+)([+-]\d+)?$/);
+  const m=t.match(/^(\d*)[dw](\d+)([+-]\d+)?$/);
   if(m){let n=+(m[1]||1);if(crit)n*=2;const d=+m[2],k=+(m[3]||0);let s=0;const rs=[];for(let i=0;i<Math.min(n,200);i++){const r=1+Math.floor(Math.random()*d);rs.push(r);s+=r;}return {v:Math.max(0,s+k),txt:`${n}d${d}${k?sgn(k):''} → [${rs.join(', ')}]${k?sgn(k):''} = ${s+k}`};}
   const v=parseInt(t,10); return isNaN(v)?null:{v,txt:String(v)};
 }
@@ -2088,14 +2090,14 @@ function applyHP(c,kind,raw){
 // Convierte en botones de tirada los ataques, dados y CD de un texto ya escapado
 function diceify(h){
   h=h.replace(/−/g,'-');
-  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance)\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
-  h=h.replace(/(\d+) \((\d+d\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)))?/gu,(all,avg,ex,tail,en,es,fr)=>{
-    const ty=(en||es||fr||'').toLowerCase();
-    return `${avg} (<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${esc(ty)}" title="Tirar daño">${ex}</button>)${tail||''}`;});
+  h=h.replace(/((?:Attack Roll|Tirada de ataque[^:.]{0,40}|[Aa]taque|Corps à corps(?: ou à distance)?|À distance|(?:Nah|Fern)kampfangriffswurf|Nah- oder Fernkampfangriffswurf)\s*:\s*)([+-]\d+)/g,(_,p,n)=>`${p}<button type="button" class="rl" data-roll="hit" data-mod="${+n}" title="Tirar ataque">${n}</button>`);
+  h=h.replace(/(\d+) \((\d+[dW]\d+(?:\s*[+-]\s*\d+)?)\)(\s+(?:(\w+) damage|de daño (?:de )?(\p{L}+)|dégâts (?:de |d’)?(\p{L}+)|(\p{L}+schaden|\p{L}+ Schaden)))?/gu,(all,avg,ex,tail,en,es,fr,de)=>{
+    const ty=(en||es||fr||de||'').toLowerCase();
+    return `${avg} (<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${esc(ty)}" title="Tirar daño">${ex}</button>)${tail||''}`;});
   // dados sueltos (fichas de jugador y conjuros): «1d8 + 4 de daño cortante», «8d6 de daño de fuego»
-  h=h.replace(/(?<![\w"(=>+-])(\d+d\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre))?/gu,
-    (all,ex,tail,ty,tyfr)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'')}" data-ty="${ty||tyfr||''}" title="Tirar">${ex}</button>${tail||''}`);
-  h=h.replace(/\b(DC|CD|DD) (\d+)/g,(_,l,n)=>`<span class="dc">${l==='DD'?'DD':'CD'} ${n}</span>`);
+  h=h.replace(/(?<![\w"(=>+-])(\d+[dW]\d+(?:\s?[+-]\s?\d+)?)(?![\w"<])((?:\s+de daño)?(?:\s+de)?\s+(ácido|contundente|frío|fuego|fuerza|relámpago|necrótico|perforante|veneno|psíquico|radiante|cortante|trueno)|\s+dégâts\s+(?:de |d’)?(perforants|tranchants|contondants|feu|poison|nécrotiques|force|radiants|acide|froid|psychiques|foudre|tonnerre)|\s+(\p{L}+schaden|\p{L}+ Schaden))?/gu,
+    (all,ex,tail,ty,tyfr,tyde)=>`<button type="button" class="rl" data-roll="dmg" data-ex="${ex.replace(/\s/g,'').replace('W','d')}" data-ty="${ty||tyfr||tyde||''}" title="Tirar">${ex}</button>${tail||''}`);
+  h=h.replace(/\b(DC|CD|DD|SG)[ -](\d+)/g,(_,l,n)=>`<span class="dc">${l==='DD'||l==='SG'?l:'CD'} ${n}</span>`);
   return h;
 }
 // Texto con formato propio (fichas de jugador, conjuros y módulos): se escapa y admite **negrita**, *cursiva* y listas
@@ -2472,10 +2474,10 @@ function giveTo(p,ty,n){
 }
 function newPcFromClass(x){
   if(!x)return;
-  const die=+((x.info?.['Dado de puntos de golpe']||'').match(/d(\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
+  const die=+((x.info?.['Dado de puntos de golpe']||'').match(/[dw](\d+)/i)||[])[1]||8,sv=fold(x.info?.['Competencias en tiradas de salvación']||'');
   openPC(null);
   $('#pc-cls').value=`${x.n} 1`;$('#pc-hp').value=$('#pc-cur').value=die;
-  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
+  ({en:['strength','dexterity','constitution','intelligence','wisdom','charisma'],fr:['force','dexterite','constitution','intelligence','sagesse','charisme'],de:['starke','geschicklichkeit','konstitution','intelligenz','weisheit','charisma']}[DATA_LANG]||['fuerza','destreza','constitucion','inteligencia','sabiduria','carisma']).forEach((a,i)=>{if(sv.includes(a))$('#pc-sv'+i).value=2;});
   toast(T(`Nivel 1: ${die} PG más tu modificador por Constitución. Las salvaciones de la clase ya llevan +2`),5200);
 }
 function invHTML(p){
@@ -3277,11 +3279,13 @@ const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote',
 const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herramienta:'Herramientas',equipo:'Equipo de aventurero'};
 // Las fichas de clase del SRD en inglés traen los campos con su nombre en inglés: se copian a los nombres que usa la página.
 const CLS_INFO={'Hit Point Die':'Dado de puntos de golpe','Primary Ability':'Característica principal','Saving Throw Proficiencies':'Competencias en tiradas de salvación',
-  'Dé de vie':'Dado de puntos de golpe','Caractéristique principale':'Característica principal','Maîtrise des jets de sauvegarde':'Competencias en tiradas de salvación'};
+  'Dé de vie':'Dado de puntos de golpe','Caractéristique principale':'Característica principal','Maîtrise des jets de sauvegarde':'Competencias en tiradas de salvación',
+  'Trefferpunktewürfel':'Dado de puntos de golpe','Hauptattribut':'Característica principal','Rettungswürfe, in denen du geübt bist':'Competencias en tiradas de salvación'};
 function normClasses(d){for(const x of d.clases||[])if(x.info)for(const[en,es]of Object.entries(CLS_INFO))if(x.info[en]&&!(es in x.info))Object.defineProperty(x.info,es,{value:x.info[en],enumerable:false});}
 const RARITY=['común','infrecuente','raro','muy raro','legendario','artefacto'];
 const RAR_EN={'very rare':'muy raro',uncommon:'infrecuente',common:'comun',rare:'raro',legendary:'legendario',artifact:'artefacto',
-  'tres rare':'muy raro','peu courant':'infrecuente',courant:'comun',legendaire:'legendario',artefact:'artefacto'};
+  'tres rare':'muy raro','peu courant':'infrecuente',courant:'comun',legendaire:'legendario',artefact:'artefacto',
+  'sehr selten':'muy raro',ungewohnlich:'infrecuente',gewohnlich:'comun',selten:'raro',legendar:'legendario',artefakt:'artefacto'};
 const rarKey=r=>{let f=fold(r);for(const[e,k]of Object.entries(RAR_EN))if(f.startsWith(e)){f=k;break;}f=f.replace(/a\b/g,'o');return RARITY.find(k=>f.startsWith(fold(k)))||(f?'variable':'');};
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
@@ -3568,8 +3572,8 @@ function ruleLinks(h){
 }
 const QR_SECS=[['Acciones','sword','#c0392b'],['Turno y reacciones','hourglass','#d35400'],['Estados','spiral','#8e44ad'],['Combate','target','#b03a2e'],['Daño y curación','heart','#c2185b'],['Movimiento','move','#2e86c1'],['Visión y luz','eye','#b7950b'],['Áreas de efecto','area','#16a085'],['Exploración','compass','#27ae60'],['Peligros','warn','#ca6f1e'],['Pruebas y tiradas','d20','#5d6d7e'],['Magia','sparkle','#6c3483'],['Interacción social','speech','#117a65']];
 const QR_ICON={Atacar:'sword','Acción':'focus',Iniciativa:'d20',Sorpresa:'burst','Tu turno':'hourglass','Dividir el movimiento':'move',Ayudar:'people',Buscar:'search',Correr:'wind',Destrabarse:'disengage',Esconderse:'fog',Esquivar:'shield',Estudiar:'book',Influir:'speech',Magia:'sparkle','Preparar una acción':'hourglass',Utilizar:'tool',Agarrado:'grab',Apresado:'chain',Asustado:'scared',Aturdido:'daze',Cansancio:'battery',Cegado:'eyeoff',Derribado:'down',Ensordecido:'mute',Envenenado:'flask',Hechizado:'heart',Incapacitado:'ban',Inconsciente:'zzz',Invisible:'ghost',Paralizado:'snow',Petrificado:'rock','Acción adicional':'plusc',Reacción:'undo','Ataques de oportunidad':'bolt',Cobertura:'wall',Crítico:'burst',Concentración:'focus','Descanso corto':'cup','Descanso largo':'moon',Ventaja:'up',Desventaja:'down',Cono:'cone',Esfera:'sphere',Cubo:'box',Cilindro:'cyl',Línea:'line',Emanación:'emanate',Saltar:'jump',Trepar:'ladder',Nadar:'wave',Volar:'feather','Terreno difícil':'rubble','Ritmo de viaje':'map',Fuego:'fire',Asfixia:'bubbles',Caídas:'fall'};
-// Mismos iconos para los nombres de las reglas en inglés y francés
-Object.assign(QR_ICON,{Attack:'sword',Attaque:'sword',Action:'focus',Initiative:'d20',Surprise:'burst','Your Turn':'hourglass','Votre tour':'hourglass','Breaking Up Your Move':'move','Scinder son déplacement':'move',Help:'people',Soutien:'people',Search:'search',Observation:'search',Dash:'wind',Pointe:'wind',Disengage:'disengage',Désengagement:'disengage',Hide:'fog',Furtivité:'fog',Dodge:'shield',Esquive:'shield',Study:'book',Étude:'book',Influence:'speech',Magic:'sparkle',Magie:'sparkle',Ready:'hourglass',Intention:'hourglass',Utilize:'tool',Utilisation:'tool',Grappled:'grab',Agrippé:'grab',Restrained:'chain',Entravé:'chain',Frightened:'scared',Effrayé:'scared',Stunned:'daze',Étourdi:'daze',Exhaustion:'battery',Épuisement:'battery',Blinded:'eyeoff',Aveuglé:'eyeoff',Prone:'down','À terre':'down',Deafened:'mute',Assourdi:'mute',Poisoned:'flask',Empoisonné:'flask',Charmed:'heart',Charmé:'heart',Incapacitated:'ban',Neutralisé:'ban',Unconscious:'zzz',Inconscient:'zzz',Paralyzed:'snow',Paralysé:'snow',Petrified:'rock',Pétrifié:'rock','Bonus Action':'plusc','Action Bonus':'plusc',Reaction:'undo',Réaction:'undo','Opportunity Attacks':'bolt','Attaques d’Opportunité':'bolt',Cover:'wall',Abris:'wall','Critical Hit':'burst','Coup critique':'burst',Concentration:'focus','Short Rest':'cup','Repos court':'cup','Long Rest':'moon','Repos long':'moon',Advantage:'up',Avantage:'up',Disadvantage:'down',Désavantage:'down',Cone:'cone',Cône:'cone',Sphere:'sphere',Sphère:'sphere',Cube:'box',Cylinder:'cyl',Cylindre:'cyl',Line:'line',Ligne:'line',Emanation:'emanate',Émanation:'emanate',Jumping:'jump',Saut:'jump',Climbing:'ladder',Escalade:'ladder',Swimming:'wave',Nage:'wave',Flying:'feather',Vol:'feather','Difficult Terrain':'rubble','Terrain difficile':'rubble','Travel Pace':'map','Allure de voyage':'map',Burning:'fire',Embrasement:'fire',Suffocation:'bubbles',Asphyxie:'bubbles',Falling:'fall',Chute:'fall'});
+// Mismos iconos para los nombres de las reglas en inglés, francés y alemán
+Object.assign(QR_ICON,{Attack:'sword',Attaque:'sword',Action:'focus',Initiative:'d20',Surprise:'burst','Your Turn':'hourglass','Votre tour':'hourglass','Breaking Up Your Move':'move','Scinder son déplacement':'move',Help:'people',Soutien:'people',Search:'search',Observation:'search',Dash:'wind',Pointe:'wind',Disengage:'disengage',Désengagement:'disengage',Hide:'fog',Furtivité:'fog',Dodge:'shield',Esquive:'shield',Study:'book',Étude:'book',Influence:'speech',Magic:'sparkle',Magie:'sparkle',Ready:'hourglass',Intention:'hourglass',Utilize:'tool',Utilisation:'tool',Grappled:'grab',Agrippé:'grab',Restrained:'chain',Entravé:'chain',Frightened:'scared',Effrayé:'scared',Stunned:'daze',Étourdi:'daze',Exhaustion:'battery',Épuisement:'battery',Blinded:'eyeoff',Aveuglé:'eyeoff',Prone:'down','À terre':'down',Deafened:'mute',Assourdi:'mute',Poisoned:'flask',Empoisonné:'flask',Charmed:'heart',Charmé:'heart',Incapacitated:'ban',Neutralisé:'ban',Unconscious:'zzz',Inconscient:'zzz',Paralyzed:'snow',Paralysé:'snow',Petrified:'rock',Pétrifié:'rock','Bonus Action':'plusc','Action Bonus':'plusc',Reaction:'undo',Réaction:'undo','Opportunity Attacks':'bolt','Attaques d’Opportunité':'bolt',Cover:'wall',Abris:'wall','Critical Hit':'burst','Coup critique':'burst',Concentration:'focus','Short Rest':'cup','Repos court':'cup','Long Rest':'moon','Repos long':'moon',Advantage:'up',Avantage:'up',Disadvantage:'down',Désavantage:'down',Cone:'cone',Cône:'cone',Sphere:'sphere',Sphère:'sphere',Cube:'box',Cylinder:'cyl',Cylindre:'cyl',Line:'line',Ligne:'line',Emanation:'emanate',Émanation:'emanate',Jumping:'jump',Saut:'jump',Climbing:'ladder',Escalade:'ladder',Swimming:'wave',Nage:'wave',Flying:'feather',Vol:'feather','Difficult Terrain':'rubble','Terrain difficile':'rubble','Travel Pace':'map','Allure de voyage':'map',Burning:'fire',Embrasement:'fire',Suffocation:'bubbles',Asphyxie:'bubbles',Falling:'fall',Chute:'fall',Angriff:'sword',Aktion:'focus',Überraschung:'burst','Dein Zug':'hourglass','Deine Bewegung aufteilen':'move',Helfen:'people',Suchen:'search',Spurt:'wind',Rückzug:'disengage',Verstecken:'fog',Ausweichen:'shield',Studieren:'book',Beeinflussen:'speech',Vorbereiten:'hourglass',Verwenden:'tool',Gepackt:'grab',Festgesetzt:'chain',Verängstigt:'scared',Betäubt:'daze',Erschöpfung:'battery',Blind:'eyeoff',Liegend:'down',Taub:'mute',Vergiftet:'flask',Bezaubert:'heart',Kampfunfähig:'ban',Bewusstlos:'zzz',Unsichtbar:'ghost',Gelähmt:'snow',Versteinert:'rock',Bonusaktion:'plusc',Reaktion:'undo',Gelegenheitsangriffe:'bolt',Deckung:'wall','Kritischer Treffer':'burst',Konzentration:'focus','Kurze Rast':'cup','Lange Rast':'moon',Vorteil:'up',Nachteil:'down',Kegel:'cone',Kugel:'sphere',Würfel:'box',Zylinder:'cyl',Linie:'line',Ausströmung:'emanate',Springen:'jump',Klettern:'ladder',Schwimmen:'wave',Fliegen:'feather','Schwieriges Gelände':'rubble',Reisegeschwindigkeit:'map',Brand:'fire',Erstickung:'bubbles',Sturz:'fall'});
 function renderRef(){
   compLoad();
   const all=compList('reglas'),sel=$('#qr-cat');
