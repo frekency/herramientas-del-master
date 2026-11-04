@@ -4,30 +4,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Pirata+One&family=Bitter:wght@400;600;700&display=swap">
-<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{const k=localStorage.getItem('combat-skin');if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;}catch(e){}</script>
+<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.removeItem('combat-skin');}if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
-  --bg:#e9ebee; --surface:#f7f8f9; --surface-2:#dfe2e7; --line:#c6cbd3;
-  --fg:#1a1e26; --muted:#5b6370; --accent:#9a6b14; --accent-fg:#fff8ea;
-  --sb:#f4efe4; --sb-rule:#8f2f22;
-  --ok:#2f7d4a; --warn:#b07a12; --crit:#b3312c;
-  --shadow:0 1px 2px rgb(20 24 32/.08),0 6px 18px rgb(20 24 32/.06);
+  --bg:#efe7d8; --surface:#faf5ec; --surface-2:#ebe1cf; --line:#d3c4ab;
+  --fg:#2a2118; --muted:#6a5a46; --accent:#8a5a12; --accent-fg:#fff8ea;
+  --sb:#f6efe1; --sb-rule:#8f2f22;
+  --ok:#2f7d4a; --warn:#a06c0c; --crit:#b3312c;
+  --shadow:0 1px 2px rgb(48 32 14/.08),0 6px 18px rgb(48 32 14/.07);
   --f-display:"Alegreya SC",Georgia,"Times New Roman",serif;
   --f-body:"Alegreya Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-sb:"Alegreya",Georgia,serif;
   --f-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#101318; --surface:#181c23; --surface-2:#222833; --line:#2f3642;
-  --fg:#e6e8ec; --muted:#98a0ad; --accent:#d9a441; --accent-fg:#1a1306;
-  --sb:#1f1d1a; --sb-rule:#c9654f;
+  --bg:#14110e; --surface:#1d1915; --surface-2:#29231d; --line:#3b3229;
+  --fg:#ece3d2; --muted:#ab9d88; --accent:#d9a441; --accent-fg:#1a1306;
+  --sb:#211b15; --sb-rule:#cf6b53;
   --ok:#58b878; --warn:#e0a83a; --crit:#ec6a5f;
   --shadow:0 1px 2px rgb(0 0 0/.4),0 8px 24px rgb(0 0 0/.3); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#101318; --surface:#181c23; --surface-2:#222833; --line:#2f3642;
-  --fg:#e6e8ec; --muted:#98a0ad; --accent:#d9a441; --accent-fg:#1a1306;
-  --sb:#1f1d1a; --sb-rule:#c9654f;
+  --bg:#14110e; --surface:#1d1915; --surface-2:#29231d; --line:#3b3229;
+  --fg:#ece3d2; --muted:#ab9d88; --accent:#d9a441; --accent-fg:#1a1306;
+  --sb:#211b15; --sb-rule:#cf6b53;
   --ok:#58b878; --warn:#e0a83a; --crit:#ec6a5f;
   --shadow:0 1px 2px rgb(0 0 0/.4),0 8px 24px rgb(0 0 0/.3); color-scheme:dark}
 
@@ -514,6 +514,21 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .skin{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .skin select{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--fg)}
 
+/* ===== Recursos de manual: rúbricas rojas, filetes y sello de iniciativa ===== */
+.brand::first-letter,.htitle::first-letter{color:var(--sb-rule)}
+.bar{border-bottom:3px double color-mix(in srgb,var(--sb-rule) 55%,var(--line))}
+.panel{border-top:2px solid var(--sb-rule)}
+.panel>h2,.panel>.inline>h2,.listhead h2,.vhead h2{color:var(--sb-rule)}
+.panel>h2{padding-bottom:6px;border-bottom:1px solid color-mix(in srgb,var(--sb-rule) 35%,transparent)}
+.c-init input{border-radius:50%;aspect-ratio:1;width:46px;max-width:100%;padding:0;margin:auto;display:block;border:1.5px solid color-mix(in srgb,var(--sb-rule) 55%,transparent);background:var(--surface-2)}
+:root:not([data-skin]) .row.cur .c-init input,:root[data-skin=""] .row.cur .c-init input{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface))}
+.tool{border-top:2px solid var(--sb-rule)}
+.tool .tn{color:var(--sb-rule)}
+.tool .tstat{border-top-style:dotted}
+.rsep{color:var(--sb-rule)}
+.rsep::before,.rsep::after{background:color-mix(in srgb,var(--sb-rule) 40%,transparent)}
+::selection{background:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--fg)}
+
 /* ===== Estilo «Arcano»: noche estrellada, vidrio y pan de oro ===== */
 :root[data-skin="arcano"]{
   --bg:#09081a; --surface:rgb(24 19 46/.72); --surface-2:rgb(58 46 102/.42); --line:rgb(178 146 255/.22);
@@ -578,57 +593,6 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="arcano"] input,[data-skin="arcano"] select,[data-skin="arcano"] textarea{color-scheme:dark}
 [data-skin="arcano"] label.f input,[data-skin="arcano"] label.f select,[data-skin="arcano"] label.f textarea,[data-skin="arcano"] .c-quick input{background:rgb(8 6 22/.55);border-color:var(--line)}
 [data-skin="arcano"] :focus-visible{outline-color:var(--rune)}
-
-/* ===== Estilo «Pergamino»: grimorio claro, tinta sepia y rúbricas rojas ===== */
-:root[data-skin="pergamino"]{
-  --bg:#e6d6b5; --surface:#f6edd6; --surface-2:#eadcbc; --line:#c2a774;
-  --fg:#2a1b0b; --muted:#6c5432; --accent:#8e1b12; --accent-fg:#fbf3df;
-  --sb:#f4e6c4; --sb-rule:#7c1d12; --ink:#1f3a66; --gilt:#b08a2e;
-  --ok:#3f6e2a; --warn:#a4620e; --crit:#a3201a;
-  --shadow:0 1px 0 rgb(255 250 235/.7) inset,0 2px 0 rgb(120 90 40/.12),0 10px 24px rgb(90 60 20/.16);
-  --f-display:"IM Fell English SC","Alegreya SC",Georgia,serif;
-  --f-body:"EB Garamond","Alegreya",Georgia,serif;
-  --f-sb:"EB Garamond","Alegreya",Georgia,serif;
-  color-scheme:light}
-[data-skin="pergamino"] body{font-size:16.5px;background:
-  radial-gradient(1200px 700px at 50% -20%,rgb(255 248 228/.9),transparent 65%),
-  radial-gradient(900px 600px at -10% 110%,rgb(150 105 45/.28),transparent 60%),
-  radial-gradient(900px 600px at 110% 110%,rgb(150 105 45/.28),transparent 60%),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .24 0 0 0 0 .1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),var(--bg);background-attachment:fixed}
-[data-skin="pergamino"] body::before{background:var(--surface)}
-[data-skin="pergamino"] .bar{background:var(--surface);border-bottom:3px double var(--accent);box-shadow:0 6px 18px rgb(90 60 20/.15)}
-[data-skin="pergamino"] .brand{font-size:26px;font-weight:400;color:var(--fg)}
-[data-skin="pergamino"] .brand::first-letter{color:var(--accent);font-size:1.45em}
-[data-skin="pergamino"] h2{font-weight:400;font-size:20px;color:var(--accent);letter-spacing:.02em}
-[data-skin="pergamino"] h2::after{content:" ❦";color:var(--gilt);font-size:.85em}
-[data-skin="pergamino"] .counter small,[data-skin="pergamino"] .now small,[data-skin="pergamino"] .sec-label{font-family:var(--f-display);letter-spacing:.06em;font-size:12px}
-[data-skin="pergamino"] .counter b{font-family:var(--f-display);font-size:26px;color:var(--accent);font-weight:400}
-[data-skin="pergamino"] .now .who{font-size:24px;font-weight:400}
-[data-skin="pergamino"] .panel{border:1px solid var(--line);outline:1px solid var(--line);outline-offset:-5px;border-radius:3px;box-shadow:var(--shadow)}
-[data-skin="pergamino"] .row{border-radius:3px;border-left-width:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--fc) 9%,transparent),transparent 35%),var(--surface);box-shadow:var(--shadow)}
-[data-skin="pergamino"] .row.cur{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),0 0 0 5px rgb(176 138 46/.35),var(--shadow)}
-[data-skin="pergamino"] .row.down .name{text-decoration-color:var(--accent);text-decoration-thickness:2px}
-[data-skin="pergamino"] .name{font-size:18px;font-weight:600}
-[data-skin="pergamino"] .turnflag{font-family:var(--f-display);font-weight:400;letter-spacing:.04em;font-size:12px;text-transform:none;border-radius:2px;background:var(--accent)}
-[data-skin="pergamino"] .c-init input{border-radius:50%;aspect-ratio:1;padding:0;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--accent-fg);background:radial-gradient(circle at 35% 30%,#c23a2c,#8e1b12 60%,#5e0f09);border:none;box-shadow:0 2px 4px rgb(60 10 5/.35),inset 0 0 0 3px rgb(255 255 255/.12),inset 0 -3px 6px rgb(0 0 0/.25)}
-[data-skin="pergamino"] .shield{background:linear-gradient(170deg,#3a2a16,#1f1408);color:#f6edd6;font-family:var(--f-display);font-weight:400;font-size:20px}
-[data-skin="pergamino"] .hpbar{height:6px;border-radius:0;background:rgb(120 90 40/.15)}
-[data-skin="pergamino"] .hpbar i{border-radius:0}
-[data-skin="pergamino"] .btn,[data-skin="pergamino"] .qb{border-radius:3px;background:var(--surface);border-color:var(--line)}
-[data-skin="pergamino"] .btn:hover,[data-skin="pergamino"] .qb:hover{background:var(--surface-2)}
-[data-skin="pergamino"] .btn.primary{background:var(--accent);color:var(--accent-fg);border:1px solid var(--gilt);box-shadow:inset 0 0 0 2px rgb(255 230 170/.25),0 2px 6px rgb(90 20 10/.3);font-family:var(--f-display);font-weight:400;letter-spacing:.03em}
-[data-skin="pergamino"] .chip,[data-skin="pergamino"] .fsum{border-radius:2px}
-[data-skin="pergamino"] label.f input,[data-skin="pergamino"] label.f select,[data-skin="pergamino"] label.f textarea,[data-skin="pergamino"] .c-quick input,[data-skin="pergamino"] .skin select{background:rgb(255 252 240/.7);border-radius:2px;border-color:var(--line)}
-[data-skin="pergamino"] .sb{background:var(--sb);border:none;border-radius:2px;box-shadow:inset 0 0 0 1px var(--line),inset 0 0 40px rgb(150 105 45/.15),var(--shadow);border-top:4px solid var(--sb-rule);border-bottom:4px solid var(--sb-rule)}
-[data-skin="pergamino"] .sb h3{font-weight:400;font-size:26px}
-[data-skin="pergamino"] .sb h3::first-letter{font-size:1.35em}
-[data-skin="pergamino"] .sb h4{font-weight:400;font-size:18px}
-[data-skin="pergamino"] .sb hr{background:var(--sb-rule);height:1px;box-shadow:0 2px 0 var(--sb);outline:1px solid var(--sb-rule);outline-offset:1px}
-[data-skin="pergamino"] .rl{color:var(--ink);border-color:var(--ink);background:transparent;border-radius:2px;font-family:var(--f-body);font-size:14px}
-[data-skin="pergamino"] .rl:hover{background:var(--ink);color:var(--surface)}
-[data-skin="pergamino"] .dc{background:transparent;border-bottom:1.5px solid var(--sb-rule);border-radius:0;font-family:var(--f-body);font-size:14px}
-[data-skin="pergamino"] .log li.round{font-family:var(--f-display);font-weight:400;font-size:15px}
-[data-skin="pergamino"] .toast{background:#2a1b0b;color:#f6edd6;border-radius:3px;font-family:var(--f-body);font-size:15px}
 
 /* ===== Estilo «Taberna»: madera oscura, cobre y luz de vela ===== */
 :root[data-skin="taberna"]{
@@ -833,7 +797,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false">⚙ Ajustes</button>
-      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="pergamino">Pergamino</option><option value="taberna">Taberna</option></select></label>
+      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores">🛡 Grupo</button>
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar">🔎 <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior">◀ <span class="bl">Anterior</span></button>
@@ -1428,7 +1392,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
       <label class="f">Idioma<select id="pf-lang" class="noi18n"></select></label>
       <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
-      <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="pergamino">Pergamino</option><option value="taberna">Taberna</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
