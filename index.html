@@ -690,6 +690,10 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="taberna"] .toast{background:linear-gradient(180deg,#3a2718,#24170e);color:var(--fg);border:2px solid var(--brass);box-shadow:0 0 30px var(--candle)}
 [data-skin="taberna"] .modal{background:rgb(8 4 2/.72)}
 
+/* aviso con «Deshacer»: se puede pulsar */
+.toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px;width:max-content}
+.tundo{border:none;background:none;color:inherit;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:6px 4px;cursor:pointer;white-space:nowrap}
+@media (pointer:coarse){.tundo{min-height:40px}}
 /* separador de la lista rotatoria */
 .rsep{display:flex;align-items:center;gap:10px;margin:4px 0;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .rsep::before,.rsep::after{content:'';flex:1;height:1px;background:var(--line)}
@@ -767,6 +771,7 @@ main.wrap .listhead{scroll-margin-top:100px}
   :root[data-page="combate"] .lastroll{position:absolute;bottom:calc(100% + 8px);right:12px;background:var(--surface);box-shadow:var(--shadow)}
   :root[data-page="combate"] .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   :root[data-page="combate"] #curpanel{scroll-margin-top:80px}
+  :root[data-page="combate"] .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   .c-quick input{flex:1;min-width:0}
   [data-skin="arcano"] .bar{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--surface)}
 }
@@ -1656,8 +1661,11 @@ function roll(expr,crit=false){
 }
 const d20=()=>1+Math.floor(Math.random()*20);
 function log(msg,round=false){state.log.unshift({r:state.active?state.round:0,msg,round});state.log=state.log.slice(0,150);}
-function commit(fn){undoStack.push(JSON.stringify(state));if(undoStack.length>80)undoStack.shift();fn();fixOrder();save();render();}
-let toastT;function toast(msg,ms=3200){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);}
+const undoLbls=[];
+function commit(fn,lbl=''){undoStack.push(JSON.stringify(state));undoLbls.push(lbl);if(undoStack.length>80){undoStack.shift();undoLbls.shift();}fn();fixOrder();save();render();}
+let toastT;function toast(msg,ms=3200,canUndo=false){const t=$('#toast');t.textContent=msg;t.classList.toggle('act',canUndo);
+  if(canUndo){const b=document.createElement('button');b.type='button';b.className='tundo';b.dataset.act='toastundo';b.textContent=T('Deshacer');t.append(' ',b);ms=Math.max(ms,6000);}
+  t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show','act'),ms);}
 function hpFrom(m){if(state.hpRoll&&m.hd){const r=roll(m.hd);if(r)return Math.max(1,r.v);}return m.hp||1;}
 
 /* ---------- turnos ---------- */
@@ -2231,12 +2239,12 @@ document.addEventListener('click',e=>{
     case 'reroll':commit(()=>{const r=d20();c.init=r+(c.initBonus||0);log(`${c.name} tira iniciativa: ${r} → ${c.init}`);});break;
     case 'dup':commit(()=>{const base=c.name.replace(/ \d+$/,'');const n=structuredClone(c);n.id=uid();n.name=`${base} ${nextName(base)}`;const m=tpl(c.tpl);n.hp=n.maxHp=m?hpFrom(m):c.maxHp;n.conds=[];n.temp=0;n.used={};n.uses={};addCreature(n);log(`Entra ${n.name}`);});break;
     case 'del':commit(()=>{const i=state.order.indexOf(c.id);const curId=state.order[state.turnIdx];state.creatures=state.creatures.filter(x=>x!==c);state.order.splice(i,1);
-      if(state.active){if(curId===c.id)state.turnIdx=i>=state.order.length?0:i;else state.turnIdx=state.order.indexOf(curId);}log(`${c.name} sale del combate`);});break;
+      if(state.active){if(curId===c.id)state.turnIdx=i>=state.order.length?0:i;else state.turnIdx=state.order.indexOf(curId);}log(`${c.name} sale del combate`);},T('Quitar del combate'));toast(`${c.name} ${T('sale del combate')}`,6000,true);break;
     case 'rollnpc':commit(()=>{let k=0;for(const x of state.creatures)if(!isPC(x)){const r=d20();x.init=r+(x.initBonus||0);k++;}log(`Iniciativa tirada para ${k} PNJ`);sortInto(state);});break;
     case 'sort':commit(()=>{sortInto(state);});break;
-    case 'end':commit(()=>{state.active=false;state.turnIdx=0;log(`Fin del combate tras ${state.round} rondas`);});break;
-    case 'newenc':commit(()=>{state.creatures=state.creatures.filter(isPC);state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.log=[];state.example=false;state.lastRoll=null;sortInto(state);});toast('Listo para el siguiente encuentro');break;
-    case 'clearall':commit(()=>{state.creatures=[];state.order=[];state.active=false;state.round=1;state.total=0;state.log=[];state.example=false;state.lastRoll=null;state.factions=state.factions.slice(0,3);});break;
+    case 'end':commit(()=>{state.active=false;state.turnIdx=0;log(`Fin del combate tras ${state.round} rondas`);},T('Terminar combate'));toast(T('Combate terminado'),6000,true);break;
+    case 'newenc':commit(()=>{state.creatures=state.creatures.filter(isPC);state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.log=[];state.example=false;state.lastRoll=null;sortInto(state);},T('Nuevo encuentro'));toast(T('Listo para el siguiente encuentro'),6000,true);break;
+    case 'clearall':commit(()=>{state.creatures=[];state.order=[];state.active=false;state.round=1;state.total=0;state.log=[];state.example=false;state.lastRoll=null;state.factions=state.factions.slice(0,3);},T('Vaciar el combate'));toast(T('Combate vaciado'),6000,true);break;
     case 'addfac':commit(()=>{const cols=['#d08a2c','#2aa3a3','#c2508f','#7a8a3a','#5f6fd6'];state.factions.push({id:uid(),name:'Nuevo bando',color:cols[state.factions.length%cols.length],pc:false});});break;
     // fichas
     case 'adv':state.adv=+b.dataset.v;save();render();break;
@@ -2359,7 +2367,7 @@ $('#addform').addEventListener('submit',e=>{
   $('#a-name').value='';$('#a-init').value='';$('#a-hp').value='';$('#a-ac').value='';$('#a-bonus').value='0';$('#a-name').focus();
 });
 
-function undo(){if(!undoStack.length)return;state=JSON.parse(undoStack.pop());fixOrder();save();render();toast('Deshecho');}
+function undo(){if(!undoStack.length)return;state=JSON.parse(undoStack.pop());const l=undoLbls.pop();fixOrder();save();render();toast(l?`${T('Deshecho')}: ${l}`:T('Deshecho'));}
 $('#next').onclick=next;$('#prev').onclick=prev;$('#undo').onclick=undo;
 $('#skin').value=document.documentElement.dataset.skin||'';
 $('#view').value=document.documentElement.dataset.view||'';
@@ -2958,6 +2966,7 @@ function extraAct(act,b,c,e){
     case 'openparty':location.hash='jugadores';break;
     case 'cfgtoggle':$('#cfgbtn').click();break;
     case 'lwhide':try{localStorage.setItem('combat-localwarn-off','1');}catch(e){}renderAcct();break;
+    case 'toastundo':$('#toast').classList.remove('show','act');undo();break;
     case 'navtoggle':{const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
     case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;

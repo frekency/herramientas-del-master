@@ -709,5 +709,12 @@
   "Mostrar encuentros, bandos y opciones": "Show encounters, sides and options",
   "Ocultar encuentros, bandos y opciones": "Hide encounters, sides and options",
   "Poner arriba a quien tiene el turno (la lista va rotando)": "Put whoever has the turn at the top (the list rotates)",
-  "Después": "Next"
+  "Después": "Next",
+  "sale del combate": "leaves the combat",
+  "Combate terminado": "Combat ended",
+  "Combate vaciado": "Combat cleared",
+  "Vaciar el combate": "Clear the combat",
+  "Deshecho": "Undone",
+  "Quitar del combate": "Remove from combat",
+  "Listo para el siguiente encuentro": "Ready for the next encounter"
 }

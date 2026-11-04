@@ -709,5 +709,12 @@
   "Mostrar encuentros, bandos y opciones": "Mostra incontri, fazioni e opzioni",
   "Ocultar encuentros, bandos y opciones": "Nascondi incontri, fazioni e opzioni",
   "Poner arriba a quien tiene el turno (la lista va rotando)": "Metti in cima chi ha il turno (la lista ruota)",
-  "Después": "Dopo"
+  "Después": "Dopo",
+  "sale del combate": "lascia il combattimento",
+  "Combate terminado": "Combattimento terminato",
+  "Combate vaciado": "Combattimento svuotato",
+  "Vaciar el combate": "Svuotare il combattimento",
+  "Deshecho": "Annullato",
+  "Quitar del combate": "Rimuovi dal combattimento",
+  "Listo para el siguiente encuentro": "Pronto per il prossimo incontro"
 }

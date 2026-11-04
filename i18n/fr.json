@@ -709,5 +709,12 @@
   "Mostrar encuentros, bandos y opciones": "Afficher rencontres, camps et options",
   "Ocultar encuentros, bandos y opciones": "Masquer rencontres, camps et options",
   "Poner arriba a quien tiene el turno (la lista va rotando)": "Mettre en haut celui dont c’est le tour (la liste tourne)",
-  "Después": "Ensuite"
+  "Después": "Ensuite",
+  "sale del combate": "quitte le combat",
+  "Combate terminado": "Combat terminé",
+  "Combate vaciado": "Combat vidé",
+  "Vaciar el combate": "Vider le combat",
+  "Deshecho": "Annulé",
+  "Quitar del combate": "Retirer du combat",
+  "Listo para el siguiente encuentro": "Prêt pour la prochaine rencontre"
 }

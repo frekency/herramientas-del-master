@@ -709,5 +709,12 @@
   "Mostrar encuentros, bandos y opciones": "Begegnungen, Seiten und Optionen zeigen",
   "Ocultar encuentros, bandos y opciones": "Begegnungen, Seiten und Optionen ausblenden",
   "Poner arriba a quien tiene el turno (la lista va rotando)": "Wer am Zug ist, steht oben (die Liste rotiert)",
-  "Después": "Danach"
+  "Después": "Danach",
+  "sale del combate": "verlässt den Kampf",
+  "Combate terminado": "Kampf beendet",
+  "Combate vaciado": "Kampf geleert",
+  "Vaciar el combate": "Kampf leeren",
+  "Deshecho": "Rückgängig gemacht",
+  "Quitar del combate": "Aus dem Kampf entfernen",
+  "Listo para el siguiente encuentro": "Bereit für die nächste Begegnung"
 }

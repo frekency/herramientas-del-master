@@ -709,5 +709,12 @@
   "Mostrar encuentros, bandos y opciones": "Mostrar encontros, lados e opções",
   "Ocultar encuentros, bandos y opciones": "Ocultar encontros, lados e opções",
   "Poner arriba a quien tiene el turno (la lista va rotando)": "Pôr no topo quem tem o turno (a lista vai rodando)",
-  "Después": "Depois"
+  "Después": "Depois",
+  "sale del combate": "sai do combate",
+  "Combate terminado": "Combate terminado",
+  "Combate vaciado": "Combate esvaziado",
+  "Vaciar el combate": "Esvaziar o combate",
+  "Deshecho": "Desfeito",
+  "Quitar del combate": "Retirar do combate",
+  "Listo para el siguiente encuentro": "Pronto para o próximo encontro"
 }
