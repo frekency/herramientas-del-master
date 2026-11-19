@@ -1,6 +1,6 @@
 {
   "name": "herramientas-del-master-desktop",
-  "version": "1.37.0",
+  "version": "1.38.0",
   "description": "Herramientas del Máster: app de escritorio para dirigir partidas de D&D 2024",
   "main": "main.js",
   "author": "Herramientas del Máster",
@@ -11,7 +11,7 @@
     "dist:win": "node prepare.mjs && electron-builder --win",
     "dist:mac": "node prepare.mjs && electron-builder --mac",
     "dist": "node prepare.mjs && electron-builder --win --mac",
-    "test": "node --test store.test.mjs"
+    "test": "node --test store.test.mjs mesa.test.mjs"
   },
   "devDependencies": {
     "electron": "^45.4.1",
@@ -27,6 +27,8 @@
       "main.js",
       "preload.js",
       "store.js",
+      "mesa-preload.js",
+      "mesa.js",
       "app/**/*",
       "build/icon.png"
     ],

@@ -25,4 +25,6 @@ contextBridge.exposeInMainWorld('__StoreBackend', { get, set, remove, keys });
 contextBridge.exposeInMainWorld('__AppShell', {
   platform: process.platform,
   titlebar: (bg, fg) => ipcRenderer.send('shell:titlebar', String(bg), String(fg)),
+  // Ventana de la mesa (la que ven los jugadores)
+  mesa: { abrir: () => ipcRenderer.send('mesa:abrir'), enviar: x => ipcRenderer.send('mesa:enviar', x) },
 });

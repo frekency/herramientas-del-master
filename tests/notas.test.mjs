@@ -121,3 +121,18 @@ test('retroenlaces: también cuenta la mención por nombre sin corchetes',()=>{
   const marta=item('npc','Marta'),faro=item('lugar','Faro',{texto:'Aquí trabaja marta cada día'}),otro=item('nota','Smartphone',{texto:'smartphone'});
   assert.deepEqual(N.retroenlaces([marta,faro,otro],marta).map(x=>x.nombre),['Faro']);
 });
+
+test('visibilidad: por defecto solo el máster; valores válidos; el antiguo «publico» pasa a jugadores',()=>{
+  assert.equal(N.norm({tipo:'nota',nombre:'a'}).visibilidad,'dm');
+  assert.equal(N.norm({tipo:'nota',nombre:'a',visibilidad:'enlace'}).visibilidad,'enlace');
+  assert.equal(N.norm({tipo:'nota',nombre:'a',visibilidad:'todos'}).visibilidad,'dm','valor desconocido: se cierra');
+  assert.equal(N.norm({tipo:'nota',nombre:'a',publico:true}).visibilidad,'jugadores');
+  assert.ok(!('publico' in N.norm({tipo:'nota',nombre:'a',publico:true})));
+});
+
+test('sesiones: encuentros enlazados por id, sin repetidos ni ids raros',()=>{
+  const s=N.norm({tipo:'sesion',nombre:'s',campos:{encuentros:['abc','abc','../x','def',5,null]}});
+  assert.deepEqual(s.campos.encuentros,['abc','def']);
+  assert.deepEqual(N.norm({tipo:'sesion',nombre:'s'}).campos.encuentros,[]);
+  assert.ok(!('encuentros' in N.norm({tipo:'npc',nombre:'n',campos:{encuentros:['abc']}}).campos));
+});

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mesa</title>
+<style>
+:root{--fg:#f1ece0;--muted:#a79f8e;--ac:#e0a458;--bg:#0b0a09;--row:#171513}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;overflow:hidden;cursor:default;user-select:none}
+#nada{height:100%}
+#img{height:100%;display:none;align-items:center;justify-content:center;position:relative}
+#img img{max-width:100%;max-height:100%;object-fit:contain}
+#img .cap{position:absolute;left:0;right:0;bottom:0;padding:18px 28px;background:linear-gradient(transparent,rgb(0 0 0/.75));font-size:clamp(18px,2.6vw,36px);font-weight:600;text-align:center}
+#img .cap:empty{display:none}
+#ini{height:100%;display:none;flex-direction:column;padding:clamp(16px,3vw,48px);gap:clamp(10px,1.6vw,22px)}
+#ini header{display:flex;align-items:baseline;gap:18px}
+#ini h1{margin:0;font-size:clamp(20px,3vw,44px);font-weight:700}
+#ini .ronda{color:var(--ac);font-size:clamp(18px,2.4vw,34px);font-weight:600}
+#lista{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:clamp(6px,1vw,14px)}
+.fila{display:flex;align-items:center;gap:16px;padding:clamp(8px,1.4vw,20px) clamp(14px,2vw,28px);background:var(--row);border-left:8px solid var(--c,#888);border-radius:12px;font-size:clamp(18px,3.2vw,48px);font-weight:600;color:var(--muted);transition:transform .2s,background .2s}
+.fila .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fila.actual{background:color-mix(in srgb,var(--ac) 20%,var(--row));color:var(--fg);outline:3px solid var(--ac);transform:scale(1.02)}
+.fila.caido{opacity:.45;text-decoration:line-through}
+.fila .flecha{color:var(--ac);width:1em;text-align:center}
+#aviso{position:fixed;right:14px;bottom:10px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div id="nada"></div>
+<div id="img"><div class="cap"></div></div>
+<div id="ini"><header><h1>Iniciativa</h1><span class="ronda"></span></header><div id="lista"></div></div>
+<div id="aviso">F11 o doble clic: pantalla completa</div>
+<script>
+const $=s=>document.querySelector(s),vistas=['#nada','#img','#ini'];
+function ver(v){for(const s of vistas)$(s).style.display=s===v?(s==='#ini'?'flex':s==='#img'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
+function mostrar(p){
+  if(!p)return;
+  if(p.tipo==='limpiar'){ver('#nada');return;}
+  if(p.tipo==='imagen'){
+    $('#img img')?.remove();
+    const im=new Image();im.alt=p.titulo||'';im.src=p.src;$('#img').prepend(im);
+    $('#img .cap').textContent=p.titulo||'';ver('#img');return;}
+  if(p.tipo==='iniciativa'){
+    $('#ini .ronda').textContent=p.activo?'Ronda '+p.ronda:'';
+    const L=$('#lista');L.textContent='';
+    for(const e of p.lista){
+      const d=document.createElement('div');d.className='fila'+(e.actual?' actual':'')+(e.caido?' caido':'');d.style.setProperty('--c',e.color);
+      const f=document.createElement('span');f.className='flecha';f.textContent=e.actual?'▶':'';
+      const n=document.createElement('span');n.className='n';n.textContent=e.n;
+      d.append(f,n);L.append(d);
+    }
+    if(!p.lista.length){const d=document.createElement('div');d.className='fila';d.textContent='Sin combate';L.append(d);}
+    const a=L.querySelector('.actual');if(a)a.scrollIntoView({block:'nearest'});
+    ver('#ini');
+  }
+}
+window.__Mesa.onMostrar(mostrar);
+window.__Mesa.listo();
+addEventListener('dblclick',()=>window.__Mesa.pantallaCompleta());
+addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();window.__Mesa.pantallaCompleta();}});
+</script>
+</body>
+</html>

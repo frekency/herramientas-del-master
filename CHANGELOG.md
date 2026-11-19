@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.38.0] - 2026-11-19
+### Añadido
+- **Ventana de mesa** (app de escritorio): una segunda ventana, para otro monitor o proyector, que muestra imágenes de la campaña («Mostrar en la mesa») y el **orden de iniciativa simplificado** (solo nombres, turno y ronda; nunca PG, CA ni notas), que se actualiza sola. F11 o doble clic para pantalla completa.
+- Sesiones: **encuentros guardados enlazados** al plan, con botón para cargarlos en el combate.
+- Visibilidad por elemento: solo el máster (por defecto), jugadores de la campaña o cualquiera con el enlace. De momento solo se guarda; se aplicará al publicar la campaña.
+- El grupo de **Jugadores** pasa a ser una pestaña de Campaña.
+### Cambiado
+- Los controles de Campaña usan el aspecto de cada estilo, como el resto de la aplicación.
+
 ## [1.37.0] - 2026-11-19
 ### Añadido
 - Sección **Campaña**: sesiones (planificación con escenas), diario (resúmenes), PNJ, lugares, tiendas con inventario, misiones con objetivos y notas. Texto en Markdown, enlaces `[[Nombre]]` con autocompletado al escribir «[[» y detección automática de menciones por nombre (clicables), «Mencionado en», búsqueda en toda la campaña, imagen opcional y marca «visible para los jugadores». Un PNJ puede vincular una criatura del bestiario (SRD o propia) con su ficha y añadirse al combate. Cada campaña tiene sus propias notas y entran en la copia de seguridad.

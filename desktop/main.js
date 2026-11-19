@@ -2,6 +2,7 @@ const { app, BrowserWindow, protocol, net, shell, Menu, ipcMain } = require('ele
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { abrir } = require('./store');
+const { validar } = require('./mesa');
 
 const APP_DIR = path.join(__dirname, 'app');
 let almacen = null;
@@ -54,6 +55,43 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
   }
 });
 
+// Ventana de la mesa: la que ven los jugadores (imágenes y orden de iniciativa). La abre el máster.
+let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' };
+const delMaster = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/index.html');
+function abrirMesa() {
+  if (mesa && !mesa.isDestroyed()) { if (mesa.isMinimized()) mesa.restore(); mesa.show(); mesa.focus(); return; }
+  mesaLista = false;
+  mesa = new BrowserWindow({
+    width: 1280, height: 720, title: 'Mesa', backgroundColor: '#0b0a09', autoHideMenuBar: true,
+    icon: path.join(__dirname, 'build', 'icon.png'),
+    webPreferences: { preload: path.join(__dirname, 'mesa-preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false },
+  });
+  mesa.setMenu(null);
+  mesa.loadURL('app://local/mesa.html');
+  mesa.on('closed', () => { mesa = null; mesaLista = false; });
+}
+function registrarMesa() {
+  ipcMain.on('mesa:abrir', e => { if (delMaster(e)) abrirMesa(); });
+  ipcMain.on('mesa:enviar', (e, p) => {
+    if (!delMaster(e)) return;
+    const v = validar(p);
+    if (!v) return;
+    ultimoMesa = v;
+    const abierta = mesa && !mesa.isDestroyed();
+    // el orden de iniciativa solo abre la ventana la primera vez que el máster lo pide; después se limita a actualizarla
+    if (!abierta && (v.tipo === 'imagen' || (v.tipo === 'iniciativa' && v.abrir))) abrirMesa();
+    if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+  });
+  ipcMain.on('mesa:listo', e => {
+    if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents) return;
+    mesaLista = true;
+    mesa.webContents.send('mesa:mostrar', ultimoMesa);
+  });
+  ipcMain.on('mesa:pantalla', e => {
+    if (mesa && !mesa.isDestroyed() && e.sender === mesa.webContents) mesa.setFullScreen(!mesa.isFullScreen());
+  });
+}
+
 // IPC síncrono del almacén: solo acepta peticiones de nuestra propia página
 function registrarAlmacen() {
   const propio = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/');
@@ -77,6 +115,7 @@ app.whenReady().then(() => {
   almacen = abrir(path.join(app.getPath('userData'), 'campanas.db'));
   try { almacen.copiaDeSeguridad(path.join(app.getPath('userData'), 'copias')); } catch (e) { console.error('copia de seguridad:', e.message); }
   registrarAlmacen();
+  registrarMesa();
 
   protocol.handle('app', req => {
     const { pathname } = new URL(req.url);

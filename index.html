@@ -52,6 +52,7 @@ window.Notas=(()=>{
   const TIPOS=[['sesion','Sesiones','scroll'],['diario','Diario','book'],['npc','PNJ','people'],['lugar','Lugares','map'],['tienda','Tiendas','bag'],['mision','Misiones','target'],['nota','Notas','list']];
   const SING={sesion:'Sesión',diario:'Entrada',npc:'PNJ',lugar:'Lugar',tienda:'Tienda',mision:'Misión',nota:'Nota'};
   const ESTADOS={sesion:['planeada','jugada','cancelada'],mision:['pendiente','activa','completada','fallida']};
+  const VIS=['dm','jugadores','enlace'];
   const MAX={items:2000,nombre:120,texto:100000,campo:2000,filas:200,img:400000};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const str=(v,n)=>typeof v==='string'?v.slice(0,n):'';
@@ -59,10 +60,11 @@ window.Notas=(()=>{
   const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
   const idOk=s=>typeof s==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(s);
   const checks=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok)})).filter(e=>e.t||e.ok);
+  const ids=v=>(Array.isArray(v)?v:[]).filter(idOk).filter((x,i,a)=>a.indexOf(x)===i).slice(0,50);
   const inv=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({n:str(e&&e.n,120),p:str(e&&e.p,40),c:str(e&&e.c,20)})).filter(e=>e.n);
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
-    sesion:{fecha:'s',estado:'e',escenas:'c'},
+    sesion:{fecha:'s',estado:'e',escenas:'c',encuentros:'d'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',criatura:'s',equipo:'s'},
     lugar:{clase:'s',padre:'s'},
@@ -75,10 +77,10 @@ window.Notas=(()=>{
     const t=x.tipo,c={},src=x.campos&&typeof x.campos==='object'?x.campos:{};
     for(const [k,k2] of Object.entries(CAMPOS[t])){
       const v=src[k];
-      c[k]=k2==='c'?checks(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
+      c[k]=k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
     }
     const img=typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=MAX.img?x.img:null;
-    return {id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),publico:!!x.publico,img,campos:c,
+    return {id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
       creado:Number.isFinite(+x.creado)?+x.creado:Date.now(),editado:Number.isFinite(+x.editado)?+x.editado:Date.now()};
   }
   function nuevo(tipo,nombre){return norm({tipo,nombre:nombre||'',campos:{}});}
@@ -144,7 +146,7 @@ window.Notas=(()=>{
     flush();close();return out.join('');
   }
   const buscar=(items,q)=>{const k=clave(q);return k?items.filter(i=>clave(i.nombre).includes(k)||clave(textos(i)).includes(k)):items;};
-  return {TIPOS,SING,ESTADOS,CAMPOS,norm,nuevo,cargar,guardar,porNombre,enlaces,retroenlaces,md,buscar,href,uid,menciona};
+  return {VIS,TIPOS,SING,ESTADOS,CAMPOS,norm,nuevo,cargar,guardar,porNombre,enlaces,retroenlaces,md,buscar,href,uid,menciona};
 })();
 </script>
 <script>/* modo app: solo existe en la app de escritorio (la expone preload.js) */
@@ -289,7 +291,7 @@ button.chip:hover{border-color:var(--crit)}
 .cb.on{background:color-mix(in srgb,var(--accent) 22%,var(--surface));border-color:var(--accent);font-weight:700}
 .fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
 label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
-label.f input,label.f select,label.f textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);width:100%;min-width:0}
+label.f input,label.f select,label.f textarea,.cptext{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);width:100%;min-width:0}
 label.f textarea{font-family:var(--f-num);font-size:12.5px;line-height:1.45;resize:vertical}
 .inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .saves{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:13px}
@@ -760,7 +762,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="cuaderno"] .qb:hover{background:var(--hl)}
 [data-skin="cuaderno"] .fsum{background:none;border:0;border-radius:0;padding:2px 4px;font-family:"Kalam",cursive;font-size:16px}
 [data-skin="cuaderno"] .fsum .mini{background:none;border:1px solid color-mix(in srgb,var(--fg) 30%,transparent);border-radius:1px}
-[data-skin="cuaderno"] label.f input,[data-skin="cuaderno"] label.f select,[data-skin="cuaderno"] label.f textarea,[data-skin="cuaderno"] .skin select,[data-skin="cuaderno"] .bfilters input,[data-skin="cuaderno"] .bfilters select,[data-skin="cuaderno"] .frow input[type=text]{background:var(--surface);border:1.5px solid color-mix(in srgb,var(--fg) 28%,transparent);border-radius:4px}
+[data-skin="cuaderno"] label.f input,[data-skin="cuaderno"] label.f select,[data-skin="cuaderno"] label.f textarea,[data-skin="cuaderno"] .cptext,[data-skin="cuaderno"] .skin select,[data-skin="cuaderno"] .bfilters input,[data-skin="cuaderno"] .bfilters select,[data-skin="cuaderno"] .frow input[type=text]{background:var(--surface);border:1.5px solid color-mix(in srgb,var(--fg) 28%,transparent);border-radius:4px}
 [data-skin="cuaderno"] label.f textarea{font-family:"IBM Plex Mono",ui-monospace,monospace}
 /* la ficha: una cartulina con clip */
 [data-skin="cuaderno"] .sb{background-color:var(--sb);background-image:none;border:1px solid var(--cu-edge);border-radius:2px;box-shadow:var(--shadow);padding:16px 18px}
@@ -834,7 +836,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="libro"] .btn.primary:hover{background:var(--sb-rule);border-color:var(--sb-rule);filter:none}
 [data-skin="libro"] .btn.ghost{border-color:transparent}
 [data-skin="libro"] .btn.danger{color:var(--crit)}
-[data-skin="libro"] label.f input,[data-skin="libro"] label.f select,[data-skin="libro"] label.f textarea,[data-skin="libro"] .skin select,[data-skin="libro"] .bfilters input,[data-skin="libro"] .bfilters select,[data-skin="libro"] .frow input[type=text]{border-radius:0;background:var(--surface)}
+[data-skin="libro"] label.f input,[data-skin="libro"] label.f select,[data-skin="libro"] label.f textarea,[data-skin="libro"] .cptext,[data-skin="libro"] .skin select,[data-skin="libro"] .bfilters input,[data-skin="libro"] .bfilters select,[data-skin="libro"] .frow input[type=text]{border-radius:0;background:var(--surface)}
 [data-skin="libro"] label.f textarea{font-family:"IBM Plex Mono",ui-monospace,monospace}
 /* paneles: sin caja, separados por un filete */
 [data-skin="libro"] .panel::before{display:none}
@@ -934,7 +936,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="pantalla"] .btn.primary:hover{filter:brightness(1.06)}
 [data-skin="pantalla"] .btn.primary:active{transform:translateY(2px);box-shadow:0 1px 0 #6f5023}
 [data-skin="pantalla"] .btn.ghost{background:transparent;border-color:transparent}
-[data-skin="pantalla"] label.f input,[data-skin="pantalla"] label.f select,[data-skin="pantalla"] label.f textarea,[data-skin="pantalla"] .skin select,[data-skin="pantalla"] .bfilters input,[data-skin="pantalla"] .bfilters select,[data-skin="pantalla"] .c-quick input,[data-skin="pantalla"] .frow input[type=text]{background:#120f0b;border-color:var(--line);box-shadow:inset 0 1px 2px rgb(0 0 0/.6)}
+[data-skin="pantalla"] label.f input,[data-skin="pantalla"] label.f select,[data-skin="pantalla"] label.f textarea,[data-skin="pantalla"] .cptext,[data-skin="pantalla"] .skin select,[data-skin="pantalla"] .bfilters input,[data-skin="pantalla"] .bfilters select,[data-skin="pantalla"] .c-quick input,[data-skin="pantalla"] .frow input[type=text]{background:#120f0b;border-color:var(--line);box-shadow:inset 0 1px 2px rgb(0 0 0/.6)}
 /* criaturas: fichas en la mesa */
 [data-skin="pantalla"] .list{gap:6px}
 [data-skin="pantalla"] .row{background:var(--surface);border:1px solid #0e0b08;border-radius:6px;box-shadow:inset 0 1px 0 rgb(255 235 200/.04)}
@@ -1057,7 +1059,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="arcano"] .log li.round{font-family:var(--f-display);letter-spacing:.1em;text-shadow:0 0 12px var(--glow)}
 [data-skin="arcano"] .toast{background:linear-gradient(135deg,#2a2150,#17122e);color:var(--fg);border:1px solid var(--accent);box-shadow:0 0 30px var(--glow)}
 [data-skin="arcano"] input,[data-skin="arcano"] select,[data-skin="arcano"] textarea{color-scheme:dark}
-[data-skin="arcano"] label.f input,[data-skin="arcano"] label.f select,[data-skin="arcano"] label.f textarea,[data-skin="arcano"] .c-quick input{background:rgb(8 6 22/.55);border-color:var(--line)}
+[data-skin="arcano"] label.f input,[data-skin="arcano"] label.f select,[data-skin="arcano"] label.f textarea,[data-skin="arcano"] .cptext,[data-skin="arcano"] .c-quick input{background:rgb(8 6 22/.55);border-color:var(--line)}
 [data-skin="arcano"] :focus-visible{outline-color:var(--rune)}
 
 /* ===== Estilo «Taberna»: madera oscura, cobre y luz de vela ===== */
@@ -1104,7 +1106,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 [data-skin="taberna"] .btn.danger{color:var(--crit)}
 [data-skin="taberna"] .chip{background:#1c120b;border-color:#000}
 [data-skin="taberna"] .fsum{background:#1c120b;border-color:color-mix(in srgb,var(--fc) 55%,#000)}
-[data-skin="taberna"] label.f input,[data-skin="taberna"] label.f select,[data-skin="taberna"] label.f textarea,[data-skin="taberna"] .c-quick input,[data-skin="taberna"] .skin select,[data-skin="taberna"] .bfilters input,[data-skin="taberna"] .bfilters select{background:#140d08;border:1px solid #000;box-shadow:inset 0 1px 3px #000;border-radius:4px}
+[data-skin="taberna"] label.f input,[data-skin="taberna"] label.f select,[data-skin="taberna"] label.f textarea,[data-skin="taberna"] .cptext,[data-skin="taberna"] .c-quick input,[data-skin="taberna"] .skin select,[data-skin="taberna"] .bfilters input,[data-skin="taberna"] .bfilters select{background:#140d08;border:1px solid #000;box-shadow:inset 0 1px 3px #000;border-radius:4px}
 [data-skin="taberna"] .sb{background:linear-gradient(180deg,#2a1b10,#1c120b);border:2px solid var(--brass);border-radius:6px;box-shadow:inset 0 0 0 3px #1c120b,inset 0 0 0 4px rgb(201 162 74/.5),inset 0 0 50px rgb(255 150 60/.07),var(--shadow)}
 [data-skin="taberna"] .sb h3{font-weight:400;font-size:30px;color:var(--accent);text-shadow:0 2px 0 #000}
 [data-skin="taberna"] .sb h4{font-weight:400;font-size:20px;color:var(--accent)}
@@ -1262,6 +1264,11 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cplist{flex:1 1 250px;max-width:340px;min-width:0;display:flex;flex-direction:column;gap:10px}
 .cpdet{flex:3 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px}
 .cpbar{display:flex;gap:8px}.cpbar input{flex:1;min-width:0}
+.cpbar.bfilters,.cphead.bfilters,.cprow.bfilters,.cplink.bfilters{margin:0}
+.cphead.bfilters select{flex:0 0 auto}
+.cprow input[type=checkbox]{flex:none;width:18px;height:18px;padding:0}
+.cptext{padding:10px 12px}
+.cptitle{font-family:var(--f-display)}
 .cpul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:70vh;overflow:auto}
 .cpit{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);text-decoration:none}
 .cpit:hover{border-color:var(--accent)}.cpit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
@@ -1286,7 +1293,7 @@ a.wl.auto{text-decoration-style:dotted}
 .cpac li.on{background:color-mix(in srgb,var(--accent) 18%,var(--surface))}.cpac small{color:var(--muted)}
 a.wl{color:var(--accent);text-decoration:underline;text-underline-offset:2px}a.wl.nuevo{border-bottom:1px dashed var(--accent);text-decoration:none;opacity:.8}
 .cpback{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}.cpback small{color:var(--muted)}
-.cpfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:12px}.cpfoot .chk{display:flex;gap:8px;align-items:center}
+.cpfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:12px}.cpvis{flex:1;max-width:320px}.cpenc{flex-wrap:wrap}.cpencn{flex:1;min-width:160px;display:flex;flex-direction:column}.cpencn small{color:var(--muted)}
 /* ===== Estilo «Escritorio»: solo existe en la app de escritorio (se añade a los selectores desde JS) ===== */
 :root[data-skin="escritorio"]{
   --bg:#f2f0ea; --surface:#ffffff; --surface-2:#eae7de; --line:#d8d3c6;
@@ -1403,7 +1410,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Jugadores</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.37</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.38</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -1446,11 +1453,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 </section>
 
 <section class="vpage" id="view-campana" hidden>
-  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" id="cp-camp"></span></div>
-  <nav class="cptabs" id="cp-tabs" role="tablist" aria-label="Secciones de la campaña"></nav>
+  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" data-cpcamp></span></div>
+  <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="cpgrid">
     <aside class="cplist">
-      <div class="cpbar"><input id="cp-q" type="search" placeholder="Buscar en la campaña" aria-label="Buscar en la campaña"><button type="button" class="btn primary" data-act="cpnew">+ Nuevo</button></div>
+      <div class="cpbar bfilters"><input id="cp-q" type="search" placeholder="Buscar en la campaña" aria-label="Buscar en la campaña"><button type="button" class="btn primary" data-act="cpnew">+ Nuevo</button></div>
       <ul class="cpul" id="cp-items"></ul>
     </aside>
     <section class="cpdet" id="cp-det" aria-live="polite"></section>
@@ -1567,6 +1574,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.38 <span>19 nov 2026</span></h3><ul>
+      <li><b>Ventana de mesa</b> en la app de escritorio: una segunda ventana para otro monitor con imágenes de la campaña y el orden de iniciativa simplificado, sin PG ni CA.</li>
+      <li>Las sesiones enlazan encuentros guardados, cada elemento indica quién puede verlo y <b>Jugadores</b> pasa a ser una pestaña de Campaña.</li></ul></li>
     <li><h3>v1.37 <span>19 nov 2026</span></h3><ul>
       <li>Nueva sección <b>Campaña</b>: sesiones (para planificar), diario, PNJ, lugares, tiendas, misiones y notas, con texto en Markdown y enlaces <code>[[Nombre]]</code> entre ellos. Un PNJ puede usar la ficha de una criatura y añadirse al combate.</li>
       <li>Cada campaña tiene sus propias notas, que entran en la copia de seguridad.</li></ul></li>
@@ -1694,6 +1704,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 </section>
 
 <section class="vpage" id="view-jugadores" hidden>
+  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" data-cpcamp></span></div>
+  <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="vhead"><h2>Grupo de jugadores</h2><span class="pcsub" id="vp-count"></span>
     <div class="inline" style="margin-left:auto">
       <button class="btn" data-act="pcnew">+ Nuevo personaje</button>
@@ -2577,11 +2589,19 @@ function render(){
   $('#log').innerHTML=s.log.length?s.log.map(e=>e.round?`<li class="round">— ${esc(e.msg)} —</li>`:`<li><span class="r">${e.r?'R'+e.r:''}</span><span>${esc(e.msg)}</span></li>`).join(''):'<li class="hint" style="display:block">Aquí aparecerá lo que pase en el combate.</li>';
   if(!$('#bestmodal').hidden)renderBest();
   renderEnc();
-  if(!$('#view-jugadores').hidden)renderParty();
+  if(!$('#view-jugadores').hidden){renderParty();cpRenderTabs('jugadores',false);}
   refreshCompView();
   if(!$('#view-inicio').hidden)renderHome();
+  if(mesaIni)mesaSendIni(false);
 }
 
+var mesaIni=false;
+function mesaIniData(){
+  const s=state,cur=s.active?s.order[s.turnIdx]:null;
+  const lista=s.order.map(id=>{const c=get(id);return c?{n:c.name,actual:id===cur,caido:c.hp<=0&&!isPC(c),color:fac(c.factionId).color}:null;}).filter(Boolean);
+  return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista};
+}
+function mesaSendIni(abrir){const S=window.__AppShell;if(S&&S.mesa)S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 let lastTurnKey=null;
 /* raíl de fichas de la «Pantalla del máster»: una ficha por criatura, la del turno levantada */
 function railHTML(s){
@@ -3697,6 +3717,10 @@ function extraAct(act,b,c,e){
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
     case 'cpnew':{const it=cpNew(cpTipo);cpFocus=true;cpEdit=true;location.hash=Notas.href(it);break;}
+    case 'cpencload':{const p=PRESETS.find(x=>x.id===b.dataset.id);if(p)loadEncounter(p);break;}
+    case 'mesaini':{if(!window.__AppShell)break;mesaIni=true;mesaSendIni(true);toast('Orden de iniciativa en la mesa');break;}
+    case 'cpmesa':{const it=cpGet(cpSel);if(!window.__AppShell||!it||!it.img)break;mesaIni=false;window.__AppShell.mesa.enviar({tipo:'imagen',src:it.img,titulo:it.nombre});toast('Mostrado en la mesa');break;}
+    case 'cpmesaclear':{if(!window.__AppShell)break;mesaIni=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});toast('Mesa limpia');break;}
     case 'cpmode':cpEdit=!cpEdit;cpRenderDet();break;
     case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] input[type="text"]');if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
     case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
@@ -3750,9 +3774,9 @@ function showView(){
   const v2=viewOf(r);
   const pages=['inicio','campana','jugadores','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
-  if(v2==='campana')renderCampana();
+  if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
-  const nav=!isPage?'combate':r.page==='compendio'?'compendio':v2;
+  const nav=!isPage?'combate':r.page==='compendio'?'compendio':r.page==='campana'?'campana':v2;
   document.querySelectorAll('.pagenav a:not(.navver)').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+nav));
   {const n=$('.pagenav');n.classList.remove('open');n.querySelector('.navtoggle').setAttribute('aria-expanded','false');}
   document.documentElement.dataset.page=isPage?v2:'combate';
@@ -3858,9 +3882,10 @@ function route(){
   if(a==='criaturas'||a==='conjuros')return {page:'compendio',tab:a,slug:b||''};
   if(a==='compendio')return {page:'compendio',tab:CTABS.some(x=>x[0]===b)?b:'',slug:c||''};
   if(a==='campana')return {page:'campana',tab:b||'',slug:c||''};
+  if(a==='jugadores')return {page:'campana',tab:'jugadores',slug:''};
   return {page:a||'inicio'};
 }
-const viewOf=r=>r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'?r.tab:'compendio';
+const viewOf=r=>r.page==='campana'&&r.tab==='jugadores'?'jugadores':r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'?r.tab:'compendio';
 const curView=()=>viewOf(route());
 function renderCmNav(tab){
   const n={criaturas:allBest().length,conjuros:SPELL_LIST.length};for(const[k] of CM_TABS)n[k]=compList(k).length;
@@ -3935,23 +3960,29 @@ function cpSorted(list){
   const fecha=i=>i.campos.fecha||'';
   return [...list].sort((a,b)=>(a.tipo==='sesion'||a.tipo==='diario')&&a.tipo===b.tipo?(fecha(b).localeCompare(fecha(a))||b.editado-a.editado):cpName(a).localeCompare(cpName(b),LANG));
 }
+/* pestañas de la campaña: las notas y, en medio, el grupo de jugadores (que tiene su propia vista) */
+const CPTABS=()=>[...Notas.TIPOS.slice(0,2),['jugadores','Jugadores','shield'],...Notas.TIPOS.slice(2)];
+function cpRenderTabs(sel,q){
+  document.querySelectorAll('[data-cptabs]').forEach(n=>{n.innerHTML=CPTABS().map(([k,l,i])=>`<a href="#campana/${k}" role="tab" aria-selected="${k===sel&&!q}">${ic(i)} ${T(l)}<span class="pcsub">${(k==='jugadores'?PARTY.length:CP.filter(x=>x.tipo===k).length)||''}</span></a>`).join('');});
+  document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=Store.campaigns.activeName()||'';});
+}
 function renderCampana(){
   const r=route();
   if(!cpLoaded){cpLoad();cpLoaded=true;}
+  if(r.tab==='jugadores'){cpRenderTabs('jugadores',false);return;}
   const ok=Notas.TIPOS.some(t=>t[0]===r.tab);
   if(!ok){let k='sesion';try{k=Store.get('cp-last')||k;}catch{}location.replace('#campana/'+(Notas.TIPOS.some(t=>t[0]===k)?k:'sesion'));return;}
   cpTipo=r.tab;try{Store.set('cp-last',cpTipo);}catch{}
   cpSel=r.slug&&cpGet(r.slug)&&cpGet(r.slug).tipo===cpTipo?r.slug:null;
   if(cpSel!==cpLastSel){cpLastSel=cpSel;const it=cpSel&&cpGet(cpSel);cpEdit=!!it&&!it.texto;}
-  $('#cp-camp').textContent=Store.campaigns.activeName()||'';
-  $('#cp-tabs').innerHTML=Notas.TIPOS.map(([k,l,i])=>`<a href="#campana/${k}" role="tab" aria-selected="${k===cpTipo&&!cpQ}">${ic(i)} ${T(l)}<span class="pcsub">${CP.filter(x=>x.tipo===k).length||''}</span></a>`).join('');
+  cpRenderTabs(cpTipo,cpQ);
   cpRenderList();cpRenderDet();
 }
 let cpLoaded=false;
 function cpRenderList(){
   const base=cpQ?Notas.buscar(CP,cpQ):CP.filter(i=>i.tipo===cpTipo);
   const rows=cpSorted(base);
-  $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}" href="${esc(Notas.href(i))}"><span class="nm">${esc(cpName(i))}</span><small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small>${i.publico?`<span class="pub" title="${esc(T('Lo verán los jugadores'))}">${ic('eye')}</span>`:''}</a></li>`).join(''):`<li class="empty">${cpQ?T('Nada coincide con la búsqueda.'):T('Aún no hay nada aquí. Pulsa «+ Nuevo».')}</li>`;
+  $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}" href="${esc(Notas.href(i))}"><span class="nm">${esc(cpName(i))}</span><small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small>${i.visibilidad!=='dm'?`<span class="pub" title="${esc(i.visibilidad==='enlace'?T('Lo verá cualquiera con el enlace'):T('Lo verán los jugadores'))}">${ic(i.visibilidad==='enlace'?'chain':'eye')}</span>`:''}</a></li>`).join(''):`<li class="empty">${cpQ?T('Nada coincide con la búsqueda.'):T('Aún no hay nada aquí. Pulsa «+ Nuevo».')}</li>`;
 }
 function cpField(i,[k,lbl,kind]){
   const v=i.campos[k]||'',id='cpf-'+k;
@@ -3965,16 +3996,25 @@ function cpField(i,[k,lbl,kind]){
 }
 function cpChecks(i,[k,lbl,add]){
   const rows=i.campos[k]||[];
-  return `<div class="cpck" data-f="${k}"><h4>${T(lbl)}</h4>${rows.map((e,n)=>`<div class="cprow"><input type="checkbox" data-cpck="${k}:${n}:ok"${e.ok?' checked':''} aria-label="${esc(T('Hecho'))}"><input type="text" data-cpck="${k}:${n}:t" value="${esc(e.t)}"><button type="button" class="btn sm ghost" data-act="cprm" data-f="${k}" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div>`).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="${k}">+ ${T(add)}</button></div>`;
+  return `<div class="cpck" data-f="${k}"><h4>${T(lbl)}</h4>${rows.map((e,n)=>`<div class="cprow bfilters"><input type="checkbox" data-cpck="${k}:${n}:ok"${e.ok?' checked':''} aria-label="${esc(T('Hecho'))}"><input type="text" data-cpck="${k}:${n}:t" value="${esc(e.t)}"><button type="button" class="btn sm ghost" data-act="cprm" data-f="${k}" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div>`).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="${k}">+ ${T(add)}</button></div>`;
 }
 function cpInv(i){
   const rows=i.campos.inventario||[];
-  return `<div class="cpck" data-f="inventario"><h4>${T('Inventario')}</h4>${rows.length?`<div class="cprow hd"><span>${T('Objeto')}</span><span>${T('Precio')}</span><span>${T('Cant.')}</span><span></span></div>`:''}${rows.map((e,n)=>`<div class="cprow inv"><input type="text" data-cpinv="${n}:n" value="${esc(e.n)}"><input type="text" data-cpinv="${n}:p" value="${esc(e.p)}"><input type="text" data-cpinv="${n}:c" value="${esc(e.c)}"><button type="button" class="btn sm ghost" data-act="cprm" data-f="inventario" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div>`).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="inventario">+ ${T('Añadir objeto')}</button></div>`;
+  return `<div class="cpck" data-f="inventario"><h4>${T('Inventario')}</h4>${rows.length?`<div class="cprow hd"><span>${T('Objeto')}</span><span>${T('Precio')}</span><span>${T('Cant.')}</span><span></span></div>`:''}${rows.map((e,n)=>`<div class="cprow inv bfilters"><input type="text" data-cpinv="${n}:n" value="${esc(e.n)}"><input type="text" data-cpinv="${n}:p" value="${esc(e.p)}"><input type="text" data-cpinv="${n}:c" value="${esc(e.c)}"><button type="button" class="btn sm ghost" data-act="cprm" data-f="inventario" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div>`).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="inventario">+ ${T('Añadir objeto')}</button></div>`;
+}
+function encSum(p){const cnt={};for(const it of p.items||[]){const k=(tpl(it.tpl)?.n)||String(it.name||'').replace(/ \d+$/,'');cnt[k]=(cnt[k]||0)+1;}return Object.entries(cnt).map(([k,v])=>(v>1?v+'× ':'')+k).join(', ');}
+function cpEncs(it){
+  if(PRESETS.some(p=>!p.id)){PRESETS.forEach(p=>{p.id=p.id||uid();});savePresets();}
+  const ids=it.campos.encuentros||[];
+  const rows=ids.map((id,n)=>{const p=PRESETS.find(x=>x.id===id);
+    return '<div class="cprow cpenc"><span class="cpencn">'+(p?'<b>'+esc(p.n)+'</b><small>'+esc(encSum(p))+'</small>':'<i>'+T('Encuentro borrado')+'</i>')+'</span>'+(p?'<button type="button" class="btn sm primary" data-act="cpencload" data-id="'+esc(id)+'">'+T('Cargar en el combate')+'</button>':'')+'<button type="button" class="btn sm ghost" data-act="cprm" data-f="encuentros" data-i="'+n+'" aria-label="'+esc(T('Quitar'))+'">✕</button></div>';}).join('');
+  const libres=PRESETS.filter(p=>!ids.includes(p.id));
+  return '<div class="cpck" data-f="encuentros"><h4>'+T('Encuentros')+'</h4>'+rows+(libres.length?'<div class="cplink bfilters"><select id="cp-encsel"><option value="">'+T('Añadir encuentro…')+'</option>'+libres.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></div>':'<p class="hint">'+T('Aún no hay encuentros guardados. Guárdalos desde Combate.')+'</p>')+'</div>';
 }
 function cpCreature(i){
   const k=i.campos.criatura,m=k&&tpl(k);
   if(k&&!m&&k.startsWith('srd:')&&!SRD_ALL.length)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Cargando…')}</p></div>`;
-  if(!m)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Vincula una criatura del bestiario (SRD o la tuya) y usa sus estadísticas, acciones y equipo.')}</p><div class="cplink"><input type="text" id="cp-cr" list="cp-dl-cr" placeholder="${esc(T('Buscar criatura…'))}"><button type="button" class="btn" data-act="cpcrlink">${T('Vincular')}</button></div>${k?`<p class="hint">${T('La criatura vinculada ya no está disponible.')}</p>`:''}</div>`;
+  if(!m)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Vincula una criatura del bestiario (SRD o la tuya) y usa sus estadísticas, acciones y equipo.')}</p><div class="cplink bfilters"><input type="text" id="cp-cr" list="cp-dl-cr" placeholder="${esc(T('Buscar criatura…'))}"><button type="button" class="btn" data-act="cpcrlink">${T('Vincular')}</button></div>${k?`<p class="hint">${T('La criatura vinculada ya no está disponible.')}</p>`:''}</div>`;
   return `<div class="cpcr"><h4>${T('Ficha de criatura')}: ${esc(m.n)}</h4>${crActions(m)}${sbHTML(m,null)}<button type="button" class="btn sm ghost" data-act="cpcrunlink">${T('Quitar vínculo')}</button></div>`;
 }
 function cpRenderDet(){
@@ -3983,18 +4023,19 @@ function cpRenderDet(){
   const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('');
   const dl=['sesion','npc','lugar'].map(t=>`<datalist id="cp-dl-${t}">${CP.filter(x=>x.tipo===t).map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`).join('');
   const back=Notas.retroenlaces(CP,it);
-  el.innerHTML=`${dl}<div class="cphead"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
+  el.innerHTML=`${dl}<div class="cphead bfilters"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
     <select data-cpf="tipo" aria-label="${esc(T('Tipo'))}">${Notas.TIPOS.map(([k])=>`<option value="${k}"${k===it.tipo?' selected':''}>${esc(T(Notas.SING[k]))}</option>`).join('')}</select></div>
     <div class="cpfields">${CPF[it.tipo].map(f=>cpField(it,f)).join('')}</div>
-    ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}</div>`:''}
+    ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}
     ${it.tipo==='npc'?cpCreature(it):''}
     ${it.tipo==='tienda'?cpInv(it):''}
     ${lists}
+    ${it.tipo==='sesion'?cpEncs(it):''}
     ${it.tipo==='npc'?`<label class="f">${T('Equipo')}<textarea rows="2" data-cpf="campos.equipo">${esc(it.campos.equipo)}</textarea></label>`:''}
     <div class="cptoolbar"><h4>${it.tipo==='sesion'?T('Plan de la sesión'):it.tipo==='diario'?T('Resumen'):T('Notas')}</h4><button type="button" class="btn sm" data-act="cpmode">${cpEdit?T('Vista'):T('Editar')}</button></div>
     ${cpEdit?`<div class="cpwrap"><textarea class="cptext" rows="14" data-cpf="texto" placeholder="${esc(T('Escribe en Markdown. Enlaza con [[Nombre]].'))}">${esc(it.texto)}</textarea><ul class="cpac" id="cp-ac" role="listbox" hidden></ul></div>`:`<div class="cpmd">${it.texto?Notas.md(it.texto,CP,{auto:true,self:it.id}):`<p class="hint">${T('Sin texto todavía.')}</p>`}</div>`}
     ${back.length?`<div class="cpback"><h4>${T('Mencionado en')}</h4>${back.map(b=>`<a class="wl" href="${esc(Notas.href(b))}">${esc(cpName(b))}</a> <small>${esc(T(Notas.SING[b.tipo]))}</small>`).join(' · ')}</div>`:''}
-    <div class="cpfoot"><label class="chk"><input type="checkbox" data-cpf="publico"${it.publico?' checked':''}> ${T('Visible para los jugadores')}</label>
+    <div class="cpfoot"><label class="f cpvis">${T('Quién puede verlo')}<select data-cpf="visibilidad">${[['dm','Solo yo (máster)'],['jugadores','Jugadores de la campaña'],['enlace','Cualquiera con el enlace']].map(([k,l])=>`<option value="${k}"${k===it.visibilidad?' selected':''}>${esc(T(l))}</option>`).join('')}</select><small class="hint">${T('Todavía no se comparte nada: se aplicará al publicar la campaña.')}</small></label>
       <button type="button" class="btn danger sm" data-act="cpdel" data-confirm>${T('Borrar')}</button></div>
     <datalist id="cp-dl-cr">${cpCrOptions()}</datalist>`;
   if(cpFocus){cpFocus=false;const t=el.querySelector('.cptitle');if(t)t.focus();}
@@ -4006,7 +4047,7 @@ function cpNew(tipo,nombre){
   CP.push(it);cpDirty=true;cpFlush();return it;
 }
 function cpSet(it,path,v){
-  if(path==='nombre')it.nombre=v.slice(0,120);else if(path==='texto')it.texto=v;else if(path==='publico')it.publico=!!v;
+  if(path==='nombre')it.nombre=v.slice(0,120);else if(path==='texto')it.texto=v;else if(path==='visibilidad'&&Notas.VIS.includes(v))it.visibilidad=v;
   else if(path.startsWith('campos.'))it.campos[path.slice(7)]=v;
   it.editado=Date.now();cpSoon();
 }
@@ -4037,7 +4078,7 @@ function cpImage(file,it){
     if(t.dataset.cpf==='tipo'){
       const n=Notas.norm({...it,tipo:t.value,campos:it.campos});if(!n)return;
       Object.assign(it,n,{id:it.id});it.editado=Date.now();cpDirty=true;cpFlush();location.hash=Notas.href(it);
-    }else if(t.dataset.cpf==='publico'){cpRenderList();}
+    }else if(t.dataset.cpf==='visibilidad'){cpRenderList();}else if(t.id==='cp-encsel'&&t.value){(it.campos.encuentros=it.campos.encuentros||[]).push(t.value);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();}
     else if(t.id==='cp-img')cpImage(t.files[0],it);
   });
   det.addEventListener('click',e=>{
@@ -4074,7 +4115,7 @@ function cpAcPick(n){
   det.addEventListener('input',e=>{if(e.target.dataset.cpf==='texto')cpAcShow(e.target);});
   det.addEventListener('focusout',e=>{if(e.target.dataset?.cpf==='texto')setTimeout(cpAcHide,150);});
 }
-$('#cp-q').addEventListener('input',e=>{cpQ=e.target.value.trim();cpRenderList();document.querySelectorAll('#cp-tabs a').forEach(a=>a.setAttribute('aria-selected',!cpQ&&a.getAttribute('href')==='#campana/'+cpTipo));});
+$('#cp-q').addEventListener('input',e=>{cpQ=e.target.value.trim();cpRenderList();cpRenderTabs(cpTipo,cpQ);});
 
 /* ---------- reglas y referencia rápida ---------- */
 const RSUM=new Map();
@@ -4279,6 +4320,14 @@ if(window.__AppShell){/* estilo propio de la app: se ofrece solo aquí */
 }
 if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barra plegada y color de los botones de la ventana */
   const R=document.documentElement,S=window.__AppShell;
+  /* ventana de mesa (lo que ven los jugadores): acceso en la barra lateral y botón de orden en el combate */
+  if(S.mesa){
+    const a=document.createElement('a');a.href='#mesa';a.className='sbmesa';a.innerHTML=ic('eye')+' '+T('Ventana de mesa');
+    a.addEventListener('click',e=>{e.preventDefault();S.mesa.abrir();});
+    $('.pagenav').insertBefore(a,$('.pagenav .navver'));
+    const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
+    if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}
+  }
   /* campaña activa arriba de la barra lateral; el selector de la barra superior se oculta */
   {const b=document.createElement('button');b.type='button';b.className='sbcamp';b.setAttribute('aria-label',T('Campaña'));
    b.innerHTML='<span class="ini noi18n"></span><span class="nm noi18n"></span><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg>';
