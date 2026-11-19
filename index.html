@@ -46,6 +46,59 @@ window.Store=(()=>{
     native:{get:k=>localStorage.getItem(k)},
     campaigns};})();
 </script>
+<script id="enc-core">
+window.Encuentros=(()=>{
+/* Planificación de encuentros (D&D 2024): presupuesto de XP del grupo y generador aleatorio. Puro y sin DOM. */
+// presupuesto de XP por personaje y nivel: [bajo, moderado, alto]
+const PRES=[[50,75,100],[100,150,200],[150,225,400],[250,375,500],[500,750,1100],[600,1000,1400],[750,1100,1700],[1000,1400,2100],[1300,1700,2600],[1600,2000,3100],
+  [1900,2600,4100],[2200,3100,4700],[2600,3400,5400],[2900,3900,6200],[3300,4300,7800],[3800,4900,9800],[4500,5800,11700],[5000,6500,13200],[5500,7500,14000],[6400,9000,17000]];
+const DIF=['bajo','moderado','alto'];
+const niv=n=>Math.min(20,Math.max(1,Math.trunc(Number(n))||1));
+/* grupo: lista de niveles, p. ej. [3,3,4,5] → presupuesto {bajo,moderado,alto} */
+function presupuesto(grupo){
+  const o={bajo:0,moderado:0,alto:0};
+  for(const l of Array.isArray(grupo)?grupo.slice(0,20):[]){const p=PRES[niv(l)-1];DIF.forEach((d,i)=>o[d]+=p[i]);}
+  return o;
+}
+/* veredicto de un total de XP frente al presupuesto */
+function veredicto(xp,pres){
+  if(!(pres.alto>0))return 'sin_grupo';
+  if(xp<=0)return 'vacio';
+  if(xp<pres.bajo)return 'trivial';
+  if(xp<=pres.bajo)return 'bajo';
+  if(xp<=pres.moderado)return 'moderado';
+  if(xp<=pres.alto)return 'alto';
+  return 'mortal';
+}
+/* criaturas: [{n,xp,cant}] */
+const total=cs=>(Array.isArray(cs)?cs:[]).reduce((s,c)=>s+(Number(c.xp)||0)*(Math.max(0,Math.trunc(Number(c.cant))||0)),0);
+function evaluar(grupo,cs){const p=presupuesto(grupo),t=total(cs);return {presupuesto:p,xp:t,veredicto:veredicto(t,p),pct:p.moderado?Math.round(100*t/p.moderado):0};}
+/* Generador. pool: [{n,xp,ty}] · opts: {grupo,dificultad:'bajo'|'moderado'|'alto',max,tipos:[],variedad,bloqueadas:[{n,xp,cant}],rng}
+   Nunca supera el presupuesto de la dificultad pedida y procura llenar al menos el 70 %. */
+function generar(pool,opts){
+  opts=opts||{};const rng=typeof opts.rng==='function'?opts.rng:Math.random;
+  const pres=presupuesto(opts.grupo),meta=pres[DIF.includes(opts.dificultad)?opts.dificultad:'moderado'];
+  const max=Math.min(40,Math.max(1,Math.trunc(Number(opts.max))||8)),variedad=Math.min(6,Math.max(1,Math.trunc(Number(opts.variedad))||3));
+  const tipos=(opts.tipos||[]).map(t=>String(t).toLowerCase());
+  const cand=(Array.isArray(pool)?pool:[]).filter(c=>c&&c.n&&c.xp>0&&(!tipos.length||tipos.includes(String(c.ty||'').toLowerCase())));
+  const sel=new Map();let n=0,xp=0;
+  for(const b of Array.isArray(opts.bloqueadas)?opts.bloqueadas:[]){const c=Math.max(1,Math.trunc(Number(b.cant))||1);if(xp+b.xp*c<=meta&&n+c<=max){sel.set(b.n,{n:b.n,xp:b.xp,ty:b.ty,cant:c});n+=c;xp+=b.xp*c;}}
+  const elige=a=>a[Math.floor(rng()*a.length)];
+  for(let i=0;i<200&&n<max&&xp<meta*0.95;i++){
+    const resto=meta-xp,libres=cand.filter(c=>c.xp<=resto&&(sel.has(c.n)||sel.size<variedad));
+    if(!libres.length)break;
+    let c;
+    if(sel.size===0){const jefes=libres.filter(x=>x.xp>=meta*0.25);c=elige(jefes.length?jefes:libres);}   // primero una pieza principal
+    else{const rep=libres.filter(x=>sel.has(x.n));c=rng()<0.55&&rep.length?elige(rep):elige(libres);}      // luego refuerzos, a menudo repetidos
+    const e=sel.get(c.n);if(e)e.cant++;else sel.set(c.n,{n:c.n,xp:c.xp,ty:c.ty,cant:1});
+    n++;xp+=c.xp;
+  }
+  const criaturas=[...sel.values()];
+  return {criaturas,xp,meta,veredicto:veredicto(xp,pres),llena:meta?xp/meta:0};
+}
+return {PRES,presupuesto,veredicto,total,evaluar,generar};
+})();
+</script>
 <script id="ficha-core">
 window.Ficha=(()=>{
 /* Motor de ficha de personaje (D&D 2024). Funciones puras: cada operación devuelve {ok:true,f} con una ficha nueva
