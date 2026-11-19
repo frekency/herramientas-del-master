@@ -19,7 +19,7 @@ window.Store=(()=>{
   const B=window.__StoreBackend||{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v),remove:k=>localStorage.removeItem(k),
     keys:()=>{const o=[];for(let i=0;i<localStorage.length;i++)o.push(localStorage.key(i));return o;}};
   const IDX='combat-campaigns-v1',BASE='local',MAX=50;
-  const SCOPED=new Set(['combat-tracker-v1','combat-party-v1','combat-presets-v1','camp-notes-v1','camp-sync-v1']);
+  const SCOPED=new Set(['combat-tracker-v1','combat-party-v1','combat-presets-v1','camp-notes-v1','camp-sync-v1','camp-fichas-v1','camp-config-v1']);
   let idx=null;
   const load=()=>{if(idx)return idx;let v=null;try{v=JSON.parse(B.get(IDX)||'null');}catch(e){}
     if(!v||!Array.isArray(v.list)||!v.list.some(c=>c&&c.id===BASE))v={v:1,active:BASE,list:[{id:BASE,nombre:'Mi campaña',creado:Date.now()}].concat((v&&Array.isArray(v.list)?v.list:[]).filter(c=>c&&c.id!==BASE))};
@@ -335,9 +335,9 @@ function espacios(f){
 function norm(x){
   if(!x||typeof x!=='object')return null;
   const f={v:1,id:txt(x.id,40)||'f'+Math.random().toString(36).slice(2,10),nombre:txt(x.nombre)||'Sin nombre',
-    origen:x.origen==='campana'?'campana':'libre',campana:x.origen==='campana'?txt(x.campana,40):'',especie:txt(x.especie),trasfondo:txt(x.trasfondo),
+    origen:x.origen==='campana'?'campana':'libre',campana:x.origen==='campana'?txt(x.campana,40):'',especie:txt(x.especie),trasfondo:txt(x.trasfondo),ca:int(x.ca,0,40,10),vel:txt(x.vel,20)||'9 m',
     car:{},niveles:[],xp:int(x.xp,0,9999999),concedidas:int(x.concedidas,0,20),hp:0,temp:int(x.temp,0,999),dgUsados:{},slotsUsados:Array(9).fill(0),
-    pactUsados:0,agot:int(x.agot,0,6),recursos:[],dotes:[],notas:txt(x.notas,5000),registro:[]};
+    pactUsados:0,agot:int(x.agot,0,6),recursos:[],dotes:[],notas:txt(x.notas,5000),registro:[],dm:[]};
   for(const a of AB)f.car[a]=int(x.car&&x.car[a],1,30,10);
   for(const n of Array.isArray(x.niveles)?x.niveles.slice(0,20):[])if(n&&Object.hasOwn(CLASES,n.c))f.niveles.push({c:n.c,hp:f.niveles.length?int(n.hp,1,CLASES[n.c].d,1):CLASES[n.c].d});
   const cl=clases(f);
@@ -349,6 +349,7 @@ function norm(x){
     f.recursos.push({id:txt(r.id,20)||'r'+f.recursos.length,n:txt(r.n,60),max,uso:int(r.uso,0,max),rec:['corto','largo'].includes(r.rec)?r.rec:''});}
   f.dotes=(Array.isArray(x.dotes)?x.dotes:[]).slice(0,30).map(d=>txt(d,60)).filter(Boolean);
   f.registro=(Array.isArray(x.registro)?x.registro:[]).slice(-200).filter(r=>r&&typeof r==='object').map(r=>({t:int(r.t,0,9e15),a:txt(r.a,30),d:txt(r.d,200),por:txt(r.por,40)}));
+  if(f.origen==='campana')f.dm=(Array.isArray(x.dm)?x.dm:[]).slice(-300).filter(r=>r&&typeof r==='object'&&txt(r.txt,3000)).map((r,i)=>({id:txt(r.id,20)||'d'+i,t:int(r.t,0,9e15),tipo:['evento','nota','secreto'].includes(r.tipo)?r.tipo:'nota',txt:txt(r.txt,3000)}));
   const mx=hpMax(f);f.hp=x.hp==null?mx:int(x.hp,0,mx,mx);
   return f;
 }
@@ -361,6 +362,15 @@ function temporales(f,n,ctx){const g=copia(f);g.temp=Math.max(g.temp,int(n,0,999
 function usarSlot(f,lv,ctx){const g=copia(f),e=espacios(g);lv=int(lv,1,9);if(g.slotsUsados[lv-1]>=e.slots[lv-1])return no('sin_espacio');g.slotsUsados[lv-1]++;return ok(anota(g,ctx,'espacio','nivel '+lv));}
 function usarPact(f,ctx){const g=copia(f),e=espacios(g);if(!e.pact||g.pactUsados>=e.pact.n)return no('sin_espacio');g.pactUsados++;return ok(anota(g,ctx,'pacto','nivel '+e.pact.nivel));}
 function usarRecurso(f,id,ctx){const g=copia(f),r=g.recursos.find(x=>x.id===id);if(!r)return no('no_existe');if(r.uso>=r.max)return no('agotado');r.uso++;return ok(anota(g,ctx,'recurso',r.n));}
+function devolverSlot(f,lv,ctx){const g=copia(f);lv=int(lv,1,9);if(g.slotsUsados[lv-1]<=0)return no('nada_que_devolver');g.slotsUsados[lv-1]--;return ok(anota(g,ctx,'espacio devuelto','nivel '+lv));}
+function devolverPact(f,ctx){const g=copia(f);if(g.pactUsados<=0)return no('nada_que_devolver');g.pactUsados--;return ok(anota(g,ctx,'pacto devuelto',''));}
+function devolverRecurso(f,id,ctx){const g=copia(f),r=g.recursos.find(x=>x.id===id);if(!r)return no('no_existe');if(r.uso<=0)return no('nada_que_devolver');r.uso--;return ok(anota(g,ctx,'recurso devuelto',r.n));}
+function nuevoRecurso(f,x,ctx){const g=copia(f);if(g.recursos.length>=30)return no('demasiados');const n=txt(x&&x.n,60);if(!n)return no('sin_nombre');
+  g.recursos.push({id:'r'+Math.random().toString(36).slice(2,8),n,max:int(x.max,1,99,1),uso:0,rec:['corto','largo'].includes(x.rec)?x.rec:''});return ok(anota(g,ctx,'recurso nuevo',n));}
+function quitarRecurso(f,id,ctx){const g=copia(f),i=g.recursos.findIndex(x=>x.id===id);if(i<0)return no('no_existe');const n=g.recursos[i].n;g.recursos.splice(i,1);return ok(anota(g,ctx,'recurso quitado',n));}
+function dmAnotar(f,x,ctx){if(f.origen!=='campana')return no('solo_campana');if(!ctx||ctx.rol!=='dm')return no('solo_dm');const g=copia(f),s=txt(x&&x.txt,3000);if(!s)return no('vacio');if(g.dm.length>=300)return no('demasiados');
+  g.dm.push({id:'d'+Math.random().toString(36).slice(2,9),t:int(ctx.ahora,0,9e15,Date.now()),tipo:['evento','nota','secreto'].includes(x.tipo)?x.tipo:'nota',txt:s});return ok(g);}
+function dmQuitar(f,id,ctx){if(!ctx||ctx.rol!=='dm')return no('solo_dm');const g=copia(f),i=g.dm.findIndex(r=>r.id===id);if(i<0)return no('no_existe');g.dm.splice(i,1);return ok(g);}
 /* dados: [{c:'mago',v:4}, …] — dados de golpe gastados con su resultado */
 function descansoCorto(f,dados,ctx){
   const g=copia(f);let cura=0;
@@ -409,6 +419,9 @@ const EDIT=['nombre','especie','trasfondo','notas'];
 function editar(f,campo,valor,ctx){
   const g=copia(f),camp=f.origen==='campana';
   if(EDIT.includes(campo))g[campo]=txt(valor,campo==='notas'?5000:80);
+  else if(campo==='ca'){g.ca=int(valor,0,40,10);}
+  else if(campo==='vel'){g.vel=txt(valor,20)||'9 m';}
+  else if(campo==='agot'){g.agot=int(valor,0,6,0);}
   else if(campo==='xp'){if(camp&&!(ctx&&ctx.rol==='dm'))return no('solo_dm');g.xp=int(valor,0,9999999);}
   else if(campo.startsWith('car.')&&AB.includes(campo.slice(4))){if(camp)return no('bloqueado');g.car[campo.slice(4)]=int(valor,1,30,10);g.hp=Math.min(g.hp,hpMax(g));}
   else return no('bloqueado');
@@ -416,17 +429,17 @@ function editar(f,campo,valor,ctx){
 }
 /* ---- exportar / importar ---- */
 const L={
-  es:{ab:['FUE','DES','CON','INT','SAB','CAR'],nv:'Nivel',cl:'Clases',es:'Especie',tf:'Trasfondo',pg:'PG',pb:'Competencia',dg:'Dados de golpe',sl:'Espacios de conjuro',rc:'Recursos',dt:'Dotes',nt:'Notas',
+  es:{ab:['FUE','DES','CON','INT','SAB','CAR'],nv:'Nivel',cl:'Clases',es:'Especie',tf:'Trasfondo',pg:'PG',ca:'CA',vl:'Velocidad',pb:'Competencia',dg:'Dados de golpe',sl:'Espacios de conjuro',rc:'Recursos',dt:'Dotes',nt:'Notas',
     c:{barbaro:'Bárbaro',bardo:'Bardo',brujo:'Brujo',clerigo:'Clérigo',druida:'Druida',explorador:'Explorador',guerrero:'Guerrero',hechicero:'Hechicero',mago:'Mago',monje:'Monje',paladin:'Paladín',picaro:'Pícaro'}},
-  en:{ab:['STR','DEX','CON','INT','WIS','CHA'],nv:'Level',cl:'Classes',es:'Species',tf:'Background',pg:'HP',pb:'Proficiency',dg:'Hit Dice',sl:'Spell slots',rc:'Resources',dt:'Feats',nt:'Notes',
+  en:{ab:['STR','DEX','CON','INT','WIS','CHA'],nv:'Level',cl:'Classes',es:'Species',tf:'Background',pg:'HP',ca:'AC',vl:'Speed',pb:'Proficiency',dg:'Hit Dice',sl:'Spell slots',rc:'Resources',dt:'Feats',nt:'Notes',
     c:{barbaro:'Barbarian',bardo:'Bard',brujo:'Warlock',clerigo:'Cleric',druida:'Druid',explorador:'Ranger',guerrero:'Fighter',hechicero:'Sorcerer',mago:'Wizard',monje:'Monk',paladin:'Paladin',picaro:'Rogue'}},
-  fr:{ab:['FOR','DEX','CON','INT','SAG','CHA'],nv:'Niveau',cl:'Classes',es:'Espèce',tf:'Historique',pg:'PV',pb:'Maîtrise',dg:'Dés de vie',sl:'Emplacements de sorts',rc:'Ressources',dt:'Dons',nt:'Notes',
+  fr:{ab:['FOR','DEX','CON','INT','SAG','CHA'],nv:'Niveau',cl:'Classes',es:'Espèce',tf:'Historique',pg:'PV',ca:'CA',vl:'Vitesse',pb:'Maîtrise',dg:'Dés de vie',sl:'Emplacements de sorts',rc:'Ressources',dt:'Dons',nt:'Notes',
     c:{barbaro:'Barbare',bardo:'Barde',brujo:'Occultiste',clerigo:'Clerc',druida:'Druide',explorador:'Rôdeur',guerrero:'Guerrier',hechicero:'Ensorceleur',mago:'Magicien',monje:'Moine',paladin:'Paladin',picaro:'Roublard'}},
-  pt:{ab:['FOR','DES','CON','INT','SAB','CAR'],nv:'Nível',cl:'Classes',es:'Espécie',tf:'Antecedente',pg:'PV',pb:'Proficiência',dg:'Dados de vida',sl:'Espaços de magia',rc:'Recursos',dt:'Talentos',nt:'Notas',
+  pt:{ab:['FOR','DES','CON','INT','SAB','CAR'],nv:'Nível',cl:'Classes',es:'Espécie',tf:'Antecedente',pg:'PV',ca:'CA',vl:'Deslocamento',pb:'Proficiência',dg:'Dados de vida',sl:'Espaços de magia',rc:'Recursos',dt:'Talentos',nt:'Notas',
     c:{barbaro:'Bárbaro',bardo:'Bardo',brujo:'Bruxo',clerigo:'Clérigo',druida:'Druida',explorador:'Patrulheiro',guerrero:'Guerreiro',hechicero:'Feiticeiro',mago:'Mago',monje:'Monge',paladin:'Paladino',picaro:'Ladino'}},
-  it:{ab:['FOR','DES','COS','INT','SAG','CAR'],nv:'Livello',cl:'Classi',es:'Specie',tf:'Background',pg:'PF',pb:'Competenza',dg:'Dadi vita',sl:'Slot incantesimo',rc:'Risorse',dt:'Talenti',nt:'Note',
+  it:{ab:['FOR','DES','COS','INT','SAG','CAR'],nv:'Livello',cl:'Classi',es:'Specie',tf:'Background',pg:'PF',ca:'CA',vl:'Velocità',pb:'Competenza',dg:'Dadi vita',sl:'Slot incantesimo',rc:'Risorse',dt:'Talenti',nt:'Note',
     c:{barbaro:'Barbaro',bardo:'Bardo',brujo:'Warlock',clerigo:'Chierico',druida:'Druido',explorador:'Ranger',guerrero:'Guerriero',hechicero:'Stregone',mago:'Mago',monje:'Monaco',paladin:'Paladino',picaro:'Ladro'}},
-  de:{ab:['STR','GES','KON','INT','WEI','CHA'],nv:'Stufe',cl:'Klassen',es:'Spezies',tf:'Hintergrund',pg:'TP',pb:'Übungsbonus',dg:'Trefferwürfel',sl:'Zauberplätze',rc:'Ressourcen',dt:'Talente',nt:'Notizen',
+  de:{ab:['STR','GES','KON','INT','WEI','CHA'],nv:'Stufe',cl:'Klassen',es:'Spezies',tf:'Hintergrund',pg:'TP',ca:'RK',vl:'Bewegungsrate',pb:'Übungsbonus',dg:'Trefferwürfel',sl:'Zauberplätze',rc:'Ressourcen',dt:'Talente',nt:'Notizen',
     c:{barbaro:'Barbar',bardo:'Barde',brujo:'Hexenmeister',clerigo:'Kleriker',druida:'Druide',explorador:'Waldläufer',guerrero:'Kämpfer',hechicero:'Zauberer',mago:'Magier',monje:'Mönch',paladin:'Paladin',picaro:'Schurke'}}};
 const fm=v=>(v>=0?'+':'')+v;
 /* opts: {idioma:'es'|'en'|…, formato:'json'|'md', registro:false} */
@@ -435,7 +448,7 @@ function exportar(f,opts){
   if(opts.formato==='md'){
     const e=espacios(f),q=dg(f);
     const s=[`# ${f.nombre}`,'',`**${l.nv}:** ${nivel(f)} · **${l.cl}:** ${Object.entries(clases(f)).map(([c,n])=>l.c[c]+' '+n).join(', ')||'—'}`,
-      `**${l.es}:** ${f.especie||'—'} · **${l.tf}:** ${f.trasfondo||'—'} · **${l.pb}:** ${fm(prof(f))}`,`**${l.pg}:** ${f.hp}/${hpMax(f)}${f.temp?' (+'+f.temp+')':''}`,'',
+      `**${l.es}:** ${f.especie||'—'} · **${l.tf}:** ${f.trasfondo||'—'} · **${l.pb}:** ${fm(prof(f))}`,`**${l.pg}:** ${f.hp}/${hpMax(f)}${f.temp?' (+'+f.temp+')':''} · **${l.ca}:** ${f.ca} · **${l.vl}:** ${f.vel}`,'',
       '| '+l.ab.join(' | ')+' |','|'+l.ab.map(()=>'---').join('|')+'|','| '+AB.map(a=>`${f.car[a]} (${fm(mod(f.car[a]))})`).join(' | ')+' |'];
     if(Object.keys(q).length)s.push('',`**${l.dg}:** `+Object.entries(q).map(([c,x])=>`${x.quedan}/${x.total} d${x.d}`).join(', '));
     if(e.nivelCaster||e.pact)s.push(`**${l.sl}:** `+[...e.slots.map((n,i)=>n?`${i+1}º ${n-f.slotsUsados[i]}/${n}`:null).filter(Boolean),e.pact?`P ${e.pact.n-f.pactUsados}/${e.pact.n} (${e.pact.nivel}º)`:null].filter(Boolean).join(' · '));
@@ -444,7 +457,7 @@ function exportar(f,opts){
     if(f.notas)s.push('',`**${l.nt}:**`,'',f.notas);
     return s.join('\n')+'\n';
   }
-  const o=JSON.parse(JSON.stringify(f));if(!opts.registro)o.registro=[];
+  const o=JSON.parse(JSON.stringify(f));if(!opts.registro)o.registro=[];o.dm=[];   // lo del máster nunca sale de la campaña
   return JSON.stringify({formato:'herramientas-del-master/ficha',v:1,idioma,ficha:o},null,2);
 }
 function importar(t){
@@ -452,7 +465,7 @@ function importar(t){
   if(!o||o.formato!=='herramientas-del-master/ficha'||o.v!==1)return no('formato');
   const f=norm(o.ficha);if(!f)return no('ficha');f.origen='libre';f.campana='';f.id='f'+Math.random().toString(36).slice(2,10);return ok(f); // lo importado nunca entra como personaje de campaña
 }
-return {AB,XP,CLASES,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
+return {AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
 })();
 </script>
 <script id="notas-core">
@@ -1675,6 +1688,50 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .evlist{display:flex;flex-wrap:wrap;gap:6px}
 .epev{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--surface-2)}
 .epev textarea{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-height:48px;font:inherit}
+.pjgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.pjsec{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}.pjsec h3{margin:0;font-size:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pjsec h3 label{font-size:12px;color:var(--muted);font-weight:500;display:flex;gap:6px;align-items:center}
+.pjcard{--pj:#c9a14a;display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-left:6px solid var(--pj);border-radius:16px;background:var(--surface);text-decoration:none;color:var(--fg)}
+.pjcard:hover{background:color-mix(in srgb,var(--pj) 8%,var(--surface))}
+.pjav{flex:none;width:48px;height:48px;border-radius:50%;background:color-mix(in srgb,var(--pj) 28%,var(--surface));border:2px solid var(--pj);display:grid;place-items:center;font-weight:800;font-size:20px}
+.pjtx{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.pjtx small{color:var(--muted)}
+.pjhp{height:14px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}.pjhp.mini{height:8px}
+.pjhp i{display:block;height:100%;border-radius:999px;transition:width .25s}.pjhp i.ok{background:var(--ok)}.pjhp i.warn{background:var(--warn)}.pjhp i.crit{background:var(--crit)}
+.pjsheet{--pj:#c9a14a;display:flex;flex-direction:column;gap:14px}
+.pjbox{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:14px;display:flex;flex-direction:column;gap:10px}
+.pjbox h3{margin:0;font-size:14px;display:flex;gap:8px;align-items:center}
+.pjhead{border-top:6px solid var(--pj);flex-direction:row;flex-wrap:wrap;align-items:center;gap:14px}
+.pjhead .pjav{width:64px;height:64px;font-size:28px}
+.pjhead input.pjname{font-size:24px;font-weight:800;background:transparent;border:1px solid transparent;border-radius:8px;padding:2px 6px;width:100%;color:var(--fg)}
+.pjhead input.pjname:hover,.pjhead input.pjname:focus{border-color:var(--line);background:var(--surface-2)}
+.pjtag{display:inline-flex;gap:6px;align-items:center;padding:2px 10px;border-radius:999px;border:1px solid var(--pj);font-size:12px;font-weight:600}
+.pjabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.pjab{border:2px solid var(--pj);border-radius:18px 18px 30px 30px;padding:8px 6px 12px;text-align:center;background:color-mix(in srgb,var(--pj) 8%,var(--surface));display:flex;flex-direction:column;gap:2px;align-items:center}
+.pjab .k{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)}.pjab .m{font-size:30px;font-weight:800;line-height:1.05}.pjab .sv{font-size:12px;color:var(--muted)}
+.pjab input{width:58px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--fg);padding:3px}
+.pjab .lk{font-size:13px;color:var(--muted)}
+.pjrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pjrow label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.pjbox input,.pjbox select,.pjbox textarea,.pjm input,.pjm select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-width:0}
+.pjsec select,.pjbox select,.pjm select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px;cursor:pointer}
+.pjsec select{background-color:var(--surface-2);border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:4px 28px 4px 8px}
+.pjbox input:focus-visible,.pjbox select:focus-visible,.pjbox textarea:focus-visible,.pjm input:focus-visible,.pjm select:focus-visible,.pjm textarea:focus-visible,.pjsec select:focus-visible,.pjab input:focus-visible{outline:2px solid var(--pj,var(--accent));outline-offset:1px}
+.pjbox input::placeholder,.pjbox textarea::placeholder{color:var(--muted);opacity:.7}
+.pjm input[type=file]{background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:10px;width:100%}
+.pjm input[type=file]::file-selector-button,.pjbox input[type=file]::file-selector-button{border:0;border-radius:7px;background:var(--pj,var(--accent));color:#111;font-weight:700;padding:5px 12px;margin-right:10px;cursor:pointer}
+.pjbox input[type=checkbox],.pjm input[type=checkbox]{accent-color:var(--pj,var(--accent));width:18px;height:18px}
+.pjbox textarea,.pjm textarea{resize:vertical}
+.pjbox input[type=number]{width:76px}
+.pjdm{border:1px dashed #8a5cd6;background:color-mix(in srgb,#8a5cd6 7%,var(--surface))}.pjdm .pjtag{border-color:#8a5cd6}
+.pjdme{align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.pjdmi{font-size:20px;line-height:1.2}
+.pjhead input.pjname::placeholder{color:var(--muted)}.pjbox textarea{min-height:90px;width:100%;font:inherit}
+.pjhpnum{font-size:26px;font-weight:800}.pjstate{color:var(--muted);font-size:14px}
+.pips{display:inline-flex;flex-wrap:wrap;gap:5px;align-items:center}
+.pip{width:20px;height:20px;border-radius:50%;border:2px solid var(--pj);background:var(--pj);cursor:pointer;padding:0}.pip.off{background:transparent}
+.pjlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.pjlist li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.pjlock{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.pjm label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}.pjm .row{display:flex;flex-wrap:wrap;gap:10px}
+.pjm textarea{width:100%;min-height:200px;font:12px/1.4 ui-monospace,Consolas,monospace;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--fg);padding:8px}
 .scrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
 .scremote{display:flex;flex-direction:column;gap:6px}
 .epgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
@@ -1860,7 +1917,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.42</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.43</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -2024,6 +2081,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.43 <span>20 nov 2026</span></h3><ul>
+      <li><b>Personajes</b>: fichas con descansos, subida de nivel guiada, recursos y exportación en varios idiomas; los de campaña tienen una sección solo para el máster.</li></ul></li>
     <li><h3>v1.42 <span>19 nov 2026</span></h3><ul>
       <li><b>Sincronización de campañas</b> con tu cuenta, por elemento y con copia local: funciona sin conexión y, si dos dispositivos tocan lo mismo, gana lo más reciente y lo otro queda guardado.</li></ul></li>
     <li><h3>v1.41 <span>19 nov 2026</span></h3><ul>
@@ -2160,6 +2219,12 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li>Editor de criaturas propias: crear, clonar y editar.</li></ul></li>
     <li><h3>v1.0</h3><ul><li>Tracker de iniciativa con bandos, PG, PG temporales, estados con duración, salvaciones contra muerte, rondas, deshacer y registro.</li></ul></li>
   </ol>
+</section>
+
+<section class="vpage" id="view-personajes" hidden>
+  <div class="vhead"><h2>Personajes</h2><span class="pcsub noi18n" id="pj-count"></span>
+    <div class="inline" style="margin-left:auto"><button type="button" class="btn" data-act="pjimport">Importar</button><button type="button" class="btn primary" data-act="pjnew">+ Nuevo personaje</button></div></div>
+  <div id="pj-body"></div>
 </section>
 
 <section class="vpage" id="view-encuentros" hidden>
@@ -2512,6 +2577,13 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="pjmodal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="pjm-h" style="width:min(560px,100%)">
+    <div class="mhead"><h2 id="pjm-h"></h2><button type="button" class="btn ghost" data-act="pjclose" aria-label="Cerrar">✕</button></div>
+    <div class="mbody" id="pjm-body" style="display:grid;gap:12px"></div>
   </div>
 </div>
 
@@ -3063,6 +3135,7 @@ function render(){
   renderEnc();
   if(!$('#view-jugadores').hidden){renderParty();cpRenderTabs('jugadores',false);}
   if(!$('#view-encuentros').hidden){epRender();cpRenderTabs('encuentros',false);}
+  if(!$('#view-personajes').hidden)pjRender();
   refreshCompView();
   if(!$('#view-inicio').hidden)renderHome();
   /* ventana de mesa: al empezar un combate el orden pasa a la mesa (si está abierta) y al terminarlo se limpia */
@@ -4272,6 +4345,40 @@ function extraAct(act,b,c,e){
     case 'epadd':{const m=epHits[+b.dataset.i];if(m)epAddMon(m);break;}
     case 'eprm':epDraft.rows.splice(+b.dataset.i,1);epRenderDet();break;
     case 'epgen':epGenerar();break;
+    case 'pjnew':pjEdit='new';pjSel=null;if(location.hash!=='#personajes')location.hash='personajes';pjRender();break;
+    case 'pjcancel':pjEdit=null;pjRender();break;
+    case 'pjstd':Ficha.AB.forEach((a,i)=>{$('#pjn-'+a).value=[15,14,13,12,10,8][i];});break;
+    case 'pjrand':Ficha.AB.forEach(a=>{const d=[1,2,3,4].map(()=>1+Math.floor(Math.random()*6)).sort((x,y)=>y-x);$('#pjn-'+a).value=d[0]+d[1]+d[2];});break;
+    case 'pjimport':pjModo='importar';pjModal(T('Importar personaje'),pjImportHTML());break;
+    case 'pjimpgo':{const r=Ficha.importar($('#pji-txt').value);if(!r.ok){toast(T('El archivo no es una ficha válida'));break;}PJ.push(r.f);pjSave();pjCerrar();location.hash='personajes/'+r.f.id;toast(T('Personaje importado'));break;}
+    case 'pjclose':pjCerrar();break;
+    case 'pjlevel':pjLevelAbrir();break;
+    case 'pjlvgo':{const s=pjGet(pjSel);if(!s||!pjLvl)break;const L=pjLvl,op={c:L.c,hp:L.hp};
+      const pide=[4,8,12,16,19].includes(Ficha.nivelClase(s.f,L.c)+1)||(Ficha.CLASES[L.c].mej||[]).includes(Ficha.nivelClase(s.f,L.c)+1);
+      if(pide)op.mejora=L.modo==='dote'?{dote:L.dote}:L.modo==='2'?{[L.a1]:2}:(L.a1===L.a2?{[L.a1]:2}:{[L.a1]:1,[L.a2]:1});
+      if(pjCommit(Ficha.subir(s.f,op,s.lista==='campana'?{criterio:pjCriterio()}:null,pjCtx()),s)){pjCerrar();toast(T('¡Sube de nivel!'));}break;}
+    case 'pjexport':pjModo='exportar';pjModal(T('Exportar personaje'),pjExportHTML());break;
+    case 'pjcopy':{const x=$('#pjx-txt');if(x){navigator.clipboard.writeText(x.value).then(()=>toast(T('Copiado')),()=>{x.select();toast(T('Selecciona y copia con Ctrl+C'));});}break;}
+    case 'pjdl':{const s=pjGet(pjSel);if(!s)break;const x=$('#pjx-txt').value,json=pjExp.formato==='json',a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([x],{type:json?'application/json':'text/markdown'}));a.download=(s.f.nombre.replace(/[^\w\- ]+/g,'').trim()||'personaje')+(json?'.json':'.md');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);break;}
+    case 'pjdano':case 'pjcura':case 'pjtemp':{const s=pjGet(pjSel);if(!s)break;const n=$('#pj-amt').value,c=pjCtx();
+      pjCommit(b.dataset.act==='pjdano'?Ficha.dano(s.f,n,c):b.dataset.act==='pjcura'?Ficha.curar(s.f,n,c):Ficha.temporales(s.f,n,c),s);break;}
+    case 'pjslot':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarSlot(s.f,+b.dataset.lv,pjCtx()):Ficha.devolverSlot(s.f,+b.dataset.lv,pjCtx()),s);break;}
+    case 'pjpact':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarPact(s.f,pjCtx()):Ficha.devolverPact(s.f,pjCtx()),s);break;}
+    case 'pjrec':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarRecurso(s.f,b.dataset.id,pjCtx()):Ficha.devolverRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
+    case 'pjrecdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.quitarRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
+    case 'pjrecnew':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.nuevoRecurso(s.f,{n:$('#pjr-n').value,max:$('#pjr-m').value,rec:$('#pjr-r').value},pjCtx()),s);break;}
+    case 'pjshort':pjRest={dados:[]};pjRender();break;
+    case 'pjshortcancel':pjRest=null;pjRender();break;
+    case 'pjdado':{const c=b.dataset.c,v=Math.trunc(+($('#pjd-'+c)||{}).value);if(pjRest&&v>=1){pjRest.dados.push({c,v});pjRender();}break;}
+    case 'pjshortdone':{const s=pjGet(pjSel);if(!s||!pjRest)break;const d=pjRest.dados;if(pjCommit(Ficha.descansoCorto(s.f,d,pjCtx()),s)){pjRest=null;pjRender();toast(T('Descanso corto terminado'));}break;}
+    case 'pjlong':{const s=pjGet(pjSel);if(s&&pjCommit(Ficha.descansoLargo(s.f,pjCtx()),s))toast(T('Descanso largo terminado'));break;}
+    case 'pjconceder':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.conceder(s.f,1,pjCtx()),s);break;}
+    case 'pjtocamp':{const s=pjGet(pjSel);if(!s)break;const c=pjNuevaCopia(s.f,{origen:'campana',campana:Store.campaigns.active()});PJC.push(c);pjSave();toast(T('Copia creada en la campaña; el original sigue en Mis personajes'));location.hash='personajes/'+c.id;break;}
+    case 'pjdup':{const s=pjGet(pjSel);if(!s)break;const c=pjNuevaCopia(s.f,{nombre:s.f.nombre+' (2)'});(s.lista==='campana'?PJC:PJ).push(c);pjSave();location.hash='personajes/'+c.id;break;}
+    case 'pjdmadd':{const s=pjGet(pjSel);if(!s)break;const x=$('#pjdm-x');if(pjCommit(Ficha.dmAnotar(s.f,{tipo:$('#pjdm-t').value,txt:x.value},pjCtx()),s))toast(T('Anotado'));break;}
+    case 'pjdmdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.dmQuitar(s.f,b.dataset.id,pjCtx()),s);break;}
+    case 'pjdel':{const s=pjGet(pjSel);if(!s)break;const arr=s.lista==='campana'?PJC:PJ,i=arr.findIndex(x=>x.id===s.f.id);if(i>=0)arr.splice(i,1);pjSave();location.hash='personajes';toast(T('Personaje borrado'));break;}
     case 'epevnew':epDraft.eventos.push(epEvNuevo());epRenderDet();break;
     case 'epevrm':epDraft.eventos.splice(+b.dataset.i,1);epRenderDet();break;
     case 'epevadd':{const x=epDraft.eventos[+b.dataset.i],m=epEvHits.hits[+b.dataset.j];if(x&&m&&x.refuerzos.length<20){x.refuerzos.push(epRowFromMon(m));epEvHits={i:-1,hits:[]};epRenderDet();}break;}
@@ -4337,7 +4444,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','campana','jugadores','encuentros','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
@@ -4348,6 +4455,7 @@ function showView(){
   $('#brand').textContent=isPage?'Herramientas del Máster':'Iniciativa';
   if(v2==='inicio')renderHome();
   if(v2==='jugadores')renderParty();
+  if(v2==='personajes')pjRoute(r.slug);
   if(r.page==='compendio'){if(v2==='conjuros')fillSpellFilters();refreshCompView();}
   if(v2==='tablas')renderTables();
   if(v2==='referencia')renderRef();
@@ -4448,6 +4556,7 @@ function route(){
   if(a==='compendio')return {page:'compendio',tab:CTABS.some(x=>x[0]===b)?b:'',slug:c||''};
   if(a==='campana')return {page:'campana',tab:b||'',slug:c||''};
   if(a==='jugadores')return {page:'campana',tab:'jugadores',slug:''};
+  if(a==='personajes')return {page:'personajes',slug:b||''};
   return {page:a||'inicio'};
 }
 const viewOf=r=>r.page==='campana'&&(r.tab==='jugadores'||r.tab==='encuentros')?r.tab:r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'?r.tab:'compendio';
@@ -4544,6 +4653,193 @@ document.addEventListener('input',e=>{
     const h=$('#ep-evhits-'+el.dataset.evq);if(h)h.innerHTML=epEvHits.hits.map((m,j)=>'<button type="button" class="btn sm" data-act="epevadd" data-i="'+el.dataset.evq+'" data-j="'+j+'">'+esc(m.n)+'</button>').join('');}
   else if(el.id==='ep-q'){const q=fold(el.value);epHits=q.length<2?[]:allBest().filter(m=>fold(m.n).includes(q)).slice(0,8);
     $('#ep-hits').innerHTML=epHits.map((m,i)=>'<button type="button" class="btn sm" data-act="epadd" data-i="'+i+'">'+esc(m.n)+(m.cr!=null?' · VD '+esc(m.cr):'')+'</button>').join('');}
+});
+/* ---------- personajes (motor de ficha: una sola lógica para fichas libres y de campaña) ---------- */
+const PJKEY='fichas-v1',PJCKEY='camp-fichas-v1',PJCFG='camp-config-v1';
+const CLSN={barbaro:'Bárbaro',bardo:'Bardo',brujo:'Brujo',clerigo:'Clérigo',druida:'Druida',explorador:'Explorador',guerrero:'Guerrero',hechicero:'Hechicero',mago:'Mago',monje:'Monje',paladin:'Paladín',picaro:'Pícaro'};
+const CLSC={barbaro:'#d0453c',bardo:'#c15fa8',brujo:'#7a4bd0',clerigo:'#d9b24a',druida:'#4f9a5a',explorador:'#6f9a3a',guerrero:'#b07a45',hechicero:'#e0663f',mago:'#3d7bd9',monje:'#3aa3a3',paladin:'#e0c060',picaro:'#7c8798'};
+const ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
+const ABK={fue:'FUE',des:'DES',con:'CON',int:'INT',sab:'SAB',car:'CAR'};
+const PJERR={sin_espacio:'No quedan espacios de ese nivel',agotado:'Recurso agotado',sin_dados:'No quedan dados de golpe',dado_invalido:'Resultado de dado no válido',faltan_xp:'Aún no tiene la experiencia necesaria',sin_hito:'El máster aún no ha concedido la subida',nivel_maximo:'Ya es de nivel 20',falta_mejora:'Este nivel exige una mejora de característica o una dote',mejora_invalida:'La mejora no es válida',mejora_no_toca:'Este nivel no da mejora',tope_20:'Una característica no puede pasar de 20',bloqueado:'En un personaje de campaña eso solo cambia al subir de nivel',solo_dm:'Solo el máster puede hacerlo',hp_invalido:'El resultado de PG no es válido',clase_invalida:'Clase no válida',nada_que_devolver:'No hay nada que devolver',vacio:'Escribe algo primero',solo_campana:'Solo en personajes de campaña',sin_nombre:'Ponle un nombre',demasiados:'Hay demasiados',no_existe:'No existe'};
+var PJ=[],PJC=[],pjCargado=false,pjSel=null,pjEdit=null,pjRest=null,pjLvl=null,pjModo='';
+function pjLoad(){pjCargado=true;
+  const rd=raw=>{try{const a=JSON.parse(raw||'[]');return (Array.isArray(a)?a:[]).slice(0,200).map(Ficha.norm).filter(Boolean);}catch{return [];}};
+  PJ=rd(Store.root.get(PJKEY));PJC=rd(Store.get(PJCKEY));
+}
+function pjSave(){try{Store.root.set(PJKEY,JSON.stringify(PJ));Store.set(PJCKEY,JSON.stringify(PJC));}catch{toast(T('No se pudo guardar'));}}
+const pjCtx=()=>({rol:'dm',quien:Store.campaigns.activeName()||'Yo',ahora:Date.now()});
+const pjCriterio=()=>{try{return JSON.parse(Store.get(PJCFG)||'{}').criterio==='xp'?'xp':'hito';}catch{return 'hito';}};
+function pjGet(id){let f=PJC.find(x=>x.id===id);if(f)return {f,lista:'campana'};f=PJ.find(x=>x.id===id);return f?{f,lista:'libre'}:null;}
+function pjCommit(res,s){
+  if(!res.ok){toast(T(PJERR[res.error]||'No se ha podido'));return false;}
+  const arr=s.lista==='campana'?PJC:PJ,i=arr.findIndex(x=>x.id===s.f.id);if(i>=0)arr[i]=res.f;
+  pjSave();pjRender();return true;
+}
+const pjHpCls=p=>p>50?'ok':p>25?'warn':'crit';
+const pjEstado=(hp,mx)=>{const p=mx?hp/mx:0;return hp<=0?'Inconsciente':p>=1?'Intacto':p>=.75?'Rasguñado':p>=.5?'Magullado':p>=.25?'Tocado':'Al borde';};
+const pjCls=f=>Object.entries(Ficha.clases(f)).map(([c,n])=>T(CLSN[c])+' '+n).join(' / ')||T('Sin clase');
+const pjCol=f=>f.niveles[0]?CLSC[f.niveles[0].c]:'#c9a14a';
+const pjSgn=n=>(n>=0?'+':'')+n;
+function pjRoute(slug){
+  if(!pjCargado)pjLoad();
+  if(slug&&!pjGet(slug)){location.replace('#personajes');return;}
+  pjSel=slug||null;pjEdit=null;pjRest=null;pjRender();
+}
+function pjRender(){
+  if(!pjCargado)pjLoad();
+  const body=$('#pj-body');if(!body)return;
+  $('#pj-count').textContent=(PJ.length+PJC.length)||'';
+  const s=pjSel&&pjGet(pjSel);
+  document.querySelector('#view-personajes .vhead .inline').hidden=!!s||pjEdit==='new';
+  body.innerHTML=pjEdit==='new'?pjFormHTML():s?pjSheetHTML(s.f,s.lista):pjListHTML();
+}
+function pjCard(f){
+  const mx=Ficha.hpMax(f),pct=mx?Math.round(100*f.hp/mx):0;
+  return '<a class="pjcard" href="#personajes/'+esc(f.id)+'" style="--pj:'+pjCol(f)+'"><span class="pjav">'+esc((f.nombre.trim()[0]||'?').toUpperCase())+'</span><span class="pjtx"><b class="noi18n">'+esc(f.nombre)+'</b><small>'+esc(pjCls(f))+(f.especie?' · '+esc(f.especie):'')+'</small><span class="pjhp mini"><i class="'+pjHpCls(pct)+'" style="width:'+pct+'%"></i></span></span></a>';
+}
+function pjListHTML(){
+  const crit=pjCriterio();
+  return '<div class="pjsec"><h3>'+esc(T('En esta campaña'))+' <span class="pcsub noi18n">'+esc(Store.campaigns.activeName()||'')+'</span>'
+   +'<label>'+esc(T('Las subidas de nivel se dan por'))+' <select data-pjcfg><option value="hito"'+(crit==='hito'?' selected':'')+'>'+esc(T('Hito'))+'</option><option value="xp"'+(crit==='xp'?' selected':'')+'>'+esc(T('Experiencia'))+'</option></select></label></h3>'
+   +(PJC.length?'<div class="pjgrid">'+PJC.map(pjCard).join('')+'</div>':'<p class="pcsub">'+esc(T('Aún no hay personajes en esta campaña.'))+'</p>')+'</div>'
+   +'<div class="pjsec"><h3>'+esc(T('Mis personajes'))+' <span class="pcsub">'+esc(T('Libres: para probar o por diversión, sin reglas que los frenen'))+'</span></h3>'
+   +(PJ.length?'<div class="pjgrid">'+PJ.map(pjCard).join('')+'</div>':'<p class="pcsub">'+esc(T('Todavía no has creado ninguno.'))+'</p>')+'</div>';
+}
+function pjFormHTML(){
+  return '<form id="pj-form" class="pjbox" style="max-width:640px"><h3>'+esc(T('Nuevo personaje'))+'</h3><div class="pjrow">'
+   +'<label style="flex:1 1 200px">'+esc(T('Nombre'))+'<input id="pjn-n" maxlength="80" required></label>'
+   +'<label>'+esc(T('Clase'))+'<select id="pjn-c">'+Object.keys(CLSN).map(c=>'<option value="'+c+'">'+esc(T(CLSN[c]))+'</option>').join('')+'</select></label>'
+   +'<label>'+esc(T('Especie'))+'<input id="pjn-e" maxlength="80" list="cm-esp-dl"></label><label>'+esc(T('Trasfondo'))+'<input id="pjn-t" maxlength="80" list="cm-tf-dl"></label></div>'
+   +'<div class="pjrow">'+Ficha.AB.map((a,i)=>'<label>'+esc(T(ABK[a]))+'<input id="pjn-'+a+'" type="number" min="1" max="30" value="'+[15,14,13,12,10,8][i]+'"></label>').join('')+'</div>'
+   +'<div class="pjrow"><button type="button" class="btn sm" data-act="pjstd">'+esc(T('Valores estándar'))+'</button><button type="button" class="btn sm" data-act="pjrand">'+esc(T('Tirar 4d6'))+'</button></div>'
+   +'<div class="pjrow"><label>'+esc(T('Dónde'))+'<select id="pjn-donde"><option value="libre">'+esc(T('Mis personajes (libre)'))+'</option><option value="campana">'+esc(T('Esta campaña'))+'</option></select></label></div>'
+   +'<div class="pjrow"><button type="submit" class="btn primary">'+esc(T('Crear'))+'</button><button type="button" class="btn ghost" data-act="pjcancel">'+esc(T('Cancelar'))+'</button></div></form>';
+}
+const pjPips=(max,usados,act,extra)=>{let s='<span class="pips">';for(let i=0;i<max;i++){const libre=i<max-usados;s+='<button type="button" class="pip'+(libre?'':' off')+'" data-act="'+act+'" data-on="'+(libre?1:0)+'"'+extra+' aria-label="'+esc(libre?T('Gastar'):T('Recuperar'))+'"></button>';}return s+'</span>';};
+function pjSheetHTML(f,lista){
+  const camp=f.origen==='campana',N=Ficha.nivel(f),mx=Ficha.hpMax(f),pb=Ficha.prof(f),pct=mx?Math.round(100*f.hp/mx):0,col=pjCol(f);
+  const first=f.niveles[0]?Ficha.CLASES[f.niveles[0].c]:null,saves=first?first.sv:[],dg=Ficha.dg(f),esp=Ficha.espacios(f);
+  const inp=(c,v,ty,ex)=>'<input data-pjf="'+c+'" '+(ty==='number'?'type="number" ':'')+'value="'+esc(v)+'"'+(ex||'')+'>';
+  let h='<div class="pjsheet" style="--pj:'+col+'">';
+  // cabecera
+  h+='<div class="pjbox pjhead"><a class="btn sm ghost" href="#personajes">← '+esc(T('Personajes'))+'</a><span class="pjav">'+esc((f.nombre.trim()[0]||'?').toUpperCase())+'</span><div style="flex:1 1 260px;min-width:0">'
+   +'<input class="pjname noi18n" data-pjf="nombre" value="'+esc(f.nombre)+'" maxlength="80" aria-label="'+esc(T('Nombre'))+'">'
+   +'<div class="pjrow"><b>'+esc(T('Nivel'))+' '+N+'</b><span>'+esc(pjCls(f))+'</span><span class="pjtag">'+esc(camp?T('De campaña'):T('Libre'))+'</span><span class="pcsub">'+esc(T('Competencia'))+' '+pjSgn(pb)+'</span></div>'
+   +'<div class="pjrow"><label>'+esc(T('Especie'))+inp('especie',f.especie,'',' list="cm-esp-dl" maxlength="80"')+'</label><label>'+esc(T('Trasfondo'))+inp('trasfondo',f.trasfondo,'',' list="cm-tf-dl" maxlength="80"')+'</label></div></div>'
+   +'<div class="pjrow"><button type="button" class="btn primary" data-act="pjlevel">'+esc(T('Subir de nivel'))+'</button><button type="button" class="btn" data-act="pjexport">'+esc(T('Exportar'))+'</button></div></div>';
+  if(camp)h+='<p class="pjlock">'+esc(T('Este personaje pertenece a la campaña: el nivel, los PG máximos y las características solo cambian al subir de nivel.'))+'</p>';
+  // características
+  h+='<div class="pjabs">'+Ficha.AB.map(a=>{const v=f.car[a],m=Ficha.mod(v),sv=m+(saves.includes(a)?pb:0);
+    return '<div class="pjab"><span class="k">'+esc(T(ABK[a]))+'</span><span class="m">'+pjSgn(m)+'</span>'+(camp?'<span class="lk">'+v+'</span>':'<input type="number" min="1" max="30" data-pjf="car.'+a+'" value="'+v+'" aria-label="'+esc(T(ABN[a]))+'">')
+     +'<span class="sv">'+esc(T('Salvación'))+' '+pjSgn(sv)+(saves.includes(a)?' ●':'')+'</span></div>';}).join('')+'</div>';
+  // vida
+  h+='<div class="pjbox"><h3>'+esc(T('Vida'))+'</h3><div class="pjrow"><span class="pjhpnum">'+f.hp+' / '+mx+'</span>'+(f.temp?'<span class="pjtag">+'+f.temp+' '+esc(T('temporales'))+'</span>':'')+'<span class="pjstate">'+esc(T(pjEstado(f.hp,mx)))+'</span></div>'
+   +'<div class="pjhp"><i class="'+pjHpCls(pct)+'" style="width:'+pct+'%"></i></div>'
+   +'<div class="pjrow"><input id="pj-amt" type="number" min="1" value="1" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn sm danger" data-act="pjdano">'+esc(T('Daño'))+'</button><button type="button" class="btn sm" data-act="pjcura">'+esc(T('Curar'))+'</button><button type="button" class="btn sm" data-act="pjtemp">'+esc(T('Temporales'))+'</button></div>'
+   +'<div class="pjrow"><label>'+esc(T('CA'))+inp('ca',f.ca,'number')+'</label><label>'+esc(T('Velocidad'))+inp('vel',f.vel,'',' style="width:90px"')+'</label><label>'+esc(T('Iniciativa'))+'<b style="padding:6px 0">'+pjSgn(Ficha.mod(f.car.des))+'</b></label>'
+   +'<label>'+esc(T('Agotamiento'))+'<select data-pjf="agot">'+[0,1,2,3,4,5,6].map(n=>'<option value="'+n+'"'+(f.agot===n?' selected':'')+'>'+n+'</option>').join('')+'</select></label></div>'
+   +'<div class="pjrow">'+Object.entries(dg).map(([c,q])=>'<span class="pjtag" title="'+esc(T(CLSN[c]))+'">d'+q.d+' · '+q.quedan+'/'+q.total+' '+esc(T('dados de golpe'))+'</span>').join('')+'</div>'
+   +'<div class="pjrow"><button type="button" class="btn sm" data-act="pjshort">'+esc(T('Descanso corto'))+'</button><button type="button" class="btn sm" data-act="pjlong" data-confirm>'+esc(T('Descanso largo'))+'</button></div>'
+   +(pjRest?pjRestHTML(f,dg):'')+'</div>';
+  // espacios de conjuro
+  if(esp.nivelCaster||esp.pact){
+    h+='<div class="pjbox"><h3>'+esc(T('Espacios de conjuro'))+'</h3><ul class="pjlist">'
+     +esp.slots.map((n,i)=>n?'<li><span>'+esc(T('Nivel'))+' '+(i+1)+'</span>'+pjPips(n,f.slotsUsados[i],'pjslot',' data-lv="'+(i+1)+'"')+'</li>':'').join('')
+     +(esp.pact?'<li><span>'+esc(T('Magia de pacto'))+' ('+esc(T('nivel'))+' '+esp.pact.nivel+')</span>'+pjPips(esp.pact.n,f.pactUsados,'pjpact','')+'</li>':'')+'</ul></div>';
+  }
+  // recursos
+  h+='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist">'+f.recursos.map(r=>'<li><span><b>'+esc(r.n)+'</b> <small class="pcsub">'+esc(r.rec==='corto'?T('Descanso corto'):r.rec==='largo'?T('Descanso largo'):T('Sin recarga'))+'</small></span><span class="pjrow">'+pjPips(r.max,r.uso,'pjrec',' data-id="'+esc(r.id)+'"')+'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(r.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
+   +'<div class="pjrow"><input id="pjr-n" placeholder="'+esc(T('Nombre'))+'" maxlength="60"><input id="pjr-m" type="number" min="1" max="99" value="1"><select id="pjr-r"><option value="largo">'+esc(T('Descanso largo'))+'</option><option value="corto">'+esc(T('Descanso corto'))+'</option><option value="">'+esc(T('Sin recarga'))+'</option></select><button type="button" class="btn sm" data-act="pjrecnew">'+esc(T('Añadir'))+'</button></div></div>';
+  // experiencia / hito
+  const crit=pjCriterio(),sig=N<20?Ficha.XP[N]:0;
+  h+='<div class="pjbox"><h3>'+esc(camp?(crit==='xp'?T('Experiencia'):T('Hitos')):T('Experiencia'))+'</h3><div class="pjrow">'
+   +((!camp||crit==='xp')?'<label>XP'+inp('xp',f.xp,'number',' style="width:110px"')+'</label>'+(N<20?'<span class="pcsub">'+esc(T('Siguiente nivel'))+': '+sig+' XP</span>':'<span class="pcsub">'+esc(T('Nivel máximo'))+'</span>'):'')
+   +(camp&&crit==='hito'?'<span>'+esc(T('Subidas concedidas'))+': <b>'+f.concedidas+'</b></span><button type="button" class="btn sm" data-act="pjconceder">'+esc(T('Conceder subida'))+'</button>':'')+'</div></div>';
+  // dotes y notas
+  h+='<div class="pjbox"><h3>'+esc(T('Dotes'))+'</h3><div class="pjrow">'+(f.dotes.length?f.dotes.map(d=>'<span class="pjtag noi18n">'+esc(d)+'</span>').join(''):'<span class="pcsub">'+esc(T('Ninguna todavía'))+'</span>')+'</div>'
+   +'<h3>'+esc(T('Notas'))+'</h3><textarea data-pjf="notas" maxlength="5000" aria-label="'+esc(T('Notas'))+'">'+esc(f.notas)+'</textarea></div>';
+  // sección privada del máster
+  if(camp){
+    const tp={evento:['Evento','⚡'],nota:['Nota','✎'],secreto:['Secreto','🗝']};
+    h+='<div class="pjbox pjdm"><h3>🔒 '+esc(T('Solo para el máster'))+' <span class="pjtag">'+esc(T('Los jugadores no lo ven'))+'</span></h3>'
+     +'<p class="pcsub">'+esc(T('Eventos, secretos y cosas que le ocurren a este personaje. No se exporta ni se comparte.'))+'</p>'
+     +'<div class="pjrow" style="align-items:stretch"><select id="pjdm-t" aria-label="'+esc(T('Tipo'))+'">'+Object.entries(tp).map(([k,v])=>'<option value="'+k+'">'+v[1]+' '+esc(T(v[0]))+'</option>').join('')+'</select>'
+     +'<textarea id="pjdm-x" maxlength="3000" placeholder="'+esc(T('Qué ha pasado…'))+'" style="flex:1 1 260px;min-height:56px"></textarea>'
+     +'<button type="button" class="btn primary" data-act="pjdmadd">'+esc(T('Anotar'))+'</button></div>'
+     +(f.dm.length?'<ul class="pjlist pjdmlist">'+f.dm.slice().reverse().map(r=>'<li class="pjdme"><span class="pjdmi">'+tp[r.tipo][1]+'</span><span style="flex:1 1 200px;min-width:0"><small class="pcsub noi18n">'+esc(new Date(r.t).toLocaleString())+' · </small><small class="pcsub">'+esc(T(tp[r.tipo][0]))+'</small><br><span class="noi18n" style="white-space:pre-wrap">'+esc(r.txt)+'</span></span><button type="button" class="btn sm ghost" data-act="pjdmdel" data-id="'+esc(r.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Todavía no has anotado nada.'))+'</p>')+'</div>';
+  }
+  // acciones y registro
+  h+='<div class="pjrow">'+(camp?'':'<button type="button" class="btn" data-act="pjtocamp">'+esc(T('Pasar a la campaña (copia)'))+'</button>')+'<button type="button" class="btn" data-act="pjdup">'+esc(T('Duplicar'))+'</button><button type="button" class="btn danger" data-act="pjdel" data-confirm>'+esc(T('Borrar personaje'))+'</button></div>';
+  h+='<details class="pjbox"><summary>'+esc(T('Registro de cambios'))+' ('+f.registro.length+')</summary><ul class="pjlist">'+f.registro.slice(-40).reverse().map(r=>'<li><small class="pcsub noi18n">'+esc(new Date(r.t).toLocaleString())+(r.por?' · '+esc(r.por):'')+'</small><span class="noi18n">'+esc(r.a+(r.d?': '+r.d:''))+'</span></li>').join('')+'</ul></details>';
+  return h+'</div>';
+}
+function pjRestHTML(f,dg){
+  const q=pjRest.dados,usados={};for(const x of q)usados[x.c]=(usados[x.c]||0)+1;
+  return '<div class="pjbox" style="background:var(--surface-2)"><h3>'+esc(T('Descanso corto'))+'</h3><p class="pcsub">'+esc(T('Tira cada dado de golpe que quieras gastar y anota el resultado.'))+'</p>'
+   +Object.entries(dg).filter(([c,x])=>x.quedan-(usados[c]||0)>0).map(([c,x])=>'<div class="pjrow"><span>d'+x.d+' ('+esc(T(CLSN[c]))+')</span><input type="number" min="1" max="'+x.d+'" value="'+(Math.floor(x.d/2)+1)+'" id="pjd-'+c+'"><button type="button" class="btn sm" data-act="pjdado" data-c="'+c+'">'+esc(T('Gastar dado'))+'</button></div>').join('')
+   +(q.length?'<div class="pjrow">'+q.map(x=>'<span class="pjtag">d'+Ficha.CLASES[x.c].d+': '+x.v+'</span>').join('')+'</div>':'')
+   +'<div class="pjrow"><button type="button" class="btn sm primary" data-act="pjshortdone">'+esc(T('Terminar descanso'))+'</button><button type="button" class="btn sm ghost" data-act="pjshortcancel">'+esc(T('Cancelar'))+'</button></div></div>';
+}
+/* ---- ventanas: subir de nivel, exportar, importar ---- */
+function pjModal(titulo,html){pjModo=html?pjModo:'';$('#pjm-h').textContent=titulo;$('#pjm-body').className='mbody pjm';$('#pjm-body').innerHTML=html;$('#pjmodal').hidden=false;syncModalOpen();}
+function pjCerrar(){$('#pjmodal').hidden=true;pjLvl=null;pjModo='';syncModalOpen();}
+function pjLevelHTML(){
+  const s=pjGet(pjSel);if(!s)return '';const f=s.f,L=pjLvl;
+  const nc=Ficha.nivelClase(f,L.c)+1,C=Ficha.CLASES[L.c],pide=[4,8,12,16,19].includes(nc)||(C.mej||[]).includes(nc),media=Math.floor(C.d/2)+1;
+  const camp=s.lista==='campana'?{criterio:pjCriterio()}:null,puede=Ficha.puedeSubir(f,camp);
+  const ab=(id,sel)=>'<select data-pjl="'+id+'">'+Ficha.AB.map(a=>'<option value="'+a+'"'+(a===sel?' selected':'')+'>'+esc(T(ABN[a]))+'</option>').join('')+'</select>';
+  let h='<p class="pcsub">'+esc(T('Nivel'))+' '+(Ficha.nivel(f)+1)+'</p>'
+   +(puede.ok?'':'<p class="pjlock">'+esc(T(PJERR[puede.error]||'No se puede subir'))+'</p>')
+   +'<div class="row"><label>'+esc(T('Clase'))+'<select data-pjl="c">'+Object.keys(CLSN).map(c=>'<option value="'+c+'"'+(c===L.c?' selected':'')+'>'+esc(T(CLSN[c]))+(Ficha.nivelClase(f,c)?' ('+Ficha.nivelClase(f,c)+')':'')+'</option>').join('')+'</select></label>'
+   +'<label>'+esc(T('PG de este nivel (dado d'))+C.d+')<input type="number" data-pjl="hp" min="1" max="'+C.d+'" value="'+L.hp+'" style="width:90px"></label>'
+   +'<span class="pcsub" style="align-self:end">'+esc(T('Media'))+': '+media+' · '+esc(T('con Constitución'))+' '+pjSgn(Ficha.mod(f.car.con))+'</span></div>';
+  if(pide){
+    h+='<fieldset style="border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:8px"><legend>'+esc(T('Mejora de característica o dote'))+'</legend>'
+     +'<label>'+esc(T('Elige'))+'<select data-pjl="modo"><option value="2"'+(L.modo==='2'?' selected':'')+'>+2 '+esc(T('a una característica'))+'</option><option value="11"'+(L.modo==='11'?' selected':'')+'>+1 '+esc(T('a dos características'))+'</option><option value="dote"'+(L.modo==='dote'?' selected':'')+'>'+esc(T('Una dote'))+'</option></select></label>'
+     +(L.modo==='2'?'<div class="row">'+ab('a1',L.a1)+'</div>':L.modo==='11'?'<div class="row">'+ab('a1',L.a1)+ab('a2',L.a2)+'</div>':'<label>'+esc(T('Dote'))+'<input data-pjl="dote" list="pj-dotes" value="'+esc(L.dote)+'" maxlength="60"></label><datalist id="pj-dotes">'+(typeof compList==='function'?compList('dotes').slice(0,200).map(d=>'<option value="'+esc(d.n)+'">').join(''):'')+'</datalist>')
+     +'</fieldset>';
+  }
+  return h+'<div class="pjrow"><button type="button" class="btn primary" data-act="pjlvgo"'+(puede.ok?'':' disabled')+'>'+esc(T('Subir'))+'</button><button type="button" class="btn ghost" data-act="pjclose">'+esc(T('Cancelar'))+'</button></div>';
+}
+function pjLevelAbrir(){
+  const s=pjGet(pjSel);if(!s)return;const f=s.f,c=f.niveles.length?f.niveles[f.niveles.length-1].c:'guerrero';
+  pjLvl={c,hp:Math.floor(Ficha.CLASES[c].d/2)+1,modo:'2',a1:'fue',a2:'des',dote:''};pjModo='nivel';
+  pjModal(T('Subir de nivel'),pjLevelHTML());
+}
+function pjExportHTML(){
+  const s=pjGet(pjSel);if(!s)return '';const o=pjExp;
+  return '<div class="row"><label>'+esc(T('Idioma'))+'<select data-pjx="idioma">'+[['es','Español'],['en','English'],['fr','Français'],['pt','Português'],['it','Italiano'],['de','Deutsch']].map(([k,l])=>'<option value="'+k+'"'+(o.idioma===k?' selected':'')+'>'+l+'</option>').join('')+'</select></label>'
+   +'<label>'+esc(T('Formato'))+'<select data-pjx="formato"><option value="md"'+(o.formato==='md'?' selected':'')+'>Markdown</option><option value="json"'+(o.formato==='json'?' selected':'')+'>JSON ('+esc(T('para importar'))+')</option></select></label>'
+   +(o.formato==='json'?'<label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-pjx="registro"'+(o.registro?' checked':'')+'> '+esc(T('Incluir el registro de cambios'))+'</label>':'')+'</div>'
+   +'<textarea readonly id="pjx-txt" aria-label="'+esc(T('Exportar'))+'">'+esc(Ficha.exportar(s.f,o))+'</textarea>'
+   +'<div class="pjrow"><button type="button" class="btn primary" data-act="pjcopy">'+esc(T('Copiar'))+'</button><button type="button" class="btn" data-act="pjdl">'+esc(T('Descargar'))+'</button></div>';
+}
+var pjExp={idioma:'es',formato:'md',registro:false};
+function pjImportHTML(){
+  return '<p class="pcsub">'+esc(T('Pega el JSON de un personaje exportado o elige el archivo. Siempre entra como personaje libre.'))+'</p><input type="file" id="pji-file" accept=".json,application/json"><textarea id="pji-txt" aria-label="JSON"></textarea><div class="pjrow"><button type="button" class="btn primary" data-act="pjimpgo">'+esc(T('Importar'))+'</button><button type="button" class="btn ghost" data-act="pjclose">'+esc(T('Cancelar'))+'</button></div>';
+}
+function pjNuevaCopia(f,extra){return Ficha.norm({...JSON.parse(JSON.stringify(f)),id:'',registro:[],dm:[],...extra});}
+// ---- eventos
+document.addEventListener('change',e=>{
+  const el=e.target;if(!el.closest)return;
+  if(el.closest('#view-personajes')){
+    if(el.dataset.pjf!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.editar(s.f,el.dataset.pjf,el.value,pjCtx()),s);}
+    else if(el.dataset.pjcfg!==undefined){try{Store.set(PJCFG,JSON.stringify({criterio:el.value==='xp'?'xp':'hito'}));}catch{}pjRender();}
+  }else if(el.closest('#pjmodal')){
+    if(el.dataset.pjl!==undefined&&pjLvl){const k=el.dataset.pjl;
+      if(k==='hp')pjLvl.hp=Math.trunc(+el.value)||1;else if(k==='c'){pjLvl.c=el.value;pjLvl.hp=Math.floor(Ficha.CLASES[el.value].d/2)+1;$('#pjm-body').innerHTML=pjLevelHTML();}
+      else if(k==='modo'){pjLvl.modo=el.value;$('#pjm-body').innerHTML=pjLevelHTML();}else pjLvl[k]=el.value;}
+    else if(el.dataset.pjx!==undefined){const k=el.dataset.pjx;pjExp[k]=el.type==='checkbox'?el.checked:el.value;$('#pjm-body').innerHTML=pjExportHTML();}
+    else if(el.id==='pji-file'&&el.files&&el.files[0]){const r=new FileReader();r.onload=()=>{$('#pji-txt').value=String(r.result||'').slice(0,2e6);};r.readAsText(el.files[0]);}
+  }
+});
+document.addEventListener('submit',e=>{
+  if(e.target.id!=='pj-form')return;e.preventDefault();
+  const g=id=>($('#'+id)||{}).value||'',cls=g('pjn-c');if(!Ficha.CLASES[cls])return;
+  const car={};for(const a of Ficha.AB)car[a]=Math.min(30,Math.max(1,Math.trunc(+g('pjn-'+a))||10));
+  const camp=g('pjn-donde')==='campana';
+  const f=Ficha.norm({nombre:g('pjn-n').trim()||T('Sin nombre'),especie:g('pjn-e'),trasfondo:g('pjn-t'),car,niveles:[{c:cls,hp:Ficha.CLASES[cls].d}],origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():''});
+  (camp?PJC:PJ).push(f);pjSave();pjEdit=null;location.hash='personajes/'+f.id;
 });
 /* ---------- eventos del combate (tarjetas, reloj y efectos; el máster decide siempre) ---------- */
 const evFmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};

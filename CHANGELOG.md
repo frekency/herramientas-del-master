@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.43.0] - 2026-11-20
+### Añadido
+- **Personajes**: nueva sección con fichas de personaje. Separa «En esta campaña» y «Mis personajes» (libres, para probar). Hoja con características, vida, CA, velocidad, dados de golpe, descansos corto y largo, espacios de conjuro, recursos, experiencia o hitos (se elige por campaña) y dotes.
+- **Subida de nivel guiada** con PG, mejora de característica o dote, y bloqueos en los personajes de campaña.
+- **Sección solo para el máster** en cada personaje de campaña: eventos, secretos y notas que no se exportan ni se comparten.
+- **Exportar** a Markdown o JSON en seis idiomas, e importar siempre como personaje libre.
+
 ## [1.42.0] - 2026-11-19
 ### Añadido
 - **Sincronización de campañas con tu cuenta**, por elemento (notas, encuentros y jugadores), con copia local y versiones: sin conexión todo sigue funcionando y se sube al volver; si dos dispositivos tocan lo mismo gana la versión más reciente y la otra queda guardada. Un elemento borrado no reaparece. Se activa por campaña desde «Gestionar campañas» y las campañas de tu cuenta se pueden traer a otro dispositivo.

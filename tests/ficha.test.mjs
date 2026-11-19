@@ -138,3 +138,52 @@ test('importar: lo importado nunca entra como ficha de campaña',()=>{
   const j=F.exportar(base({origen:'campana',campana:'c9'}),{formato:'json'});
   const r=F.importar(j).f;assert.equal(r.origen,'libre');assert.equal(r.campana,'');assert.notEqual(r.id,'a');
 });
+
+test('CA, velocidad y agotamiento se editan (también en campaña); se sanean',()=>{
+  const c=base({origen:'campana',campana:'c1'});
+  assert.equal(F.editar(c,'ca',17).f.ca,17);assert.equal(F.editar(c,'ca',999).f.ca,40);assert.equal(F.editar(c,'ca','x').f.ca,10);
+  assert.equal(F.editar(c,'vel','12 m').f.vel,'12 m');assert.equal(F.editar(c,'vel','').f.vel,'9 m');
+  assert.equal(F.editar(c,'agot',3).f.agot,3);assert.equal(F.editar(c,'agot',99).f.agot,6);
+  assert.equal(base().ca,10);assert.equal(base().vel,'9 m');
+});
+
+test('devolver espacios, pacto y recursos (corregir un error de anotación)',()=>{
+  let f=sube(base(),1);f=F.usarSlot(f,1).f;f=F.usarSlot(f,1).f;
+  f=F.devolverSlot(f,1).f;assert.equal(f.slotsUsados[0],1);
+  f=F.devolverSlot(f,1).f;assert.equal(F.devolverSlot(f,1).error,'nada_que_devolver');
+  const bru=F.norm({niveles:Array(3).fill({c:'brujo',hp:5})});assert.equal(F.devolverPact(bru).error,'nada_que_devolver');
+  const g=F.devolverPact(F.usarPact(bru).f);assert.equal(g.f.pactUsados,0);
+  let r=F.nuevoRecurso(base(),{n:'Furia',max:3,rec:'largo'}).f;const id=r.recursos[0].id;
+  r=F.usarRecurso(r,id).f;r=F.devolverRecurso(r,id).f;assert.equal(r.recursos[0].uso,0);assert.equal(F.devolverRecurso(r,id).error,'nada_que_devolver');
+  assert.equal(F.devolverRecurso(r,'zzz').error,'no_existe');
+});
+
+test('recursos: crear con límites y quitar',()=>{
+  assert.equal(F.nuevoRecurso(base(),{n:'  '}).error,'sin_nombre');
+  const r=F.nuevoRecurso(base(),{n:'x'.repeat(200),max:999,rec:'hack'}).f.recursos[0];
+  assert.equal(r.n.length,60);assert.equal(r.max,99);assert.equal(r.rec,'');
+  let f=base();for(let i=0;i<30;i++)f=F.nuevoRecurso(f,{n:'r'+i,max:1}).f;
+  assert.equal(F.nuevoRecurso(f,{n:'otro'}).error,'demasiados');
+  const q=F.quitarRecurso(f,f.recursos[0].id);assert.equal(q.f.recursos.length,29);assert.equal(F.quitarRecurso(f,'zzz').error,'no_existe');
+});
+
+test('exportar incluye CA y velocidad en cada idioma',()=>{
+  const f=F.editar(base(),'ca',16).f;
+  assert.match(F.exportar(f,{formato:'md',idioma:'es'}),/\*\*CA:\*\* 16 · \*\*Velocidad:\*\* 9 m/);
+  assert.match(F.exportar(f,{formato:'md',idioma:'en'}),/\*\*AC:\*\* 16 · \*\*Speed:\*\*/);
+  assert.match(F.exportar(f,{formato:'md',idioma:'de'}),/\*\*RK:\*\* 16/);
+  assert.equal(F.importar(F.exportar(f,{formato:'json'})).f.ca,16);
+});
+
+test('sección del máster: solo en campaña, solo el DM, y nunca se exporta',()=>{
+  const c=base({origen:'campana',campana:'c1'}),dm={rol:'dm',ahora:5},jug={rol:'jugador'};
+  assert.equal(F.dmAnotar(base(),{txt:'x'},dm).error,'solo_campana');
+  assert.equal(F.dmAnotar(c,{txt:'x'},jug).error,'solo_dm');assert.equal(F.dmAnotar(c,{txt:'x'}).error,'solo_dm');
+  assert.equal(F.dmAnotar(c,{txt:'  '},dm).error,'vacio');
+  let f=F.dmAnotar(c,{tipo:'evento',txt:'Lo marcó una bruja'},dm).f;f=F.dmAnotar(f,{tipo:'hack',txt:'y'.repeat(9000)},dm).f;
+  assert.equal(f.dm.length,2);assert.equal(f.dm[0].tipo,'evento');assert.equal(f.dm[1].tipo,'nota');assert.equal(f.dm[1].txt.length,3000);
+  assert.equal(F.norm(JSON.parse(JSON.stringify(f))).dm.length,2);
+  assert.equal(F.norm({...f,origen:'libre'}).dm.length,0);                       // un personaje libre no guarda lo del máster
+  assert.doesNotMatch(F.exportar(f,{formato:'json',registro:true}),/bruja/);assert.doesNotMatch(F.exportar(f,{formato:'md'}),/bruja/);
+  assert.equal(F.dmQuitar(f,f.dm[0].id,jug).error,'solo_dm');assert.equal(F.dmQuitar(f,f.dm[0].id,dm).f.dm.length,1);assert.equal(F.dmQuitar(f,'zz',dm).error,'no_existe');
+});
