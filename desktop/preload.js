@@ -20,3 +20,9 @@ try {
 } catch (e) { /* si falla, la página arranca igualmente con lo que haya */ }
 
 contextBridge.exposeInMainWorld('__StoreBackend', { get, set, remove, keys });
+
+// Marca a la página como app de escritorio (activa el modo app) y le deja pintar los botones de la ventana
+contextBridge.exposeInMainWorld('__AppShell', {
+  platform: process.platform,
+  titlebar: (bg, fg) => ipcRenderer.send('shell:titlebar', String(bg), String(fg)),
+});

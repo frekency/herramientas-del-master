@@ -46,6 +46,10 @@ window.Store=(()=>{
     native:{get:k=>localStorage.getItem(k)},
     campaigns};})();
 </script>
+<script>/* modo app: solo existe en la app de escritorio (la expone preload.js) */
+(()=>{const S=window.__AppShell;if(!S)return;const R=document.documentElement;R.classList.add('app-escritorio','app-'+S.platform);
+try{if(Store.get('app-sidebar')==='min')R.classList.add('sb-min');}catch(e){}})();
+</script>
 <script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=Store.get('combat-skin');if(k==='pergamino'){k='';Store.set('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
@@ -1149,6 +1153,32 @@ main.wrap .listhead{scroll-margin-top:100px}
 @media (prefers-reduced-motion:reduce){#loading .d20{animation:none}}
 #loading [lang]{display:none}
 html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[lang="en"] #loading [lang="en"],html[lang="fr"] #loading [lang="fr"],html[lang="pt"] #loading [lang="pt"],html[lang="it"] #loading [lang="it"],html[lang="de"] #loading [lang="de"]{display:inline}
+/* ===== Modo app (escritorio): barra lateral plegable y barra de título propia ===== */
+.apptitle{display:none}
+html.app-escritorio{--tb:36px;--sbw:216px}
+html.app-escritorio.sb-min{--sbw:60px}
+html.app-escritorio body{padding-top:var(--tb);padding-left:var(--sbw);transition:padding-left .16s ease}
+html.app-escritorio .apptitle{display:flex;align-items:center;position:fixed;top:0;left:0;right:0;height:var(--tb);z-index:30;background:var(--surface);border-bottom:1px solid var(--line);-webkit-app-region:drag;user-select:none;font-size:12px;color:var(--muted);padding-left:max(12px,env(titlebar-area-x,0px));padding-right:calc(100vw - env(titlebar-area-width,100vw) - env(titlebar-area-x,0px))}
+html.app-escritorio .apptitle b{color:var(--fg);font-weight:600;margin-right:8px}
+html.app-escritorio .bar{top:var(--tb)}
+html.app-escritorio .pagenav{position:fixed;top:var(--tb);bottom:0;left:0;width:var(--sbw);max-width:none;margin:0;padding:10px 8px;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:2px;overflow:hidden auto;background:var(--surface);border-right:1px solid var(--line);z-index:20;transition:width .16s ease}
+html.app-escritorio .pagenav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:0;white-space:nowrap;font-size:14px}
+html.app-escritorio .pagenav a .ic{width:18px;height:18px;flex:none}
+html.app-escritorio .pagenav a.on{background:var(--accent);color:var(--accent-fg);font-weight:600}
+html.app-escritorio .pagenav .navsep{margin:12px 0 2px 10px}
+html.app-escritorio .pagenav .navver{margin:auto 0 0 10px;font-size:12px;padding:4px 0}
+html.app-escritorio .pagenav .btn{order:2;justify-content:flex-start;margin:0}
+html.app-escritorio .pagenav .pfbtn{margin-left:0}
+html.app-escritorio .pagenav .navtoggle{display:inline-flex;order:-1;margin-bottom:8px}
+html.app-escritorio.sb-min .pagenav a{font-size:0;justify-content:center;padding:10px 0;gap:0}
+html.app-escritorio.sb-min .pagenav .navsep{font-size:0;height:1px;background:var(--line);margin:8px 6px}
+html.app-escritorio.sb-min .pagenav .navver{display:none}
+html.app-escritorio.sb-min .pagenav .btn{font-size:0;justify-content:center;gap:0}
+html.app-escritorio.sb-min .pagenav .navtoggle span{display:none}
+html.app-escritorio .pagenav .navtoggle{background:none;border-color:transparent;color:var(--muted)}
+html.app-escritorio .pagenav .btn .ic{width:18px;height:18px;flex:none}
+html.app-escritorio .localwarn{display:none!important}
+@media (prefers-reduced-motion:reduce){html.app-escritorio body,html.app-escritorio .pagenav{transition:none}}
 </style>
 
 
@@ -1158,6 +1188,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   <span><span lang="es">Cargando…</span><span lang="en">Loading…</span><span lang="fr">Chargement…</span><span lang="pt">Carregando…</span><span lang="it">Caricamento…</span><span lang="de">Wird geladen …</span></span>
 </div></div>
 
+<div class="apptitle" aria-hidden="true"><b class="noi18n">Herramientas del Máster</b><span class="noi18n" id="apptitle-c"></span></div>
 <header class="bar">
   <div class="bar-in">
     <h1 class="brand"><a href="#inicio" id="brand" title="Ir al inicio">Iniciativa</a></h1>
@@ -3453,7 +3484,7 @@ function extraAct(act,b,c,e){
     case 'lwhide':try{Store.set('combat-localwarn-off','1');}catch(e){}renderAcct();break;
     case 'sumclose':state.summary=null;save();render();break;
     case 'toastundo':$('#toast').classList.remove('show','act');undo();break;
-    case 'navtoggle':{const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
+    case 'navtoggle':{if(document.documentElement.classList.contains('app-escritorio')){const m=document.documentElement.classList.toggle('sb-min');try{Store.set('app-sidebar',m?'min':'max');}catch(e){}b.setAttribute('aria-expanded',!m);break;}const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
     case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
@@ -3847,6 +3878,15 @@ function renderCamps(){
   $('#camp-new').placeholder=T('Nombre de la nueva campaña');
 }
 function campOpen(){renderCamps();$('#campmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#camp-new').focus(),30);}
+if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barra plegada y color de los botones de la ventana */
+  const R=document.documentElement,S=window.__AppShell;
+  const ct=$('#apptitle-c');if(ct){const n=Store.campaigns.activeName();ct.textContent=n?'· '+n:'';}
+  $('.pagenav').addEventListener('mouseover',e=>{const a=e.target.closest('a');if(a&&!a.classList.contains('navver'))a.title=a.textContent.trim();});
+  $('.navtoggle').setAttribute('aria-expanded',!R.classList.contains('sb-min'));
+  const tb=()=>{try{const c=getComputedStyle(R);S.titlebar(c.getPropertyValue('--surface').trim(),c.getPropertyValue('--fg').trim());}catch(e){}};
+  tb();new MutationObserver(tb).observe(R,{attributes:true,attributeFilter:['data-theme','data-skin']});
+  matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>setTimeout(tb,50));
+}
 $('#camp').addEventListener('change',e=>{const v=e.target.value;if(v==='__mgr'){renderCamps();campOpen();return;}if(Store.campaigns.select(v))location.reload();});
 $('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-camp]');if(!i)return;if(!Store.campaigns.rename(i.dataset.camp,i.value))toast('Pon un nombre a la campaña');renderCamps();});
 $('#camp-form').addEventListener('submit',e=>{e.preventDefault();const n=$('#camp-new').value;

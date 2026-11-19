@@ -18,11 +18,14 @@ function crearVentana() {
   const win = new BrowserWindow({
     width: 1280,
     height: 860,
-    minWidth: 420,
+    minWidth: 760,
     minHeight: 600,
     title: 'Herramientas del Máster',
     icon: path.join(__dirname, 'build', 'icon.png'),
     backgroundColor: '#141414',
+    // Barra de título propia: la página dibuja la suya y Electron pone solo los botones de la ventana
+    titleBarStyle: 'hidden',
+    titleBarOverlay: { color: '#1d1915', symbolColor: '#ece3d2', height: 36 },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -41,6 +44,15 @@ function crearVentana() {
     if (!url.startsWith('app://')) { e.preventDefault(); if (/^https?:/i.test(url)) shell.openExternal(url); }
   });
 }
+
+// Color de los botones de la ventana (Windows/Linux): lo manda la página según el tema
+ipcMain.on('shell:titlebar', (e, bg, fg) => {
+  const ok = c => typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c);
+  const w = BrowserWindow.fromWebContents(e.sender);
+  if (w && e.senderFrame && e.senderFrame.url.startsWith('app://local/') && ok(bg) && ok(fg) && w.setTitleBarOverlay) {
+    try { w.setTitleBarOverlay({ color: bg, symbolColor: fg, height: 36 }); } catch { /* macOS no lo admite */ }
+  }
+});
 
 // IPC síncrono del almacén: solo acepta peticiones de nuestra propia página
 function registrarAlmacen() {
