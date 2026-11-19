@@ -34,6 +34,7 @@ function crearVentana() {
       nodeIntegration: false,
     },
   });
+  master = win;
   win.loadURL('app://local/index.html');
 
   // Enlaces externos al navegador del sistema
@@ -56,7 +57,10 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
 });
 
 // Ventana de la mesa: la que ven los jugadores (imágenes y orden de iniciativa). La abre el máster.
-let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' };
+let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, master = null;
+const avisarMesa = () => {
+  if (master && !master.isDestroyed()) master.webContents.send('mesa:estado', !!(mesa && !mesa.isDestroyed()));
+};
 const delMaster = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/index.html');
 function abrirMesa() {
   if (mesa && !mesa.isDestroyed()) { if (mesa.isMinimized()) mesa.restore(); mesa.show(); mesa.focus(); return; }
@@ -68,10 +72,12 @@ function abrirMesa() {
   });
   mesa.setMenu(null);
   mesa.loadURL('app://local/mesa.html');
-  mesa.on('closed', () => { mesa = null; mesaLista = false; });
+  mesa.on('closed', () => { mesa = null; mesaLista = false; avisarMesa(); });
+  avisarMesa();
 }
 function registrarMesa() {
   ipcMain.on('mesa:abrir', e => { if (delMaster(e)) abrirMesa(); });
+  ipcMain.on('mesa:cerrar', e => { if (delMaster(e) && mesa && !mesa.isDestroyed()) mesa.close(); });
   ipcMain.on('mesa:enviar', (e, p) => {
     if (!delMaster(e)) return;
     const v = validar(p);

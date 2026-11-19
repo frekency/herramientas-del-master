@@ -1287,6 +1287,12 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpmd{line-height:1.55}.cpmd h3,.cpmd h4,.cpmd h5{margin:14px 0 6px}.cpmd ul,.cpmd ol{padding-left:22px}.cpmd blockquote{margin:8px 0;padding:4px 12px;border-left:3px solid var(--accent);color:var(--muted)}
 .cpmd code{background:var(--surface-2);padding:1px 5px;border-radius:4px}
 a.wl.auto{text-decoration-style:dotted}
+.mesapanel{position:fixed;left:calc(var(--sbw,0px) + 10px);bottom:12px;z-index:40;width:320px;max-width:calc(100vw - 24px);background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px rgb(0 0 0/.35);padding:14px;display:flex;flex-direction:column;gap:12px}
+.mesapanel[hidden]{display:none}
+.mesapanel h3{margin:0;font-size:15px}
+.mpstate{margin:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}.mpstate b{color:var(--fg);font-size:15px}
+.mpbtns{display:flex;flex-wrap:wrap;gap:8px}
+.mesapanel .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
 .cpwrap{position:relative}
 .cpac{position:absolute;left:12px;bottom:12px;z-index:5;list-style:none;margin:0;padding:4px;min-width:220px;max-width:calc(100% - 24px);background:var(--surface);border:1px solid var(--accent);border-radius:8px;box-shadow:var(--shadow);max-height:220px;overflow:auto}
 .cpac li{display:flex;justify-content:space-between;gap:12px;padding:6px 10px;border-radius:6px;cursor:pointer}
@@ -2594,21 +2600,51 @@ function render(){
   if(!$('#view-inicio').hidden)renderHome();
   /* ventana de mesa: al empezar un combate el orden pasa a la mesa (si está abierta) y al terminarlo se limpia */
   if(window.__AppShell){
-    if(state.active&&!mesaWasActive)mesaIni=true;
-    else if(!state.active&&mesaWasActive&&mesaIni){mesaIni=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});}
+    if(state.active&&!mesaWasActive){let a=true;try{a=Store.get('mesa-auto')!=='0';}catch{}if(a){mesaIni=true;mesaEst.que='iniciativa';mesaEst.congelado=false;}}
+    else if(!state.active&&mesaWasActive&&mesaIni){mesaIni=false;mesaEst.que='nada';window.__AppShell.mesa.enviar({tipo:'limpiar'});}
     mesaWasActive=!!state.active;
     if(mesaIni)mesaSendIni(false);
   }
 }
 
 var mesaWasActive=false;
+/* panel de la mesa: qué se está enviando y cómo pararlo */
+function mesaPanelEl(){let p=$('#mesapanel');if(!p){p=document.createElement('div');p.id='mesapanel';p.className='mesapanel';p.setAttribute('role','dialog');p.setAttribute('aria-label',T('Ventana de mesa'));p.hidden=true;document.body.append(p);
+  p.addEventListener('click',e=>{const b=e.target.closest('[data-mp]');if(b)mesaPanelAct(b.dataset.mp);});
+  p.addEventListener('change',e=>{if(e.target.dataset.mpauto!==undefined){try{Store.set('mesa-auto',e.target.checked?'1':'0');}catch{}}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden){p.hidden=true;}});
+  document.addEventListener('mousedown',e=>{if(!p.hidden&&!e.target.closest('#mesapanel,.sbmesa'))p.hidden=true;});}
+  return p;}
+function mesaPanelToggle(){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
+function mesaPanelRender(){
+  const p=$('#mesapanel');if(!p||p.hidden)return;
+  const E=mesaEst;let auto=true;try{auto=Store.get('mesa-auto')!=='0';}catch{}
+  const que=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='iniciativa'?T('Orden de iniciativa')+(E.congelado?' ('+T('congelado')+')':''):E.que==='imagen'?T('Imagen')+(E.titulo?': '+E.titulo:''):T('Nada (pantalla en negro)');
+  p.innerHTML='<h3>'+esc(T('Ventana de mesa'))+'</h3><p class="mpstate"><span>'+esc(T('En la mesa'))+'</span><b>'+esc(que)+'</b></p>'
+   +'<div class="mpbtns">'
+   +'<button type="button" class="btn sm primary" data-mp="orden">'+esc(T('Mostrar el orden'))+'</button>'
+   +'<button type="button" class="btn sm" data-mp="limpiar"'+(E.abierta?'':' disabled')+'>'+esc(T('Limpiar la mesa'))+'</button>'
+   +(E.abierta&&E.que==='iniciativa'?'<button type="button" class="btn sm" data-mp="congelar">'+esc(E.congelado?T('Reanudar'):T('Dejar de actualizar'))+'</button>':'')
+   +(E.abierta?'<button type="button" class="btn sm" data-mp="cerrar">'+esc(T('Cerrar la ventana'))+'</button>':'<button type="button" class="btn sm" data-mp="abrir">'+esc(T('Abrir la ventana'))+'</button>')
+   +'</div><label class="chk"><input type="checkbox" data-mpauto'+(auto?' checked':'')+'> '+esc(T('Mostrar el orden automáticamente al empezar un combate'))+'</label>';
+}
+function mesaPanelAct(a){
+  const S=window.__AppShell;if(!S||!S.mesa)return;const E=mesaEst;
+  if(a==='orden'){mesaIni=true;E.que='iniciativa';E.congelado=false;E.abierta=true;mesaSendIni(true);}
+  else if(a==='limpiar'){mesaIni=false;E.que='nada';E.congelado=false;S.mesa.enviar({tipo:'limpiar'});}
+  else if(a==='congelar'){E.congelado=!E.congelado;if(!E.congelado)mesaSendIni(false);}
+  else if(a==='abrir')S.mesa.abrir();
+  else if(a==='cerrar'){S.mesa.cerrar();mesaIni=false;E.que='nada';E.congelado=false;}
+  mesaPanelRender();
+}
 var mesaIni=false;
 function mesaIniData(){
   const s=state,cur=s.active?s.order[s.turnIdx]:null;
   const lista=s.order.map(id=>{const c=get(id);return c?{n:c.name,actual:id===cur,caido:c.hp<=0&&!isPC(c),color:fac(c.factionId).color}:null;}).filter(Boolean);
   return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista};
 }
-function mesaSendIni(abrir){const S=window.__AppShell;if(S&&S.mesa)S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
+var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false};
+function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 let lastTurnKey=null;
 /* raíl de fichas de la «Pantalla del máster»: una ficha por criatura, la del turno levantada */
 function railHTML(s){
@@ -3725,9 +3761,9 @@ function extraAct(act,b,c,e){
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
     case 'cpnew':{const it=cpNew(cpTipo);cpFocus=true;cpEdit=true;location.hash=Notas.href(it);break;}
     case 'cpencload':{const p=PRESETS.find(x=>x.id===b.dataset.id);if(p)loadEncounter(p);break;}
-    case 'mesaini':{if(!window.__AppShell)break;mesaIni=true;mesaSendIni(true);toast('Orden de iniciativa en la mesa');break;}
-    case 'cpmesa':{const it=cpGet(cpSel);if(!window.__AppShell||!it||!it.img)break;mesaIni=false;window.__AppShell.mesa.enviar({tipo:'imagen',src:it.img,titulo:it.nombre});toast('Mostrado en la mesa');break;}
-    case 'cpmesaclear':{if(!window.__AppShell)break;mesaIni=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});toast('Mesa limpia');break;}
+    case 'mesaini':{if(!window.__AppShell)break;mesaIni=true;mesaEst.que='iniciativa';mesaEst.congelado=false;mesaSendIni(true);toast('Orden de iniciativa en la mesa');break;}
+    case 'cpmesa':{const it=cpGet(cpSel);if(!window.__AppShell||!it||!it.img)break;mesaIni=false;mesaEst.que='imagen';mesaEst.titulo=it.nombre;mesaEst.congelado=false;window.__AppShell.mesa.enviar({tipo:'imagen',src:it.img,titulo:it.nombre});toast('Mostrado en la mesa');break;}
+    case 'cpmesaclear':{if(!window.__AppShell)break;mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});toast('Mesa limpia');break;}
     case 'cpmode':cpEdit=!cpEdit;cpRenderDet();break;
     case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] input[type="text"]');if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
     case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
@@ -4330,7 +4366,8 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   /* ventana de mesa (lo que ven los jugadores): acceso en la barra lateral y botón de orden en el combate */
   if(S.mesa){
     const a=document.createElement('a');a.href='#mesa';a.className='sbmesa';a.innerHTML=ic('eye')+' '+T('Ventana de mesa');
-    a.addEventListener('click',e=>{e.preventDefault();S.mesa.abrir();});
+    a.addEventListener('click',e=>{e.preventDefault();mesaPanelToggle();});
+    if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;}mesaPanelRender();});
     $('.pagenav').insertBefore(a,$('.pagenav .navver'));
     const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
     if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}

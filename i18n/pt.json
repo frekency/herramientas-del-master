@@ -838,5 +838,16 @@
   "Mostrado en la mesa": "Mostrado na mesa",
   "Mesa limpia": "Mesa limpa",
   "Orden de iniciativa en la mesa": "Ordem de iniciativa na mesa",
-  "Mostrar el orden de iniciativa en la ventana de mesa": "Mostrar a ordem de iniciativa na janela da mesa"
+  "Mostrar el orden de iniciativa en la ventana de mesa": "Mostrar a ordem de iniciativa na janela da mesa",
+  "En la mesa": "Na mesa",
+  "Imagen": "Imagem",
+  "Nada (pantalla en negro)": "Nada (ecrã preto)",
+  "congelado": "congelado",
+  "La ventana de mesa está cerrada": "A janela da mesa está fechada",
+  "Mostrar el orden": "Mostrar a ordem",
+  "Dejar de actualizar": "Parar de atualizar",
+  "Reanudar": "Retomar",
+  "Abrir la ventana": "Abrir a janela",
+  "Cerrar la ventana": "Fechar a janela",
+  "Mostrar el orden automáticamente al empezar un combate": "Mostrar a ordem automaticamente ao começar um combate"
 }

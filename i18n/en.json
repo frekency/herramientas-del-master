@@ -838,5 +838,16 @@
   "Mostrado en la mesa": "Shown on the table",
   "Mesa limpia": "Table cleared",
   "Orden de iniciativa en la mesa": "Initiative order on the table",
-  "Mostrar el orden de iniciativa en la ventana de mesa": "Show the initiative order in the table window"
+  "Mostrar el orden de iniciativa en la ventana de mesa": "Show the initiative order in the table window",
+  "En la mesa": "On the table",
+  "Imagen": "Image",
+  "Nada (pantalla en negro)": "Nothing (black screen)",
+  "congelado": "frozen",
+  "La ventana de mesa está cerrada": "The table window is closed",
+  "Mostrar el orden": "Show the order",
+  "Dejar de actualizar": "Stop updating",
+  "Reanudar": "Resume",
+  "Abrir la ventana": "Open the window",
+  "Cerrar la ventana": "Close the window",
+  "Mostrar el orden automáticamente al empezar un combate": "Show the order automatically when a combat starts"
 }

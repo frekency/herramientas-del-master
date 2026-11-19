@@ -838,5 +838,16 @@
   "Mostrado en la mesa": "Auf dem Tisch gezeigt",
   "Mesa limpia": "Tisch geleert",
   "Orden de iniciativa en la mesa": "Initiative-Reihenfolge auf dem Tisch",
-  "Mostrar el orden de iniciativa en la ventana de mesa": "Initiative-Reihenfolge im Tischfenster zeigen"
+  "Mostrar el orden de iniciativa en la ventana de mesa": "Initiative-Reihenfolge im Tischfenster zeigen",
+  "En la mesa": "Auf dem Tisch",
+  "Imagen": "Bild",
+  "Nada (pantalla en negro)": "Nichts (schwarzer Bildschirm)",
+  "congelado": "eingefroren",
+  "La ventana de mesa está cerrada": "Das Tischfenster ist geschlossen",
+  "Mostrar el orden": "Reihenfolge zeigen",
+  "Dejar de actualizar": "Nicht mehr aktualisieren",
+  "Reanudar": "Fortsetzen",
+  "Abrir la ventana": "Fenster öffnen",
+  "Cerrar la ventana": "Fenster schließen",
+  "Mostrar el orden automáticamente al empezar un combate": "Reihenfolge automatisch zu Kampfbeginn zeigen"
 }

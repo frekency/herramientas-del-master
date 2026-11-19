@@ -26,5 +26,10 @@ contextBridge.exposeInMainWorld('__AppShell', {
   platform: process.platform,
   titlebar: (bg, fg) => ipcRenderer.send('shell:titlebar', String(bg), String(fg)),
   // Ventana de la mesa (la que ven los jugadores)
-  mesa: { abrir: () => ipcRenderer.send('mesa:abrir'), enviar: x => ipcRenderer.send('mesa:enviar', x) },
+  mesa: {
+    abrir: () => ipcRenderer.send('mesa:abrir'),
+    cerrar: () => ipcRenderer.send('mesa:cerrar'),
+    enviar: x => ipcRenderer.send('mesa:enviar', x),
+    onEstado: cb => ipcRenderer.on('mesa:estado', (_e, v) => cb(!!v)),
+  },
 });

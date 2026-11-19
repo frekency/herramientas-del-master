@@ -838,5 +838,16 @@
   "Mostrado en la mesa": "Affiché sur la table",
   "Mesa limpia": "Table vidée",
   "Orden de iniciativa en la mesa": "Ordre d’initiative sur la table",
-  "Mostrar el orden de iniciativa en la ventana de mesa": "Afficher l’ordre d’initiative dans la fenêtre de table"
+  "Mostrar el orden de iniciativa en la ventana de mesa": "Afficher l’ordre d’initiative dans la fenêtre de table",
+  "En la mesa": "Sur la table",
+  "Imagen": "Image",
+  "Nada (pantalla en negro)": "Rien (écran noir)",
+  "congelado": "figé",
+  "La ventana de mesa está cerrada": "La fenêtre de table est fermée",
+  "Mostrar el orden": "Afficher l’ordre",
+  "Dejar de actualizar": "Arrêter la mise à jour",
+  "Reanudar": "Reprendre",
+  "Abrir la ventana": "Ouvrir la fenêtre",
+  "Cerrar la ventana": "Fermer la fenêtre",
+  "Mostrar el orden automáticamente al empezar un combate": "Afficher l’ordre automatiquement au début d’un combat"
 }
