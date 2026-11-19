@@ -27,7 +27,8 @@
       "main.js",
       "preload.js",
       "store.js",
-      "app/**/*"
+      "app/**/*",
+      "build/icon.png"
     ],
     "win": {
       "target": [

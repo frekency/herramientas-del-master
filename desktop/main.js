@@ -21,6 +21,7 @@ function crearVentana() {
     minWidth: 420,
     minHeight: 600,
     title: 'Herramientas del Máster',
+    icon: path.join(__dirname, 'build', 'icon.png'),
     backgroundColor: '#141414',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
