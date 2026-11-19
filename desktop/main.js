@@ -57,7 +57,7 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
 });
 
 // Ventana de la mesa: la que ven los jugadores (imágenes y orden de iniciativa). La abre el máster.
-let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, master = null;
+let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, ultimoCuentas = { tipo: 'cuentas', lista: [] }, master = null;
 const avisarMesa = () => {
   if (master && !master.isDestroyed()) master.webContents.send('mesa:estado', !!(mesa && !mesa.isDestroyed()));
 };
@@ -82,6 +82,12 @@ function registrarMesa() {
     if (!delMaster(e)) return;
     const v = validar(p);
     if (!v) return;
+    if (v.tipo === 'cuentas') {
+      // las cuentas atrás van aparte: se superponen a lo que haya y no lo sustituyen
+      ultimoCuentas = v;
+      if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+      return;
+    }
     ultimoMesa = v;
     const abierta = mesa && !mesa.isDestroyed();
     // el orden de iniciativa solo abre la ventana la primera vez que el máster lo pide; después se limita a actualizarla
@@ -92,6 +98,7 @@ function registrarMesa() {
     if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents) return;
     mesaLista = true;
     mesa.webContents.send('mesa:mostrar', ultimoMesa);
+    mesa.webContents.send('mesa:mostrar', ultimoCuentas);
   });
   ipcMain.on('mesa:pantalla', e => {
     if (mesa && !mesa.isDestroyed() && e.sender === mesa.webContents) mesa.setFullScreen(!mesa.isFullScreen());

@@ -909,5 +909,10 @@
   "Pausar": "Pause",
   "Reiniciar": "Reset",
   "Pausado": "Paused",
-  "Aviso": "Notice"
+  "Aviso": "Notice",
+  "Cuentas atrás": "Countdowns",
+  "Nombre (trampa, puzle…)": "Name (trap, puzzle…)",
+  "Indica los minutos": "Enter the minutes",
+  "Demasiadas cuentas atrás": "Too many countdowns",
+  "¡Tiempo!": "Time’s up!"
 }

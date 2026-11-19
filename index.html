@@ -137,6 +137,36 @@ function cuentaAtras(s,ahora){
 }
 return {MAX_EV,norm,normLista,crear,normEstado,transcurrido,iniciar,pausar,reiniciar,revisar,disparar,posponer,descartar,cuentaAtras,nuevoId};
 })();
+window.Cuentas=(()=>{
+/* Cuentas atrás sueltas (una trampa, un puzle, «decidid en 5 minutos»): no dependen de ningún evento. Puro.
+   {id,n,seg,acum,corre,desde,mesa}  mesa = si se enseña ahora en la ventana de mesa. Al cargar siempre quedan en pausa. */
+const MAX=8;
+const int=(v,a,b,d=0)=>{v=Math.trunc(Number(v));return Number.isFinite(v)?Math.min(b,Math.max(a,v)):d;};
+const txt=(v,n)=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n):'';
+const nuevoId=()=>'c'+Math.random().toString(36).slice(2,9);
+function norm(c){
+  if(!c||typeof c!=='object')return null;
+  const seg=int(c.seg,1,86400,60);
+  return {id:typeof c.id==='string'&&/^[a-z0-9]{1,24}$/i.test(c.id)?c.id:nuevoId(),n:txt(c.n,60)||'Cuenta atrás',seg,acum:Math.min(seg,Math.max(0,+c.acum||0)),corre:false,desde:0,mesa:!!c.mesa};
+}
+const normLista=l=>(Array.isArray(l)?l:[]).slice(0,MAX).map(norm).filter(Boolean);
+const gastado=(c,ahora)=>Math.min(c.seg,c.acum+(c.corre?Math.max(0,(ahora-c.desde)/1000):0));
+const restante=(c,ahora)=>Math.max(0,Math.ceil(c.seg-gastado(c,ahora)));
+const terminada=(c,ahora)=>restante(c,ahora)===0;
+const nueva=(n,seg)=>norm({n,seg});
+const iniciar=(c,ahora)=>c.corre||terminada(c,ahora)?c:{...c,corre:true,desde:ahora};
+const pausar=(c,ahora)=>({...c,acum:gastado(c,ahora),corre:false,desde:0});
+const reiniciar=c=>({...c,acum:0,corre:false,desde:0});
+/* las que llegan a cero se paran solas; devuelve {lista,terminadas:[ids recién terminadas]} */
+function actualizar(lista,ahora){
+  const terminadas=[];
+  const l=lista.map(c=>{if(c.corre&&terminada(c,ahora)){terminadas.push(c.id);return {...c,acum:c.seg,corre:false,desde:0};}return c;});
+  return {lista:l,terminadas};
+}
+/* lo que se manda a la mesa: solo las que el máster ha elegido enseñar */
+const paraMesa=(lista,ahora)=>lista.filter(c=>c.mesa).slice(0,4).map(c=>({n:c.n,seg:restante(c,ahora),pausa:!c.corre,fin:terminada(c,ahora)}));
+return {MAX,norm,normLista,nueva,restante,terminada,iniciar,pausar,reiniciar,actualizar,paraMesa};
+})();
 </script>
 <script id="sync-core">
 window.Sincro=(()=>{
@@ -1694,6 +1724,8 @@ a.wl.auto{text-decoration-style:dotted}
 .mesapanel[hidden]{display:none}
 .mesapanel h3{margin:0;font-size:15px}
 .mpstate{margin:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}.mpstate b{color:var(--fg);font-size:15px}
+.mpcu{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.mpcu li{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}.mpcun{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mesapanel{max-height:calc(100vh - 24px);overflow:auto}
 .mpbtns{display:flex;flex-wrap:wrap;gap:8px}
 .mesapanel .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
 .cpwrap{position:relative}
@@ -1819,7 +1851,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.40</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.41</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -1983,6 +2015,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.41 <span>19 nov 2026</span></h3><ul>
+      <li><b>Cuentas atrás</b> sueltas para la ventana de mesa: una trampa, un puzle o una decisión con límite de tiempo. Se muestran encima de lo que haya en pantalla.</li></ul></li>
     <li><h3>v1.40 <span>19 nov 2026</span></h3><ul>
       <li><b>Eventos de encuentro</b>: por ronda, por tiempo real o manuales, con aviso opcional, refuerzos, imagen para la mesa y reloj con pausa. El máster decide siempre si se disparan.</li></ul></li>
     <li><h3>v1.39 <span>19 nov 2026</span></h3><ul>
@@ -3029,9 +3063,38 @@ function render(){
 }
 
 var mesaWasActive=false;
+/* cuentas atrás sueltas: trampa, puzle, decisión con límite de tiempo. Viven aparte del combate: cambiar de combate no las borra. */
+var CUL=[];try{CUL=Cuentas.normLista(JSON.parse(Store.get('mesa-cuentas-v1')||'[]'));}catch{}
+function cuSave(){try{Store.set('mesa-cuentas-v1',JSON.stringify(CUL));}catch{}}
+function mesaCuentasHTML(){
+  const now=Date.now(),L=CUL;
+  return '<h3>'+esc(T('Cuentas atrás'))+'</h3>'
+   +(L.length?'<ul class="mpcu">'+L.map(c=>'<li><div class="mpcun"><b>'+esc(c.n)+'</b><span class="evclock" data-cuenta-t="'+esc(c.id)+'">'+evFmt(Cuentas.restante(c,now))+'</span></div><div class="mpbtns">'
+      +'<button type="button" class="btn sm" data-mp="cplay" data-id="'+esc(c.id)+'">'+esc(c.corre?T('Pausar'):T('Iniciar'))+'</button>'
+      +'<button type="button" class="btn sm ghost" data-mp="creset" data-id="'+esc(c.id)+'">'+esc(T('Reiniciar'))+'</button>'
+      +'<button type="button" class="btn sm'+(c.mesa?' primary':'')+'" data-mp="cshow" data-id="'+esc(c.id)+'" aria-pressed="'+c.mesa+'">'+esc(c.mesa?T('En la mesa'):T('Mostrar en la mesa'))+'</button>'
+      +'<button type="button" class="btn sm ghost" data-mp="cdel" data-id="'+esc(c.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></div></li>').join('')+'</ul>':'')
+   +'<div class="mpbtns"><input id="mp-cn" placeholder="'+esc(T('Nombre (trampa, puzle…)'))+'" maxlength="60" style="flex:1 1 130px"><input id="mp-cm" type="number" min="0.5" step="0.5" placeholder="'+esc(T('Minutos'))+'" style="width:84px"><button type="button" class="btn sm" data-mp="cnew">'+esc(T('Añadir'))+'</button></div>';
+}
+function cuentaAct(a,id){
+  const now=Date.now(),i=CUL.findIndex(c=>c.id===id);if(i<0)return;let c=CUL[i];
+  if(a==='cdel')CUL.splice(i,1);
+  else{if(a==='cplay')c=c.corre?Cuentas.pausar(c,now):Cuentas.iniciar(c,now);else if(a==='creset')c=Cuentas.reiniciar(c);else if(a==='cshow')c={...c,mesa:!c.mesa};CUL[i]=c;}
+  cuSave();cuentasMesa();
+}
+function cuentasMesa(){const S=window.__AppShell;mesaPanelRender();if(S&&S.mesa)S.mesa.enviar({tipo:'cuentas',lista:Cuentas.paraMesa(CUL,Date.now())});}
+var cuUlt=0;
+setInterval(()=>{
+  if(!state||!CUL||!CUL.length)return;
+  const now=Date.now(),r=Cuentas.actualizar(CUL,now);
+  if(r.terminadas.length){CUL=r.lista;cuSave();for(const id of r.terminadas){const c=CUL.find(x=>x.id===id);if(c)toast(T('¡Tiempo!')+' '+c.n,8000);}cuentasMesa();}
+  document.querySelectorAll('[data-cuenta-t]').forEach(s=>{const c=CUL.find(x=>x.id===s.dataset.cuentaT);if(c)s.textContent=evFmt(Cuentas.restante(c,now));});
+  if(window.__AppShell&&CUL.some(c=>c.mesa&&c.corre))cuentasMesa();
+  if(CUL.some(c=>c.corre)&&now-cuUlt>10000){cuUlt=now;CUL=CUL.map(c=>c.corre?Cuentas.iniciar(Cuentas.pausar(c,now),now):c);cuSave();}
+},1000);
 /* panel de la mesa: qué se está enviando y cómo pararlo */
 function mesaPanelEl(){let p=$('#mesapanel');if(!p){p=document.createElement('div');p.id='mesapanel';p.className='mesapanel';p.setAttribute('role','dialog');p.setAttribute('aria-label',T('Ventana de mesa'));p.hidden=true;document.body.append(p);
-  p.addEventListener('click',e=>{const b=e.target.closest('[data-mp]');if(b)mesaPanelAct(b.dataset.mp);});
+  p.addEventListener('click',e=>{const b=e.target.closest('[data-mp]');if(b)mesaPanelAct(b.dataset.mp,b.dataset.id);});
   p.addEventListener('change',e=>{if(e.target.dataset.mpauto!==undefined){try{Store.set('mesa-auto',e.target.checked?'1':'0');}catch{}}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden){p.hidden=true;}});
   document.addEventListener('mousedown',e=>{if(!p.hidden&&!e.target.closest('#mesapanel,.sbmesa'))p.hidden=true;});}
@@ -3047,14 +3110,19 @@ function mesaPanelRender(){
    +'<button type="button" class="btn sm" data-mp="limpiar"'+(E.abierta?'':' disabled')+'>'+esc(T('Limpiar la mesa'))+'</button>'
    +(E.abierta&&E.que==='iniciativa'?'<button type="button" class="btn sm" data-mp="congelar">'+esc(E.congelado?T('Reanudar'):T('Dejar de actualizar'))+'</button>':'')
    +(E.abierta?'<button type="button" class="btn sm" data-mp="cerrar">'+esc(T('Cerrar la ventana'))+'</button>':'<button type="button" class="btn sm" data-mp="abrir">'+esc(T('Abrir la ventana'))+'</button>')
-   +'</div><label class="chk"><input type="checkbox" data-mpauto'+(auto?' checked':'')+'> '+esc(T('Mostrar el orden automáticamente al empezar un combate'))+'</label>';
+   +'</div><label class="chk"><input type="checkbox" data-mpauto'+(auto?' checked':'')+'> '+esc(T('Mostrar el orden automáticamente al empezar un combate'))+'</label>'
+   +mesaCuentasHTML();
 }
-function mesaPanelAct(a){
+function mesaPanelAct(a,id){
   const S=window.__AppShell;if(!S||!S.mesa)return;const E=mesaEst;
   if(a==='orden'){mesaIni=true;E.que='iniciativa';E.congelado=false;E.abierta=true;mesaSendIni(true);}
   else if(a==='limpiar'){mesaIni=false;E.que='nada';E.congelado=false;S.mesa.enviar({tipo:'limpiar'});}
   else if(a==='congelar'){E.congelado=!E.congelado;if(!E.congelado)mesaSendIni(false);}
   else if(a==='abrir')S.mesa.abrir();
+  else if(a==='cnew'){const n=($('#mp-cn')||{}).value||'',m=parseFloat((($('#mp-cm')||{}).value||'').replace(',','.'));
+    if(!(m>0)){toast(T('Indica los minutos'));return;}if(CUL.length>=Cuentas.MAX){toast(T('Demasiadas cuentas atrás'));return;}
+    CUL.push(Cuentas.nueva(n,Math.round(m*60)));cuSave();cuentasMesa();}
+  else if(['cplay','creset','cshow','cdel'].includes(a)){cuentaAct(a,id);}
   else if(a==='cerrar'){S.mesa.cerrar();mesaIni=false;E.que='nada';E.congelado=false;}
   mesaPanelRender();
 }
@@ -5007,7 +5075,7 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   if(S.mesa){
     const a=document.createElement('a');a.href='#mesa';a.className='sbmesa';a.innerHTML=ic('eye')+' '+T('Ventana de mesa');
     a.addEventListener('click',e=>{e.preventDefault();mesaPanelToggle();});
-    if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;}mesaPanelRender();});
+    if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(v)setTimeout(cuentasMesa,600);if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;}mesaPanelRender();});
     $('.pagenav').insertBefore(a,$('.pagenav .navver'));
     const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
     if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}

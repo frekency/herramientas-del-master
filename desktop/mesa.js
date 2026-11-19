@@ -11,6 +11,13 @@ function validar(p) {
     if (typeof p.src !== 'string' || p.src.length > MAX_IMG || !IMG.test(p.src)) return null;
     return { tipo: 'imagen', src: p.src, titulo: typeof p.titulo === 'string' ? p.titulo.slice(0, 200) : '' };
   }
+  if (p.tipo === 'cuentas') {
+    const lista = (Array.isArray(p.lista) ? p.lista : []).slice(0, 4).map(c => {
+      const s = Math.trunc(Number(c && c.seg));
+      return { n: String((c && c.n) || '').slice(0, 60), seg: Number.isFinite(s) ? Math.max(0, Math.min(86400, s)) : 0, pausa: !!(c && c.pausa), fin: !!(c && c.fin) };
+    });
+    return { tipo: 'cuentas', lista };
+  }
   if (p.tipo === 'aviso') {
     const texto = typeof p.texto === 'string' ? p.texto.trim().slice(0, 400) : '';
     const titulo = typeof p.titulo === 'string' ? p.titulo.trim().slice(0, 80) : '';

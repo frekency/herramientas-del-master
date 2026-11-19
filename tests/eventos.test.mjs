@@ -100,3 +100,30 @@ test('normEstado: descarta lo que no encaja y no muta lo recibido',()=>{
   assert.deepEqual(Object.keys(n.hecho),['a']);assert.deepEqual(n.descartado,{});assert.deepEqual(n.pend,['a']);assert.equal(n.reloj.acum,0);assert.equal(n.reloj.corre,false);
   assert.deepEqual(E.normEstado(null).lista,[]);assert.deepEqual(E.normEstado('x').pend,[]);
 });
+
+test('cuentas atrás sueltas: cuentan, se pausan, terminan solas y se pueden enseñar en la mesa', () => {
+  const C = window.Cuentas;
+  let c = C.nueva('Trampa de agujas', 120);
+  assert.equal(C.restante(c, 0), 120);assert.equal(c.mesa, false);
+  c = C.iniciar(c, 0);assert.equal(C.restante(c, 30 * SEG), 90);
+  c = C.pausar(c, 30 * SEG);assert.equal(C.restante(c, 9999 * SEG), 90);                  // en pausa no avanza
+  c = C.iniciar(c, 100 * SEG);assert.equal(C.restante(c, 160 * SEG), 30);
+  const r = C.actualizar([c], 300 * SEG);
+  assert.deepEqual(r.terminadas, [c.id]);assert.equal(r.lista[0].corre, false);assert.equal(C.restante(r.lista[0], 999 * SEG), 0);
+  assert.equal(C.iniciar(r.lista[0], 400 * SEG).corre, false);                           // una terminada no arranca sin reiniciar
+  assert.equal(C.restante(C.reiniciar(r.lista[0]), 0), 120);
+  assert.deepEqual(C.actualizar(r.lista, 400 * SEG).terminadas, []);                     // no avisa dos veces
+});
+
+test('cuentas atrás: solo van a la mesa las elegidas, con tope; cargar las deja en pausa', () => {
+  const C = window.Cuentas;
+  const l = [1, 2, 3, 4, 5, 6].map(i => ({ ...C.nueva('c' + i, 60 * i), mesa: i !== 2 }));
+  const m = C.paraMesa(l, 0);
+  assert.equal(m.length, 4);assert.ok(!m.some(x => x.n === 'c2'));
+  assert.deepEqual(m[0], { n: 'c1', seg: 60, pausa: true, fin: false });
+  const guardada = JSON.parse(JSON.stringify([{ ...C.iniciar(C.nueva('p', 600), 0), acum: 120 }]));
+  const n = C.normLista(guardada);assert.equal(n[0].corre, false);assert.equal(n[0].acum, 120);
+  assert.equal(C.normLista(Array(30).fill({ n: 'x', seg: 5 })).length, 8);
+  assert.equal(C.nueva('x'.repeat(200), 99999999).seg, 86400);assert.equal(C.nueva('', 0).seg, 1);assert.equal(C.nueva('', 5).n, 'Cuenta atrás');
+  assert.deepEqual(C.normLista('x'), []);
+});

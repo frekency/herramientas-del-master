@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.41.0] - 2026-11-19
+### Añadido
+- **Cuentas atrás** sueltas para la ventana de mesa (una trampa, un puzle, «decidid en 5 minutos»): se crean desde el panel de la mesa, con iniciar, pausar, reiniciar y mostrar u ocultar en la mesa. Se superponen a lo que haya en pantalla, o van centradas y grandes si la mesa está vacía. Al llegar a cero avisan.
+
 ## [1.40.0] - 2026-11-19
 ### Añadido
 - **Eventos de encuentro**: algo puede ocurrir por ronda (una vez o repetido), por tiempo real o a mano: más enemigos, un derrumbe… Cada evento puede llevar aviso (opcional), refuerzos, imagen para la mesa y una nota privada. En el combate sale una tarjeta con opciones y el máster decide: disparar, posponer o descartar; nada ocurre solo.

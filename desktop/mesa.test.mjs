@@ -55,3 +55,13 @@ test('iniciativa: la cuenta atrás es opcional y solo lleva etiqueta, segundos y
   assert.equal(validar({ tipo: 'iniciativa', lista: [], cuenta: { seg: 1e9 } }).cuenta.seg, 86400);
   assert.equal(validar({ tipo: 'iniciativa', lista: [], cuenta: 'x' }).cuenta, null);
 });
+
+test('cuentas: máximo cuatro, solo etiqueta, segundos, pausa y fin', () => {
+  const v = validar({ tipo: 'cuentas', lista: [{ n: 'Trampa', seg: 90.7, pausa: 1, fin: 0, x: 'secreto' }, { n: 'a'.repeat(200), seg: -5 }, null, { seg: 'x' }, { n: 'e' }] });
+  assert.equal(v.lista.length, 4);
+  assert.deepEqual(v.lista[0], { n: 'Trampa', seg: 90, pausa: true, fin: false });
+  assert.equal(v.lista[1].n.length, 60);assert.equal(v.lista[1].seg, 0);
+  assert.equal(validar({ tipo: 'cuentas', lista: [{ n: 'x', seg: 1e9 }] }).lista[0].seg, 86400);
+  assert.deepEqual(validar({ tipo: 'cuentas' }), { tipo: 'cuentas', lista: [] });
+  assert.ok(!JSON.stringify(v).includes('secreto'));
+});
