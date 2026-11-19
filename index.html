@@ -1211,6 +1211,14 @@ html.app-escritorio.sb-min .pagenav .navtoggle span{display:none}
 html.app-escritorio .pagenav .navtoggle{background:none;border-color:transparent;color:var(--muted)}
 html.app-escritorio .pagenav .btn .ic{width:18px;height:18px;flex:none}
 html.app-escritorio .localwarn{display:none!important}
+html.app-escritorio .campsel{display:none!important}
+html.app-escritorio .sbcamp{order:-2;display:flex;align-items:center;gap:10px;width:100%;margin:0 0 6px;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--fg);font:inherit;font-weight:600;text-align:left;cursor:pointer}
+html.app-escritorio .sbcamp:hover{border-color:var(--accent)}
+html.app-escritorio .sbcamp .ini{flex:none;width:26px;height:26px;border-radius:7px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-size:13px}
+html.app-escritorio .sbcamp .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.app-escritorio .sbcamp .ic{width:14px;height:14px;flex:none;color:var(--muted)}
+html.app-escritorio.sb-min .sbcamp{padding:6px 0;border-color:transparent;background:none;justify-content:center}
+html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{display:none}
 /* Los puntos de corte de la web miden el ancho de la ventana; en la app hay que descontar la barra lateral (216 px, o 60 px plegada) */
 @media (max-width:1396px){
   html.app-escritorio:not(.sb-min) .rmain{grid-template-columns:52px minmax(0,1fr) 54px auto;grid-template-areas:"i n a q" "i h a q";row-gap:6px}
@@ -1246,7 +1254,7 @@ html.app-escritorio .localwarn{display:none!important}
     <div class="now"><small id="nowlbl">Combate sin empezar</small><div class="who" id="who">Pulsa «Empezar»</div><div class="nx" id="nx"></div></div>
     <div class="nav">
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
-      <label class="skin" title="Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros"><span>Campaña</span><select id="camp" class="noi18n" style="max-width:170px"></select></label>
+      <label class="skin campsel" title="Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros"><span>Campaña</span><select id="camp" class="noi18n" style="max-width:170px"></select></label>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Ajustes</button>
       <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
@@ -3538,7 +3546,7 @@ function extraAct(act,b,c,e){
     case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
-    case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();break;
+    case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();window.__campLabel&&window.__campLabel();break;
     case 'campgo':if(Store.campaigns.select(b.dataset.id))location.reload();break;
     case 'campdel':{const id=b.dataset.id,was=Store.campaigns.active()===id;if(Store.campaigns.remove(id)){toast('Campaña borrada');if(was)location.reload();else renderCamps();}break;}
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
@@ -3934,6 +3942,22 @@ if(window.__AppShell){/* estilo propio de la app: se ofrece solo aquí */
 }
 if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barra plegada y color de los botones de la ventana */
   const R=document.documentElement,S=window.__AppShell;
+  /* campaña activa arriba de la barra lateral; el selector de la barra superior se oculta */
+  {const b=document.createElement('button');b.type='button';b.className='sbcamp';b.setAttribute('aria-label',T('Campaña'));
+   b.innerHTML='<span class="ini noi18n"></span><span class="nm noi18n"></span><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg>';
+   $('.pagenav').prepend(b);
+   window.__campLabel=()=>{const n=Store.campaigns.activeName()||T('Campaña');b.querySelector('.nm').textContent=n;b.querySelector('.ini').textContent=(n.trim()[0]||'C').toUpperCase();b.title=n;};
+   window.__campLabel();b.addEventListener('click',()=>campOpen());}
+  /* búsqueda global: Ctrl+K o Ctrl+F (⌘ en Mac) desde cualquier sitio, también escribiendo en un campo */
+  const mac=S.platform==='darwin',kb=mac?'⌘K':'Ctrl+K';
+  const sb=document.querySelector('[data-act="openbest"]');if(sb)sb.title=sb.title.replace(/\s*\(tecla B\)/,'')+' ('+kb+')';
+  document.addEventListener('keydown',e=>{
+    if(!(e.ctrlKey||e.metaKey)||e.altKey||e.shiftKey||!['k','f'].includes(e.key.toLowerCase()))return;
+    const abierto=!$('#bestmodal').hidden;
+    if(document.body.classList.contains('modal-open')&&!abierto)return;
+    e.preventDefault();
+    if(abierto){const q=$('#b-q');q.focus();q.select();}else openBest();
+  });
   const ct=$('#apptitle-c');if(ct){const n=Store.campaigns.activeName();ct.textContent=n?'· '+n:'';}
   $('.pagenav').addEventListener('mouseover',e=>{const a=e.target.closest('a');if(a&&!a.classList.contains('navver'))a.title=a.textContent.trim();});
   $('.navtoggle').setAttribute('aria-expanded',!R.classList.contains('sb-min'));
