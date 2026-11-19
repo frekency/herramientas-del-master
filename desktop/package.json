@@ -1,0 +1,51 @@
+{
+  "name": "herramientas-del-master-desktop",
+  "version": "1.35.0",
+  "description": "Herramientas del Máster: app de escritorio para dirigir partidas de D&D 2024",
+  "main": "main.js",
+  "author": "Herramientas del Máster",
+  "private": true,
+  "scripts": {
+    "prepare-app": "node prepare.mjs",
+    "start": "node prepare.mjs && electron .",
+    "dist:win": "node prepare.mjs && electron-builder --win",
+    "dist:mac": "node prepare.mjs && electron-builder --mac",
+    "dist": "node prepare.mjs && electron-builder --win --mac",
+    "test": "node --test store.test.mjs"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.herramientasdelmaster.app",
+    "productName": "Herramientas del Máster",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "store.js",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.games"
+    },
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+  }
+}
