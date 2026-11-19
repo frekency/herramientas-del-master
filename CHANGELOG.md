@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.36.0] - 2026-11-19
+### Añadido
+- Campañas: combate, grupo y encuentros son por campaña; selector en la barra y ventana para crear, abrir, renombrar y borrar. La campaña «local» conserva los datos de siempre.
+- App de escritorio para Windows y Mac (Electron, carpeta `desktop/`) con almacén SQLite local y copias de seguridad automáticas.
+- Esquema de Supabase para campañas con permisos por rol (`supabase/campanas.sql`).
+- Supabase configurable con `window.APP_CONFIG`; la web apunta a una cuenta nueva.
+### Corregido
+- Etiqueta viewport: el diseño móvil no se activaba al servir la página sola.
+
 ## [1.35.0] - 2026-11-04
 ### Añadido
 - SRD 5.2.1 en alemán e italiano: `srd2024_de/it.json`, `conjuros_srd_de/it.json` y `compendio_srd_de/it.json`, con sus generadores en `tools/`; `DATA_LANG` admite `de` e `it`. Las tiradas reconocen los formatos alemán e italiano.
