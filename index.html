@@ -2592,9 +2592,16 @@ function render(){
   if(!$('#view-jugadores').hidden){renderParty();cpRenderTabs('jugadores',false);}
   refreshCompView();
   if(!$('#view-inicio').hidden)renderHome();
-  if(mesaIni)mesaSendIni(false);
+  /* ventana de mesa: al empezar un combate el orden pasa a la mesa (si está abierta) y al terminarlo se limpia */
+  if(window.__AppShell){
+    if(state.active&&!mesaWasActive)mesaIni=true;
+    else if(!state.active&&mesaWasActive&&mesaIni){mesaIni=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});}
+    mesaWasActive=!!state.active;
+    if(mesaIni)mesaSendIni(false);
+  }
 }
 
+var mesaWasActive=false;
 var mesaIni=false;
 function mesaIniData(){
   const s=state,cur=s.active?s.order[s.turnIdx]:null;
