@@ -46,6 +46,72 @@ window.Store=(()=>{
     native:{get:k=>localStorage.getItem(k)},
     campaigns};})();
 </script>
+<script id="sync-core">
+window.Sincro=(()=>{
+/* Motor de sincronización por elemento. Puro: no toca red ni almacenamiento; decide qué subir, qué bajar y qué hacer en un conflicto.
+   Local:  {items:{clave:{valor,bv,mod,dirty,del}}, conflictos:[…]}     bv = versión del servidor desde la que se editó (0 = nunca subido)
+   Remoto: {clave:{valor,version,actualizado,borrado}}                   version la pone el servidor, no el reloj del dispositivo
+   Regla: lo que no se ha tocado en local sigue al servidor. Si se tocó en local y el servidor no se movió, se sube. Si ambos se movieron
+   (conflicto) gana el más reciente, y la versión perdedora se guarda en «conflictos» para poder recuperarla: nunca se tira en silencio. */
+const CLAVE=/^[a-z0-9][a-z0-9._:-]{0,79}$/,MAX_VALOR=1900000,MAX_CONFLICTOS=50;
+const vacio=()=>({items:{},conflictos:[]});
+const copia=l=>({items:Object.fromEntries(Object.entries(l.items).map(([k,v])=>[k,{...v}])),conflictos:l.conflictos.slice()});
+const tam=v=>{try{return JSON.stringify(v).length;}catch{return Infinity;}};
+function norm(l){
+  const o=vacio();if(!l||typeof l!=='object')return o;
+  for(const [k,v] of Object.entries(l.items||{})){if(!CLAVE.test(k)||!v||typeof v!=='object')continue;
+    o.items[k]={valor:v.valor,bv:Math.max(0,Math.trunc(+v.bv)||0),mod:Math.max(0,+v.mod||0),dirty:!!v.dirty,del:!!v.del};}
+  o.conflictos=(Array.isArray(l.conflictos)?l.conflictos:[]).slice(-MAX_CONFLICTOS).filter(c=>c&&typeof c.clave==='string'&&CLAVE.test(c.clave));
+  return o;
+}
+function editar(l,clave,valor,ahora){
+  if(!CLAVE.test(clave))return {ok:false,error:'clave_invalida'};
+  if(tam(valor)>MAX_VALOR)return {ok:false,error:'demasiado_grande'};
+  const g=copia(l),p=g.items[clave];
+  g.items[clave]={valor,bv:p?p.bv:0,mod:ahora,dirty:true,del:false};return {ok:true,l:g};
+}
+function borrar(l,clave,ahora){
+  const g=copia(l),p=g.items[clave];if(!p)return {ok:true,l:g};
+  if(p.bv===0)delete g.items[clave];                       // nunca llegó al servidor: basta con olvidarlo
+  else g.items[clave]={...p,del:true,dirty:true,mod:ahora};
+  return {ok:true,l:g};
+}
+const vivos=l=>Object.fromEntries(Object.entries(l.items).filter(([,v])=>!v.del).map(([k,v])=>[k,v.valor]));
+function guarda(g,clave,valor,motivo,ahora){g.conflictos.push({clave,valor,motivo,t:ahora});if(g.conflictos.length>MAX_CONFLICTOS)g.conflictos.splice(0,g.conflictos.length-MAX_CONFLICTOS);}
+/* → {l, subir:[{clave,valor,borrado,base}], bajados:[], borrados:[], conflictos:[], rechazadas:[]} */
+function fusionar(local,remoto,ahora){
+  const g=copia(norm(local)),R=remoto&&typeof remoto==='object'?remoto:{};
+  const r={l:g,subir:[],bajados:[],borrados:[],conflictos:[],rechazadas:[]};
+  const claves=new Set([...Object.keys(g.items),...Object.keys(R).filter(k=>CLAVE.test(k))]);
+  const aplicarRemoto=(k,x)=>{if(x.borrado){if(g.items[k]){delete g.items[k];r.borrados.push(k);}}
+    else{g.items[k]={valor:x.valor,bv:x.version,mod:x.actualizado||0,dirty:false,del:false};r.bajados.push(k);}};
+  const subir=(k,it,base)=>{if(it.del){r.subir.push({clave:k,valor:null,borrado:true,base});return;}
+    if(tam(it.valor)>MAX_VALOR){r.rechazadas.push({clave:k,motivo:'demasiado_grande'});return;}
+    r.subir.push({clave:k,valor:it.valor,borrado:false,base});};
+  for(const k of claves){
+    const L=g.items[k],X=R[k];
+    if(!L){if(X)aplicarRemoto(k,X);continue;}
+    if(!X){if(L.del)delete g.items[k];else subir(k,L,0);continue;}   // sin fila remota: alta nueva
+    if(!L.dirty){if(L.bv!==X.version||X.borrado)aplicarRemoto(k,X);continue;}
+    if(L.bv===X.version){subir(k,L,X.version);continue;}             // el servidor no se ha movido: se sube lo mío
+    // conflicto: se movieron los dos
+    const localGana=L.mod>X.actualizado;
+    if(localGana){if(!X.borrado)guarda(g,k,X.valor,'pisada_remota',ahora);L.bv=X.version;subir(k,L,X.version);}
+    else{if(!L.del)guarda(g,k,L.valor,'pisada_local',ahora);aplicarRemoto(k,X);}
+    r.conflictos.push(k);
+  }
+  return r;
+}
+/* el servidor aceptó la subida: res = {clave, version} */
+function confirmar(l,res){
+  const g=copia(l),p=g.items[res.clave];if(!p)return g;
+  if(p.del)delete g.items[res.clave];else g.items[res.clave]={...p,bv:res.version,dirty:false};
+  return g;
+}
+const pendientes=l=>Object.values(l.items).filter(v=>v.dirty).length;
+return {CLAVE,MAX_VALOR,vacio,norm,editar,borrar,vivos,fusionar,confirmar,pendientes};
+})();
+</script>
 <script id="enc-core">
 window.Encuentros=(()=>{
 /* Planificación de encuentros (D&D 2024): presupuesto de XP del grupo y generador aleatorio. Puro y sin DOM. */
