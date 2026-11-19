@@ -76,3 +76,10 @@ test('generador: casos límite sin explotar',()=>{
   assert.ok(E.generar(POOL,{grupo:[20,20,20,20],dificultad:'alto',max:9999,rng:seq(0.1,0.9,0.5)}).criaturas.reduce((s,c)=>s+c.cant,0)<=40);
   assert.ok(E.generar([{n:'Malo',xp:-5},{n:'',xp:5},{n:'Nada',xp:0}],{grupo:[5]}).criaturas.length===0);
 });
+
+test('xpDeVD y nivelDeTexto',()=>{
+  assert.equal(E.xpDeVD('1/4'),50);assert.equal(E.xpDeVD(0.5),100);assert.equal(E.xpDeVD('10'),5900);assert.equal(E.xpDeVD('30'),155000);
+  assert.equal(E.xpDeVD('x'),0);assert.equal(E.xpDeVD(null),0);assert.equal(E.xpDeVD('__proto__'),0);
+  assert.equal(E.nivelDeTexto('Maga 5'),5);assert.equal(E.nivelDeTexto('Guerrero 12 '),12);
+  assert.equal(E.nivelDeTexto('Maga'),0);assert.equal(E.nivelDeTexto('Maga 99'),0);assert.equal(E.nivelDeTexto(null),0);
+});

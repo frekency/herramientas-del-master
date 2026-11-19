@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.39.0] - 2026-11-19
+### Añadido
+- **Encuentros** dentro de la Campaña: calculadora de dificultad con el presupuesto de XP de D&D 2024 para el grupo (los jugadores de la campaña o un grupo manual), generador aleatorio por dificultad, tipo, máximo y variedad (con criaturas fijables) y edición de última hora antes de lanzar, sin tocar el encuentro guardado. El combate solo los usa.
+- Ventana de mesa: panel de control (qué se envía, limpiar, congelar, abrir y cerrar) y envío automático del orden al empezar el combate.
+- Motor de ficha de personaje (núcleo, sin interfaz todavía).
+
 ## [1.38.0] - 2026-11-19
 ### Añadido
 - **Ventana de mesa** (app de escritorio): una segunda ventana, para otro monitor o proyector, que muestra imágenes de la campaña («Mostrar en la mesa») y el **orden de iniciativa simplificado** (solo nombres, turno y ronda; nunca PG, CA ni notas), que se actualiza sola. F11 o doble clic para pantalla completa.

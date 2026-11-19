@@ -96,7 +96,12 @@ function generar(pool,opts){
   const criaturas=[...sel.values()];
   return {criaturas,xp,meta,veredicto:veredicto(xp,pres),llena:meta?xp/meta:0};
 }
-return {PRES,presupuesto,veredicto,total,evaluar,generar};
+const XPVD={'0':10,'1/8':25,'1/4':50,'1/2':100,'1':200,'2':450,'3':700,'4':1100,'5':1800,'6':2300,'7':2900,'8':3900,'9':5000,'10':5900,'11':7200,'12':8400,'13':10000,'14':11500,'15':13000,'16':15000,'17':18000,'18':20000,'19':22000,'20':25000,'21':33000,'22':41000,'23':50000,'24':62000,'25':75000,'26':90000,'27':105000,'28':120000,'29':135000,'30':155000};
+/* experiencia de un VD escrito como "1/4", "0.5" o 10; 0 si no se reconoce */
+function xpDeVD(cr){let k=String(cr==null?'':cr).trim();if(k==='0.5')k='1/2';else if(k==='0.25')k='1/4';else if(k==='0.125')k='1/8';return Object.hasOwn(XPVD,k)?XPVD[k]:0;}
+/* nivel escrito al final de un texto libre ("Maga 5", "Guerrero 3 / Pícaro 2" → 5 sería mal: solo se toma un número final de 1–20) */
+function nivelDeTexto(t){const m=/(\d{1,2})\s*$/.exec(String(t||''));const n=m?Number(m[1]):0;return n>=1&&n<=20?n:0;}
+return {PRES,presupuesto,veredicto,total,evaluar,generar,xpDeVD,nivelDeTexto};
 })();
 </script>
 <script id="ficha-core">
@@ -1466,6 +1471,28 @@ main.wrap .listhead{scroll-margin-top:100px}
 #loading [lang]{display:none}
 html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[lang="en"] #loading [lang="en"],html[lang="fr"] #loading [lang="fr"],html[lang="pt"] #loading [lang="pt"],html[lang="it"] #loading [lang="it"],html[lang="de"] #loading [lang="de"]{display:inline}
 /* ===== Campaña: notas, PNJ, lugares… ===== */
+.epgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.epside{flex:1 1 240px;max-width:320px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.eplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.eplist a{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);text-decoration:none}
+.eplist a[aria-current="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.eplist small{color:var(--muted)}
+.epdet{flex:3 1 460px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.epbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;display:flex;flex-direction:column;gap:10px}
+.epbox h3{margin:0;font-size:14px}
+.eprow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.eprow label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.eprow input,.eprow select,.epbox input,.epbox select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-width:0}
+.eprow input[type=number]{width:72px}
+.eptab{width:100%;border-collapse:collapse;font-size:14px}
+.eptab th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:2px 6px}
+.eptab td{padding:4px 6px;border-top:1px solid var(--line)}
+.eptab input[type=number]{width:64px}.eptab .epn{width:100%}
+.epbud{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}.epbud b{color:var(--fg)}
+.epv{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid currentColor}
+.epv-trivial,.epv-vacio,.epv-sin_grupo{color:var(--muted)}.epv-bajo{color:var(--ok)}.epv-moderado{color:var(--warn)}.epv-alto{color:var(--crit)}.epv-mortal{color:#fff;background:var(--crit);border-color:var(--crit)}
+.ephits{display:flex;flex-wrap:wrap;gap:6px}
+.epfoot{display:flex;flex-wrap:wrap;gap:8px}
 .cptabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
 .cptabs a{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);text-decoration:none;font-size:14px}
 .cptabs a[aria-selected="true"]{border-color:var(--accent);color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
@@ -1625,7 +1652,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.38</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.39</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -1789,6 +1816,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.39 <span>19 nov 2026</span></h3><ul>
+      <li><b>Encuentros</b> dentro de la Campaña: calculadora de dificultad (D&D 2024), generador aleatorio y edición de última hora antes de lanzarlos al combate.</li>
+      <li>Panel de control de la ventana de mesa en la app de escritorio.</li></ul></li>
     <li><h3>v1.38 <span>19 nov 2026</span></h3><ul>
       <li><b>Ventana de mesa</b> en la app de escritorio: una segunda ventana para otro monitor con imágenes de la campaña y el orden de iniciativa simplificado, sin PG ni CA.</li>
       <li>Las sesiones enlazan encuentros guardados, cada elemento indica quién puede verlo y <b>Jugadores</b> pasa a ser una pestaña de Campaña.</li></ul></li>
@@ -1916,6 +1946,15 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li>Editor de criaturas propias: crear, clonar y editar.</li></ul></li>
     <li><h3>v1.0</h3><ul><li>Tracker de iniciativa con bandos, PG, PG temporales, estados con duración, salvaciones contra muerte, rondas, deshacer y registro.</li></ul></li>
   </ol>
+</section>
+
+<section class="vpage" id="view-encuentros" hidden>
+  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" data-cpcamp></span></div>
+  <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
+  <div class="epgrid">
+    <aside class="epside"><div class="bfilters"><button type="button" class="btn primary" data-act="encnew">+ Nuevo encuentro</button></div><ul id="ep-list" class="eplist"></ul></aside>
+    <div id="ep-det" class="epdet"></div>
+  </div>
 </section>
 
 <section class="vpage" id="view-jugadores" hidden>
@@ -2805,6 +2844,7 @@ function render(){
   if(!$('#bestmodal').hidden)renderBest();
   renderEnc();
   if(!$('#view-jugadores').hidden){renderParty();cpRenderTabs('jugadores',false);}
+  if(!$('#view-encuentros').hidden){epRender();cpRenderTabs('encuentros',false);}
   refreshCompView();
   if(!$('#view-inicio').hidden)renderHome();
   /* ventana de mesa: al empezar un combate el orden pasa a la mesa (si está abierta) y al terminarlo se limpia */
@@ -3973,6 +4013,14 @@ function extraAct(act,b,c,e){
     case 'mesaini':{if(!window.__AppShell)break;mesaIni=true;mesaEst.que='iniciativa';mesaEst.congelado=false;mesaSendIni(true);toast('Orden de iniciativa en la mesa');break;}
     case 'cpmesa':{const it=cpGet(cpSel);if(!window.__AppShell||!it||!it.img)break;mesaIni=false;mesaEst.que='imagen';mesaEst.titulo=it.nombre;mesaEst.congelado=false;window.__AppShell.mesa.enviar({tipo:'imagen',src:it.img,titulo:it.nombre});toast('Mostrado en la mesa');break;}
     case 'cpmesaclear':{if(!window.__AppShell)break;mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});toast('Mesa limpia');break;}
+    case 'encnew':location.hash='campana/encuentros';epDraft={id:null,n:'',rows:[]};epSel=null;epRender();break;
+    case 'epadd':{const m=epHits[+b.dataset.i];if(m)epAddMon(m);break;}
+    case 'eprm':epDraft.rows.splice(+b.dataset.i,1);epRenderDet();break;
+    case 'epgen':epGenerar();break;
+    case 'epsave':epGuardar(false);break;
+    case 'eplaunch':epLanzar(false);break;
+    case 'eplaunchsave':epLanzar(true);break;
+    case 'epdel':{const i=PRESETS.findIndex(x=>x.id===epSel);if(i>=0){const n=PRESETS[i].n;PRESETS.splice(i,1);savePresets();epSel=null;epDraft=null;location.hash='campana/encuentros';epRender();toast(T('Encuentro borrado')+': '+n);}break;}
     case 'cpmode':cpEdit=!cpEdit;cpRenderDet();break;
     case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] input[type="text"]');if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
     case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
@@ -4024,7 +4072,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','campana','jugadores','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','campana','jugadores','encuentros','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
@@ -4137,7 +4185,7 @@ function route(){
   if(a==='jugadores')return {page:'campana',tab:'jugadores',slug:''};
   return {page:a||'inicio'};
 }
-const viewOf=r=>r.page==='campana'&&r.tab==='jugadores'?'jugadores':r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'?r.tab:'compendio';
+const viewOf=r=>r.page==='campana'&&(r.tab==='jugadores'||r.tab==='encuentros')?r.tab:r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'?r.tab:'compendio';
 const curView=()=>viewOf(route());
 function renderCmNav(tab){
   const n={criaturas:allBest().length,conjuros:SPELL_LIST.length};for(const[k] of CM_TABS)n[k]=compList(k).length;
@@ -4213,15 +4261,116 @@ function cpSorted(list){
   return [...list].sort((a,b)=>(a.tipo==='sesion'||a.tipo==='diario')&&a.tipo===b.tipo?(fecha(b).localeCompare(fecha(a))||b.editado-a.editado):cpName(a).localeCompare(cpName(b),LANG));
 }
 /* pestañas de la campaña: las notas y, en medio, el grupo de jugadores (que tiene su propia vista) */
-const CPTABS=()=>[...Notas.TIPOS.slice(0,2),['jugadores','Jugadores','shield'],...Notas.TIPOS.slice(2)];
+document.addEventListener('input',e=>{
+  const el=e.target;if(!epDraft||!el.closest||!el.closest('#view-encuentros'))return;
+  if(el.dataset.epf==='n')epDraft.n=el.value;
+  else if(el.dataset.epr){const r=epDraft.rows[+el.dataset.i];if(!r)return;const k=el.dataset.epr;
+    if(k==='name')r.name=el.value;else if(k==='lock')r.lock=el.checked;else if(k==='ac')r.ac=el.value===''?null:Math.max(0,+el.value||0);
+    else r[k]=Math.max(k==='cant'||k==='hp'?1:0,Math.min(k==='cant'?40:99999,Math.trunc(+el.value)||0))||(k==='cant'||k==='hp'?1:0);epTotals();}
+  else if(el.dataset.epg){const g=epGrupoCfg();g[el.dataset.epg]=el.type==='checkbox'?el.checked:Math.trunc(+el.value)||1;lsSet('enc-grupo-v1',g);if(el.type==='checkbox')epRenderDet();else epTotals();}
+  else if(el.dataset.epgen){epGen[el.dataset.epgen]=el.tagName==='SELECT'?el.value:Math.max(1,Math.trunc(+el.value)||1);}
+  else if(el.id==='ep-q'){const q=fold(el.value);epHits=q.length<2?[]:allBest().filter(m=>fold(m.n).includes(q)).slice(0,8);
+    $('#ep-hits').innerHTML=epHits.map((m,i)=>'<button type="button" class="btn sm" data-act="epadd" data-i="'+i+'">'+esc(m.n)+(m.cr!=null?' · VD '+esc(m.cr):'')+'</button>').join('');}
+});
+/* ---------- planificador de encuentros (dentro de la Campaña; el combate solo los usa) ---------- */
+var epSel=null,epDraft=null,epHits=[],epGen={dif:'moderado',max:6,variedad:3,tipo:''};
+const epXp=m=>m?(Number(m.xp)>0?Number(m.xp):Encuentros.xpDeVD(m.cr)):0;
+function epGrupoCfg(){let g={usar:true,n:4,nivel:3};try{Object.assign(g,lsGet('enc-grupo-v1')||{});}catch{}return g;}
+function epNiveles(){
+  const g=epGrupoCfg(),pj=PARTY.map(p=>Encuentros.nivelDeTexto(p.cls)).filter(Boolean);
+  if(g.usar&&pj.length)return {niveles:pj,deCampana:true,hayCampana:true};
+  return {niveles:Array(Math.min(20,Math.max(1,+g.n||1))).fill(Math.min(20,Math.max(1,+g.nivel||1))),deCampana:false,hayCampana:pj.length>0};
+}
+function epFromPreset(p){const m=new Map();
+  for(const it of p.items||[]){const base=String(it.name).replace(/ \d+$/,''),k=[it.tpl||'',base,it.maxHp,it.ac,it.fname].join('|');let r=m.get(k);
+    if(r)r.cant++;else m.set(k,{tpl:it.tpl||null,name:base,cant:1,hp:it.maxHp,ac:it.ac,ib:it.initBonus||0,xp:epXp(tpl(it.tpl)),fname:it.fname,fcolor:it.fcolor,notes:it.notes||'',lock:false});}
+  return [...m.values()];}
+function epToItems(rows){const o=[];for(const r of rows)for(let i=1;i<=r.cant;i++)o.push({tpl:r.tpl,name:r.cant>1?r.name+' '+i:r.name,fname:r.fname,fcolor:r.fcolor,maxHp:r.hp,ac:r.ac,initBonus:r.ib,notes:r.notes});return o;}
+function epRowFromMon(m,cant=1){return {tpl:tkey(m),name:m.n,cant,hp:Math.max(1,Number(m.hp)||1),ac:m.ac??null,ib:m.in??0,xp:epXp(m),fname:T('Enemigos'),fcolor:'#d0453c',notes:'',lock:false};}
+function epRoute(slug){
+  if(slug&&slug!==epSel){const p=PRESETS.find(x=>x.id===slug);if(p){epSel=p.id;epDraft={id:p.id,n:p.n,rows:epFromPreset(p)};}}
+  else if(!slug&&epSel&&!epDraft?.id){/* borrador nuevo */}
+  else if(!slug){epSel=null;}
+  if(!epDraft)epDraft={id:null,n:'',rows:[]};
+  epRender();
+}
+function epRender(){
+  if(PRESETS.some(p=>!p.id)){PRESETS.forEach(p=>{p.id=p.id||uid();});savePresets();}
+  const niv=epNiveles().niveles,pres=Encuentros.presupuesto(niv);
+  $('#ep-list').innerHTML=PRESETS.length?PRESETS.map(p=>{const rows=epFromPreset(p),ev=Encuentros.evaluar(niv,rows),n=rows.reduce((s,r)=>s+r.cant,0);
+    return '<li><a href="#campana/encuentros/'+esc(p.id)+'"'+(p.id===epSel?' aria-current="true"':'')+'><b>'+esc(p.n)+'</b><small>'+n+' '+esc(T('criaturas'))+' · '+ev.xp+' XP · '+esc(T(EPV[ev.veredicto]))+'</small></a></li>';}).join('')
+    :'<li><small>'+esc(T('Aún no hay encuentros. Crea uno o genéralo.'))+'</small></li>';
+  epRenderDet();
+}
+const EPV={trivial:'Trivial',bajo:'Bajo',moderado:'Moderado',alto:'Alto',mortal:'Mortal',sin_grupo:'Sin grupo',vacio:'Vacío'};
+function epRenderDet(){
+  const d=epDraft;if(!d)return;
+  const G=epGrupoCfg(),N=epNiveles(),tipos=[...new Set(allBest().map(m=>m.ty).filter(Boolean))].sort();
+  $('#ep-det').innerHTML=
+   '<div class="epbox"><div class="eprow"><label style="flex:1 1 220px">'+esc(T('Nombre del encuentro'))+'<input data-epf="n" value="'+esc(d.n)+'" maxlength="80"></label></div></div>'
+  +'<div class="epbox"><h3>'+esc(T('Grupo'))+'</h3><div class="eprow">'
+   +(N.hayCampana?'<label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-epg="usar"'+(G.usar?' checked':'')+'> '+esc(T('Usar los jugadores de la campaña'))+'</label>':'')
+   +(N.deCampana?'<span class="epbud"><span>'+N.niveles.length+' '+esc(T('jugadores'))+'</span></span>':'<label>'+esc(T('Jugadores'))+'<input type="number" min="1" max="20" data-epg="n" value="'+(+G.n||4)+'"></label><label>'+esc(T('Nivel'))+'<input type="number" min="1" max="20" data-epg="nivel" value="'+(+G.nivel||3)+'"></label>')
+   +'</div><div class="epbud" id="ep-bud"></div></div>'
+  +'<div class="epbox"><h3>'+esc(T('Criaturas'))+'</h3>'
+   +(d.rows.length?'<table class="eptab"><thead><tr><th>'+esc(T('Nombre'))+'</th><th>'+esc(T('Cant.'))+'</th><th>'+esc(T('PG'))+'</th><th>'+esc(T('CA'))+'</th><th>XP</th><th>'+esc(T('Fijar'))+'</th><th></th></tr></thead><tbody>'
+     +d.rows.map((r,i)=>'<tr><td><input class="epn" data-epr="name" data-i="'+i+'" value="'+esc(r.name)+'" maxlength="60"></td><td><input type="number" min="1" max="40" data-epr="cant" data-i="'+i+'" value="'+r.cant+'"></td>'
+       +'<td><input type="number" min="1" data-epr="hp" data-i="'+i+'" value="'+r.hp+'"></td><td><input type="number" min="0" data-epr="ac" data-i="'+i+'" value="'+(r.ac??'')+'"></td><td><input type="number" min="0" data-epr="xp" data-i="'+i+'" value="'+r.xp+'"></td>'
+       +'<td><input type="checkbox" data-epr="lock" data-i="'+i+'"'+(r.lock?' checked':'')+' aria-label="'+esc(T('Fijar'))+'"></td><td><button type="button" class="btn sm ghost" data-act="eprm" data-i="'+i+'" aria-label="'+esc(T('Quitar'))+'">×</button></td></tr>').join('')+'</tbody></table>'
+    :'<p class="epbud">'+esc(T('Sin criaturas'))+'</p>')
+   +'<div class="eprow"><input id="ep-q" type="search" placeholder="'+esc(T('Añadir criatura…'))+'" style="flex:1 1 220px" autocomplete="off"></div><div class="ephits" id="ep-hits"></div></div>'
+  +'<div class="epbox"><h3>'+esc(T('Generador aleatorio'))+'</h3><div class="eprow">'
+   +'<label>'+esc(T('Dificultad'))+'<select data-epgen="dif">'+['bajo','moderado','alto'].map(k=>'<option value="'+k+'"'+(epGen.dif===k?' selected':'')+'>'+esc(T(EPV[k]))+'</option>').join('')+'</select></label>'
+   +'<label>'+esc(T('Máx. criaturas'))+'<input type="number" min="1" max="40" data-epgen="max" value="'+epGen.max+'"></label>'
+   +'<label>'+esc(T('Variedad'))+'<input type="number" min="1" max="6" data-epgen="variedad" value="'+epGen.variedad+'"></label>'
+   +'<label>'+esc(T('Tipo'))+'<select data-epgen="tipo"><option value="">'+esc(T('Cualquiera'))+'</option>'+tipos.map(x=>'<option'+(epGen.tipo===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'
+   +'<button type="button" class="btn" data-act="epgen">'+esc(d.rows.length?T('Volver a tirar'):T('Generar'))+'</button></div></div>'
+  +'<div class="epbox"><div class="eprow" id="ep-tot"></div>'
+   +'<div class="epfoot"><button type="button" class="btn primary" data-act="eplaunch">'+esc(T('Lanzar en el combate'))+'</button>'
+   +'<button type="button" class="btn" data-act="eplaunchsave">'+esc(T('Lanzar y guardar'))+'</button>'
+   +'<button type="button" class="btn" data-act="epsave">'+esc(T('Guardar'))+'</button>'
+   +(d.id?'<button type="button" class="btn danger" data-act="epdel" data-confirm>'+esc(T('Borrar encuentro'))+'</button>':'')+'</div></div>';
+  epTotals();
+}
+function epTotals(){
+  const N=epNiveles(),pres=Encuentros.presupuesto(N.niveles),rows=epDraft.rows,ev=Encuentros.evaluar(N.niveles,rows);
+  const b=$('#ep-bud');if(b)b.innerHTML=['bajo','moderado','alto'].map(k=>esc(T(EPV[k]))+': <b>'+pres[k]+' XP</b>').join(' · ');
+  const t=$('#ep-tot');if(t)t.innerHTML='<span>'+esc(T('Total'))+': <b>'+ev.xp+' XP</b></span><span>'+ev.pct+'% '+esc(T('del moderado'))+'</span><span class="epv epv-'+ev.veredicto+'">'+esc(T(EPV[ev.veredicto]))+'</span>';
+}
+function epAddMon(m){const i=epDraft.rows.findIndex(r=>r.tpl===tkey(m)&&!r.lock&&r.hp===(Number(m.hp)||1));if(i>=0)epDraft.rows[i].cant++;else epDraft.rows.push(epRowFromMon(m));epHits=[];epRenderDet();}
+function epGenerar(){
+  const N=epNiveles(),pool=allBest().map(m=>({n:m.n,xp:epXp(m),ty:m.ty,_m:m})).filter(c=>c.xp>0),byN=new Map(pool.map(c=>[c.n,c._m]));
+  const fijas=epDraft.rows.filter(r=>r.lock).map(r=>({n:r.name,xp:r.xp,ty:'',cant:r.cant}));
+  const r=Encuentros.generar(pool,{grupo:N.niveles,dificultad:epGen.dif,max:epGen.max,variedad:epGen.variedad,tipos:epGen.tipo?[epGen.tipo]:[],bloqueadas:fijas});
+  if(!r.criaturas.length){toast(T('Nada que generar con esos criterios'));return;}
+  const nuevas=r.criaturas.filter(c=>!fijas.some(f=>f.n===c.n)).map(c=>epRowFromMon(byN.get(c.n),c.cant));
+  epDraft.rows=[...epDraft.rows.filter(x=>x.lock),...nuevas];epRenderDet();
+}
+function epGuardar(silencioso){
+  const d=epDraft;if(!d.rows.length){toast(T('Sin criaturas'));return null;}
+  const name=(d.n||'').trim()||(T('Encuentro')+' '+(PRESETS.length+1)),items=epToItems(d.rows);
+  let p=d.id&&PRESETS.find(x=>x.id===d.id);
+  if(p){p.n=name;p.items=items;}else{p={id:uid(),n:name,items};PRESETS.push(p);}
+  savePresets();d.id=p.id;d.n=name;epSel=p.id;
+  if(!silencioso){toast(T('Encuentro guardado')+': '+name);location.hash='campana/encuentros/'+p.id;epRender();}
+  return p;
+}
+function epLanzar(guardar){
+  const d=epDraft;if(!d.rows.length){toast(T('Sin criaturas'));return;}
+  if(guardar)epGuardar(true);
+  loadEncounter({items:epToItems(d.rows)});location.hash='combate';
+}
+
+const CPTABS=()=>[...Notas.TIPOS.slice(0,2),['jugadores','Jugadores','shield'],...Notas.TIPOS.slice(2,6),['encuentros','Encuentros','d20'],...Notas.TIPOS.slice(6)];
 function cpRenderTabs(sel,q){
-  document.querySelectorAll('[data-cptabs]').forEach(n=>{n.innerHTML=CPTABS().map(([k,l,i])=>`<a href="#campana/${k}" role="tab" aria-selected="${k===sel&&!q}">${ic(i)} ${T(l)}<span class="pcsub">${(k==='jugadores'?PARTY.length:CP.filter(x=>x.tipo===k).length)||''}</span></a>`).join('');});
+  document.querySelectorAll('[data-cptabs]').forEach(n=>{n.innerHTML=CPTABS().map(([k,l,i])=>`<a href="#campana/${k}" role="tab" aria-selected="${k===sel&&!q}">${ic(i)} ${T(l)}<span class="pcsub">${(k==='jugadores'?PARTY.length:k==='encuentros'?PRESETS.length:CP.filter(x=>x.tipo===k).length)||''}</span></a>`).join('');});
   document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=Store.campaigns.activeName()||'';});
 }
 function renderCampana(){
   const r=route();
   if(!cpLoaded){cpLoad();cpLoaded=true;}
   if(r.tab==='jugadores'){cpRenderTabs('jugadores',false);return;}
+  if(r.tab==='encuentros'){epRoute(r.slug);cpRenderTabs('encuentros',false);return;}
   const ok=Notas.TIPOS.some(t=>t[0]===r.tab);
   if(!ok){let k='sesion';try{k=Store.get('cp-last')||k;}catch{}location.replace('#campana/'+(Notas.TIPOS.some(t=>t[0]===k)?k:'sesion'));return;}
   cpTipo=r.tab;try{Store.set('cp-last',cpTipo);}catch{}
