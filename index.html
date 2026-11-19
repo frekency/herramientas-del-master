@@ -46,6 +46,98 @@ window.Store=(()=>{
     native:{get:k=>localStorage.getItem(k)},
     campaigns};})();
 </script>
+<script id="ev-core">
+window.Eventos=(()=>{
+/* Eventos de encuentro («escenas»): algo que puede ocurrir en una ronda o a un tiempo real. Puro: no toca el DOM.
+   Evento: {id,n,cuando:{tipo:'ronda'|'tiempo'|'manual',ronda,cada,seg},aviso:{texto,mesa},refuerzos:[…],imagen,cuentaMesa,nota}
+   Estado en combate: {lista,hecho:{id:{n,r,t}},descartado:{id:true},retorno:{id:{r|t}},pend:[ids],reloj:{acum,corre,desde}}
+   Nada se dispara solo: revisar() solo deja los eventos «pendientes» y el máster elige disparar, posponer o descartar. */
+const MAX_EV=20,MAX_REF=20;
+const int=(v,a,b,d=0)=>{v=Math.trunc(Number(v));return Number.isFinite(v)?Math.min(b,Math.max(a,v)):d;};
+const txt=(v,n)=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n):'';
+const idOk=s=>typeof s==='string'&&/^[a-z0-9]{1,24}$/i.test(s);
+const nuevoId=()=>'e'+Math.random().toString(36).slice(2,9);
+function normRef(r){
+  if(!r||typeof r!=='object')return null;
+  return {tpl:typeof r.tpl==='string'?r.tpl.slice(0,120):null,name:txt(r.name,60)||'Criatura',cant:int(r.cant,1,40,1),hp:int(r.hp,1,99999,1),ac:r.ac==null||r.ac===''?null:int(r.ac,0,99,0),
+    ib:int(r.ib,-20,40,0),xp:int(r.xp,0,999999,0),fname:txt(r.fname,40)||'Enemigos',fcolor:/^#[0-9a-f]{6}$/i.test(r.fcolor)?r.fcolor:'#d0453c',notes:txt(r.notes,300)};
+}
+function norm(x){
+  if(!x||typeof x!=='object')return null;
+  const c=x.cuando&&typeof x.cuando==='object'?x.cuando:{},tipo=['ronda','tiempo','manual'].includes(c.tipo)?c.tipo:'manual';
+  return {id:idOk(x.id)?x.id:nuevoId(),n:txt(x.n,80)||'Evento',
+    cuando:{tipo,ronda:int(c.ronda,1,99,2),cada:int(c.cada,0,99,0),seg:int(c.seg,1,86400,600)},
+    aviso:{texto:txt(x.aviso&&x.aviso.texto,400),mesa:!!(x.aviso&&x.aviso.mesa)},
+    refuerzos:(Array.isArray(x.refuerzos)?x.refuerzos:[]).slice(0,MAX_REF).map(normRef).filter(Boolean),
+    imagen:idOk(x.imagen)?x.imagen:'',cuentaMesa:!!x.cuentaMesa&&tipo==='tiempo',nota:txt(x.nota,800)};
+}
+const normLista=l=>(Array.isArray(l)?l:[]).slice(0,MAX_EV).map(norm).filter(Boolean);
+const relojVacio=()=>({acum:0,corre:false,desde:0});
+function crear(lista){return {lista:normLista(lista),hecho:{},descartado:{},retorno:{},pend:[],reloj:relojVacio()};}
+function normEstado(s){
+  const e=crear(s&&s.lista);if(!s||typeof s!=='object')return e;
+  const ids=new Set(e.lista.map(x=>x.id));
+  for(const [k,v] of Object.entries(s.hecho||{}))if(ids.has(k)&&v&&typeof v==='object')e.hecho[k]={n:int(v.n,0,9999),r:int(v.r,0,9999),t:Math.max(0,+v.t||0)};
+  for(const k of Object.keys(s.descartado||{}))if(ids.has(k))e.descartado[k]=true;
+  for(const [k,v] of Object.entries(s.retorno||{}))if(ids.has(k)&&v&&typeof v==='object')e.retorno[k]={r:v.r==null?null:int(v.r,1,9999),t:v.t==null?null:Math.max(0,+v.t||0)};
+  e.pend=(Array.isArray(s.pend)?s.pend:[]).filter(k=>ids.has(k)&&!e.descartado[k]).filter((k,i,a)=>a.indexOf(k)===i);
+  e.reloj={acum:Math.max(0,+(s.reloj&&s.reloj.acum)||0),corre:false,desde:0};   // al cargar siempre queda en pausa
+  return e;
+}
+const copia=s=>{const g=normEstado(JSON.parse(JSON.stringify(s)));g.reloj={acum:Math.max(0,+s.reloj.acum||0),corre:!!s.reloj.corre,desde:+s.reloj.desde||0};return g;};   // copiar no pausa el reloj; solo cargar lo pausa
+/* ---- reloj de tiempo real ---- */
+const transcurrido=(s,ahora)=>s.reloj.acum+(s.reloj.corre?Math.max(0,(ahora-s.reloj.desde)/1000):0);
+function iniciar(s,ahora){const g=copia(s);if(!s.reloj.corre){g.reloj={acum:s.reloj.acum,corre:true,desde:ahora};}return g;}
+function pausar(s,ahora){const g=copia(s);g.reloj={acum:transcurrido(s,ahora),corre:false,desde:0};return g;}
+function reiniciar(s){const g=copia(s);g.reloj=relojVacio();return g;}
+/* ---- qué toca ofrecer ahora ---- */
+function revisar(s,ctx){
+  const g=copia(s),ronda=int(ctx&&ctx.ronda,1,9999,1),activo=!!(ctx&&ctx.activo),tr=transcurrido(s,ctx&&ctx.ahora||0),nuevos=[];
+  for(const e of g.lista){
+    if(g.descartado[e.id]||g.pend.includes(e.id))continue;
+    const h=g.hecho[e.id],ret=g.retorno[e.id];let debido=false;
+    if(ret){debido=(ret.r!=null&&activo&&ronda>=ret.r)||(ret.t!=null&&tr>=ret.t);}
+    else if(e.cuando.tipo==='ronda'&&activo){
+      const {ronda:base,cada}=e.cuando;
+      debido=cada>0?ronda>=base&&(ronda-base)%cada===0&&!(h&&h.r===ronda):ronda>=base&&!h;
+    }else if(e.cuando.tipo==='tiempo'){debido=tr>=e.cuando.seg&&!h;}
+    if(debido){delete g.retorno[e.id];g.pend.push(e.id);g.hecho[e.id]={n:h?h.n:0,r:ronda,t:tr};nuevos.push(e.id);}
+  }
+  return {s:g,nuevos};
+}
+const buscar=(s,id)=>s.lista.find(e=>e.id===id);
+/* el máster dispara (también vale para eventos manuales). Devuelve el efecto a aplicar. */
+function disparar(s,id,ctx){
+  const e=buscar(s,id);if(!e)return {ok:false,error:'no_existe'};
+  const g=copia(s),h=g.hecho[id]||{n:0,r:0,t:0};
+  g.pend=g.pend.filter(k=>k!==id);delete g.retorno[id];
+  g.hecho[id]={n:h.n+1,r:int(ctx&&ctx.ronda,0,9999,h.r),t:transcurrido(s,ctx&&ctx.ahora||0)};
+  return {ok:true,s:g,efecto:{n:e.n,aviso:e.aviso,refuerzos:e.refuerzos,imagen:e.imagen,nota:e.nota}};
+}
+function posponer(s,id,ctx){
+  const e=buscar(s,id);if(!e)return {ok:false,error:'no_existe'};
+  const g=copia(s);g.pend=g.pend.filter(k=>k!==id);
+  if(e.cuando.tipo==='ronda')g.retorno[id]={r:int(ctx&&ctx.ronda,1,9999,1)+1,t:null};
+  else if(e.cuando.tipo==='tiempo')g.retorno[id]={r:null,t:transcurrido(s,ctx&&ctx.ahora||0)+60};
+  return {ok:true,s:g};
+}
+function descartar(s,id){
+  if(!buscar(s,id))return {ok:false,error:'no_existe'};
+  const g=copia(s);g.pend=g.pend.filter(k=>k!==id);g.descartado[id]=true;delete g.retorno[id];return {ok:true,s:g};
+}
+/* cuenta atrás visible en la mesa: el evento de tiempo con «mostrar contador» que está más cerca */
+function cuentaAtras(s,ahora){
+  const tr=transcurrido(s,ahora);let mejor=null;
+  for(const e of s.lista){
+    if(!e.cuentaMesa||e.cuando.tipo!=='tiempo'||s.descartado[e.id]||(s.hecho[e.id]&&!s.retorno[e.id]))continue;
+    const meta=s.retorno[e.id]&&s.retorno[e.id].t!=null?s.retorno[e.id].t:e.cuando.seg,seg=Math.max(0,Math.ceil(meta-tr));
+    if(!mejor||seg<mejor.seg)mejor={n:e.n,seg,pausa:!s.reloj.corre};
+  }
+  return mejor;
+}
+return {MAX_EV,norm,normLista,crear,normEstado,transcurrido,iniciar,pausar,reiniciar,revisar,disparar,posponer,descartar,cuentaAtras,nuevoId};
+})();
+</script>
 <script id="sync-core">
 window.Sincro=(()=>{
 /* Motor de sincronización por elemento. Puro: no toca red ni almacenamiento; decide qué subir, qué bajar y qué hacer en un conflicto.
