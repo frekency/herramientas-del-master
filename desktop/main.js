@@ -18,7 +18,7 @@ function crearVentana() {
   const win = new BrowserWindow({
     width: 1280,
     height: 860,
-    minWidth: 760,
+    minWidth: 900,
     minHeight: 600,
     title: 'Herramientas del Máster',
     icon: path.join(__dirname, 'build', 'icon.png'),

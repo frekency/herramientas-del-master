@@ -754,5 +754,8 @@
   "Campaña borrada": "Campagne supprimée",
   "Campaña creada": "Campagne créée",
   "Pon un nombre a la campaña": "Donnez un nom à la campagne",
-  "No se ha podido crear la campaña": "Impossible de créer la campagne"
+  "No se ha podido crear la campaña": "Impossible de créer la campagne",
+  "Escritorio": "Bureau",
+  "Condiciones": "États",
+  "Sin condiciones": "Aucun état"
 }

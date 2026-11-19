@@ -50,7 +50,7 @@ window.Store=(()=>{
 (()=>{const S=window.__AppShell;if(!S)return;const R=document.documentElement;R.classList.add('app-escritorio','app-'+S.platform);
 try{if(Store.get('app-sidebar')==='min')R.classList.add('sb-min');}catch(e){}})();
 </script>
-<script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=Store.get('combat-skin');if(k==='pergamino'){k='';Store.set('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=Store.get('combat-skin');if(k==='pergamino'){k='';Store.set('combat-skin','');}if(k===null)k=document.documentElement.classList.contains('app-escritorio')?'escritorio':'cuaderno';if(k)document.documentElement.dataset.skin=k;const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
@@ -1153,6 +1153,39 @@ main.wrap .listhead{scroll-margin-top:100px}
 @media (prefers-reduced-motion:reduce){#loading .d20{animation:none}}
 #loading [lang]{display:none}
 html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[lang="en"] #loading [lang="en"],html[lang="fr"] #loading [lang="fr"],html[lang="pt"] #loading [lang="pt"],html[lang="it"] #loading [lang="it"],html[lang="de"] #loading [lang="de"]{display:inline}
+/* ===== Estilo «Escritorio»: solo existe en la app de escritorio (se añade a los selectores desde JS) ===== */
+:root[data-skin="escritorio"]{
+  --bg:#f2f0ea; --surface:#ffffff; --surface-2:#eae7de; --line:#d8d3c6;
+  --fg:#1f1d19; --muted:#686356; --accent:#9a3b1c; --accent-fg:#ffffff;
+  --sb:#faf8f3; --sb-rule:#9a3b1c;
+  --ok:#2f7d4a; --warn:#a06c0c; --crit:#b3312c;
+  --shadow:0 1px 2px rgb(30 25 15/.07);
+  --f-display:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-body:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-sb:var(--f-body); --f-num:var(--f-body);
+  color-scheme:light}
+@media (prefers-color-scheme:dark){:root[data-skin="escritorio"]:not([data-theme="light"]){
+  --bg:#121213; --surface:#1b1b1d; --surface-2:#252528; --line:#34343a;
+  --fg:#ececee; --muted:#a2a2ab; --accent:#e0a458; --accent-fg:#1a1204;
+  --sb:#202023; --sb-rule:#e0a458;
+  --ok:#58b878; --warn:#e0a83a; --crit:#ec6a5f;
+  --shadow:0 1px 2px rgb(0 0 0/.4); color-scheme:dark}}
+:root[data-skin="escritorio"][data-theme="dark"]{
+  --bg:#121213; --surface:#1b1b1d; --surface-2:#252528; --line:#34343a;
+  --fg:#ececee; --muted:#a2a2ab; --accent:#e0a458; --accent-fg:#1a1204;
+  --sb:#202023; --sb-rule:#e0a458;
+  --ok:#58b878; --warn:#e0a83a; --crit:#ec6a5f;
+  --shadow:0 1px 2px rgb(0 0 0/.4); color-scheme:dark}
+[data-skin="escritorio"] body{font-variant-numeric:tabular-nums}
+[data-skin="escritorio"] h1,[data-skin="escritorio"] h2,[data-skin="escritorio"] .brand{font-family:var(--f-display);font-weight:650;letter-spacing:0;text-transform:none}
+[data-skin="escritorio"] h2{font-size:17px}
+[data-skin="escritorio"] .panel,[data-skin="escritorio"] .row,[data-skin="escritorio"] .mbox{border-radius:10px}
+[data-skin="escritorio"] .btn{border-radius:8px}
+[data-skin="escritorio"] .row.cur{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.nostat{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.nostat div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding:4px 0}
+.nostat div:last-child{border-bottom:0}
+.nostat span{color:var(--muted)}
 /* ===== Modo app (escritorio): barra lateral plegable y barra de título propia ===== */
 .apptitle{display:none}
 html.app-escritorio{--tb:36px;--sbw:216px}
@@ -1178,6 +1211,19 @@ html.app-escritorio.sb-min .pagenav .navtoggle span{display:none}
 html.app-escritorio .pagenav .navtoggle{background:none;border-color:transparent;color:var(--muted)}
 html.app-escritorio .pagenav .btn .ic{width:18px;height:18px;flex:none}
 html.app-escritorio .localwarn{display:none!important}
+/* Los puntos de corte de la web miden el ancho de la ventana; en la app hay que descontar la barra lateral (216 px, o 60 px plegada) */
+@media (max-width:1396px){
+  html.app-escritorio:not(.sb-min) .rmain{grid-template-columns:52px minmax(0,1fr) 54px auto;grid-template-areas:"i n a q" "i h a q";row-gap:6px}
+  html.app-escritorio:not(.sb-min) .c-init{grid-area:i}html.app-escritorio:not(.sb-min) .c-name{grid-area:n}html.app-escritorio:not(.sb-min) .c-ac{grid-area:a}html.app-escritorio:not(.sb-min) .c-hp{grid-area:h}html.app-escritorio:not(.sb-min) .c-quick{grid-area:q}
+  html.app-escritorio:not(.sb-min)[data-view="mini"] .rmain{grid-template-columns:42px minmax(0,1fr) 40px auto}
+}
+@media (max-width:1196px){html.app-escritorio:not(.sb-min) .wrap,html.app-escritorio:not(.sb-min)[data-view="mini"] .wrap{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:1240px){
+  html.app-escritorio.sb-min .rmain{grid-template-columns:52px minmax(0,1fr) 54px auto;grid-template-areas:"i n a q" "i h a q";row-gap:6px}
+  html.app-escritorio.sb-min .c-init{grid-area:i}html.app-escritorio.sb-min .c-name{grid-area:n}html.app-escritorio.sb-min .c-ac{grid-area:a}html.app-escritorio.sb-min .c-hp{grid-area:h}html.app-escritorio.sb-min .c-quick{grid-area:q}
+  html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px minmax(0,1fr) 40px auto}
+}
+@media (max-width:1040px){html.app-escritorio.sb-min .wrap,html.app-escritorio.sb-min[data-view="mini"] .wrap{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){html.app-escritorio body,html.app-escritorio .pagenav{transition:none}}
 </style>
 
@@ -2328,8 +2374,12 @@ function render(){
 
   // ficha del turno
   const m=cur&&tpl(cur.tpl);
-  $('#curpanel').hidden=!m;try{$('#curpanel').classList.toggle('folded',Store.get('combat-sheet-folded')==='1');}catch(e){}$('#gosheet').hidden=!m;
+  $('#curpanel').hidden=!cur;try{$('#curpanel').classList.toggle('folded',Store.get('combat-sheet-folded')==='1');}catch(e){}$('#gosheet').hidden=!m;
   if(m){$('#curtitle').textContent=`Ficha del turno · ${cur.name}`;$('#cursb').innerHTML=sbHTML(m,cur,{compact:true});}
+  else if(cur){/* sin ficha: lo esencial del turno */
+    let nx=null;for(let k=1;k<n&&!nx;k++){const c=get(s.order[(s.turnIdx+k)%n]);if(c&&!skipped(c)&&c!==cur)nx=c;}
+    $('#curtitle').textContent=`${T('En turno')} · ${cur.name}`;
+    $('#cursb').innerHTML=`<div class="nostat"><div><span>${T('CA')}</span><b>${cur.ac??'–'}</b></div><div><span>${T('PG')}</span><b>${cur.hp}/${cur.maxHp}${cur.temp?` +${cur.temp}`:''}</b></div><div><span>${T('Condiciones')}</span><b>${cur.conds.length?cur.conds.map(x=>esc(x.key==='agotamiento'?`${T('Agotamiento')} ${x.lvl||1}`:(CLABEL[x.key]||x.label))).join(', '):T('Sin condiciones')}</b></div><div><span>${T('Siguiente')}</span><b>${nx?esc(nx.name):'–'}</b></div></div>`;}
 
   $('#fsum').innerHTML=s.factions.map(f=>{
     const cs=s.creatures.filter(c=>c.factionId===f.id);if(!cs.length)return'';
@@ -3878,6 +3928,10 @@ function renderCamps(){
   $('#camp-new').placeholder=T('Nombre de la nueva campaña');
 }
 function campOpen(){renderCamps();$('#campmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#camp-new').focus(),30);}
+if(window.__AppShell){/* estilo propio de la app: se ofrece solo aquí */
+  for(const id of ['#skin','#pf-skin']){const s=$(id);if(s&&!s.querySelector('option[value="escritorio"]')){const o=new Option(T('Escritorio'),'escritorio');s.insertBefore(o,s.firstChild);}}
+  $('#skin').value=document.documentElement.dataset.skin||'';
+}
 if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barra plegada y color de los botones de la ventana */
   const R=document.documentElement,S=window.__AppShell;
   const ct=$('#apptitle-c');if(ct){const n=Store.campaigns.activeName();ct.textContent=n?'· '+n:'';}

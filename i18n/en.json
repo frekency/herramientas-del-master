@@ -754,5 +754,8 @@
   "Campaña borrada": "Campaign deleted",
   "Campaña creada": "Campaign created",
   "Pon un nombre a la campaña": "Give the campaign a name",
-  "No se ha podido crear la campaña": "The campaign could not be created"
+  "No se ha podido crear la campaña": "The campaign could not be created",
+  "Escritorio": "Desktop",
+  "Condiciones": "Conditions",
+  "Sin condiciones": "No conditions"
 }

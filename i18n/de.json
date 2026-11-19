@@ -754,5 +754,8 @@
   "Campaña borrada": "Kampagne gelöscht",
   "Campaña creada": "Kampagne erstellt",
   "Pon un nombre a la campaña": "Gib der Kampagne einen Namen",
-  "No se ha podido crear la campaña": "Die Kampagne konnte nicht erstellt werden"
+  "No se ha podido crear la campaña": "Die Kampagne konnte nicht erstellt werden",
+  "Escritorio": "Desktop",
+  "Condiciones": "Zustände",
+  "Sin condiciones": "Keine Zustände"
 }
