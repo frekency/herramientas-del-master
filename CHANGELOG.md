@@ -8,7 +8,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ### Añadido
 - SRD 5.2.1 en alemán e italiano: `srd2024_de/it.json`, `conjuros_srd_de/it.json` y `compendio_srd_de/it.json`, con sus generadores en `tools/`; `DATA_LANG` admite `de` e `it`. Las tiradas reconocen los formatos alemán e italiano.
 - Tests automáticos (`npm test`, `node --test tests/`): datos de cada idioma, traducciones, versión, seguridad estática y ataque real en Edge sin ventana. El hook `.githooks/pre-push` los pasa antes de cada subida.
-- `_headers` para Netlify con cabeceras de seguridad.
+- `_headers` con cabeceras de seguridad.
 ### Corregido
 - Seguridad: los módulos del catálogo ya no pueden colar HTML ni código en objetos, dotes, clases, especies, trasfondos y reglas; los datos guardados, los módulos y las copias de seguridad se sanean al cargarlos (antes un dato mal formado dejaba la página rota) y la copia no puede tocar el prototipo de los interruptores de módulos.
 - supabase-js se carga con integridad (SRI).

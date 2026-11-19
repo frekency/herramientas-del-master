@@ -62,7 +62,7 @@ Las cuentas son solo con Discord (no se envían correos).
 1. En Supabase → **SQL Editor**, ejecuta `supabase/schema.sql` (se puede repetir sin problema).
 2. En el portal de desarrolladores de Discord, crea una aplicación y añade en **OAuth2 → Redirects** `https://mjzolxysvxoauvaxuqcq.supabase.co/auth/v1/callback`.
 3. En Supabase → **Authentication → Sign In / Providers → Discord**, actívalo con el Client ID y el Client Secret de Discord.
-4. En **Authentication → URL Configuration**, pon la dirección de Netlify como Site URL y añádela (con `/**`) a Redirect URLs.
+4. En **Authentication → URL Configuration**, pon la dirección de Cloudflare (`https://herramientas-del-master.sotoaeduardo.workers.dev`) como Site URL y añádela (con `/**`) a Redirect URLs.
 5. La URL y la clave publicable del proyecto están en `index.html` (`SB_URL`, `SB_KEY`). Nunca pongas ahí la clave `service_role`/secret.
 
 Para ocultar un módulo del catálogo, pon `oculto = true` en la tabla `modulos_publicos`; las denuncias llegan a la tabla `denuncias`.

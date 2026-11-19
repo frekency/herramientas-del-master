@@ -70,7 +70,7 @@ test('los datos de terceros (módulos) no pueden marcarse como HTML de confianza
   assert.match(m,/_html:false/,'compList no anula _html en los módulos');
 });
 
-test('Netlify sirve la página con cabeceras de seguridad',()=>{
+test('El hosting sirve la página con cabeceras de seguridad',()=>{
   const h=read('_headers');
   for(const x of ['X-Content-Type-Options: nosniff','X-Frame-Options: SAMEORIGIN','Referrer-Policy:'])assert.ok(h.includes(x),`_headers sin ${x}`);
 });
