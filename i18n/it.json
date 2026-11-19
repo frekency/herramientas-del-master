@@ -739,5 +739,20 @@
   "Mi cuenta": "Il mio account",
   "Repetir iniciativa": "Ritira l’iniziativa",
   "Libro de reglas": "Manuale",
-  "Pantalla del máster": "Schermo del Master"
+  "Pantalla del máster": "Schermo del Master",
+  "Campaña": "Campagna",
+  "Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros": "Campagna attiva: ogni campagna ha il proprio combattimento, gruppo e incontri",
+  "Campañas": "Campagne",
+  "Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.": "Ogni campagna ha il proprio combattimento, gruppo e incontri. Il tuo bestiario, le tue tabelle e i tuoi moduli sono tuoi e valgono per tutte.",
+  "Crear campaña": "Crea campagna",
+  "Nueva campaña": "Nuova campagna",
+  "Gestionar campañas…": "Gestisci campagne…",
+  "Nombre de la campaña": "Nome della campagna",
+  "activa": "attiva",
+  "Abrir": "Apri",
+  "Nombre de la nueva campaña": "Nome della nuova campagna",
+  "Campaña borrada": "Campagna eliminata",
+  "Campaña creada": "Campagna creata",
+  "Pon un nombre a la campaña": "Dai un nome alla campagna",
+  "No se ha podido crear la campaña": "Impossibile creare la campagna"
 }

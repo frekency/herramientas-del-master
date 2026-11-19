@@ -739,5 +739,20 @@
   "Mi cuenta": "Mein Konto",
   "Repetir iniciativa": "Initiative neu würfeln",
   "Libro de reglas": "Regelbuch",
-  "Pantalla del máster": "Spielleiterschirm"
+  "Pantalla del máster": "Spielleiterschirm",
+  "Campaña": "Kampagne",
+  "Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros": "Aktive Kampagne: Jede Kampagne hat ihren eigenen Kampf, ihre eigene Gruppe und eigene Begegnungen",
+  "Campañas": "Kampagnen",
+  "Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.": "Jede Kampagne hat ihren eigenen Kampf, ihre eigene Gruppe und eigene Begegnungen. Dein Bestiarium, deine Tabellen und deine Module gehören dir und gelten für alle.",
+  "Crear campaña": "Kampagne erstellen",
+  "Nueva campaña": "Neue Kampagne",
+  "Gestionar campañas…": "Kampagnen verwalten…",
+  "Nombre de la campaña": "Name der Kampagne",
+  "activa": "aktiv",
+  "Abrir": "Öffnen",
+  "Nombre de la nueva campaña": "Name der neuen Kampagne",
+  "Campaña borrada": "Kampagne gelöscht",
+  "Campaña creada": "Kampagne erstellt",
+  "Pon un nombre a la campaña": "Gib der Kampagne einen Namen",
+  "No se ha podido crear la campaña": "Die Kampagne konnte nicht erstellt werden"
 }

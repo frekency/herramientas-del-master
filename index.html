@@ -1,10 +1,52 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Herramientas del Máster</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Grenze:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
-<script>try{const p=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=localStorage.getItem('combat-skin');if(k==='pergamino'){k='';localStorage.setItem('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=localStorage.getItem('combat-view');if(v)document.documentElement.dataset.view=v;const t=localStorage.getItem('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>
+/* Almacenamiento de datos de la app. Es la única puerta de entrada a los datos persistentes.
+   Por defecto usa localStorage (web). Otro entorno (p. ej. la app de escritorio con SQLite) puede
+   definir window.__StoreBackend = {get(k)->string|null, set(k,v), remove(k), keys()->string[]} antes de cargar la página.
+   La interfaz es síncrona a propósito: así el resto del código no cambia.
+   CAMPAÑAS: los datos de la mesa (SCOPED) se guardan por campaña. La campaña «local» usa las claves de siempre (así los
+   datos anteriores siguen donde estaban); las demás usan «camp:<id>:<clave>». Todo lo demás (bestiario propio, tablas,
+   módulos, preferencias) es de la persona usuaria y vale para todas las campañas.
+   Store.root salta el reparto por campañas (la sincronización de la cuenta trabaja siempre sobre la campaña «local»);
+   Store.native es el localStorage del navegador, para las claves de librerías ajenas como supabase-js. */
+window.Store=(()=>{
+  const B=window.__StoreBackend||{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v),remove:k=>localStorage.removeItem(k),
+    keys:()=>{const o=[];for(let i=0;i<localStorage.length;i++)o.push(localStorage.key(i));return o;}};
+  const IDX='combat-campaigns-v1',BASE='local',MAX=50;
+  const SCOPED=new Set(['combat-tracker-v1','combat-party-v1','combat-presets-v1']);
+  let idx=null;
+  const load=()=>{if(idx)return idx;let v=null;try{v=JSON.parse(B.get(IDX)||'null');}catch(e){}
+    if(!v||!Array.isArray(v.list)||!v.list.some(c=>c&&c.id===BASE))v={v:1,active:BASE,list:[{id:BASE,nombre:'Mi campaña',creado:Date.now()}].concat((v&&Array.isArray(v.list)?v.list:[]).filter(c=>c&&c.id!==BASE))};
+    if(!v.list.some(c=>c.id===v.active))v.active=BASE;return idx=v;};
+  const save=()=>B.set(IDX,JSON.stringify(idx));
+  const map=k=>{const a=load().active;return a!==BASE&&SCOPED.has(k)?'camp:'+a+':'+k:k;};
+  const clean=n=>String(n==null?'':n).replace(/\s+/g,' ').trim().slice(0,60);
+  const campaigns={
+    BASE,
+    list:()=>load().list.map(c=>({...c})),
+    active:()=>load().active,
+    activeName:()=>(load().list.find(c=>c.id===load().active)||{}).nombre||'',
+    create(n){n=clean(n);if(!n)throw new Error('nombre vacío');if(load().list.length>=MAX)throw new Error('demasiadas campañas');
+      const id='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);idx.list.push({id,nombre:n,creado:Date.now()});save();return id;},
+    rename(id,n){n=clean(n);const c=load().list.find(x=>x.id===id);if(!c||!n)return false;c.nombre=n;save();return true;},
+    select(id){if(!load().list.some(c=>c.id===id))return false;idx.active=id;save();return true;},
+    // La campaña «local» no se borra (es donde viven los datos de siempre y los de la cuenta); las demás sí, con sus datos.
+    remove(id){if(id===BASE||!load().list.some(c=>c.id===id))return false;
+      const pre='camp:'+id+':';for(const k of (B.keys?B.keys():[]))if(k.startsWith(pre))B.remove(k);
+      idx.list=idx.list.filter(c=>c.id!==id);if(idx.active===id)idx.active=BASE;save();return true;},
+  };
+  return{get:k=>B.get(map(k)),set:(k,v)=>B.set(map(k),v),remove:k=>B.remove(map(k)),
+    root:{get:k=>B.get(k),set:(k,v)=>B.set(k,v),remove:k=>B.remove(k)},
+    native:{get:k=>localStorage.getItem(k)},
+    campaigns};})();
+</script>
+<script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=Store.get('combat-skin');if(k==='pergamino'){k='';Store.set('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
@@ -511,6 +553,12 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 :root[data-view="mini"] .addgrid{grid-template-columns:1fr 1fr 1fr}
 :root[data-view="mini"] .addgrid .full{grid-column:1/-1}
 :root[data-view="mini"] .row.down{opacity:.4}
+
+/* campañas */
+.camplist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.camprow{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--surface)}
+.camprow.on{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.camprow .txt{flex:1 1 auto;min-width:0}
 
 /* selector de estilo */
 .skin{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
@@ -1121,6 +1169,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
     <div class="now"><small id="nowlbl">Combate sin empezar</small><div class="who" id="who">Pulsa «Empezar»</div><div class="nx" id="nx"></div></div>
     <div class="nav">
       <span class="lastroll" id="lastroll" hidden title="Pulsa − en una criatura con la casilla vacía para aplicar este daño"></span>
+      <label class="skin" title="Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros"><span>Campaña</span><select id="camp" class="noi18n" style="max-width:170px"></select></label>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Ajustes</button>
       <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
@@ -1748,6 +1797,17 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   </div>
 </div>
 
+<div class="modal" id="campmodal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="camp-h" style="width:min(520px,100%)">
+    <div class="mhead"><h2 id="camp-h">Campañas</h2><button class="btn ghost" data-act="campclose" aria-label="Cerrar">✕</button></div>
+    <div class="mbody" style="display:grid;gap:12px">
+      <p class="hint" style="display:block;margin:0">Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.</p>
+      <ul class="camplist noi18n" id="camp-list"></ul>
+      <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="iomodal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="io-h" style="width:min(640px,100%)">
     <div class="mhead"><h2 id="io-h">Copias de seguridad</h2><button class="btn ghost" data-act="closeio" aria-label="Cerrar">✕</button></div>
@@ -1771,7 +1831,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
    completos y los atributos placeholder, title y aria-label) con este diccionario; los datos (criaturas, conjuros,
    compendio) se cargan de los archivos del SRD en inglés. # = cualquier número. */
 const LANGS={es:'Español',en:'English',fr:'Français',pt:'Português',it:'Italiano',de:'Deutsch'};
-let LANG='es';try{const l=JSON.parse(localStorage.getItem('combat-prefs-v1')||'{}').lang;if(l in LANGS)LANG=l;}catch(e){}
+let LANG='es';try{const l=JSON.parse(Store.get('combat-prefs-v1')||'{}').lang;if(l in LANGS)LANG=l;}catch(e){}
 document.documentElement.lang=LANG;
 let I18N={},I18N_RX=[];
 const I18N_AFX=/^([\s\p{Extended_Pictographic}\uFE0F\u200D←→▶◀✕›‹·•↗+−–-]*)(.*?)([\s→▶↗…:·×]*)$/su;
@@ -1867,8 +1927,8 @@ function normItem(k,x){
     for(const f of ['ac','hp'])if(f in x&&!Number.isFinite(+x[f]))x[f]=f==='ac'?10:1;}
   return x;
 }
-try{MY=cleanList(JSON.parse(localStorage.getItem(BKEY)||'[]')).map(x=>normItem('criaturas',x));}catch(e){MY=[];}
-function saveBest(){try{localStorage.setItem(BKEY,JSON.stringify(MY));}catch(e){}}
+try{MY=cleanList(JSON.parse(Store.get(BKEY)||'[]')).map(x=>normItem('criaturas',x));}catch(e){MY=[];}
+function saveBest(){try{Store.set(BKEY,JSON.stringify(MY));}catch(e){}}
 function tpl(key){
   if(!key)return null;
   if(key.startsWith('srd:')){const k=key.slice(4);return SRD_ALL.find(m=>(m.en||m.n)===k)||null;}
@@ -1965,7 +2025,7 @@ function removeExamples(){
 
 let state, undoStack=[];
 function load(){
-  try{const raw=localStorage.getItem(KEY); if(raw){const s=JSON.parse(raw); if(s&&typeof s==='object'&&!Array.isArray(s)&&s.example!==true){
+  try{const raw=Store.get(KEY); if(raw){const s=JSON.parse(raw); if(s&&typeof s==='object'&&!Array.isArray(s)&&s.example!==true){
     // un combate guardado con otra forma: cada campo que no encaja vuelve a su valor inicial
     const e=emptyState();
     for(const k in e)if(e[k]!==null&&(Array.isArray(e[k])!==Array.isArray(s[k])||typeof e[k]!==typeof s[k]))s[k]=e[k];
@@ -1973,7 +2033,7 @@ function load(){
   return emptyState();
 }
 function save(){
-  try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}
+  try{Store.set(KEY,JSON.stringify(state));}catch(e){}
   // los PG de los personajes del grupo siguen a su criatura en el combate
   let dirty=false;
   for(const c of state.creatures){if(!c.pcId)continue;const p=PARTY.find(x=>x.id===c.pcId);
@@ -2234,7 +2294,7 @@ function render(){
 
   // ficha del turno
   const m=cur&&tpl(cur.tpl);
-  $('#curpanel').hidden=!m;try{$('#curpanel').classList.toggle('folded',localStorage.getItem('combat-sheet-folded')==='1');}catch(e){}$('#gosheet').hidden=!m;
+  $('#curpanel').hidden=!m;try{$('#curpanel').classList.toggle('folded',Store.get('combat-sheet-folded')==='1');}catch(e){}$('#gosheet').hidden=!m;
   if(m){$('#curtitle').textContent=`Ficha del turno · ${cur.name}`;$('#cursb').innerHTML=sbHTML(m,cur,{compact:true});}
 
   $('#fsum').innerHTML=s.factions.map(f=>{
@@ -2384,7 +2444,7 @@ let bSel=null;
 // Tipos del buscador: las criaturas usan su clave del bestiario; el resto, «tipo:nombre»
 const BTY=[['todo','Todo'],['criaturas','Criaturas','claw'],['conjuros','Conjuros','sparkle'],['objetos','Objetos','bag'],['dotes','Dotes','star'],['clases','Clases','shield'],['especies','Especies','people'],['trasfondos','Trasfondos','scroll'],['reglas','Reglas','book']];
 const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Dote',clases:'Clase',especies:'Especie',trasfondos:'Trasfondo',reglas:'Regla'};
-let bTy=(()=>{try{return localStorage.getItem('b-ty')||'todo';}catch{return 'todo';}})();
+let bTy=(()=>{try{return Store.get('b-ty')||'todo';}catch{return 'todo';}})();
 const bTyOf=k=>{const p=String(k||'').split(':')[0];return TY_ONE[p]&&p!=='criaturas'?p:'criaturas';};
 function cmSub(tab,x){
   const s=tab==='objetos'?[x.t||OBJ_KIND[x.k],x.r,x.precio]:tab==='dotes'?[x.cat&&'Dote '+(fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()),x.req]:tab==='clases'?[(x.info?.['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,''),x.info?.['Característica principal']]:tab==='reglas'?[x.cat]:tab==='especies'?[String(x.tam||'').replace(/\s*\(.*?\)/g,''),x.vel]:[x.dote];
@@ -2529,8 +2589,8 @@ function fillCompDL(){
     $(id).innerHTML=compList(tab).map(x=>`<option value="${esc(x.n)}">${esc(tab==='objetos'?x.t||OBJ_KIND[x.k]||'':x._src)}</option>`).join('');
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
-function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
-function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal'].some(id=>!$(id).hidden));}
+function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
+function syncModalOpen(){document.body.classList.toggle('modal-open',['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
   commit(()=>{
@@ -2670,7 +2730,7 @@ document.addEventListener('click',e=>{
       if(m.id)openEditor(m);else openEditor(m,{asNew:true,relink:same});break;}
     case 'mkfromrow':openEditor({n:c.name.replace(/ \d+$/,''),sz:'Medium',ty:'Humanoid',ac:c.ac,hp:c.maxHp,in:c.initBonus,ab:[10,10,10,10,10,10]},{asNew:true,relink:[c.id]});break;
     // bestiario
-    case 'sheetfold':if(!MOB.matches)break;{const p=$('#curpanel'),c=p.classList.toggle('folded');try{localStorage.setItem('combat-sheet-folded',c?'1':'');}catch(e){}}break;
+    case 'sheetfold':if(!MOB.matches)break;{const p=$('#curpanel'),c=p.classList.toggle('folded');try{Store.set('combat-sheet-folded',c?'1':'');}catch(e){}}break;
     case 'railgo':{const el=document.querySelector(`.row[data-id="${b.dataset.id}"]`);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}}break;
     case 'gosheet':$('#curpanel').classList.remove('folded');$('#curpanel').scrollIntoView({behavior:'smooth',block:'start'});break;
     case 'openbest':openBest();break;
@@ -2703,7 +2763,7 @@ document.addEventListener('click',e=>{
 $('#bestmodal').addEventListener('click',e=>{if(e.target.id==='bestmodal')closeModals();});
 for(const id of ['#b-q','#b-src','#b-cr','#b-cat'])$(id).addEventListener('input',renderBest);
 $('#bestmodal').addEventListener('click',e=>{if(e.target.closest('a[href^="#"]'))closeModals();});
-$('#b-ty').addEventListener('click',e=>{const b=e.target.closest('[data-bty]');if(!b)return;bTy=b.dataset.bty;try{localStorage.setItem('b-ty',bTy);}catch{}$('#b-cat').value='';renderBest();$('#b-q').focus();});
+$('#b-ty').addEventListener('click',e=>{const b=e.target.closest('[data-bty]');if(!b)return;bTy=b.dataset.bty;try{Store.set('b-ty',bTy);}catch{}$('#b-cat').value='';renderBest();$('#b-q').focus();});
 
 document.addEventListener('change',e=>{
   const el=e.target,frow=el.closest('.frow');
@@ -2787,15 +2847,15 @@ function undo(){if(!undoStack.length)return;state=JSON.parse(undoStack.pop());co
 $('#next').onclick=next;$('#prev').onclick=prev;$('#undo').onclick=undo;
 $('#skin').value=document.documentElement.dataset.skin||'';
 $('#view').value=document.documentElement.dataset.view||'';
-$('#view').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.view=v;else delete document.documentElement.dataset.view;try{localStorage.setItem('combat-view',v);}catch(err){}});
+$('#view').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.view=v;else delete document.documentElement.dataset.view;try{Store.set('combat-view',v);}catch(err){}});
 $('#cfgbtn').addEventListener('click',e=>{const r=document.documentElement,on=r.dataset.cfg!=='1';if(on)r.dataset.cfg='1';else delete r.dataset.cfg;e.currentTarget.setAttribute('aria-expanded',on);if(on&&!document.documentElement.hasAttribute('data-mesa'))document.querySelector('.cfg').scrollIntoView({behavior:'smooth',block:'start'});});
-$('#skin').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.skin=v;else delete document.documentElement.dataset.skin;try{localStorage.setItem('combat-skin',v);}catch(err){}});
+$('#skin').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.skin=v;else delete document.documentElement.dataset.skin;try{Store.set('combat-skin',v);}catch(err){}});
 
 /* ---------- grupo, encuentros y conjuros ---------- */
 const PKEY='combat-party-v1', EKEY='combat-presets-v1', SKEY='combat-spells-v1', LBKEY='combat-books-v1';
 const SCHOOLS=Object.fromEntries(Object.entries({abjuracion:'Abjuración',conjuracion:'Conjuración',adivinacion:'Adivinación',encantamiento:'Encantamiento',evocacion:'Evocación',ilusionismo:'Ilusionismo',nigromancia:'Nigromancia',transmutacion:'Transmutación'}).map(([k,v])=>[k,T(v)]));
-function lsGet(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function lsGet(k){try{const r=Store.get(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+function lsSet(k,v){try{Store.set(k,JSON.stringify(v));return true;}catch(e){return false;}}
 
 /* ---------- módulos ---------- */
 // El SRD 5.2.1 va siempre cargado; el resto lo elige cada usuario. Tres apartados: oficiales libres (alojados aquí),
@@ -2816,7 +2876,7 @@ let MODS=null,MODCR=[],MODTB=[];
 function loadMods(){
   let m=lsGet(MKEY);if(m&&m.on&&typeof m.on==='object'&&Array.isArray(m.list)){m.list=cleanMods(m.list);return m;}
   // Primera vez: quien ya usaba la herramienta conserva el SRD activado y sus libros pasan a ser módulos.
-  const used=['combat-tracker-v1','combat-bestiary-v1','combat-party-v1','combat-tables-v1',LBKEY,SKEY].some(k=>{try{return !!localStorage.getItem(k);}catch{return false;}});
+  const used=['combat-tracker-v1','combat-bestiary-v1','combat-party-v1','combat-tables-v1',LBKEY,SKEY].some(k=>{try{return !!Store.get(k);}catch{return false;}});
   m={on:{srd521:used},list:[]};
   for(const bk of getBooks()){const o=OFFICIAL_BYO.find(x=>fold(bk.n).includes(x.k));
     m.list.push({id:o?o.id:modSlug(bk.n),n:o?o.n:bk.n,ab:o?o.ab:bk.ab,ref:o?o.id:'',on:true,conjuros:bk.spells});}
@@ -3387,13 +3447,16 @@ function extraAct(act,b,c,e){
   switch(act){
     case 'openparty':location.hash='jugadores';break;
     case 'cfgtoggle':$('#cfgbtn').click();break;
-    case 'lwhide':try{localStorage.setItem('combat-localwarn-off','1');}catch(e){}renderAcct();break;
+    case 'lwhide':try{Store.set('combat-localwarn-off','1');}catch(e){}renderAcct();break;
     case 'sumclose':state.summary=null;save();render();break;
     case 'toastundo':$('#toast').classList.remove('show','act');undo();break;
     case 'navtoggle':{const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
     case 'pfopen':$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'pfclose':$('#prefmodal').hidden=true;syncModalOpen();break;
+    case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();break;
+    case 'campgo':if(Store.campaigns.select(b.dataset.id))location.reload();break;
+    case 'campdel':{const id=b.dataset.id,was=Store.campaigns.active()===id;if(Store.campaigns.remove(id)){toast('Campaña borrada');if(was)location.reload();else renderCamps();}break;}
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
     case 'pcnew':openPC(null);break;
     case 'pcedit':openPC(b.dataset.id);break;
@@ -3429,9 +3492,9 @@ function extraAct(act,b,c,e){
 /* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const r=route();
-  if(r.page==='compendio'&&!r.tab){let k='criaturas';try{k=localStorage.getItem('cm-last')||k;}catch{}location.replace('#compendio/'+(CTABS.some(x=>x[0]===k)?k:'criaturas'));return;}
+  if(r.page==='compendio'&&!r.tab){let k='criaturas';try{k=Store.get('cm-last')||k;}catch{}location.replace('#compendio/'+(CTABS.some(x=>x[0]===k)?k:'criaturas'));return;}
   if(r.page==='compendio'){
-    try{localStorage.setItem('cm-last',r.tab);}catch{}
+    try{Store.set('cm-last',r.tab);}catch{}
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
@@ -3756,7 +3819,7 @@ function setPref(k,v){PREFS[k]=v;lsSet(PREFKEY,PREFS);document.querySelectorAll(
 $('#pf-dist').addEventListener('change',e=>setPref('dist',e.target.value));
 $('#pf-peso').addEventListener('change',e=>setPref('peso',e.target.value));
 // las mismas que en la barra: se cambian allí para no duplicar la lógica
-$('#pf-theme').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;try{localStorage.setItem('combat-theme',v);}catch(err){}});
+$('#pf-theme').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;try{Store.set('combat-theme',v);}catch(err){}});
 for(const k of ['view','skin'])$('#pf-'+k).addEventListener('change',e=>{const b=$('#'+k);b.value=e.target.value;b.dispatchEvent(new Event('change'));});
 $('#pf-lang').innerHTML=Object.entries(LANGS).map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
 $('#pf-lang').addEventListener('change',async e=>{
@@ -3773,15 +3836,33 @@ let SB=null,SB_USER=null,SB_NAME='',syncT=null,syncBusy=false,lastRaw={},CAT=nul
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data);
 unitsIn(document.body);
 
+/* ---------- campañas ---------- */
+function renderCamps(){
+  const C=Store.campaigns,act=C.active();
+  $('#camp').innerHTML=C.list().map(c=>`<option value="${esc(c.id)}"${c.id===act?' selected':''}>${esc(c.nombre)}</option>`).join('')+`<option value="__mgr">${esc(T('Gestionar campañas…'))}</option>`;
+  $('#camp-list').innerHTML=C.list().map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
+  $('#camp-new').placeholder=T('Nombre de la nueva campaña');
+}
+function campOpen(){renderCamps();$('#campmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#camp-new').focus(),30);}
+$('#camp').addEventListener('change',e=>{const v=e.target.value;if(v==='__mgr'){renderCamps();campOpen();return;}if(Store.campaigns.select(v))location.reload();});
+$('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-camp]');if(!i)return;if(!Store.campaigns.rename(i.dataset.camp,i.value))toast('Pon un nombre a la campaña');renderCamps();});
+$('#camp-form').addEventListener('submit',e=>{e.preventDefault();const n=$('#camp-new').value;
+  try{const id=Store.campaigns.create(n);Store.campaigns.select(id);toast('Campaña creada');location.reload();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}});
+renderCamps();
+
 /* ---------- cuentas y sincronización (Supabase) ---------- */
 // Solo en la web: dentro del visor de claude.ai no hay conexión con Supabase. La clave publicable puede ir en la página:
 // lo que protege los datos son las reglas de la base de datos (cada uno solo lee y escribe lo suyo).
-const SB_URL='https://uigkelicqmhiqaokndvo.supabase.co',SB_KEY='sb_publishable_yaFkSGsgTGVAY3dW-7vKRw_-_4dfata';
+// Proyecto de Supabase. Para usar otro, define window.APP_CONFIG={supabaseUrl,supabaseKey} antes de cargar la página
+// (así no hace falta tocar el código al cambiar de cuenta). La clave es la «publishable», pensada para ir en el navegador.
+const APP_CONFIG=window.APP_CONFIG||{};
+const SB_URL=APP_CONFIG.supabaseUrl||'https://mjzolxysvxoauvaxuqcq.supabase.co',SB_KEY=APP_CONFIG.supabaseKey||'sb_publishable_CwYkw5WqYN5mkgW1zjuGsQ_qE0RyJXD';
+const SB_REF=(()=>{try{return new URL(SB_URL).hostname.split('.')[0];}catch(e){return '';}})();
 const SYNC_KEYS={tracker:KEY,bestiario:BKEY,grupo:PKEY,encuentros:EKEY,tablas:TKEY,modulos:MKEY,preferencias:PREFKEY},SYNC_META='combat-sync-v1';
 const LICS=['CC-BY-4.0','CC-BY-SA-4.0','CC0','Todos los derechos reservados'];
 const canon=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(q=>[q,x[q]])):x);
 const hsh=s=>{let x=5381;for(let i=0;i<s.length;i++)x=(Math.imul(x,33)^s.charCodeAt(i))>>>0;return x.toString(36)+'.'+s.length;};
-const lsRaw=k=>{try{return localStorage.getItem(k);}catch{return null;}};
+const lsRaw=k=>{try{return Store.root.get(k);}catch{return null;}};   // la cuenta sincroniza la campaña «local»
 const AC_ERR=[[/rate limit|too many/i,'Demasiados intentos seguidos; espera un minuto y vuelve a probar'],[/duplicate|unique/i,'Ese nombre de usuario ya está cogido'],[/fetch|network/i,'No hay conexión con el servidor']];
 const acErr=e=>(AC_ERR.find(([r])=>r.test(e?.message||''))||[])[1]||('Error: '+(e?.message||e));
 function acMsg(t,ok){const m=$('#ac-msg');m.textContent=t||'';m.classList.toggle('ok',!!ok);}
@@ -3795,9 +3876,9 @@ function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_US
   $('#ac-srdv').textContent=OFFICIAL_FREE.find(o=>o.id==='srd521')?.n||'SRD';$('#ac-srdl').textContent=`${T('Datos en')} ${LANGS[DATA_LANG]}`;
   $('#ac-exdel').disabled=!hasExamples();}
 function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
-const SB_STORED=()=>{try{return !!localStorage.getItem('sb-uigkelicqmhiqaokndvo-auth-token');}catch(e){return false;}};
+const SB_STORED=()=>{try{return !!Store.native.get('sb-'+SB_REF+'-auth-token');}catch(e){return false;}};   // supabase-js guarda la sesión en el localStorage del navegador
 function renderAcct(){
-  const lwOff=(()=>{try{return localStorage.getItem('combat-localwarn-off')==='1';}catch(e){return false;}})();
+  const lwOff=(()=>{try{return Store.get('combat-localwarn-off')==='1';}catch(e){return false;}})();
   document.querySelectorAll('.localwarn').forEach(el=>el.hidden=lwOff||!(SB&&!SB_USER&&!SB_STORED()));
   const b=$('#acct-btn');b.hidden=!SB;b.innerHTML=ic('user')+' '+(SB_USER?esc(SB_NAME||T('Mi cuenta')):T('Entrar'));
   $('#ac-user').textContent=SB_NAME||'—';
@@ -3863,7 +3944,7 @@ async function syncPull(){
     const hl=loc==null?null:hsh(canon(loc)),hs=cl in srv?hsh(canon(srv[cl])):null;
     if(hl===hs){meta.h[cl]=hs;continue;}
     if(hs===null||preferLocal||(same&&hl!==null&&hl!==meta.h[cl]&&hs===meta.h[cl]))continue;   // se sube lo de aquí
-    try{localStorage.setItem(k,JSON.stringify(srv[cl]));meta.h[cl]=hs;changed=true;}catch{}
+    try{Store.root.set(k,JSON.stringify(srv[cl]));meta.h[cl]=hs;changed=true;}catch{}
   }
   lsSet(SYNC_META,meta);
   let again=false;try{again=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}

@@ -21,7 +21,8 @@ test('ningún secreto en el repositorio (service_role, claves secretas, tokens)'
 });
 
 test('la clave de Supabase de la página es la publicable',()=>{
-  const k=PAGE.match(/SB_KEY='([^']+)'/)?.[1];
+  // Valor por defecto de la página (se sustituye con window.APP_CONFIG.supabaseKey al cambiar de proyecto)
+  const k=PAGE.match(/SB_KEY=[^;\n]*?\|\|'([^']+)'/)?.[1];
   assert.ok(k,'no se encuentra SB_KEY');
   assert.match(k,/^sb_publishable_/);
 });

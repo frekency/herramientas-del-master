@@ -739,5 +739,20 @@
   "Mi cuenta": "My account",
   "Repetir iniciativa": "Reroll initiative",
   "Libro de reglas": "Rulebook",
-  "Pantalla del máster": "GM screen"
+  "Pantalla del máster": "GM screen",
+  "Campaña": "Campaign",
+  "Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros": "Active campaign: each campaign has its own combat, party and encounters",
+  "Campañas": "Campaigns",
+  "Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.": "Each campaign has its own combat, party and encounters. Your bestiary, tables and modules are yours and apply to all of them.",
+  "Crear campaña": "Create campaign",
+  "Nueva campaña": "New campaign",
+  "Gestionar campañas…": "Manage campaigns…",
+  "Nombre de la campaña": "Campaign name",
+  "activa": "active",
+  "Abrir": "Open",
+  "Nombre de la nueva campaña": "New campaign name",
+  "Campaña borrada": "Campaign deleted",
+  "Campaña creada": "Campaign created",
+  "Pon un nombre a la campaña": "Give the campaign a name",
+  "No se ha podido crear la campaña": "The campaign could not be created"
 }

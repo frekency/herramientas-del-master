@@ -739,5 +739,20 @@
   "Mi cuenta": "Mon compte",
   "Repetir iniciativa": "Relancer l’initiative",
   "Libro de reglas": "Livre de règles",
-  "Pantalla del máster": "Écran du MJ"
+  "Pantalla del máster": "Écran du MJ",
+  "Campaña": "Campagne",
+  "Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros": "Campagne active : chaque campagne a son propre combat, son groupe et ses rencontres",
+  "Campañas": "Campagnes",
+  "Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.": "Chaque campagne a son propre combat, son groupe et ses rencontres. Votre bestiaire, vos tables et vos modules vous appartiennent et valent pour toutes.",
+  "Crear campaña": "Créer la campagne",
+  "Nueva campaña": "Nouvelle campagne",
+  "Gestionar campañas…": "Gérer les campagnes…",
+  "Nombre de la campaña": "Nom de la campagne",
+  "activa": "active",
+  "Abrir": "Ouvrir",
+  "Nombre de la nueva campaña": "Nom de la nouvelle campagne",
+  "Campaña borrada": "Campagne supprimée",
+  "Campaña creada": "Campagne créée",
+  "Pon un nombre a la campaña": "Donnez un nom à la campagne",
+  "No se ha podido crear la campaña": "Impossible de créer la campagne"
 }

@@ -1,4 +1,4 @@
-# Cabeceras de seguridad para Netlify
+# Cabeceras de seguridad (mismo formato en Netlify y en Cloudflare Pages)
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
