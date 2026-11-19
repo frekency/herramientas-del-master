@@ -19,7 +19,7 @@ window.Store=(()=>{
   const B=window.__StoreBackend||{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v),remove:k=>localStorage.removeItem(k),
     keys:()=>{const o=[];for(let i=0;i<localStorage.length;i++)o.push(localStorage.key(i));return o;}};
   const IDX='combat-campaigns-v1',BASE='local',MAX=50;
-  const SCOPED=new Set(['combat-tracker-v1','combat-party-v1','combat-presets-v1','camp-notes-v1']);
+  const SCOPED=new Set(['combat-tracker-v1','combat-party-v1','combat-presets-v1','camp-notes-v1','camp-sync-v1']);
   let idx=null;
   const load=()=>{if(idx)return idx;let v=null;try{v=JSON.parse(B.get(IDX)||'null');}catch(e){}
     if(!v||!Array.isArray(v.list)||!v.list.some(c=>c&&c.id===BASE))v={v:1,active:BASE,list:[{id:BASE,nombre:'Mi campaña',creado:Date.now()}].concat((v&&Array.isArray(v.list)?v.list:[]).filter(c=>c&&c.id!==BASE))};
@@ -34,6 +34,8 @@ window.Store=(()=>{
     activeName:()=>(load().list.find(c=>c.id===load().active)||{}).nombre||'',
     create(n){n=clean(n);if(!n)throw new Error('nombre vacío');if(load().list.length>=MAX)throw new Error('demasiadas campañas');
       const id='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);idx.list.push({id,nombre:n,creado:Date.now()});save();return id;},
+    remote:id=>{const c=load().list.find(x=>x.id===id);return c&&/^[0-9a-f-]{36}$/.test(c.remoto||'')?c.remoto:'';},
+    setRemote(id,uuid){const c=load().list.find(x=>x.id===id);if(!c)return false;if(uuid&&!/^[0-9a-f-]{36}$/.test(uuid))return false;if(uuid)c.remoto=uuid;else delete c.remoto;save();return true;},
     rename(id,n){n=clean(n);const c=load().list.find(x=>x.id===id);if(!c||!n)return false;c.nombre=n;save();return true;},
     select(id){if(!load().list.some(c=>c.id===id))return false;idx.active=id;save();return true;},
     // La campaña «local» no se borra (es donde viven los datos de siempre y los de la cuenta); las demás sí, con sus datos.
@@ -201,7 +203,8 @@ function borrar(l,clave,ahora){
 const vivos=l=>Object.fromEntries(Object.entries(l.items).filter(([,v])=>!v.del).map(([k,v])=>[k,v.valor]));
 function guarda(g,clave,valor,motivo,ahora){g.conflictos.push({clave,valor,motivo,t:ahora});if(g.conflictos.length>MAX_CONFLICTOS)g.conflictos.splice(0,g.conflictos.length-MAX_CONFLICTOS);}
 /* → {l, subir:[{clave,valor,borrado,base}], bajados:[], borrados:[], conflictos:[], rechazadas:[]} */
-function fusionar(local,remoto,ahora){
+function fusionar(local,remoto,ahora,opts){
+  const inc=!!(opts&&opts.incremental);   // incremental: «no viene» significa «no ha cambiado»; completa: «no viene» significa «ya no existe»
   const g=copia(norm(local)),R=remoto&&typeof remoto==='object'?remoto:{};
   const r={l:g,subir:[],bajados:[],borrados:[],conflictos:[],rechazadas:[]};
   const claves=new Set([...Object.keys(g.items),...Object.keys(R).filter(k=>CLAVE.test(k))]);
@@ -213,7 +216,11 @@ function fusionar(local,remoto,ahora){
   for(const k of claves){
     const L=g.items[k],X=R[k];
     if(!L){if(X)aplicarRemoto(k,X);continue;}
-    if(!X){if(L.del)delete g.items[k];else subir(k,L,0);continue;}   // sin fila remota: alta nueva
+    if(!X){
+      if(!L.dirty){if(L.bv>0&&!inc)delete g.items[k];continue;}
+      if(L.del){if(inc&&L.bv>0)subir(k,L,L.bv);else delete g.items[k];continue;}
+      subir(k,L,inc&&L.bv>0?L.bv:0);continue;                               // alta nueva (o edición sobre una versión que el servidor no ha movido)
+    }
     if(!L.dirty){if(L.bv!==X.version||X.borrado)aplicarRemoto(k,X);continue;}
     if(L.bv===X.version){subir(k,L,X.version);continue;}             // el servidor no se ha movido: se sube lo mío
     // conflicto: se movieron los dos
@@ -1668,6 +1675,8 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .evlist{display:flex;flex-wrap:wrap;gap:6px}
 .epev{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--surface-2)}
 .epev textarea{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-height:48px;font:inherit}
+.scrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.scremote{display:flex;flex-direction:column;gap:6px}
 .epgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
 .epside{flex:1 1 240px;max-width:320px;min-width:0;display:flex;flex-direction:column;gap:10px}
 .eplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
@@ -1851,7 +1860,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.41</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.42</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -2015,6 +2024,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.42 <span>19 nov 2026</span></h3><ul>
+      <li><b>Sincronización de campañas</b> con tu cuenta, por elemento y con copia local: funciona sin conexión y, si dos dispositivos tocan lo mismo, gana lo más reciente y lo otro queda guardado.</li></ul></li>
     <li><h3>v1.41 <span>19 nov 2026</span></h3><ul>
       <li><b>Cuentas atrás</b> sueltas para la ventana de mesa: una trampa, un puzle o una decisión con límite de tiempo. Se muestran encima de lo que haya en pantalla.</li></ul></li>
     <li><h3>v1.40 <span>19 nov 2026</span></h3><ul>
@@ -2510,6 +2521,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <div class="mbody" style="display:grid;gap:12px">
       <p class="hint" style="display:block;margin:0">Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.</p>
       <ul class="camplist noi18n" id="camp-list"></ul>
+      <div class="scrow" id="camp-sc"></div>
+      <div class="scremote" id="camp-remote"></div>
       <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
     </div>
   </div>
@@ -4278,6 +4291,9 @@ function extraAct(act,b,c,e){
     case 'cpcrunlink':{const it=cpGet(cpSel);if(!it)break;it.campos.criatura='';it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpimgrm':{const it=cpGet(cpSel);if(!it)break;it.img=null;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();window.__campLabel&&window.__campLabel();break;
+    case 'scvinc':scVincular(b.dataset.id);break;
+    case 'sctraer':scTraer(b.dataset.id,b.dataset.n);break;
+    case 'scahora':scRun(true);break;
     case 'campgo':if(Store.campaigns.select(b.dataset.id))location.reload();break;
     case 'campdel':{const id=b.dataset.id,was=Store.campaigns.active()===id;if(Store.campaigns.remove(id)){toast('Campaña borrada');if(was)location.reload();else renderCamps();}break;}
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
@@ -5061,8 +5077,9 @@ unitsIn(document.body);
 function renderCamps(){
   const C=Store.campaigns,act=C.active();
   $('#camp').innerHTML=C.list().map(c=>`<option value="${esc(c.id)}"${c.id===act?' selected':''}>${esc(c.nombre)}</option>`).join('')+`<option value="__mgr">${esc(T('Gestionar campañas…'))}</option>`;
-  $('#camp-list').innerHTML=C.list().map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
+  $('#camp-list').innerHTML=C.list().map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${SB_USER?(C.remote(c.id)?`<span class="chip" title="${esc(T('Sincronizada con tu cuenta'))}">${esc(T('Sincronizada'))}</span>`:`<button class="btn sm" data-act="scvinc" data-id="${esc(c.id)}">${esc(T('Sincronizar'))}</button>`):''}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
   $('#camp-new').placeholder=T('Nombre de la nueva campaña');
+  scRemotas();
 }
 function campOpen(){renderCamps();$('#campmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#camp-new').focus(),30);}
 if(window.__AppShell){/* estilo propio de la app: se ofrece solo aquí */
@@ -5155,6 +5172,118 @@ async function sbInit(){
     if(u.id!==was)setTimeout(acSignedIn,0);   // fuera del callback, como pide supabase-js
   });
 }
+/* ---------- sincronización de la campaña activa (por elemento: notas, encuentros y jugadores) ----------
+   La copia local manda mientras no hay conexión; con conexión se funde con la de la cuenta (ver Sincro). */
+const SCKEY='camp-sync-v1';
+var SC={l:Sincro.vacio(),since:null,busy:false,msg:'',cargada:false};
+function scLoad(){SC.cargada=true;try{const o=JSON.parse(Store.get(SCKEY)||'null');if(o){SC.l=Sincro.norm(o.l);SC.since=typeof o.since==='string'?o.since:null;}}catch{}}
+function scSave(){try{Store.set(SCKEY,JSON.stringify({l:SC.l,since:SC.since}));}catch{}}
+const scClone=v=>JSON.parse(JSON.stringify(v));
+function scSnapshot(){
+  if(!cpLoaded){cpLoad();cpLoaded=true;}cpFlush();
+  const m={};
+  for(const i of CP)m['nota:'+i.id]=i;
+  for(const p of PRESETS)if(p&&p.id&&!p.ex)m['enc:'+p.id]=p;
+  for(const p of PARTY)if(p&&p.id&&!p.ex)m['pj:'+p.id]=p;
+  for(const k of Object.keys(m))if(!Sincro.CLAVE.test(k))delete m[k];
+  return m;
+}
+function scDetect(){
+  const snap=scSnapshot(),now=Date.now();let l=SC.l;
+  for(const [k,v] of Object.entries(snap)){const it=l.items[k],val=scClone(v);
+    if(!it||it.del||canon(it.valor)!==canon(val)){const r=Sincro.editar(l,k,val,now);if(r.ok)l=r.l;}}
+  for(const k of Object.keys(l.items))if(!(k in snap)&&!l.items[k].del)l=Sincro.borrar(l,k,now).l;
+  SC.l=l;
+}
+function scApply(r){
+  let nCP=false,nE=false,nP=false;
+  const put=(arr,x)=>{const i=arr.findIndex(y=>y.id===x.id);if(i>=0)arr[i]=x;else arr.push(x);};
+  const quita=(arr,id)=>{const i=arr.findIndex(y=>y.id===id);if(i>=0){arr.splice(i,1);return true;}return false;};
+  const parte=k=>[k.slice(0,k.indexOf(':')),k.slice(k.indexOf(':')+1)];
+  for(const k of r.bajados){const it=SC.l.items[k];if(!it)continue;const [tp,id]=parte(k);
+    if(tp==='nota'){const n=Notas.norm(it.valor);if(n){put(CP,n);nCP=true;}}
+    else if(tp==='enc'&&it.valor&&Array.isArray(it.valor.items)){put(PRESETS,{...scClone(it.valor),id});nE=true;}
+    else if(tp==='pj'&&it.valor&&typeof it.valor==='object'){put(PARTY,{...scClone(it.valor),id});nP=true;}}
+  for(const k of r.borrados){const [tp,id]=parte(k);
+    if(tp==='nota')nCP=quita(CP,id)||nCP;else if(tp==='enc')nE=quita(PRESETS,id)||nE;else if(tp==='pj')nP=quita(PARTY,id)||nP;}
+  if(nCP){cpDirty=false;try{Store.set(CPKEY,Notas.guardar(CP));}catch{}}
+  if(nE)savePresets();if(nP)saveParty();
+  const snap=scSnapshot();for(const k of r.bajados)if(snap[k]&&SC.l.items[k])SC.l.items[k].valor=scClone(snap[k]);   // lo que quedó en local es la referencia: no cuenta como edición
+  if(nCP||nE||nP){
+    if(!$('#view-campana').hidden)renderCampana();if(!$('#view-encuentros').hidden)epRender();if(!$('#view-jugadores').hidden)renderParty();renderEnc();
+  }
+}
+async function scEscribir(cid,u){
+  const fila={valor:u.borrado?null:u.valor,borrado:!!u.borrado};
+  if(u.base===0){
+    const {data,error}=await SB.from('datos_campana').insert({campana_id:cid,clave:u.clave,...fila}).select('version').single();
+    if(error){if(error.code==='23505')return {ok:false};throw error;}
+    return {ok:true,version:data.version};
+  }
+  const {data,error}=await SB.from('datos_campana').update(fila).eq('campana_id',cid).eq('clave',u.clave).eq('version',u.base).select('version');
+  if(error)throw error;
+  return data&&data.length?{ok:true,version:data[0].version}:{ok:false};   // 0 filas = otro dispositivo se adelantó
+}
+function scEstado(m){SC.msg=m;const e=$('#camp-sc');if(e)e.textContent=m;}
+async function scRun(manual){
+  if(SC.busy||!SB||!SB_USER)return;
+  const cid=Store.campaigns.remote(Store.campaigns.active());if(!cid)return;
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){scEstado(T('Sin conexión: los cambios se guardan aquí y se subirán al volver'));return;}
+  SC.busy=true;if(!SC.cargada)scLoad();
+  const res={bajados:0,subidas:0,conflictos:0,rechazadas:0};
+  try{
+    scDetect();
+    let completa=false;                                   // tras un rechazo se vuelve a leer todo: la fila en disputa puede no estar en la lectura incremental
+    for(let vuelta=0;vuelta<5;vuelta++){
+      let q=SB.from('datos_campana').select('clave,valor,version,actualizado,borrado').eq('campana_id',cid);
+      if(SC.since&&!completa)q=q.gt('actualizado',SC.since);
+      const {data,error}=await q.order('actualizado',{ascending:true}).limit(1000);
+      if(error)throw error;
+      const remoto={};let max=SC.since,maxMs=SC.since?Date.parse(SC.since):0;
+      for(const r of data){const ms=Date.parse(r.actualizado)||0;remoto[r.clave]={valor:r.valor,version:r.version,actualizado:ms,borrado:!!r.borrado};if(ms>=maxMs){maxMs=ms;max=r.actualizado;}}
+      const f=Sincro.fusionar(SC.l,remoto,Date.now(),{incremental:!!SC.since&&!completa});
+      completa=false;
+      SC.l=f.l;SC.since=max;res.bajados+=f.bajados.length+f.borrados.length;res.conflictos+=f.conflictos.length;res.rechazadas+=f.rechazadas.length;
+      scApply(f);
+      let rechazo=false;
+      for(const u of f.subir){const w=await scEscribir(cid,u);if(w.ok){SC.l=Sincro.confirmar(SC.l,{clave:u.clave,version:w.version});res.subidas++;}else rechazo=true;}
+      scSave();
+      if(rechazo)completa=true;
+      if(!rechazo&&data.length<1000)break;
+    }
+    scSave();
+    const hora=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    scEstado(T('Sincronizada')+' '+hora+(SC.l.conflictos.length?' · '+SC.l.conflictos.length+' '+T('copias de conflicto guardadas'):''));
+    if(res.conflictos)toast(res.conflictos+' '+T('conflictos resueltos: la versión más reciente gana y la otra queda guardada'),6000);
+    else if(manual)toast(T('Sincronizada')+': '+res.subidas+' ↑ · '+res.bajados+' ↓');
+  }catch(err){scEstado(T('No se ha podido sincronizar')+': '+(err&&err.message||err));scSave();}
+  finally{SC.busy=false;}
+  return res;
+}
+async function scVincular(localId){
+  if(!SB||!SB_USER)return;const C=Store.campaigns,c=C.list().find(x=>x.id===localId);if(!c)return;
+  const {data,error}=await SB.from('campanas').insert({nombre:c.nombre.padEnd(2,'·')}).select('id').single();
+  if(error){toast(T('No se ha podido sincronizar')+': '+error.message);return;}
+  C.setRemote(localId,data.id);renderCamps();
+  if(localId===C.active()){SC.l=Sincro.vacio();SC.since=null;scSave();scRun(true);}else toast(T('Se sincronizará al abrirla'));
+}
+async function scRemotas(){
+  const box=$('#camp-remote');if(!box)return;
+  if(!SB||!SB_USER){box.textContent='';return;}
+  const {data,error}=await SB.from('campanas').select('id,nombre').eq('master_id',SB_USER.id).order('creado');
+  if(error||!data){return;}
+  const ya=new Set(Store.campaigns.list().map(c=>c.remoto).filter(Boolean)),libres=data.filter(c=>!ya.has(c.id));
+  box.innerHTML=libres.length?'<span class="scrow">'+esc(T('Campañas de tu cuenta que aún no están aquí'))+'</span>'+libres.map(c=>'<div class="scrow"><b class="noi18n">'+esc(c.nombre)+'</b><button type="button" class="btn sm" data-act="sctraer" data-id="'+esc(c.id)+'" data-n="'+esc(c.nombre)+'">'+esc(T('Traer'))+'</button></div>').join(''):'';
+  const hay=Store.campaigns.remote(Store.campaigns.active());
+  $('#camp-sc').innerHTML=hay?esc(SC.msg||'')+' <button type="button" class="btn sm ghost" data-act="scahora">'+esc(T('Sincronizar ahora'))+'</button>':'';
+}
+function scTraer(rid,nombre){
+  try{const id=Store.campaigns.create(nombre);Store.campaigns.setRemote(id,rid);toast(T('Campaña traída: ábrela para bajar su contenido'));renderCamps();}catch(err){toast(err.message);}
+}
+setInterval(()=>{if(!document.hidden&&SB_USER&&Store.campaigns.remote(Store.campaigns.active()))scRun(false);},30000);
+addEventListener('online',()=>scRun(false));
+addEventListener('visibilitychange',()=>{if(document.hidden&&SB_USER)scRun(false);});
+
 async function acSignedIn(){
   const {data}=await SB.from('perfiles').select('usuario').eq('user_id',SB_USER.id).maybeSingle();
   SB_NAME=data?.usuario||'';
@@ -5164,6 +5293,7 @@ async function acSignedIn(){
     if(!SB_NAME){acOpen('name');$('#ac-nm-user').value=sug;acMsg('Bienvenido. Antes de seguir, elige tu nombre de usuario',true);}}
   renderAcct();if(location.hash==='#modulos')renderMods();
   await syncPull();
+  scRun(false);
 }
 $('#acctmodal').addEventListener('submit',async e=>{
   e.preventDefault();const p=e.target.dataset.pane,v=id=>$(id).value.trim(),btn=e.target.querySelector('button:not([type=button])');

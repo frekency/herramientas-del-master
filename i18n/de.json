@@ -914,5 +914,16 @@
   "Nombre (trampa, puzle…)": "Name (Falle, Rätsel …)",
   "Indica los minutos": "Minuten angeben",
   "Demasiadas cuentas atrás": "Zu viele Countdowns",
-  "¡Tiempo!": "Zeit abgelaufen!"
+  "¡Tiempo!": "Zeit abgelaufen!",
+  "Sincronizar": "Synchronisieren",
+  "Sincronizada": "Synchronisiert",
+  "Sincronizada con tu cuenta": "Mit deinem Konto synchronisiert",
+  "Sin conexión: los cambios se guardan aquí y se subirán al volver": "Offline: Änderungen bleiben hier und werden später hochgeladen",
+  "copias de conflicto guardadas": "Konfliktkopien gespeichert",
+  "conflictos resueltos: la versión más reciente gana y la otra queda guardada": "Konflikte gelöst: die neueste Version gewinnt, die andere bleibt gespeichert",
+  "No se ha podido sincronizar": "Synchronisierung fehlgeschlagen",
+  "Se sincronizará al abrirla": "Wird beim Öffnen synchronisiert",
+  "Campañas de tu cuenta que aún no están aquí": "Kampagnen deines Kontos, die noch nicht hier sind",
+  "Traer": "Holen",
+  "Campaña traída: ábrela para bajar su contenido": "Kampagne hinzugefügt: öffne sie, um den Inhalt zu laden"
 }

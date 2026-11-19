@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.42.0] - 2026-11-19
+### Añadido
+- **Sincronización de campañas con tu cuenta**, por elemento (notas, encuentros y jugadores), con copia local y versiones: sin conexión todo sigue funcionando y se sube al volver; si dos dispositivos tocan lo mismo gana la versión más reciente y la otra queda guardada. Un elemento borrado no reaparece. Se activa por campaña desde «Gestionar campañas» y las campañas de tu cuenta se pueden traer a otro dispositivo.
+
 ## [1.41.0] - 2026-11-19
 ### Añadido
 - **Cuentas atrás** sueltas para la ventana de mesa (una trampa, un puzle, «decidid en 5 minutos»): se crean desde el panel de la mesa, con iniciar, pausar, reiniciar y mostrar u ocultar en la mesa. Se superponen a lo que haya en pantalla, o van centradas y grandes si la mesa está vacía. Al llegar a cero avisan.

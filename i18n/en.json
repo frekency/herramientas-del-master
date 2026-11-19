@@ -914,5 +914,16 @@
   "Nombre (trampa, puzle…)": "Name (trap, puzzle…)",
   "Indica los minutos": "Enter the minutes",
   "Demasiadas cuentas atrás": "Too many countdowns",
-  "¡Tiempo!": "Time’s up!"
+  "¡Tiempo!": "Time’s up!",
+  "Sincronizar": "Sync",
+  "Sincronizada": "Synced",
+  "Sincronizada con tu cuenta": "Synced with your account",
+  "Sin conexión: los cambios se guardan aquí y se subirán al volver": "Offline: changes are saved here and will upload when you are back",
+  "copias de conflicto guardadas": "conflict copies saved",
+  "conflictos resueltos: la versión más reciente gana y la otra queda guardada": "conflicts resolved: the newest version wins and the other one is kept",
+  "No se ha podido sincronizar": "Could not sync",
+  "Se sincronizará al abrirla": "It will sync when you open it",
+  "Campañas de tu cuenta que aún no están aquí": "Campaigns in your account that are not here yet",
+  "Traer": "Bring",
+  "Campaña traída: ábrela para bajar su contenido": "Campaign added: open it to download its content"
 }

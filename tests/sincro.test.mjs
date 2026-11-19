@@ -171,3 +171,51 @@ test('el conjunto de conflictos tiene tope',()=>{
     l=S.fusionar({items:{n:{...e.items.n,bv:1}},conflictos:l.conflictos},{n:{valor:{t:'r'+i},version:2+i,actualizado:1,borrado:false}},i).l;}
   assert.ok(l.conflictos.length<=50);
 });
+
+test('lectura incremental: lo que no llega no ha cambiado; lo pendiente se sube con su versión base', () => {
+  const base = { items: {
+    quieta: { valor: 1, bv: 3, mod: 1, dirty: false, del: false },
+    editada: { valor: 2, bv: 4, mod: 9, dirty: true, del: false },
+    borrada: { valor: 3, bv: 5, mod: 9, dirty: true, del: true },
+    nueva: { valor: 4, bv: 0, mod: 9, dirty: true, del: false } }, conflictos: [] };
+  const inc = S.fusionar(base, {}, 100, { incremental: true });
+  assert.ok(inc.l.items.quieta);                                                         // sigue ahí
+  const u = Object.fromEntries(inc.subir.map(x => [x.clave, x]));
+  assert.equal(u.editada.base, 4);assert.equal(u.borrada.base, 5);assert.equal(u.borrada.borrado, true);assert.equal(u.nueva.base, 0);
+  const completa = S.fusionar(base, {}, 100);                                           // lectura completa: lo que no está, ya no existe
+  assert.equal(completa.l.items.quieta, undefined);
+  assert.equal(completa.subir.find(x => x.clave === 'editada').base, 0);
+  assert.equal(completa.l.items.borrada, undefined);
+});
+
+test('convergencia con lecturas incrementales y varios dispositivos', () => {
+  let s = 777;const azar = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let ronda = 0; ronda < 40; ronda++) {
+    const srv = servidor();
+    const mk = n => { const d = dispositivo(srv, n);d.since = 0;
+      d.sync = t => {
+        let completa = false;
+        for (let i = 0; i < 6; i++) {
+          const delta = Object.fromEntries(Object.entries(srv.leer()).filter(([, f]) => completa || f.actualizado > d.since));
+          const r = S.fusionar(d.l, delta, t, { incremental: d.since > 0 && !completa });d.l = r.l;completa = false;
+          for (const f of Object.values(delta)) d.since = Math.max(d.since, f.actualizado);
+          if (!r.subir.length) return r;
+          let rechazo = false;
+          for (const u of r.subir) { const w = srv.escribir(u);if (w.ok) d.l = S.confirmar(d.l, { clave: u.clave, version: w.version });else rechazo = true; }
+          if (!rechazo) return r;
+          completa = true;
+        }
+      };
+      return d; };
+    const ds = [mk('a'), mk('b'), mk('c')];let t = 1;
+    for (let paso = 0; paso < 25; paso++) {
+      const d = ds[Math.floor(azar() * 3)], k = 'n' + Math.floor(azar() * 5), q = azar();t += 1 + Math.floor(azar() * 5);
+      if (q < 0.5) d.editar(k, { t: 'v' + paso + d.nombre }, t);else if (q < 0.65) d.borrar(k, t);else d.sync(t);
+    }
+    for (let i = 0; i < 3; i++) for (const d of ds) d.sync(t += 10);
+    assert.deepEqual(ds[0].datos(), ds[1].datos());assert.deepEqual(ds[1].datos(), ds[2].datos());
+    const vivos = Object.entries(srv.filas).filter(([, f]) => !f.borrado).map(([k]) => k).sort();
+    assert.deepEqual(Object.keys(ds[0].datos()).sort(), vivos);
+    for (const d of ds) assert.equal(S.pendientes(d.l), 0);
+  }
+});
