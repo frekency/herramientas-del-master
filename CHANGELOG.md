@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.40.0] - 2026-11-19
+### Añadido
+- **Eventos de encuentro**: algo puede ocurrir por ronda (una vez o repetido), por tiempo real o a mano: más enemigos, un derrumbe… Cada evento puede llevar aviso (opcional), refuerzos, imagen para la mesa y una nota privada. En el combate sale una tarjeta con opciones y el máster decide: disparar, posponer o descartar; nada ocurre solo.
+- Reloj de tiempo real con pausa manual; al cerrar la aplicación queda en pausa.
+- La ventana de mesa puede mostrar la cuenta atrás de un evento y los avisos.
+- Sincronización por elemento: motor de fusión con versiones, conflictos y borrados (aún sin conectar) y migración SQL.
+
 ## [1.39.0] - 2026-11-19
 ### Añadido
 - **Encuentros** dentro de la Campaña: calculadora de dificultad con el presupuesto de XP de D&D 2024 para el grupo (los jugadores de la campaña o un grupo manual), generador aleatorio por dificultad, tipo, máximo y variedad (con criaturas fijables) y edición de última hora antes de lanzar, sin tocar el encuentro guardado. El combate solo los usa.

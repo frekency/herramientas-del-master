@@ -17,6 +17,12 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:
 #ini header{display:flex;align-items:baseline;gap:18px}
 #ini h1{margin:0;font-size:clamp(20px,3vw,44px);font-weight:700}
 #ini .ronda{color:var(--ac);font-size:clamp(18px,2.4vw,34px);font-weight:600}
+#ini .cuenta{margin-left:auto;font-size:clamp(20px,3vw,44px);font-weight:700;font-variant-numeric:tabular-nums;color:var(--ac)}
+#ini .cuenta.pausa{color:var(--muted)}
+#ini .cuenta small{font-size:.5em;font-weight:600;color:var(--muted);margin-right:.6em}
+#avi{height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2vw,28px);padding:clamp(24px,5vw,80px);text-align:center}
+#avi h1{margin:0;font-size:clamp(28px,5vw,80px);color:var(--ac);font-weight:800}
+#avi p{margin:0;font-size:clamp(22px,3.6vw,56px);line-height:1.25;max-width:24ch}
 #lista{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:clamp(6px,1vw,14px)}
 .fila{display:flex;align-items:center;gap:16px;padding:clamp(8px,1.4vw,20px) clamp(14px,2vw,28px);background:var(--row);border-left:8px solid var(--c,#888);border-radius:12px;font-size:clamp(18px,3.2vw,48px);font-weight:600;color:var(--muted);transition:transform .2s,background .2s}
 .fila .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -29,11 +35,12 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:
 <body>
 <div id="nada"></div>
 <div id="img"><div class="cap"></div></div>
-<div id="ini"><header><h1>Iniciativa</h1><span class="ronda"></span></header><div id="lista"></div></div>
+<div id="ini"><header><h1>Iniciativa</h1><span class="ronda"></span><span class="cuenta" hidden></span></header><div id="lista"></div></div>
+<div id="avi"><h1></h1><p></p></div>
 <div id="aviso">F11 o doble clic: pantalla completa</div>
 <script>
-const $=s=>document.querySelector(s),vistas=['#nada','#img','#ini'];
-function ver(v){for(const s of vistas)$(s).style.display=s===v?(s==='#ini'?'flex':s==='#img'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
+const $=s=>document.querySelector(s),vistas=['#nada','#img','#ini','#avi'];
+function ver(v){for(const s of vistas)$(s).style.display=s===v?(s==='#ini'||s==='#img'||s==='#avi'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
 function mostrar(p){
   if(!p)return;
   if(p.tipo==='limpiar'){ver('#nada');return;}
@@ -41,7 +48,12 @@ function mostrar(p){
     $('#img img')?.remove();
     const im=new Image();im.alt=p.titulo||'';im.src=p.src;$('#img').prepend(im);
     $('#img .cap').textContent=p.titulo||'';ver('#img');return;}
+  if(p.tipo==='aviso'){$('#avi h1').textContent=p.titulo||'';$('#avi p').textContent=p.texto||'';ver('#avi');return;}
   if(p.tipo==='iniciativa'){
+    const c=$('#ini .cuenta');
+    if(p.cuenta){const s=p.cuenta.seg,m=String(Math.floor(s/60)).padStart(2,'0'),x=String(s%60).padStart(2,'0');
+      c.textContent='';const sm=document.createElement('small');sm.textContent=p.cuenta.n;c.append(sm,(p.cuenta.pausa?'⏸ ':'')+m+':'+x);c.classList.toggle('pausa',!!p.cuenta.pausa);c.hidden=false;}
+    else{c.hidden=true;}
     $('#ini .ronda').textContent=p.activo?'Ronda '+p.ronda:'';
     const L=$('#lista');L.textContent='';
     for(const e of p.lista){

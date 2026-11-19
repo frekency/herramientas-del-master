@@ -11,6 +11,11 @@ function validar(p) {
     if (typeof p.src !== 'string' || p.src.length > MAX_IMG || !IMG.test(p.src)) return null;
     return { tipo: 'imagen', src: p.src, titulo: typeof p.titulo === 'string' ? p.titulo.slice(0, 200) : '' };
   }
+  if (p.tipo === 'aviso') {
+    const texto = typeof p.texto === 'string' ? p.texto.trim().slice(0, 400) : '';
+    const titulo = typeof p.titulo === 'string' ? p.titulo.trim().slice(0, 80) : '';
+    return texto || titulo ? { tipo: 'aviso', titulo, texto } : null;
+  }
   if (p.tipo === 'iniciativa') {
     const lista = (Array.isArray(p.lista) ? p.lista : []).slice(0, 80).map(e => ({
       n: String((e && e.n) || '').slice(0, 80),
@@ -19,7 +24,13 @@ function validar(p) {
       color: e && typeof e.color === 'string' && COLOR.test(e.color) ? e.color : '#888888',
     })).filter(e => e.n);
     const r = Math.trunc(Number(p.ronda));
-    return { tipo: 'iniciativa', abrir: !!p.abrir, activo: !!p.activo, ronda: Number.isFinite(r) ? Math.max(0, Math.min(9999, r)) : 0, lista };
+    // cuenta atrás opcional (la que el máster decide enseñar): solo etiqueta, segundos y si está en pausa
+    let cuenta = null;
+    if (p.cuenta && typeof p.cuenta === 'object') {
+      const s = Math.trunc(Number(p.cuenta.seg));
+      if (Number.isFinite(s)) cuenta = { n: String(p.cuenta.n || '').slice(0, 80), seg: Math.max(0, Math.min(86400, s)), pausa: !!p.cuenta.pausa };
+    }
+    return { tipo: 'iniciativa', abrir: !!p.abrir, activo: !!p.activo, ronda: Number.isFinite(r) ? Math.max(0, Math.min(9999, r)) : 0, lista, cuenta };
   }
   return null;
 }

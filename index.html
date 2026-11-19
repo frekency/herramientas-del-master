@@ -1629,6 +1629,15 @@ main.wrap .listhead{scroll-margin-top:100px}
 #loading [lang]{display:none}
 html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[lang="en"] #loading [lang="en"],html[lang="fr"] #loading [lang="fr"],html[lang="pt"] #loading [lang="pt"],html[lang="it"] #loading [lang="it"],html[lang="de"] #loading [lang="de"]{display:inline}
 /* ===== Campaña: notas, PNJ, lugares… ===== */
+.evbar{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.evcard{border:1px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.evcard h4{margin:0;font-size:15px}.evcard p{margin:0;font-size:14px}.evcard .evnota{color:var(--muted);font-size:13px}
+.evops{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}.evops label{display:flex;gap:6px;align-items:center}
+.evctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.evclock{font-variant-numeric:tabular-nums;font-weight:700;color:var(--fg);font-size:15px}
+.evlist{display:flex;flex-wrap:wrap;gap:6px}
+.epev{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--surface-2)}
+.epev textarea{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-height:48px;font:inherit}
 .epgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
 .epside{flex:1 1 240px;max-width:320px;min-width:0;display:flex;flex-direction:column;gap:10px}
 .eplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
@@ -1810,7 +1819,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.39</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.40</a><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -1974,6 +1983,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.40 <span>19 nov 2026</span></h3><ul>
+      <li><b>Eventos de encuentro</b>: por ronda, por tiempo real o manuales, con aviso opcional, refuerzos, imagen para la mesa y reloj con pausa. El máster decide siempre si se disparan.</li></ul></li>
     <li><h3>v1.39 <span>19 nov 2026</span></h3><ul>
       <li><b>Encuentros</b> dentro de la Campaña: calculadora de dificultad (D&D 2024), generador aleatorio y edición de última hora antes de lanzarlos al combate.</li>
       <li>Panel de control de la ventana de mesa en la app de escritorio.</li></ul></li>
@@ -2191,6 +2202,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <span>Esto es un <b>combate de ejemplo</b> para que veas cómo funciona.</span>
       <button type="button" class="linkbtn" data-act="clearall" data-confirm>Vaciar y empezar el mío</button>
     </p>
+    <div class="evbar" id="evbar" hidden></div>
     <div class="rail" id="rail" aria-label="Orden de iniciativa" hidden></div>
     <div id="endsum" hidden></div>
     <div class="factions" id="fsum"></div>
@@ -2618,7 +2630,7 @@ function searchBest(q,src='',cr=''){
    y tablas, si el SRD 5.2.1 está activado. Los textos pasan por T(), así que se crean en el idioma de cada cual. */
 const baseFactions=()=>[{id:'pj',name:T('Jugadores'),color:'#3d7bd9',pc:true},{id:'al',name:T('Aliados'),color:'#3fa266',pc:false},{id:'en',name:T('Enemigos'),color:'#d0453c',pc:false}];
 function emptyState(){
-  return {example:false,factions:baseFactions(),creatures:[],order:[],active:false,turnIdx:0,round:1,total:0,skipDead:true,tickDur:true,hpRoll:false,autoRecharge:true,adv:0,lastRoll:null,log:[],expanded:null};
+  return {example:false,factions:baseFactions(),creatures:[],order:[],active:false,turnIdx:0,round:1,total:0,skipDead:true,tickDur:true,hpRoll:false,autoRecharge:true,adv:0,lastRoll:null,log:[],expanded:null,ev:Eventos.crear([])};
 }
 function sample(pcs={}){
   const c=(name,fac,init,bonus,hp,max,ac,conds=[],t=null,pcId=null)=>({id:uid(),name,factionId:fac,init,initBonus:bonus,hp,maxHp:max,temp:0,ac,conds,notes:'',ds:0,df:0,tpl:t,used:{},uses:{},la:0,lr:0,ex:true,...(pcId?{pcId,tpl:'pc:'+pcId}:{})});
@@ -2702,6 +2714,7 @@ function save(){
   if(dirty)saveParty();
 }
 function migrate(s){
+  s.ev=Eventos.normEstado(s.ev);
   s.hpRoll??=false;s.autoRecharge??=true;s.adv??=0;s.lastRoll??=null;
   for(const c of s.creatures){c.used??={};c.uses??={};c.la??=0;c.lr??=0;c.tpl??=null;}
   return s;
@@ -3012,6 +3025,7 @@ function render(){
     mesaWasActive=!!state.active;
     if(mesaIni)mesaSendIni(false);
   }
+  evCheck();evRender();
 }
 
 var mesaWasActive=false;
@@ -3026,7 +3040,7 @@ function mesaPanelToggle(){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden
 function mesaPanelRender(){
   const p=$('#mesapanel');if(!p||p.hidden)return;
   const E=mesaEst;let auto=true;try{auto=Store.get('mesa-auto')!=='0';}catch{}
-  const que=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='iniciativa'?T('Orden de iniciativa')+(E.congelado?' ('+T('congelado')+')':''):E.que==='imagen'?T('Imagen')+(E.titulo?': '+E.titulo:''):T('Nada (pantalla en negro)');
+  const que=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='iniciativa'?T('Orden de iniciativa')+(E.congelado?' ('+T('congelado')+')':''):E.que==='imagen'?T('Imagen')+(E.titulo?': '+E.titulo:''):E.que==='aviso'?T('Aviso')+(E.titulo?': '+E.titulo:''):T('Nada (pantalla en negro)');
   p.innerHTML='<h3>'+esc(T('Ventana de mesa'))+'</h3><p class="mpstate"><span>'+esc(T('En la mesa'))+'</span><b>'+esc(que)+'</b></p>'
    +'<div class="mpbtns">'
    +'<button type="button" class="btn sm primary" data-mp="orden">'+esc(T('Mostrar el orden'))+'</button>'
@@ -3048,7 +3062,7 @@ var mesaIni=false;
 function mesaIniData(){
   const s=state,cur=s.active?s.order[s.turnIdx]:null;
   const lista=s.order.map(id=>{const c=get(id);return c?{n:c.name,actual:id===cur,caido:c.hp<=0&&!isPC(c),color:fac(c.factionId).color}:null;}).filter(Boolean);
-  return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista};
+  return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista,cuenta:Eventos.cuentaAtras(s.ev,Date.now())};
 }
 var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false};
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
@@ -3888,6 +3902,8 @@ function saveEncounter(){
 function loadEncounter(p){
   const replace=$('#enc-replace').checked;
   commit(()=>{
+    {const ya=replace?[]:state.ev.lista,nuevos=Eventos.normLista(p.eventos).filter(e=>!ya.some(y=>y.id===e.id));
+     state.ev=Eventos.crear([...ya,...nuevos]);}
     if(replace){state.creatures=state.creatures.filter(c=>c.pcId||isPC(c));state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.lastRoll=null;}
     state.example=false;
     for(const it of p.items){
@@ -4171,10 +4187,17 @@ function extraAct(act,b,c,e){
     case 'mesaini':{if(!window.__AppShell)break;mesaIni=true;mesaEst.que='iniciativa';mesaEst.congelado=false;mesaSendIni(true);toast('Orden de iniciativa en la mesa');break;}
     case 'cpmesa':{const it=cpGet(cpSel);if(!window.__AppShell||!it||!it.img)break;mesaIni=false;mesaEst.que='imagen';mesaEst.titulo=it.nombre;mesaEst.congelado=false;window.__AppShell.mesa.enviar({tipo:'imagen',src:it.img,titulo:it.nombre});toast('Mostrado en la mesa');break;}
     case 'cpmesaclear':{if(!window.__AppShell)break;mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;window.__AppShell.mesa.enviar({tipo:'limpiar'});toast('Mesa limpia');break;}
-    case 'encnew':location.hash='campana/encuentros';epDraft={id:null,n:'',rows:[]};epSel=null;epRender();break;
+    case 'encnew':location.hash='campana/encuentros';epDraft={id:null,n:'',rows:[],eventos:[]};epSel=null;epRender();break;
     case 'epadd':{const m=epHits[+b.dataset.i];if(m)epAddMon(m);break;}
     case 'eprm':epDraft.rows.splice(+b.dataset.i,1);epRenderDet();break;
     case 'epgen':epGenerar();break;
+    case 'epevnew':epDraft.eventos.push(epEvNuevo());epRenderDet();break;
+    case 'epevrm':epDraft.eventos.splice(+b.dataset.i,1);epRenderDet();break;
+    case 'epevadd':{const x=epDraft.eventos[+b.dataset.i],m=epEvHits.hits[+b.dataset.j];if(x&&m&&x.refuerzos.length<20){x.refuerzos.push(epRowFromMon(m));epEvHits={i:-1,hits:[]};epRenderDet();}break;}
+    case 'epevrfx':{const x=epDraft.eventos[+b.dataset.i];if(x){x.refuerzos.splice(+b.dataset.j,1);epRenderDet();}break;}
+    case 'evdisparar':case 'evposponer':case 'evdescartar':evCarta(b);break;
+    case 'evreloj':evReloj(b.dataset.op);break;
+    case 'evmanual':evManual(b.dataset.id);break;
     case 'epsave':epGuardar(false);break;
     case 'eplaunch':epLanzar(false);break;
     case 'eplaunchsave':epLanzar(true);break;
@@ -4427,9 +4450,86 @@ document.addEventListener('input',e=>{
     else r[k]=Math.max(k==='cant'||k==='hp'?1:0,Math.min(k==='cant'?40:99999,Math.trunc(+el.value)||0))||(k==='cant'||k==='hp'?1:0);epTotals();}
   else if(el.dataset.epg){const g=epGrupoCfg();g[el.dataset.epg]=el.type==='checkbox'?el.checked:Math.trunc(+el.value)||1;lsSet('enc-grupo-v1',g);if(el.type==='checkbox')epRenderDet();else epTotals();}
   else if(el.dataset.epgen){epGen[el.dataset.epgen]=el.tagName==='SELECT'?el.value:Math.max(1,Math.trunc(+el.value)||1);}
+  else if(el.dataset.eve!==undefined){const x=epDraft.eventos[+el.dataset.i];if(!x)return;const k=el.dataset.eve;
+    if(k==='tipo'){x.cuando.tipo=el.value;if(el.value!=='tiempo')x.cuentaMesa=false;epRenderDet();return;}
+    if(k==='ronda'||k==='cada')x.cuando[k]=Math.trunc(+el.value)||0;else if(k==='min')x.cuando.seg=Math.max(1,Math.round((+el.value||1)*60));
+    else if(k==='texto')x.aviso.texto=el.value;else if(k==='mesa')x.aviso.mesa=el.checked;else if(k==='cuentaMesa')x.cuentaMesa=el.checked;
+    else if(k==='imagen')x.imagen=el.value;else if(k==='n'||k==='nota')x[k]=el.value;}
+  else if(el.dataset.evr!==undefined){const x=epDraft.eventos[+el.dataset.i],r=x&&x.refuerzos[+el.dataset.j];if(r)r.cant=Math.min(40,Math.max(1,Math.trunc(+el.value)||1));}
+  else if(el.dataset.evq!==undefined){const q=fold(el.value);epEvHits={i:+el.dataset.evq,hits:q.length<2?[]:allBest().filter(m=>fold(m.n).includes(q)).slice(0,8)};
+    const h=$('#ep-evhits-'+el.dataset.evq);if(h)h.innerHTML=epEvHits.hits.map((m,j)=>'<button type="button" class="btn sm" data-act="epevadd" data-i="'+el.dataset.evq+'" data-j="'+j+'">'+esc(m.n)+'</button>').join('');}
   else if(el.id==='ep-q'){const q=fold(el.value);epHits=q.length<2?[]:allBest().filter(m=>fold(m.n).includes(q)).slice(0,8);
     $('#ep-hits').innerHTML=epHits.map((m,i)=>'<button type="button" class="btn sm" data-act="epadd" data-i="'+i+'">'+esc(m.n)+(m.cr!=null?' · VD '+esc(m.cr):'')+'</button>').join('');}
 });
+/* ---------- eventos del combate (tarjetas, reloj y efectos; el máster decide siempre) ---------- */
+const evFmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+function evCheck(){
+  if(!state||!state.ev||!state.ev.lista.length)return;
+  const r=Eventos.revisar(state.ev,{ronda:state.round,activo:state.active,ahora:Date.now()});
+  if(r.nuevos.length){state.ev=r.s;save();evRender();toast(T('Evento pendiente')+': '+r.nuevos.map(id=>r.s.lista.find(e=>e.id===id).n).join(', '),6000);}
+}
+function evRender(){
+  const el=$('#evbar');if(!el||!state||!state.ev)return;const ev=state.ev;
+  if(!ev.lista.length){el.hidden=true;el.textContent='';return;}
+  el.hidden=false;
+  const cartas=ev.pend.map(id=>ev.lista.find(e=>e.id===id)).filter(Boolean).map(e=>{
+    const ref=e.refuerzos.length?'<p>'+esc(T('Refuerzos'))+': '+e.refuerzos.map(r=>r.cant+'× '+esc(r.name)).join(', ')+'</p>':'';
+    return '<div class="evcard" data-id="'+esc(e.id)+'"><h4>'+esc(e.n)+'</h4>'+(e.aviso.texto?'<p>'+esc(e.aviso.texto)+'</p>':'')+ref+(e.nota?'<p class="evnota">'+esc(e.nota)+'</p>':'')
+     +'<div class="evops">'
+     +(e.aviso.texto?'<label><input type="checkbox" data-evop="aviso" checked> '+esc(T('Mostrar el aviso'))+'</label><label><input type="checkbox" data-evop="mesa"'+(e.aviso.mesa?' checked':'')+'> '+esc(T('Mostrar el aviso en la mesa'))+'</label>':'')
+     +(e.refuerzos.length?'<label><input type="checkbox" data-evop="refuerzos" checked> '+esc(T('Añadir los refuerzos'))+'</label>':'')
+     +(e.imagen?'<label><input type="checkbox" data-evop="imagen" checked> '+esc(T('Cambiar la imagen de la mesa'))+'</label>':'')+'</div>'
+     +'<div class="inline"><button type="button" class="btn sm primary" data-act="evdisparar">'+esc(T('Disparar'))+'</button><button type="button" class="btn sm" data-act="evposponer">'+esc(T('Posponer'))+'</button><button type="button" class="btn sm ghost" data-act="evdescartar">'+esc(T('Descartar'))+'</button></div></div>';}).join('');
+  const hayTiempo=ev.lista.some(e=>e.cuando.tipo==='tiempo'),libres=ev.lista.filter(e=>!ev.pend.includes(e.id)&&!ev.descartado[e.id]);
+  const ctl='<div class="evctl">'+(hayTiempo?esc(T('Tiempo'))+' <span class="evclock" id="evclock">'+evFmt(Eventos.transcurrido(ev,Date.now()))+'</span>'
+     +'<button type="button" class="btn sm" data-act="evreloj" data-op="'+(ev.reloj.corre?'pausar':'iniciar')+'">'+esc(ev.reloj.corre?T('Pausar'):T('Iniciar'))+'</button>'
+     +'<button type="button" class="btn sm ghost" data-act="evreloj" data-op="reiniciar">'+esc(T('Reiniciar'))+'</button>'+(ev.reloj.corre?'':'<span>'+esc(T('Pausado'))+'</span>'):'')
+     +(libres.length?'<details><summary>'+esc(T('Eventos'))+' ('+libres.length+')</summary><div class="evlist">'+libres.map(e=>'<button type="button" class="btn sm" data-act="evmanual" data-id="'+esc(e.id)+'">'+esc(T('Ocurre ahora'))+': '+esc(e.n)+'</button>').join('')+'</div></details>':'')+'</div>';
+  el.innerHTML=cartas+ctl;
+}
+function evCarta(b){
+  const card=b.closest('.evcard');if(!card||!state.ev)return;const id=card.dataset.id,ctx={ronda:state.round,ahora:Date.now()};
+  if(b.dataset.act==='evposponer'){const r=Eventos.posponer(state.ev,id,ctx);if(r.ok){state.ev=r.s;save();evRender();}return;}
+  if(b.dataset.act==='evdescartar'){const r=Eventos.descartar(state.ev,id);if(r.ok){state.ev=r.s;save();evRender();}return;}
+  const op={};card.querySelectorAll('[data-evop]').forEach(i=>{op[i.dataset.evop]=i.checked;});
+  evAplicar(id,op);
+}
+function evManual(id){if(!state.ev||state.ev.pend.includes(id)||!state.ev.lista.some(x=>x.id===id))return;state.ev.pend=[...state.ev.pend,id];save();evRender();}
+function evReloj(op){
+  const now=Date.now();
+  if(op==='iniciar')state.ev=Eventos.iniciar(state.ev,now);else if(op==='pausar')state.ev=Eventos.pausar(state.ev,now);else if(op==='reiniciar')state.ev=Eventos.reiniciar(state.ev);
+  save();evRender();if(window.__AppShell&&mesaIni)mesaSendIni(false);
+}
+function evAplicar(id,op){
+  const r=Eventos.disparar(state.ev,id,{ronda:state.round,ahora:Date.now()});if(!r.ok)return;const e=r.efecto;
+  commit(()=>{
+    state.ev=r.s;
+    if(op.refuerzos&&e.refuerzos.length){
+      for(const it of epToItems(e.refuerzos)){
+        let f=state.factions.find(x=>x.name===it.fname);if(!f){f={id:uid(),name:it.fname||'Enemigos',color:it.fcolor||'#d0453c',pc:false};state.factions.push(f);}
+        const m=tpl(it.tpl);
+        addCreature({id:uid(),name:it.name,factionId:f.id,init:d20()+(it.initBonus||0),initBonus:it.initBonus||0,hp:it.maxHp,maxHp:it.maxHp,temp:0,ac:it.ac,conds:[],notes:it.notes||'',ds:0,df:0,tpl:m?it.tpl:null,used:{},uses:{},la:m?laMax(m):0,lr:m?lrMax(m):0});
+      }
+    }
+    log(T('Evento')+': '+e.n+((op.aviso&&e.aviso.texto)?' — '+e.aviso.texto:''));
+  });
+  if(op.aviso&&e.aviso.texto)toast(e.n+': '+e.aviso.texto,7000);
+  const S=window.__AppShell;
+  if(S&&S.mesa){
+    const nota=op.imagen&&e.imagen?CP.find(x=>x.id===e.imagen&&x.img):null;
+    if(nota){mesaIni=false;mesaEst.que='imagen';mesaEst.titulo=op.mesa&&e.aviso.texto?e.aviso.texto:nota.nombre;mesaEst.congelado=false;S.mesa.enviar({tipo:'imagen',src:nota.img,titulo:mesaEst.titulo});}
+    else if(op.mesa&&e.aviso.texto){mesaIni=false;mesaEst.que='aviso';mesaEst.titulo=e.n;mesaEst.congelado=false;S.mesa.enviar({tipo:'aviso',titulo:e.n,texto:e.aviso.texto});}
+  }
+}
+var evUlt=0;
+setInterval(()=>{
+  if(!state||!state.ev||!state.ev.lista.length)return;
+  const now=Date.now();evCheck();
+  const c=$('#evclock');if(c)c.textContent=evFmt(Eventos.transcurrido(state.ev,now));
+  if(window.__AppShell&&mesaIni&&Eventos.cuentaAtras(state.ev,now))mesaSendIni(false);
+  if(state.ev.reloj.corre&&now-evUlt>10000){evUlt=now;state.ev=Eventos.iniciar(Eventos.pausar(state.ev,now),now);save();}   // asienta lo acumulado: si se cierra la app, queda en pausa en este punto
+},1000);
+
 /* ---------- planificador de encuentros (dentro de la Campaña; el combate solo los usa) ---------- */
 var epSel=null,epDraft=null,epHits=[],epGen={dif:'moderado',max:6,variedad:3,tipo:''};
 const epXp=m=>m?(Number(m.xp)>0?Number(m.xp):Encuentros.xpDeVD(m.cr)):0;
@@ -4439,6 +4539,8 @@ function epNiveles(){
   if(g.usar&&pj.length)return {niveles:pj,deCampana:true,hayCampana:true};
   return {niveles:Array(Math.min(20,Math.max(1,+g.n||1))).fill(Math.min(20,Math.max(1,+g.nivel||1))),deCampana:false,hayCampana:pj.length>0};
 }
+const epEvNuevo=()=>Eventos.norm({n:T('Evento'),cuando:{tipo:'ronda',ronda:3,cada:0,seg:600}});
+var epEvHits={i:-1,hits:[]};
 function epFromPreset(p){const m=new Map();
   for(const it of p.items||[]){const base=String(it.name).replace(/ \d+$/,''),k=[it.tpl||'',base,it.maxHp,it.ac,it.fname].join('|');let r=m.get(k);
     if(r)r.cant++;else m.set(k,{tpl:it.tpl||null,name:base,cant:1,hp:it.maxHp,ac:it.ac,ib:it.initBonus||0,xp:epXp(tpl(it.tpl)),fname:it.fname,fcolor:it.fcolor,notes:it.notes||'',lock:false});}
@@ -4446,10 +4548,10 @@ function epFromPreset(p){const m=new Map();
 function epToItems(rows){const o=[];for(const r of rows)for(let i=1;i<=r.cant;i++)o.push({tpl:r.tpl,name:r.cant>1?r.name+' '+i:r.name,fname:r.fname,fcolor:r.fcolor,maxHp:r.hp,ac:r.ac,initBonus:r.ib,notes:r.notes});return o;}
 function epRowFromMon(m,cant=1){return {tpl:tkey(m),name:m.n,cant,hp:Math.max(1,Number(m.hp)||1),ac:m.ac??null,ib:m.in??0,xp:epXp(m),fname:T('Enemigos'),fcolor:'#d0453c',notes:'',lock:false};}
 function epRoute(slug){
-  if(slug&&slug!==epSel){const p=PRESETS.find(x=>x.id===slug);if(p){epSel=p.id;epDraft={id:p.id,n:p.n,rows:epFromPreset(p)};}}
+  if(slug&&slug!==epSel){const p=PRESETS.find(x=>x.id===slug);if(p){epSel=p.id;epDraft={id:p.id,n:p.n,rows:epFromPreset(p),eventos:Eventos.normLista(p.eventos)};}}
   else if(!slug&&epSel&&!epDraft?.id){/* borrador nuevo */}
   else if(!slug){epSel=null;}
-  if(!epDraft)epDraft={id:null,n:'',rows:[]};
+  if(!epDraft)epDraft={id:null,n:'',rows:[],eventos:[]};
   epRender();
 }
 function epRender(){
@@ -4483,12 +4585,33 @@ function epRenderDet(){
    +'<label>'+esc(T('Variedad'))+'<input type="number" min="1" max="6" data-epgen="variedad" value="'+epGen.variedad+'"></label>'
    +'<label>'+esc(T('Tipo'))+'<select data-epgen="tipo"><option value="">'+esc(T('Cualquiera'))+'</option>'+tipos.map(x=>'<option'+(epGen.tipo===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'
    +'<button type="button" class="btn" data-act="epgen">'+esc(d.rows.length?T('Volver a tirar'):T('Generar'))+'</button></div></div>'
+  +epEventosHTML()
   +'<div class="epbox"><div class="eprow" id="ep-tot"></div>'
    +'<div class="epfoot"><button type="button" class="btn primary" data-act="eplaunch">'+esc(T('Lanzar en el combate'))+'</button>'
    +'<button type="button" class="btn" data-act="eplaunchsave">'+esc(T('Lanzar y guardar'))+'</button>'
    +'<button type="button" class="btn" data-act="epsave">'+esc(T('Guardar'))+'</button>'
    +(d.id?'<button type="button" class="btn danger" data-act="epdel" data-confirm>'+esc(T('Borrar encuentro'))+'</button>':'')+'</div></div>';
   epTotals();
+}
+function epEventosHTML(){
+  const ev=epDraft.eventos||[],imgs=CP.filter(x=>x.img);
+  const sel=(k,v,opts)=>'<select data-eve="'+k+'" data-i="$I">'+opts.map(([o,l])=>'<option value="'+o+'"'+(v===o?' selected':'')+'>'+esc(l)+'</option>').join('')+'</select>';
+  return '<div class="epbox"><h3>'+esc(T('Eventos'))+'</h3>'
+   +(ev.length?'':'<p class="epbud">'+esc(T('Algo puede ocurrir durante el combate: más enemigos, un derrumbe…'))+'</p>')
+   +ev.map((x,i)=>{const c=x.cuando,I=String(i);
+     return '<div class="epev"><div class="eprow"><label style="flex:1 1 200px">'+esc(T('Evento'))+'<input data-eve="n" data-i="'+i+'" value="'+esc(x.n)+'" maxlength="80"></label>'
+      +'<label>'+esc(T('Cuándo'))+sel('tipo',c.tipo,[['ronda',T('Por ronda')],['tiempo',T('Por tiempo real')],['manual',T('Manual')]]).replace('$I',I)+'</label>'
+      +(c.tipo==='ronda'?'<label>'+esc(T('Ronda'))+'<input type="number" min="1" max="99" data-eve="ronda" data-i="'+i+'" value="'+c.ronda+'"></label><label>'+esc(T('Repetir cada'))+'<input type="number" min="0" max="99" data-eve="cada" data-i="'+i+'" value="'+c.cada+'"></label>':'')
+      +(c.tipo==='tiempo'?'<label>'+esc(T('Minutos'))+'<input type="number" min="1" max="1440" data-eve="min" data-i="'+i+'" value="'+Math.round(c.seg/60)+'"></label>':'')
+      +'<button type="button" class="btn sm ghost" data-act="epevrm" data-i="'+i+'" aria-label="'+esc(T('Quitar'))+'">×</button></div>'
+      +'<label class="eprow" style="flex-direction:column;align-items:stretch;font-size:12px;color:var(--muted)">'+esc(T('Aviso (opcional)'))+'<input data-eve="texto" data-i="'+i+'" value="'+esc(x.aviso.texto)+'" maxlength="400"></label>'
+      +'<div class="eprow"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-eve="mesa" data-i="'+i+'"'+(x.aviso.mesa?' checked':'')+'> '+esc(T('Mostrar el aviso en la mesa'))+'</label>'
+      +(c.tipo==='tiempo'?'<label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-eve="cuentaMesa" data-i="'+i+'"'+(x.cuentaMesa?' checked':'')+'> '+esc(T('Mostrar la cuenta atrás en la mesa'))+'</label>':'')+'</div>'
+      +'<div class="eprow"><span class="epbud"><b>'+esc(T('Refuerzos'))+':</b></span>'+x.refuerzos.map((r,j)=>'<span class="epbud" style="display:inline-flex;gap:4px;align-items:center"><input type="number" min="1" max="40" data-evr="cant" data-i="'+i+'" data-j="'+j+'" value="'+r.cant+'" style="width:56px"> '+esc(r.name)+' <button type="button" class="btn sm ghost" data-act="epevrfx" data-i="'+i+'" data-j="'+j+'" aria-label="'+esc(T('Quitar'))+'">×</button></span>').join('')
+      +'<input type="search" data-evq="'+i+'" placeholder="'+esc(T('Añadir refuerzo…'))+'" style="flex:1 1 160px" autocomplete="off"></div><div class="ephits" id="ep-evhits-'+i+'"></div>'
+      +(imgs.length?'<label class="eprow" style="flex-direction:column;align-items:stretch;font-size:12px;color:var(--muted)">'+esc(T('Imagen para la mesa'))+'<select data-eve="imagen" data-i="'+i+'"><option value="">'+esc(T('Ninguna'))+'</option>'+imgs.map(n=>'<option value="'+esc(n.id)+'"'+(x.imagen===n.id?' selected':'')+'>'+esc(n.nombre)+'</option>').join('')+'</select></label>':'')
+      +'<label class="eprow" style="flex-direction:column;align-items:stretch;font-size:12px;color:var(--muted)">'+esc(T('Nota privada'))+'<textarea data-eve="nota" data-i="'+i+'" maxlength="800">'+esc(x.nota)+'</textarea></label></div>';}).join('')
+   +'<div><button type="button" class="btn sm" data-act="epevnew">+ '+esc(T('Nuevo evento'))+'</button></div></div>';
 }
 function epTotals(){
   const N=epNiveles(),pres=Encuentros.presupuesto(N.niveles),rows=epDraft.rows,ev=Encuentros.evaluar(N.niveles,rows);
@@ -4508,7 +4631,8 @@ function epGuardar(silencioso){
   const d=epDraft;if(!d.rows.length){toast(T('Sin criaturas'));return null;}
   const name=(d.n||'').trim()||(T('Encuentro')+' '+(PRESETS.length+1)),items=epToItems(d.rows);
   let p=d.id&&PRESETS.find(x=>x.id===d.id);
-  if(p){p.n=name;p.items=items;}else{p={id:uid(),n:name,items};PRESETS.push(p);}
+  const eventos=Eventos.normLista(d.eventos);
+  if(p){p.n=name;p.items=items;p.eventos=eventos;}else{p={id:uid(),n:name,items,eventos};PRESETS.push(p);}
   savePresets();d.id=p.id;d.n=name;epSel=p.id;
   if(!silencioso){toast(T('Encuentro guardado')+': '+name);location.hash='campana/encuentros/'+p.id;epRender();}
   return p;
@@ -4516,7 +4640,7 @@ function epGuardar(silencioso){
 function epLanzar(guardar){
   const d=epDraft;if(!d.rows.length){toast(T('Sin criaturas'));return;}
   if(guardar)epGuardar(true);
-  loadEncounter({items:epToItems(d.rows)});location.hash='combate';
+  loadEncounter({items:epToItems(d.rows),eventos:Eventos.normLista(d.eventos)});location.hash='combate';
 }
 
 const CPTABS=()=>[...Notas.TIPOS.slice(0,2),['jugadores','Jugadores','shield'],...Notas.TIPOS.slice(2,6),['encuentros','Encuentros','d20'],...Notas.TIPOS.slice(6)];
