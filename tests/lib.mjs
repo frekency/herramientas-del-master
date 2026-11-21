@@ -13,5 +13,5 @@ export const SCRIPTS=[...PAGE.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>
 
 // Idiomas de la interfaz (además del español, que es el texto original) y de los datos del SRD
 export const UI_LANGS=['en','fr','pt','it','de'];
-export const DATA_LANGS={es:'',en:'_en',fr:'_fr',de:'_de',it:'_it'};   // sufijo de conjuros_srd y compendio_srd
-export const BEST={es:'srd2024_es.json',en:'srd2024.json',fr:'srd2024_fr.json',de:'srd2024_de.json',it:'srd2024_it.json'};
+export const DATA_LANGS=['es','en','fr','de','it'];   // carpetas datos/<idioma>/
+export const BEST=Object.fromEntries(DATA_LANGS.map(l=>[l,`datos/${l}/bestiario.json`]));

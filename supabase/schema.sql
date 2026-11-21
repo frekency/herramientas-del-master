@@ -18,10 +18,9 @@ create policy "cada uno lo suyo" on public.datos_usuario
   using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
 -- Solo las claves que sincroniza la página y como mucho 5 MB por fila: así nadie puede llenar la base de datos.
-do $$ begin
-  alter table public.datos_usuario add constraint datos_usuario_clave
-    check (clave in ('tracker','bestiario','grupo','encuentros','tablas','modulos','preferencias')) not valid;
-exception when duplicate_object then null; end $$;
+alter table public.datos_usuario drop constraint if exists datos_usuario_clave;
+alter table public.datos_usuario add constraint datos_usuario_clave
+  check (clave in ('tracker','bestiario','grupo','encuentros','tablas','modulos','preferencias','fichas')) not valid;
 do $$ begin
   alter table public.datos_usuario add constraint datos_usuario_tamano check (octet_length(valor::text) < 5000000) not valid;
 exception when duplicate_object then null; end $$;

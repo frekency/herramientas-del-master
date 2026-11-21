@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {read,PAGE,SCRIPTS,ROOT} from './lib.mjs';
 
 const tracked=execFileSync('git',['ls-files'],{cwd:ROOT,encoding:'utf8'}).split('\n').filter(Boolean);
-const TEXT=tracked.filter(f=>/\.(html|js|mjs|json|sql|md|py|toml|txt)$/.test(f)&&!/^(srd2024|conjuros_srd|compendio_srd)/.test(f));
+const TEXT=tracked.filter(f=>/\.(html|js|mjs|json|sql|md|py|toml|txt)$/.test(f)&&!/^datos\//.test(f));
 
 test('ningún secreto en el repositorio (service_role, claves secretas, tokens)',()=>{
   const bad=[
@@ -28,8 +28,8 @@ test('la clave de Supabase de la página es la publicable',()=>{
 });
 
 test('los manuales oficiales no se suben al repositorio',()=>{
-  for(const f of ['conjuros.json'])assert.ok(!tracked.includes(f),`${f} está en git`);
-  assert.ok(!tracked.some(f=>f.startsWith('libros/')||f.endsWith('.csv')),'libros/ o CSV en git');
+  for(const f of ['datos/privado/conjuros.json'])assert.ok(!tracked.includes(f),`${f} está en git`);
+  assert.ok(!tracked.some(f=>f.startsWith('datos/privado/')||f.endsWith('.csv')),'datos/privado/ o CSV en git');
 });
 
 test('los scripts externos llevan versión exacta',()=>{

@@ -1,5 +1,5 @@
 # Extrae los conjuros del SRD 5.2.1 en español (texto de pdftotext) al formato de conjuros.json.
-# Uso: python build_srd_spells.py es/r.txt srd_en_spells.json conjuros_srd.json
+# Uso: python build_srd_spells.py es/r.txt srd_en_spells.json datos/es/conjuros.json
 import re,json,sys,unicodedata
 L=open(sys.argv[1],encoding='utf-8').read().replace('\f','\n').split('\n')
 EN=json.load(open(sys.argv[2],encoding='utf-8'))

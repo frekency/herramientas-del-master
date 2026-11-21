@@ -1,6 +1,6 @@
 {
   "name": "herramientas-del-master-desktop",
-  "version": "1.43.0",
+  "version": "1.45.0",
   "description": "Herramientas del Máster: app de escritorio para dirigir partidas de D&D 2024",
   "main": "main.js",
   "author": "Herramientas del Máster",
@@ -11,7 +11,7 @@
     "dist:win": "node prepare.mjs && electron-builder --win",
     "dist:mac": "node prepare.mjs && electron-builder --mac",
     "dist": "node prepare.mjs && electron-builder --win --mac",
-    "test": "node --test store.test.mjs mesa.test.mjs"
+    "test": "node --test store.test.mjs mesa.test.mjs copias.test.mjs auth.test.mjs updater.test.mjs"
   },
   "devDependencies": {
     "electron": "^45.4.1",
@@ -29,8 +29,28 @@
       "store.js",
       "mesa-preload.js",
       "mesa.js",
+      "copias.js",
+      "auth.js",
+      "updater.js",
+      "package.json",
       "app/**/*",
       "build/icon.png"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "frekency",
+        "repo": "herramientas-del-master",
+        "releaseType": "release"
+      }
+    ],
+    "protocols": [
+      {
+        "name": "Herramientas del Máster",
+        "schemes": [
+          "herramientasdelmaster"
+        ]
+      }
     ],
     "win": {
       "target": [
@@ -55,5 +75,8 @@
     "portable": {
       "artifactName": "${productName}-${version}-portable-${arch}.${ext}"
     }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
   }
 }

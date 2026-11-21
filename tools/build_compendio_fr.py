@@ -1,6 +1,6 @@
 # Versión francesa de build_compendio.py: mismas utilidades, con los nombres de secciones y campos del SRD 5.2.1 en francés.
 # Las categorías (k de objetos, cat de dotes y de reglas) se guardan con las mismas claves que en español para que
-# la página las traduzca al mostrarlas.  Uso: python -I build_compendio_fr.py srd_fr.json compendio_srd_fr.json
+# la página las traduzca al mostrarlas.  Uso: python -I build_compendio_fr.py srd_fr.json datos/fr/compendio.json
 import os,sys
 _src=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'build_compendio.py'),encoding='utf-8').read()
 exec(_src[:_src.index('\nout={}')])

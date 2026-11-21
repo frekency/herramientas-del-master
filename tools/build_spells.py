@@ -1,4 +1,4 @@
-# Convierte el CSV de conjuros al JSON que lee el tracker (conjuros.json).
+# Convierte el CSV de conjuros al JSON que lee el tracker (datos/privado/conjuros.json).
 import csv,json,sys,re
 SCH=['abjuracion','conjuracion','adivinacion','encantamiento','evocacion','ilusionismo','nigromancia','transmutacion']
 yes=lambda v:str(v).strip().lower() in ('true','sí','si','x','1')

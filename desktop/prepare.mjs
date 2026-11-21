@@ -1,6 +1,6 @@
 // Copia la web (index.html + datos SRD) a desktop/app para empaquetarla.
-// App PERSONAL para la campaña: incluye conjuros.json (uso personal, no publicar los instaladores).
-// No incluye libros/, tests/ ni tools/.
+// Solo datos libres (SRD): NUNCA se empaqueta datos/privado/ (contenido con copyright, uso personal).
+// Los libros del usuario se importan desde la app y viven en su perfil, no en el instalador. Tampoco tests/ ni tools/.
 import { cpSync, rmSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,12 +14,13 @@ mkdirSync(out, { recursive: true });
 
 const EXCLUIR = new Set(['package.json']);
 const incluir = f =>
-  !EXCLUIR.has(f) && (f === 'index.html' || f === 'privacidad.html' || f === 'terminos.html' || f.endsWith('.json'));
+  !EXCLUIR.has(f) && (f === 'index.html' || f === 'privacidad.html' || f === 'terminos.html');
 
 for (const f of readdirSync(root, { withFileTypes: true })) {
   if (f.isFile() && incluir(f.name)) cpSync(join(root, f.name), join(out, f.name));
 }
 cpSync(join(root, 'i18n'), join(out, 'i18n'), { recursive: true });
+cpSync(join(root, 'datos'), join(out, 'datos'), { recursive: true, filter: s => !s.replace(/\\/g, '/').includes('/datos/privado') });
 cpSync(join(here, 'mesa.html'), join(out, 'mesa.html'));
 
 // Sincroniza la versión con el fichero VERSION de la web

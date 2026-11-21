@@ -35,7 +35,7 @@ Reúne en una sola página web las herramientas que un máster necesita para dir
 
 ## Capabilities and Constraints
 
-- Un solo archivo HTML (HTML + CSS + JS vanilla), sin dependencias ni compilación. Los datos van en JSON aparte (`srd2024*.json`, `conjuros_srd*.json`, `compendio_srd*.json`, `i18n/*.json`).
+- Un solo archivo HTML (HTML + CSS + JS vanilla), sin dependencias ni compilación. Los datos van en JSON aparte (`datos/<idioma>/*.json`, `i18n/*.json`).
 - Rutas por hash (`#combate`, `#jugadores`, `#tablas`, `#referencia`, `#modulos`, páginas de elemento del compendio).
 - i18n: el español está en la página; el resto de idiomas se traduce con diccionarios `i18n/<lang>.json` (clave en español) y un MutationObserver. Todo texto nuevo de la interfaz necesita entrada en los 5 diccionarios, y cada versión su entrada de changelog en los 6 idiomas.
 - Datos del SRD en español e inglés. Francés, portugués, italiano y alemán usan por ahora los datos en inglés.

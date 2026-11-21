@@ -1,6 +1,6 @@
 # Versión alemana de build_compendio.py: mismas utilidades, con los nombres de secciones y campos del SRD 5.2.1 en alemán.
 # Las categorías (k de objetos, cat de dotes y de reglas) se guardan con las mismas claves que en español para que
-# la página las traduzca al mostrarlas.  Uso: python -I build_compendio_de.py srd_de.json compendio_srd_de.json
+# la página las traduzca al mostrarlas.  Uso: python -I build_compendio_de.py srd_de.json datos/de/compendio.json
 import os,sys
 _src=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'build_compendio.py'),encoding='utf-8').read()
 exec(_src[:_src.index('\nout={}')])

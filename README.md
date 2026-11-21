@@ -10,26 +10,21 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 | Archivo | Qué es |
 |---|---|
 | `index.html` | La aplicación completa (HTML + CSS + JS). |
-| `srd2024_es.json` | Bestiario del SRD 5.2.1 en español (CC-BY-4.0, Wizards of the Coast). |
-| `conjuros_srd.json` | Los 339 conjuros del SRD 5.2.1 en español con su nombre en inglés (CC-BY-4.0). Base de serie. |
-| `conjuros.json` | Conjuros generados a partir del CSV personal (manuales). **Uso personal**: no se publica en abierto ni se sube al repositorio. |
+| `datos/<idioma>/` | Datos del SRD 5.2.1 (CC-BY-4.0, Wizards of the Coast) en `es`, `en`, `fr`, `de` e `it`. Cada carpeta tiene `bestiario.json` (criaturas), `conjuros.json` (los 339 conjuros, con su nombre en inglés) y `compendio.json` (objetos, dotes, trasfondos, especies y clases). Es lo único que se publica en abierto. |
+| `datos/privado/conjuros.json` | Conjuros generados a partir del CSV personal (manuales). **Uso personal**: no se publica en abierto ni se sube al repositorio (la carpeta `datos/privado/` está en `.gitignore`). |
 | `tools/build_srd.py` | Descarga y compacta el SRD 2024 en inglés desde Open5e. |
 | `tools/build_es.py` | Extrae los textos del PDF oficial en español y los empareja con los datos en inglés. |
-| `libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`). **Uso personal**: ignorado por git. |
-| `tools/build_spells.py` | Convierte el CSV de conjuros a `conjuros.json`. |
+| `datos/privado/libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`). **Uso personal**: ignorado por git. |
+| `tools/build_spells.py` | Convierte el CSV de conjuros a `datos/privado/conjuros.json`. |
 | `tools/build_srd_spells.py` | Extrae los conjuros del PDF oficial en español (`pdftotext`) y les pone el nombre en inglés de Open5e. |
-| `srd2024_fr.json`, `conjuros_srd_fr.json`, `compendio_srd_fr.json` | Bestiario, conjuros y compendio del SRD 5.2.1 en francés (CC-BY-4.0), con el nombre inglés de cada criatura y conjuro. |
 | `tools/build_fr.py`, `tools/build_spells_fr.py`, `tools/build_compendio_fr.py` | Extraen el SRD 5.2.1 en francés del PDF oficial (`pdftotext -enc UTF-8` para criaturas y conjuros, `stream.py` para el compendio) y lo emparejan con los datos en inglés. |
-| `srd2024_de.json`, `conjuros_srd_de.json`, `compendio_srd_de.json` | Lo mismo en alemán (CC-BY-4.0). |
 | `tools/build_de.py`, `tools/build_spells_de.py`, `tools/build_compendio_de.py` | Extraen el SRD 5.2.1 en alemán. Las criaturas combinan dos lecturas de `pdftotext` (normal y `-raw`, guardada como `r_raw.txt`); conjuros y compendio salen de `stream.py`. |
-| `srd2024_it.json`, `conjuros_srd_it.json`, `compendio_srd_it.json` | Lo mismo en italiano (CC-BY-4.0). |
 | `tools/build_it.py`, `tools/build_spells_it.py`, `tools/build_compendio_it.py` | Extraen el SRD 5.2.1 en italiano con el mismo método que la versión alemana. |
 
 ## Contenido libre y libros opcionales
 - De serie solo va contenido del **SRD 5.2.1** (CC-BY-4.0): bestiario y conjuros. Es lo único que se publica en abierto.
 - Los manuales (Manual del Jugador, etc.) se añaden por usuario desde ✨ Conjuros → 📚 Libros opcionales, con un archivo CSV/JSON propio o un enlace. Se guardan solo en ese navegador y sustituyen al conjuro del SRD equivalente.
-- La página también lee un `conjuros.json` junto a ella si existe; solo debe publicarse así en un artifact **privado**.
-- Versión pública: la misma página con el título «Herramientas del Máster SRD» y solo `srd2024_es.json` + `conjuros_srd.json`.
+- Versión pública: la misma página con el título «Herramientas del Máster SRD» y solo `datos/es/bestiario.json` + `datos/es/conjuros.json`.
 
 ## Probarlo en local
 ```

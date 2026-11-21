@@ -1,6 +1,6 @@
-# Conjuros del SRD 5.2.1 en alemán (secuencia de stream.py) al formato de conjuros_srd.json.
-# El nombre inglés sale de conjuros_srd_en.json emparejando nivel, escuela, clases y datos de lanzamiento.
-# Uso: python -I build_spells_de.py srd.json conjuros_srd_en.json conjuros_srd_de.json
+# Conjuros del SRD 5.2.1 en alemán (secuencia de stream.py) al formato de datos/es/conjuros.json.
+# El nombre inglés sale de datos/en/conjuros.json emparejando nivel, escuela, clases y datos de lanzamiento.
+# Uso: python -I build_spells_de.py srd.json datos/en/conjuros.json datos/de/conjuros.json
 import re,json,sys
 
 EN=json.load(open(sys.argv[2],encoding='utf-8'))

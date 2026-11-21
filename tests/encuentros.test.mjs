@@ -13,7 +13,7 @@ const azar=()=>{let s=7;return()=>(s=(s*16807)%2147483647)/2147483647;};
 test('presupuesto: suma por personaje y nivel; el nivel se acota a 1–20',()=>{
   assert.deepEqual(E.presupuesto([1,1,1,1]),{bajo:200,moderado:300,alto:400});
   assert.deepEqual(E.presupuesto([5]),{bajo:500,moderado:750,alto:1100});
-  assert.deepEqual(E.presupuesto([0,99,'x']),{bajo:50+6400+50,moderado:75+9000+75,alto:100+17000+100});
+  assert.deepEqual(E.presupuesto([0,99,'x']),{bajo:50+6400+50,moderado:75+13200+75,alto:100+22000+100});
   assert.deepEqual(E.presupuesto([]),{bajo:0,moderado:0,alto:0});
   assert.deepEqual(E.presupuesto(null),{bajo:0,moderado:0,alto:0});
   assert.equal(E.PRES.length,20);

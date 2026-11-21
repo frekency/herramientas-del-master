@@ -1,0 +1,927 @@
+{
+ "exportedFrom": "Roliando",
+ "exportedAt": "2026-11-20T18:20:17.347Z",
+ "kind": "dnd-sheet",
+ "version": 1,
+ "sheet": {
+  "name": "Rhiavel",
+  "avatar_url": "",
+  "edition": "2024",
+  "level": 3,
+  "experience": 300,
+  "classes": [
+   {
+    "class": "00_Druid_XPHB",
+    "level": 3,
+    "subclass": "Circle_of_the_Moon_XPHB"
+   }
+  ],
+  "abilities": {
+   "cha": 10,
+   "con": 16,
+   "dex": 12,
+   "int": 13,
+   "str": 8,
+   "wis": 16
+  },
+  "build": {
+   "class": "00_Druid_XPHB",
+   "rolls": null,
+   "manual": {
+    "vuln": [],
+    "immune": [],
+    "resist": []
+   },
+   "skills": [
+    "animal handling",
+    "nature"
+   ],
+   "spells": {
+    "by_class": {
+     "Druid": {
+      "cantrips": [
+       "Shillelagh_XPHB",
+       "Thorn_Whip_XPHB",
+       "Spare_the_Dying_XPHB"
+      ],
+      "prepared": [
+       "Ice_Knife_XPHB",
+       "Animal_Friendship_XPHB",
+       "Faerie_Fire_XPHB",
+       "Thunderwave_XPHB",
+       "Goodberry_XPHB",
+       "Flame_Blade_XPHB"
+      ],
+      "spellbook": []
+     }
+    },
+    "cantrips": [
+     "Shillelagh_XPHB",
+     "Thorn_Whip_XPHB",
+     "Spare_the_Dying_XPHB"
+    ],
+    "prepared": [
+     "Ice_Knife_XPHB",
+     "Animal_Friendship_XPHB",
+     "Faerie_Fire_XPHB",
+     "Thunderwave_XPHB",
+     "Goodberry_XPHB",
+     "Flame_Blade_XPHB"
+    ]
+   },
+   "bg_feat": "Magic_Initiate_XPHB",
+   "details": {
+    "bonds": "",
+    "flaws": "",
+    "story": "",
+    "ideals": "",
+    "alignment": "Neutral",
+    "personality": ""
+   },
+   "edition": "2024",
+   "hp_mode": "fixed",
+   "species": "Elf_XPHB",
+   "bg_bonus": {
+    "mode": "2+1",
+    "alloc": {
+     "con": 2,
+     "wis": 1
+    }
+   },
+   "settings": null,
+   "subclass": null,
+   "bg_skills": [],
+   "languages": [
+    "Élfico",
+    "Enano"
+   ],
+   "overrides": {
+    "adjust": {}
+   },
+   "background": "Guide_XPHB",
+   "base_scores": {
+    "cha": 10,
+    "con": 14,
+    "dex": 12,
+    "int": 13,
+    "str": 8,
+    "wis": 15
+   },
+   "shape_forms": [
+    {
+     "ac": 13,
+     "cr": "1/8",
+     "hp": 9,
+     "data": {
+      "ac": 13,
+      "cr": "1/8",
+      "hp": 9,
+      "xp": 25,
+      "img": "bestiary/XMM/Animals Hills and Mountains.webp",
+      "mech": {
+       "v": 1,
+       "cr": {
+        "cr": "1/8",
+        "pb": 2,
+        "xp": 25,
+        "xpLair": null
+       },
+       "size": "M",
+       "bonus": [],
+       "senses": {
+        "list": [
+         {
+          "kind": "darkvision",
+          "range": 60
+         }
+        ],
+        "passive": 13
+       },
+       "skills": {
+        "stealth": 5,
+        "acrobatics": 5,
+        "perception": 3
+       },
+       "traits": [],
+       "actions": [
+        {
+         "kind": "attack",
+         "name": "Bite",
+         "save": null,
+         "range": null,
+         "reach": 5,
+         "toHit": 5,
+         "damage": [
+          {
+           "dice": "1d4 + 3",
+           "type": "piercing"
+          }
+         ],
+         "recharge": null,
+         "saveHalf": null,
+         "rangeLong": null
+        }
+       ],
+       "abilities": {
+        "cha": 5,
+        "con": 10,
+        "dex": 17,
+        "int": 4,
+        "str": 11,
+        "wis": 12
+       },
+       "legendary": [],
+       "reactions": [],
+       "size_cells": 1
+      },
+      "saves": null,
+      "speed": "40 ft., trepar 30 ft.",
+      "stats": {
+       "cha": 5,
+       "con": 10,
+       "dex": 17,
+       "int": 4,
+       "str": 11,
+       "wis": 12
+      },
+      "senses": "Darkvision 60 ft., Percepción pasiva 13",
+      "skills": "Acrobatics +5, Perception +3, Stealth +5",
+      "languages": null,
+      "legendary": false,
+      "type_line": "Mediano Bestia, no alineado",
+      "hp_formula": "2d8",
+      "environment": null,
+      "fuente_libro": "Monster Manual (2025)",
+      "has_spellcasting": false,
+      "damage_immunities": null,
+      "damage_resistances": null,
+      "condition_immunities": null
+     },
+     "name": "Giant Weasel",
+     "size": "M",
+     "slug": "Giant_Weasel_XMM",
+     "saves": {},
+     "stats": {
+      "cha": 5,
+      "con": 10,
+      "dex": 17,
+      "int": 4,
+      "str": 11,
+      "wis": 12
+     },
+     "senses": "Darkvision 60 ft., Percepción pasiva 13",
+     "skills": {
+      "stealth": 5,
+      "acrobatics": 5,
+      "perception": 3
+     },
+     "speeds": {
+      "walk": 40,
+      "climb": 30
+     },
+     "body_md": null,
+     "name_es": "Comadreja gigante",
+     "image_url": "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/bestiary/tokens/XMM/Giant%20Weasel.webp",
+     "type_line": "Mediano Bestia, no alineado",
+     "hp_formula": "2d8",
+     "initiative": null,
+     "size_cells": 1
+    },
+    {
+     "ac": 11,
+     "cr": "0",
+     "hp": 1,
+     "data": {
+      "ac": 11,
+      "cr": "0",
+      "hp": 1,
+      "xp": 0,
+      "img": "bestiary/XMM/Scorpion.webp",
+      "mech": {
+       "v": 1,
+       "cr": {
+        "cr": "0",
+        "pb": 2,
+        "xp": 10,
+        "xpLair": null
+       },
+       "size": "T",
+       "bonus": [],
+       "senses": {
+        "list": [
+         {
+          "kind": "blindsight",
+          "range": 10
+         }
+        ],
+        "passive": 9
+       },
+       "traits": [],
+       "actions": [
+        {
+         "kind": "attack",
+         "name": "Sting",
+         "save": null,
+         "range": null,
+         "reach": 5,
+         "toHit": 2,
+         "damage": [
+          {
+           "dice": "1d6",
+           "type": "poison"
+          }
+         ],
+         "recharge": null,
+         "saveHalf": null,
+         "rangeLong": null
+        }
+       ],
+       "abilities": {
+        "cha": 2,
+        "con": 8,
+        "dex": 11,
+        "int": 1,
+        "str": 2,
+        "wis": 8
+       },
+       "legendary": [],
+       "reactions": [],
+       "size_cells": 1
+      },
+      "saves": null,
+      "speed": "10 ft.",
+      "stats": {
+       "cha": 2,
+       "con": 8,
+       "dex": 11,
+       "int": 1,
+       "str": 2,
+       "wis": 8
+      },
+      "senses": "Blindsight 10 ft., Percepción pasiva 9",
+      "skills": null,
+      "languages": null,
+      "legendary": false,
+      "type_line": "Diminuto Bestia, no alineado",
+      "hp_formula": "1d4 - 1",
+      "environment": null,
+      "fuente_libro": "Monster Manual (2025)",
+      "has_spellcasting": false,
+      "damage_immunities": null,
+      "damage_resistances": null,
+      "condition_immunities": null
+     },
+     "name": "Scorpion",
+     "size": "T",
+     "slug": "Scorpion_XMM",
+     "saves": {},
+     "stats": {
+      "cha": 2,
+      "con": 8,
+      "dex": 11,
+      "int": 1,
+      "str": 2,
+      "wis": 8
+     },
+     "senses": "Blindsight 10 ft., Percepción pasiva 9",
+     "skills": {},
+     "speeds": {
+      "walk": 10
+     },
+     "body_md": null,
+     "name_es": "Escorpión",
+     "image_url": "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/bestiary/tokens/XMM/Scorpion.webp",
+     "type_line": "Diminuto Bestia, no alineado",
+     "hp_formula": "1d4 - 1",
+     "initiative": null,
+     "size_cells": 0.5
+    },
+    {
+     "ac": 12,
+     "cr": "1/4",
+     "hp": 11,
+     "data": {
+      "ac": 12,
+      "cr": "1/4",
+      "hp": 11,
+      "xp": 50,
+      "img": "bestiary/XMM/Wolf.webp",
+      "mech": {
+       "v": 1,
+       "cr": {
+        "cr": "1/4",
+        "pb": 2,
+        "xp": 50,
+        "xpLair": null
+       },
+       "size": "M",
+       "bonus": [],
+       "senses": {
+        "list": [
+         {
+          "kind": "darkvision",
+          "range": 60
+         }
+        ],
+        "passive": 15
+       },
+       "skills": {
+        "stealth": 4,
+        "perception": 5
+       },
+       "traits": [],
+       "actions": [
+        {
+         "kind": "attack",
+         "name": "Bite",
+         "save": null,
+         "range": null,
+         "reach": 5,
+         "toHit": 4,
+         "damage": [
+          {
+           "dice": "1d6 + 2",
+           "type": "piercing"
+          }
+         ],
+         "recharge": null,
+         "saveHalf": null,
+         "rangeLong": null
+        }
+       ],
+       "abilities": {
+        "cha": 6,
+        "con": 12,
+        "dex": 15,
+        "int": 3,
+        "str": 14,
+        "wis": 12
+       },
+       "legendary": [],
+       "reactions": [],
+       "size_cells": 1
+      },
+      "saves": null,
+      "speed": "40 ft.",
+      "stats": {
+       "cha": 6,
+       "con": 12,
+       "dex": 15,
+       "int": 3,
+       "str": 14,
+       "wis": 12
+      },
+      "senses": "Darkvision 60 ft., Percepción pasiva 15",
+      "skills": "Perception +5, Stealth +4",
+      "languages": null,
+      "legendary": false,
+      "type_line": "Mediano Bestia, no alineado",
+      "hp_formula": "2d8 + 2",
+      "environment": null,
+      "fuente_libro": "Monster Manual (2025)",
+      "has_spellcasting": false,
+      "damage_immunities": null,
+      "damage_resistances": null,
+      "condition_immunities": null
+     },
+     "name": "Wolf",
+     "size": "M",
+     "slug": "Wolf_XMM",
+     "saves": {},
+     "stats": {
+      "cha": 6,
+      "con": 12,
+      "dex": 15,
+      "int": 3,
+      "str": 14,
+      "wis": 12
+     },
+     "senses": "Darkvision 60 ft., Percepción pasiva 15",
+     "skills": {
+      "stealth": 4,
+      "perception": 5
+     },
+     "speeds": {
+      "walk": 40
+     },
+     "body_md": null,
+     "name_es": "Lobo",
+     "image_url": "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/bestiary/tokens/XMM/Wolf.webp",
+     "type_line": "Mediano Bestia, no alineado",
+     "hp_formula": "2d8 + 2",
+     "initiative": null,
+     "size_cells": 1
+    },
+    {
+     "ac": 11,
+     "cr": "1/4",
+     "hp": 13,
+     "data": {
+      "ac": 11,
+      "cr": "1/4",
+      "hp": 13,
+      "xp": 50,
+      "img": "bestiary/XMM/Riding Horse.webp",
+      "mech": {
+       "v": 1,
+       "cr": {
+        "cr": "1/4",
+        "pb": 2,
+        "xp": 50,
+        "xpLair": null
+       },
+       "size": "L",
+       "bonus": [],
+       "senses": {
+        "list": [],
+        "passive": 10
+       },
+       "traits": [],
+       "actions": [
+        {
+         "kind": "attack",
+         "name": "Hooves",
+         "save": null,
+         "range": null,
+         "reach": 5,
+         "toHit": 5,
+         "damage": [
+          {
+           "dice": "1d8 + 3",
+           "type": "bludgeoning"
+          }
+         ],
+         "recharge": null,
+         "saveHalf": null,
+         "rangeLong": null
+        }
+       ],
+       "abilities": {
+        "cha": 7,
+        "con": 12,
+        "dex": 13,
+        "int": 2,
+        "str": 16,
+        "wis": 11
+       },
+       "legendary": [],
+       "reactions": [],
+       "size_cells": 2
+      },
+      "saves": null,
+      "speed": "60 ft.",
+      "stats": {
+       "cha": 7,
+       "con": 12,
+       "dex": 13,
+       "int": 2,
+       "str": 16,
+       "wis": 11
+      },
+      "senses": "Percepción pasiva 10",
+      "skills": null,
+      "languages": null,
+      "legendary": false,
+      "type_line": "Grande Bestia, no alineado",
+      "hp_formula": "2d10 + 2",
+      "environment": null,
+      "fuente_libro": "Monster Manual (2025)",
+      "has_spellcasting": false,
+      "damage_immunities": null,
+      "damage_resistances": null,
+      "condition_immunities": null
+     },
+     "name": "Riding Horse",
+     "size": "L",
+     "slug": "Riding_Horse_XMM",
+     "saves": {},
+     "stats": {
+      "cha": 7,
+      "con": 12,
+      "dex": 13,
+      "int": 2,
+      "str": 16,
+      "wis": 11
+     },
+     "senses": "Percepción pasiva 10",
+     "skills": {},
+     "speeds": {
+      "walk": 60
+     },
+     "body_md": null,
+     "name_es": "Caballo de monta",
+     "image_url": "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/bestiary/tokens/XMM/Riding%20Horse.webp",
+     "type_line": "Grande Bestia, no alineado",
+     "hp_formula": "2d10 + 2",
+     "initiative": null,
+     "size_cells": 2
+    }
+   ],
+   "species_asi": {},
+   "bg_equipment": {
+    "mode": "gold"
+   },
+   "race_choices": {
+    "skills": [
+     "perception"
+    ],
+    "lineage": "Elfo del Bosque",
+    "cantrips": []
+   },
+   "level_choices": {
+    "1": {
+     "feature_choices": {
+      "Orden Primigenia": "Naturalista"
+     }
+    },
+    "2": {
+     "class": "00_Druid_XPHB",
+     "hp_max_before": 11
+    },
+    "3": {
+     "class": "00_Druid_XPHB",
+     "subclass_set": "Circle_of_the_Moon_XPHB",
+     "hp_max_before": 19
+    }
+   },
+   "ability_method": "standard_array",
+   "species_custom": null,
+   "bg_feat_choices": {
+    "spell": {
+     "class": "Druid",
+     "level1": [
+      "Cure_Wounds_XPHB"
+     ],
+     "cantrips": [
+      "Produce_Flame_XPHB",
+      "Guidance_XPHB"
+     ]
+    }
+   },
+   "class_equipment": {
+    "weapon": {
+     "0.0.3": "Wooden_Staff_XPHB"
+    }
+   },
+   "background_custom": null,
+   "race_spell_ability": "wis"
+  },
+  "state": {
+   "grants": [],
+   "hp_max": 27,
+   "effects": [],
+   "hp_temp": 0,
+   "portent": [],
+   "ac_cache": 13,
+   "defenses": {
+    "resist": [],
+    "immune": [],
+    "vuln": []
+   },
+   "monturas": [
+    {
+     "ac": 11,
+     "hp": 13,
+     "id": "05051768-30c2-4d10-9b48-60be20d86637",
+     "str": 16,
+     "base": "caballo_monta",
+     "name": "Rohan",
+     "size": "L",
+     "items": [],
+     "hp_max": 13,
+     "portrait": "",
+     "description": "",
+     "compendium_id": "8c8d3b36-01a4-4e7f-9904-d5a080fc812f",
+     "compendium_name": "Caballo de monta"
+    }
+   ],
+   "adv_cache": {
+    "adv": [],
+    "dis": []
+   },
+   "pact_used": 0,
+   "rule_uses": {},
+   "companions": {
+    "spell:Find_Familiar_XPHB": {
+     "form": 14
+    }
+   },
+   "conditions": [],
+   "hp_current": 24,
+   "init_cache": 1,
+   "shape_slug": null,
+   "slots_used": {
+    "1": 1
+   },
+   "arcane_ward": 0,
+   "cond_immune": [
+    "dormido"
+   ],
+   "death_saves": {
+    "fail": 0,
+    "success": 0
+   },
+   "inspiration": false,
+   "resistances": [],
+   "saves_cache": {
+    "str": -1,
+    "dex": 1,
+    "con": 3,
+    "int": 3,
+    "wis": 5,
+    "cha": 0
+   },
+   "shape_cache": null,
+   "slots_cache": {
+    "max": [
+     4,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "pact": null
+   },
+   "stats_cache": {
+    "level": 3,
+    "prof": 2,
+    "speed": 35,
+    "passive_perception": 15,
+    "abilities": {
+     "str": 8,
+     "dex": 12,
+     "con": 16,
+     "int": 13,
+     "wis": 16,
+     "cha": 10
+    },
+    "mods": {
+     "str": -1,
+     "dex": 1,
+     "con": 3,
+     "int": 1,
+     "wis": 3,
+     "cha": 0
+    }
+   },
+   "active_modes": {},
+   "attuned_init": true,
+   "item_charges": {},
+   "skills_cache": {
+    "acrobatics": 1,
+    "animal handling": 5,
+    "arcana": 4,
+    "athletics": -1,
+    "deception": 0,
+    "history": 1,
+    "insight": 3,
+    "intimidation": 0,
+    "investigation": 1,
+    "medicine": 3,
+    "nature": 6,
+    "perception": 5,
+    "performance": 0,
+    "persuasion": 0,
+    "religion": 1,
+    "sleight of hand": 1,
+    "stealth": 3,
+    "survival": 5
+   },
+   "trance_profs": [],
+   "concentration": null,
+   "hit_dice_used": 0,
+   "passive_cache": 15,
+   "init_adv_cache": null,
+   "class_resources": {
+    "00_Druid_XPHB:Forma Salvaje": 1
+   },
+   "darkvision_cache": 60,
+   "hit_dice_used_by": {
+    "1d8": 0
+   },
+   "level_up_available": 0,
+   "recuperacion_usada": false
+  },
+  "inventory": [
+   {
+    "qty": 1,
+    "name": "Escudo",
+    "slug": "Shield_XPHB",
+    "attuned": false,
+    "equipped": false
+   },
+   {
+    "qty": 1,
+    "name": "Hoz",
+    "slug": "Sickle_XPHB",
+    "attuned": false,
+    "equipped": false
+   },
+   {
+    "qty": 1,
+    "grip": "2h",
+    "name": "Bastón de madera",
+    "pick": "druidicFocus",
+    "slug": "Wooden_Staff_XPHB",
+    "attuned": false,
+    "equipped": false
+   },
+   {
+    "qty": 1,
+    "name": "Ballesta ligera",
+    "slug": "Light_Crossbow_XPHB",
+    "damage": "1d8 perforante",
+    "ability": "dex",
+    "attuned": false,
+    "equipped": false,
+    "type_line": "Arma a distancia",
+    "properties": "A, LD, 2H",
+    "mech_weapon": {
+     "ammo": "bolt",
+     "range": {
+      "long": 320,
+      "normal": 80
+     },
+     "damage": {
+      "dice": "1d8",
+      "type": "piercing"
+     },
+     "ranged": true,
+     "mastery": "Slow",
+     "category": "simple",
+     "versatile": null,
+     "properties": [
+      "A",
+      "LD",
+      "2H"
+     ]
+    }
+   },
+   {
+    "qty": 1,
+    "name": "Mochila de explorador",
+    "slug": "Explorers_Pack_XPHB"
+   },
+   {
+    "qty": 1,
+    "name": "Kit de herboristería",
+    "slug": "Herbalism_Kit_XPHB"
+   },
+   {
+    "qty": 1,
+    "name": "Honda",
+    "slug": "Sling_XPHB",
+    "price": "0.1 po",
+    "damage": "1d4 contundente",
+    "equipped": false,
+    "type_line": "Arma a distancia",
+    "properties": "A",
+    "mech_weapon": {
+     "ammo": "sling bullet",
+     "range": {
+      "long": 120,
+      "normal": 30
+     },
+     "damage": {
+      "dice": "1d4",
+      "type": "bludgeoning"
+     },
+     "ranged": true,
+     "mastery": "Slow",
+     "category": "simple",
+     "versatile": null,
+     "properties": [
+      "A"
+     ]
+    }
+   },
+   {
+    "qty": 1,
+    "name": "Piedras de honda (20)",
+    "slug": "Sling_Bullets_(20)_XPHB",
+    "price": "0.04 po",
+    "equipped": false,
+    "type_line": "Munición"
+   },
+   {
+    "qty": 1,
+    "name": "Capa Redbrand",
+    "equipped": false,
+    "type_line": "Accesorio"
+   },
+   {
+    "qty": 1,
+    "name": "Espada corta",
+    "slug": "Shortsword_XPHB",
+    "price": "10 po",
+    "damage": "1d6 perforante",
+    "equipped": false,
+    "type_line": "Arma cuerpo a cuerpo",
+    "properties": "F, L",
+    "mech_weapon": {
+     "ammo": null,
+     "range": null,
+     "damage": {
+      "dice": "1d6",
+      "type": "piercing"
+     },
+     "ranged": false,
+     "mastery": "Vex",
+     "category": "martial",
+     "versatile": null,
+     "properties": [
+      "F",
+      "L"
+     ]
+    }
+   },
+   {
+    "qty": 2,
+    "name": "Frasco",
+    "slug": "Flask_XPHB",
+    "price": "0.02 po",
+    "equipped": false,
+    "type_line": "Equipo de aventura"
+   },
+   {
+    "qty": 1,
+    "name": "Estatuilla de Jade",
+    "price": "40",
+    "attuned": false,
+    "equipped": false,
+    "type_line": "Objeto",
+    "attunement": true,
+    "description": "Estatua con forma de rana de jade con los ojos dorados."
+   },
+   {
+    "ac": "12",
+    "qty": 1,
+    "name": "Armadura de cuero tachonado",
+    "slug": "Studded_Leather_Armor_XPHB",
+    "price": "45 po",
+    "attuned": false,
+    "equipped": true,
+    "type_line": "Armadura ligera"
+   },
+   {
+    "qty": 2,
+    "name": "Botiquín",
+    "slug": "Healers_Kit_XPHB",
+    "price": "5 po",
+    "attuned": false,
+    "equipped": false,
+    "type_line": "Equipo de aventura"
+   }
+  ],
+  "currency": {
+   "gp": 140,
+   "sp": 62,
+   "cobre": 0
+  },
+  "notes": null
+ }
+}

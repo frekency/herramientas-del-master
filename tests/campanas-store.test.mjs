@@ -111,3 +111,15 @@ test('las claves por campaña son las de la mesa y las claves de Supabase son v�
   const {Store,datos}=nuevo();const id=Store.campaigns.create('x');Store.campaigns.select(id);Store.set(T,'1');
   const k=[...datos.keys()].find(x=>x.startsWith('camp:'));assert.match(k,/^camp:[a-z0-9]+:combat-[a-z-]+-v1$/);
 });
+
+test('el rol es de cada campaña: quien la crea es máster y puede ser jugador en otra',()=>{
+  const {Store}=nuevo();
+  const mia=Store.campaigns.create('La mía'),ajena=Store.campaigns.create('La de otro');
+  assert.equal(Store.campaigns.rol('local'),'master');assert.equal(Store.campaigns.rol(mia),'master');   // por defecto, máster
+  assert.equal(Store.campaigns.setRol(ajena,'jugador'),true);
+  Store.campaigns.select(ajena);assert.equal(Store.campaigns.rol(),'jugador');
+  Store.campaigns.select(mia);assert.equal(Store.campaigns.rol(),'master');                              // la misma persona, otro rol
+  assert.equal(Store.campaigns.setRol(ajena,'admin'),false);assert.equal(Store.campaigns.setRol('nada','jugador'),false);
+  assert.equal(Store.campaigns.setRol(ajena,'master'),true);assert.equal(Store.campaigns.rol(ajena),'master');
+  assert.equal(Store.campaigns.rol('no-existe'),'master');
+});

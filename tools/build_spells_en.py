@@ -1,5 +1,5 @@
-# Conjuros del SRD 5.2 en inglés (API de Open5e, documento srd-2024) al formato de conjuros_srd.json.
-# Uso: python -I build_spells_en.py raw.json conjuros_srd_en.json
+# Conjuros del SRD 5.2 en inglés (API de Open5e, documento srd-2024) al formato de datos/es/conjuros.json.
+# Uso: python -I build_spells_en.py raw.json datos/en/conjuros.json
 import json,sys,re
 R=json.load(open(sys.argv[1],encoding='utf-8'))
 R=R['results'] if isinstance(R,dict) else R

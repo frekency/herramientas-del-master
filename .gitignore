@@ -1,4 +1,4 @@
-conjuros.json
+datos/privado/
 *.csv
 __pycache__/
-libros/
+dist-build.log

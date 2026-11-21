@@ -25,6 +25,26 @@ contextBridge.exposeInMainWorld('__StoreBackend', { get, set, remove, keys });
 contextBridge.exposeInMainWorld('__AppShell', {
   platform: process.platform,
   titlebar: (bg, fg) => ipcRenderer.send('shell:titlebar', String(bg), String(fg)),
+  // Copias de seguridad automáticas en la carpeta que elija la persona
+  copias: {
+    carpeta: () => ipcRenderer.invoke('copias:carpeta'),
+    elegir: () => ipcRenderer.invoke('copias:elegir'),
+    guardar: texto => ipcRenderer.invoke('copias:guardar', String(texto)),
+  },
+  // Actualizaciones de la app (GitHub Releases)
+  actualizar: {
+    estado: () => ipcRenderer.invoke('update:estado'),
+    buscar: () => ipcRenderer.send('update:buscar'),
+    instalar: () => ipcRenderer.send('update:instalar'),
+    abrir: () => ipcRenderer.send('update:abrir'),
+    onEstado: cb => ipcRenderer.on('update:estado', (_e, x) => cb(x)),
+  },
+  // Inicio de sesión en el navegador del sistema (Discord): abre la dirección y recibe el retorno por enlace propio
+  auth: {
+    abrir: url => ipcRenderer.invoke('auth:abrir', String(url)),
+    pendiente: () => ipcRenderer.invoke('auth:pendiente'),
+    onRetorno: cb => ipcRenderer.on('auth:retorno', (_e, r) => cb(r)),
+  },
   // Ventana de la mesa (la que ven los jugadores)
   mesa: {
     abrir: () => ipcRenderer.send('mesa:abrir'),

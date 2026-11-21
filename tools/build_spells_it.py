@@ -1,7 +1,7 @@
-# Conjuros del SRD 5.2.1 en italiano (secuencia de stream.py) al formato de conjuros_srd.json.
-# El nombre inglés sale de conjuros_srd_en.json emparejando nivel, escuela, clases y datos de lanzamiento.
+# Conjuros del SRD 5.2.1 en italiano (secuencia de stream.py) al formato de datos/es/conjuros.json.
+# El nombre inglés sale de datos/en/conjuros.json emparejando nivel, escuela, clases y datos de lanzamiento.
 # Ojo: en italiano «Evocazione» es conjuración y «Invocazione» es evocación.
-# Uso: python -I build_spells_it.py srd.json conjuros_srd_en.json conjuros_srd_it.json
+# Uso: python -I build_spells_it.py srd.json datos/en/conjuros.json datos/it/conjuros.json
 import re,json,sys
 import html as H
 EN=json.load(open(sys.argv[2],encoding='utf-8'))

@@ -1,6 +1,6 @@
 import re,json,sys,collections
 L=open('es/r.txt',encoding='utf-8').read().replace('\f','\n').split('\n')
-EN=json.load(open('srd2024.json',encoding='utf-8'))
+EN=json.load(open('datos/en/bestiario.json',encoding='utf-8'))
 TY='Aberración|Bestia|Celestial|Constructo|Dragón|Elemental|Feérico|Infernal|Gigante|Humanoide|Monstruosidad|Cieno|Planta|Muerto viviente|Enjambre'
 SZ='Diminut|Pequeñ|Median|Grande|Enorme|Gargant'
 start=next(i for i,l in enumerate(L) if l.strip()=='Aboleth' and i>18000)
@@ -109,4 +109,4 @@ for o in merged:
     o.pop('_abok',None);o.pop('fb',None)
     if o['en']=='Giant Fly':o['n']='Mosca gigante'
     if o.get('eq'):pass
-json.dump(merged,open('srd2024_es.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+json.dump(merged,open('datos/es/bestiario.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))

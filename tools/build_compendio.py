@@ -1,5 +1,5 @@
-# Genera compendio_srd.json (objetos, dotes, trasfondos, especies y clases del SRD 5.2.1 en español)
-# a partir de la secuencia que produce stream.py.  Uso: python -I build_compendio.py srd.json compendio_srd.json
+# Genera datos/es/compendio.json (objetos, dotes, trasfondos, especies y clases del SRD 5.2.1 en español)
+# a partir de la secuencia que produce stream.py.  Uso: python -I build_compendio.py srd.json datos/es/compendio.json
 import json,re,sys,html as H
 
 S=[tuple(e) for e in json.load(open(sys.argv[1],encoding='utf-8'))]

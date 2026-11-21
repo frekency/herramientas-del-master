@@ -1,5 +1,5 @@
 # Compila la app de escritorio (Windows y Mac) en GitHub.
-# Como conjuros.json y libros/ no están en el repositorio, estos instaladores
+# Como datos/privado/ (conjuros.json y libros/) no está en el repositorio, estos instaladores
 # solo llevan el SRD: son los que se pueden compartir.
 # Se lanza a mano (Actions → Escritorio → Run workflow) o al subir una etiqueta v*.
 name: Escritorio
@@ -8,7 +8,7 @@ on:
   push:
     tags: ['v*']
 permissions:
-  contents: read
+  contents: write   # para publicar la release con los instaladores y latest.yml
 jobs:
   compilar:
     strategy:
@@ -32,9 +32,10 @@ jobs:
           cache-dependency-path: desktop/package-lock.json
       - run: npm ci
       - run: npm test
-      - run: npm run ${{ matrix.script }}
+      - run: npm run ${{ matrix.script }} -- --publish ${{ startsWith(github.ref, 'refs/tags/v') && 'always' || 'never' }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: instalador-${{ matrix.os }}

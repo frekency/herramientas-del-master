@@ -1,6 +1,6 @@
-# Criaturas del SRD 5.2.1 en italiano (texto de pdftotext -enc UTF-8) fusionadas sobre srd2024.json por CA, PG y características.
+# Criaturas del SRD 5.2.1 en italiano (texto de pdftotext -enc UTF-8) fusionadas sobre datos/en/bestiario.json por CA, PG y características.
 # Se leen dos versiones del texto (la «raw», con el orden real de lectura, y la normal) y por criatura gana la que encaja mejor.
-# Uso: python -I build_it.py r.txt srd2024.json srd2024_it.json   (espera también r_raw.txt junto a r.txt)
+# Uso: python -I build_it.py r.txt datos/en/bestiario.json datos/it/bestiario.json   (espera también r_raw.txt junto a r.txt)
 import re,json,sys,collections
 EN=json.load(open(sys.argv[2],encoding='utf-8'))
 SIZES=r'(?:Minuscol[aeoi]|Piccol[aeoi]|Medi[aeoi]|Grand[ei]|Enorm[ei]|Mastodontic[aoh]e?)'
