@@ -1346,7 +1346,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 /* ventanas */
 /* web alojada: va directa a la cuenta, así que no se enseña nada de sincronizar */
 html:not(.app-escritorio) #upd-box{display:none}   /* las actualizaciones son cosa de la app de escritorio */
-html.web-nube #camp-sc,html.web-nube #ac-sync,html.web-nube #acctmodal [data-act="acsync"]{display:none}
+html.web-nube #camp-list .chip,html.web-nube #camp-list [data-act="scvinc"],html.web-nube #camp-sc,html.web-nube #ac-sync,html.web-nube #acctmodal [data-act="acsync"]{display:none}
 /* web privada: sin sesión solo se ve el acceso, sin crear cuenta ni Discord (entra solo quien tiene invitación) */
 html.gate-web:not(.con-sesion) #acctmodal{background:var(--bg,#0b0a09);z-index:99}
 html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #acctmodal [data-to="signup"],html.gate-web #acctmodal [data-pane="in"]>p.pcsub,html.gate-web #acctmodal [data-pane="in"]>p.hint{display:none}

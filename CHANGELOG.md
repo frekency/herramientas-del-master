@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.4] - 2026-11-21
+### Cambiado
+- Web: el gestor de campañas ya no muestra las etiquetas «activa» y «Sincronizada» ni el botón «Sincronizar».
+
 ## [1.57.3] - 2026-11-21
 ### Corregido
 - Web: el gestor de campañas ya no enseña la campaña local vacía, y al entrar manda siempre la cuenta (ya no pregunta «navegador o cuenta»). Sin avisos de actualización de la app en la web.
