@@ -1127,7 +1127,7 @@ window.Notas=(()=>{
 (()=>{const S=window.__AppShell;if(!S)return;const R=document.documentElement;R.classList.add('app-escritorio','app-'+S.platform);
 try{if(Store.get('app-sidebar')==='min')R.classList.add('sb-min');}catch(e){}})();
 </script>
-<script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=Store.get('combat-skin');if(k==='pergamino'){k='';Store.set('combat-skin','');}if(k===null)k=document.documentElement.classList.contains('app-escritorio')?'escritorio':'cuaderno';if(k)document.documentElement.dataset.skin=k;const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{let k=Store.get('combat-skin');if(k==='pergamino'){k='';Store.set('combat-skin','');}if(k===null)k='cuaderno';if(k)document.documentElement.dataset.skin=k;const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;else if(t===null&&document.documentElement.classList.contains('app-escritorio'))document.documentElement.dataset.theme='light';}catch(e){}</script>
 <style>
 /* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
@@ -1218,7 +1218,10 @@ h2{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.0
 .listhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
 .tools{display:flex;gap:6px;flex-wrap:wrap}
 .list{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
-.empty{border:1px dashed var(--line);border-radius:10px;padding:28px;text-align:center;color:var(--muted)}
+.empty{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 8px;text-align:center;color:var(--muted)}
+a.btn,a.btn:visited{text-decoration:none}a.btn:not(.primary):not(.danger),a.btn:not(.primary):not(.danger):visited{color:var(--fg)}
+.rar-c{--rc:var(--fg)}.rar-u{--rc:#2e8b3d}.rar-r{--rc:#2f6fd0}.rar-vr{--rc:#8a45c9}.rar-l{--rc:#d9761f}.rar-a{--rc:#c23b3b}
+.rar{font-weight:600;color:color-mix(in srgb,var(--rc,var(--fg)) 72%,var(--fg))}
 
 /* fila de criatura */
 .row{--fc:#888;position:relative;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--fc);border-radius:10px;transition:box-shadow .15s,border-color .15s}
@@ -1563,9 +1566,20 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .qrcard .qs{font-size:13px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #qrmodal .mhead h2 .pcsub{margin-left:8px;font-weight:400}
 .hero{padding-block:18px 22px;max-width:760px}
-.eyebrow{margin:0 0 6px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .htitle{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5vw,44px);line-height:1.05;margin:0;text-wrap:balance}
 .hsub{color:var(--muted);font-size:17px;margin:10px 0 0;max-width:60ch}
+.hoy{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:4px 0 8px;padding:14px 2px;border-top:3px double var(--sb-rule);border-bottom:1px solid var(--line)}
+.hoy[hidden]{display:none}
+.hoy b{font-family:var(--f-display);font-size:22px;line-height:1.2}
+.hoy .pcsub{flex:1 1 200px}
+.ix{list-style:none;margin:0 0 6px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));column-gap:44px}
+.ixr{display:grid;grid-template-columns:auto 1fr auto;column-gap:10px;align-items:baseline;padding:12px 2px 13px;border-top:1px solid var(--line);color:var(--fg);text-decoration:none}
+.ixr::before{content:"";grid-column:2;grid-row:1;align-self:end;margin-bottom:.32em;border-bottom:2px dotted color-mix(in srgb,var(--fg) 35%,transparent)}
+.ixn{grid-column:1;grid-row:1;font-family:var(--f-display);font-weight:700;font-size:19px;line-height:1.2}
+.ixs{grid-column:3;grid-row:1;font-family:var(--f-num);font-size:13px;color:var(--muted);text-align:right}
+.ixd{grid-column:1/-1;grid-row:2;color:var(--muted);font-size:14px;margin-top:3px;max-width:62ch}
+.ixr:hover .ixn,.ixr:focus-visible .ixn{color:var(--accent);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:2px}
+.ixr:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .tool{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--fg);text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
 .tool:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow)}
@@ -2281,7 +2295,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 #pf-lock:not([hidden]){display:grid;gap:10px;border-top:1px solid var(--line,#8884);padding-top:10px}
 .sesbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 16px;font-size:14px;border-bottom:1px solid var(--line,#8886)}
 .cpcal{border:1px solid var(--line,#8886);border-radius:10px;padding:8px;display:grid;gap:6px}
-.cpcal[hidden]{display:none}.cpcal .cph{display:flex;align-items:center;gap:6px}.cpcal .cph b{flex:1;text-align:center;text-transform:capitalize}
+.cpcal[hidden]{display:none}.cpcal .cph{display:flex;align-items:center;gap:6px}.cpcal .cph b{flex:1;text-align:center}
 .cpcal .cpg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}.cpcal .cpg>span{font-size:11px;opacity:.7}
 .cpcd{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:36px;padding:2px 0;border:1px solid transparent;border-radius:6px;background:none;color:inherit;font:inherit;font-size:13px;cursor:pointer}
 .cpcd:hover{border-color:var(--accent,#888)}.cpcd.fuera{opacity:.4}.cpcd.hoy{border-color:currentColor;font-weight:700}
@@ -2521,6 +2535,17 @@ html.app-escritorio body{padding-top:var(--tb);padding-left:var(--sbw);transitio
 html.app-escritorio .apptitle{display:flex;align-items:center;position:fixed;top:0;left:0;right:0;height:var(--tb);z-index:30;background:var(--surface);border-bottom:1px solid var(--line);-webkit-app-region:drag;user-select:none;font-size:12px;color:var(--muted);padding-left:max(12px,env(titlebar-area-x,0px));padding-right:calc(100vw - env(titlebar-area-width,100vw) - env(titlebar-area-x,0px))}
 html.app-escritorio .apptitle b{color:var(--fg);font-weight:600;margin-right:8px}
 html.app-escritorio .bar{top:var(--tb)}
+.pagenav .navsearch{display:none}
+html.app-escritorio .bar label.skin,html.app-escritorio .bar [data-act="openbest"]{display:none}   /* campaña, vista y estilo ya están en la barra lateral y en Preferencias */
+html.app-escritorio:not([data-page="combate"]) .bar{display:none}   /* fuera del combate cada pantalla trae su propio título */
+html.app-escritorio .pagenav .navsearch{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;order:0}
+html.app-escritorio .pagenav .navsearch:hover{background:var(--surface-2)}
+html.app-escritorio .pagenav .navsearch .ic{width:18px;height:18px;flex:none}
+html.app-escritorio .pagenav .navsearch .nk{margin-left:auto;font-family:var(--f-num);font-size:11px;color:var(--muted)}
+html.app-escritorio.sb-min .pagenav .navsearch{font-size:0;justify-content:center;padding:10px 0;gap:0}
+html.app-escritorio.sb-min .pagenav .navsearch .nk,html.app-escritorio.sb-min .pagenav .nl{display:none}
+.pagenav .nl{display:none}
+html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}
 html.app-escritorio .pagenav{position:fixed;top:var(--tb);bottom:0;left:0;width:var(--sbw);max-width:none;margin:0;padding:10px 8px;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:2px;overflow:hidden auto;background:var(--surface);border-right:1px solid var(--line);z-index:20;transition:width .16s ease}
 html.app-escritorio .pagenav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:0;white-space:nowrap;font-size:14px}
 html.app-escritorio .pagenav a .ic{width:18px;height:18px;flex:none}
@@ -2596,31 +2621,31 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.46</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio">♪</button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.47</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
-    <p class="eyebrow">D&amp;D 2024 · SRD 5.2.1 en español</p>
     <h1 class="htitle">Herramientas útiles para el Máster</h1>
     <p class="hsub">Lleva el combate, el grupo y las consultas de reglas desde una sola página, sin perder la cuenta de nada.</p>
   </div>
   <div class="mdbanner" id="hs-app" hidden><span>También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:</span><a class="btn primary" id="hs-app-dl" href="#">Descargar</a><a id="hs-app-otros" href="#" target="_blank" rel="noopener">Otros sistemas y versiones</a></div>
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
+  <div class="hoy" id="hs-hoy" hidden></div>
   <div class="vhead tools-h"><h2>Herramientas</h2><span class="pcsub">Para llevar la partida</span></div>
-  <div class="tools-grid">
-    <a class="tool" href="#combate"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg></span><span class="tn">Tracker de combate</span><span class="td">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span><span class="tstat" id="hs-combat"></span></a>
-    <a class="tool" href="#jugadores"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="tn">Gestión de jugadores</span><span class="td">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span><span class="tstat" id="hs-party"></span></a>
-    <a class="tool" href="#tablas"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg></span><span class="tn">Tablas aleatorias</span><span class="td">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span><span class="tstat" id="hs-tables"></span></a>
-    <a class="tool" href="#referencia"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></span><span class="tn">Referencia rápida</span><span class="td">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span><span class="tstat" id="hs-ref"></span></a>
-  </div>
+  <ol class="ix">
+    <li><a class="ixr" href="#combate"><span class="ixn">Tracker de combate</span><span class="ixs" id="hs-combat"></span><span class="ixd">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span></a></li>
+    <li><a class="ixr" href="#jugadores"><span class="ixn">Gestión de jugadores</span><span class="ixs" id="hs-party"></span><span class="ixd">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span></a></li>
+    <li><a class="ixr" href="#tablas"><span class="ixn">Tablas aleatorias</span><span class="ixs" id="hs-tables"></span><span class="ixd">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span></a></li>
+    <li><a class="ixr" href="#referencia"><span class="ixn">Referencia rápida</span><span class="ixs" id="hs-ref"></span><span class="ixd">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span></a></li>
+  </ol>
   <div class="vhead tools-h"><h2>Compendio</h2><span class="pcsub">Todo el contenido de tus módulos, cada cosa con su página</span></div>
-  <div class="tools-grid">
-    <a class="tool" href="#compendio/criaturas"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-claw"/></svg></span><span class="tn">Criaturas</span><span class="td">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span><span class="tstat" id="hs-best"></span></a>
-    <a class="tool" href="#compendio/conjuros"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-sparkle"/></svg></span><span class="tn">Conjuros</span><span class="td">Busca por nivel, clase, escuela, concentración o ritual.</span><span class="tstat" id="hs-spells"></span></a>
-    <a class="tool" href="#compendio/objetos"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg></span><span class="tn">Objetos, dotes y más</span><span class="td">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span><span class="tstat" id="hs-comp"></span></a>
-    <a class="tool" href="#modulos"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg></span><span class="tn">Módulos</span><span class="td">Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span><span class="tstat" id="hs-mods"></span></a>
-  </div>
+  <ol class="ix">
+    <li><a class="ixr" href="#compendio/criaturas"><span class="ixn">Criaturas</span><span class="ixs" id="hs-best"></span><span class="ixd">El bestiario del SRD en español y las tuyas, con filtros por tipo y VD.</span></a></li>
+    <li><a class="ixr" href="#compendio/conjuros"><span class="ixn">Conjuros</span><span class="ixs" id="hs-spells"></span><span class="ixd">Busca por nivel, clase, escuela, concentración o ritual.</span></a></li>
+    <li><a class="ixr" href="#compendio/objetos"><span class="ixn">Objetos, dotes y más</span><span class="ixs" id="hs-comp"></span><span class="ixd">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span></a></li>
+    <li><a class="ixr" href="#modulos"><span class="ixn">Módulos</span><span class="ixs" id="hs-mods"></span><span class="ixd">Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span></a></li>
+  </ol>
   <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
   <ol class="changelog" id="changelog-home"></ol>
   <p class="clmore"><a href="#cambios">Ver historial completo →</a></p>
@@ -2763,6 +2788,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.47 <span>21 nov 2026</span></h3><ul>
+      <li><b>Aspecto de papel y tinta por defecto</b>, también en la app de escritorio; el oscuro sigue en Preferencias.</li>
+      <li><b>Portada en forma de índice</b>, con el combate o la sesión en curso arriba. En escritorio, la cabecera solo sale en el combate y «Buscar» (Ctrl K) está en la barra lateral.</li>
+      <li>Estados vacíos más sobrios, rareza de los objetos con su color y otros detalles.</li>
+    </ul></li>
     <li><h3>v1.46 <span>21 nov 2026</span></h3><ul>
       <li><b>Invitaciones a la campaña</b>: el máster crea un código y el jugador lo canjea en «Unirme con un código»; la campaña aparece con el rol de jugador.</li>
       <li>Botón de descarga de la app de escritorio en Inicio (solo en la web).</li>
@@ -5054,7 +5084,7 @@ function renderTables(){
   $('#tb-count').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'';
   const item=tb=>`<button type="button" class="tbitem${tb.id===tbSel?' on':''}" data-act="tbsel" data-id="${esc(tb.id)}"><b>${esc(tb.n)}</b><span class="pcsub">d${tb.rows} · ${tb.cols.length} columna${tb.cols.length>1?'s':''}</span>${tb._mod?`<span class="pcsub">${ic('box')} ${esc(tb._mod)}</span>`:''}</button>`;
   $('#tb-list').innerHTML=(TABLES.map(item).join('')
-    ||'<p class="hint" style="display:block">Aún no tienes tablas.</p><button type="button" class="btn sm" data-act="tbexamples">Crear tablas de ejemplo</button>')
+    ||'<p class="hint" style="display:block">Aún no tienes tablas.</p><button type="button" class="btn primary" data-act="tbexamples">Crear tablas de ejemplo</button>')
     +(MODTB.length?`<p class="pcsub" style="margin:10px 0 2px">De módulos</p>${MODTB.map(item).join('')}`:'');
   const tb=curTable();
   if(!tb){$('#tb-main').innerHTML='<div class="empty">Crea una tabla con «+ Nueva tabla» o empieza con las de ejemplo.</div>';return;}
@@ -5219,7 +5249,7 @@ function compList(tab){
 }
 const cmTxt=v=>esc(String(v??''));
 const CM_COLS={
-  objetos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tipo',x=>cmTxt(x.t||OBJ_KIND[x.k]||'')],['Rareza',x=>cmTxt(x.r||'')],['Sint.',x=>x.s?'<span class="yes" title="Requiere sintonización">✓</span>':'<span class="no" aria-label="No">–</span>','c'],['Precio',x=>cmTxt(x.precio||'')]],
+  objetos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tipo',x=>cmTxt(x.t||OBJ_KIND[x.k]||'')],['Rareza',x=>{const f=fold(x.r),k=/muy rar|very rare/.test(f)?'vr':/infrecuente|uncommon/.test(f)?'u':/legendar/.test(f)?'l':/artefact|artifact/.test(f)?'a':/rar|rare/.test(f)?'r':/comun|common/.test(f)?'c':'';return k?'<span class="rar rar-'+k+'">'+cmTxt(x.r)+'</span>':cmTxt(x.r||'');}],['Sint.',x=>x.s?'<span class="yes" title="Requiere sintonización">✓</span>':'<span class="no" aria-label="No">–</span>','c'],['Precio',x=>cmTxt(x.precio||'')]],
   dotes:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Requisitos',x=>cmTxt(x.req||'—')]],
   clases:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Dado de golpe',x=>cmTxt((x.info?.['Dado de puntos de golpe']||x.dado||'').replace(/ (por nivel|per ).*/i,''))],['Característica principal',x=>cmTxt(x.info?.['Característica principal']||x.principal||'')],['Salvaciones',x=>cmTxt(x.info?.['Competencias en tiradas de salvación']||x.salvaciones||'')],['Subclases',x=>cmTxt((x.sub||[]).join(', '))]],
   especies:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tamaño',x=>cmTxt(String(x.tam||'').replace(/\s*\(.*?\)/g,''))],['Velocidad',x=>cmTxt(x.vel||'')]],
@@ -5471,6 +5501,14 @@ function showView(){
 function renderHome(){
   const cl=$('#changelog-home');if(!cl.children.length)cl.append(...[...$('#changelog-full').children].slice(0,3).map(li=>li.cloneNode(true)));
   const n=state.creatures.length;
+  {const h=$('#hs-hoy');let html='';
+   try{
+     if(state.active){const c=state.creatures[state.turnIdx];html='<b>'+esc(T('Combate en curso'))+'</b><span class="pcsub noi18n">'+esc(T('Ronda')+' '+state.round+(c?' · '+T('turno de')+' '+c.name:''))+'</span><a class="btn primary" href="#combate">'+esc(T('Seguir el combate'))+'</a>';}
+     else if(sesUsa()){const a=Notas.activa(CP),hoy=a?null:sesHoy();
+       if(a)html='<b>'+esc(T('Sesión en curso'))+'</b><span class="pcsub noi18n">'+esc(cpName(a))+'</span><a class="btn primary" href="'+esc(Notas.href(a))+'">'+esc(T('Abrir la sesión'))+'</a>';
+       else if(hoy)html='<b>'+esc(T('Hoy toca'))+'</b><span class="pcsub noi18n">'+esc(cpName(hoy))+'</span><button type="button" class="btn primary" data-act="seshoy">'+esc(T('Iniciar la de hoy'))+'</button>';}
+   }catch{}
+   h.innerHTML=html;h.hidden=!html;}
   $('#hs-combat').textContent=state.active?`En curso · ronda ${state.round} · ${n} criaturas`:(n?`${n} criaturas preparadas`:'Sin combate preparado');
   $('#hs-party').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''}`:'Sin personajes';
   $('#hs-best').textContent=allBest().length?`${allBest().length} criaturas${MY.length?` · ${MY.length} tuyas`:''}`:'Sin criaturas activas';
@@ -6228,7 +6266,7 @@ function cpRenderList(){
   cpRenderCal();
   const base=cpQ?Notas.buscar(CP,cpQ):CP.filter(i=>i.tipo===cpTipo);
   const rows=cpSorted(base);
-  $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}" href="${esc(Notas.href(i))}"><span class="nm">${esc(cpName(i))}</span><small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small>${i.visibilidad!=='dm'?`<span class="pub" title="${esc(i.visibilidad==='enlace'?T('Lo verá cualquiera con el enlace'):T('Lo verán los jugadores'))}">${ic(i.visibilidad==='enlace'?'chain':'eye')}</span>`:''}</a></li>`).join(''):`<li class="empty">${cpQ?T('Nada coincide con la búsqueda.'):T('Aún no hay nada aquí. Pulsa «+ Nuevo».')}</li>`;
+  $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}" href="${esc(Notas.href(i))}"><span class="nm">${esc(cpName(i))}</span><small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small>${i.visibilidad!=='dm'?`<span class="pub" title="${esc(i.visibilidad==='enlace'?T('Lo verá cualquiera con el enlace'):T('Lo verán los jugadores'))}">${ic(i.visibilidad==='enlace'?'chain':'eye')}</span>`:''}</a></li>`).join(''):(cpQ?`<li class="empty">${T('Nada coincide con la búsqueda.')}</li>`:'');
 }
 function cpField(i,[k,lbl,kind]){
   const v=i.campos[k]||'',id='cpf-'+k;
@@ -6265,7 +6303,7 @@ function cpCreature(i){
 }
 function cpRenderDet(){
   const el=$('#cp-det'),it=cpSel&&cpGet(cpSel);
-  if(!it){el.innerHTML=`<div class="empty">${T('Elige algo de la lista o crea uno nuevo.')}</div>`;return;}
+  if(!it){const vacio=!cpQ&&!CP.some(i=>i.tipo===cpTipo);el.innerHTML=`<div class="empty">${T(vacio?'Aún no hay nada aquí. Pulsa «+ Nuevo».':'Elige algo de la lista o crea uno nuevo.')}</div>`;return;}
   const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('');
   const dl=['sesion','npc','lugar'].map(t=>`<datalist id="cp-dl-${t}">${CP.filter(x=>x.tipo===t).map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`).join('');
   const back=Notas.retroenlaces(CP,it);
@@ -6682,7 +6720,7 @@ function cpRenderCal(){
   const el=$('#cp-cal');if(!el)return;const on=cpTipo==='sesion'&&!cpQ;el.hidden=!on;if(!on)return;
   const hoy=Notas.fechaDe(Date.now());if(!/^\d{4}-\d{2}$/.test(cpCalMes))cpCalMes=hoy.slice(0,7);
   const [y,m]=cpCalMes.split('-').map(Number),cel=Notas.calendario(CP,y,m),st=Notas.estadisticas(CP);
-  const mes=new Date(y,m-1,1).toLocaleDateString(LANG,{month:'long',year:'numeric'});
+  const mes0=new Date(y,m-1,1).toLocaleDateString(LANG,{month:'long',year:'numeric'}),mes=mes0.charAt(0).toUpperCase()+mes0.slice(1);
   const dsem=[0,1,2,3,4,5,6].map(k=>new Date(2024,0,1+k).toLocaleDateString(LANG,{weekday:'narrow'}));
   el.innerHTML='<div class="cph"><button type="button" class="btn sm ghost" data-act="cpcalmes" data-d="-1" aria-label="'+esc(T('Mes anterior'))+'">‹</button><b class="noi18n">'+esc(mes)+'</b><button type="button" class="btn sm ghost" data-act="cpcalmes" data-d="1" aria-label="'+esc(T('Mes siguiente'))+'">›</button><button type="button" class="btn sm" data-act="cpcalmes" data-d="0">'+esc(T('Hoy'))+'</button></div>'
    +'<div class="cpg">'+dsem.map(d=>'<span class="noi18n">'+esc(d)+'</span>').join('')

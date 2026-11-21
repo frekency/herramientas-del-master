@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.47.0] - 2026-11-21
+### Cambiado
+- **Aspecto de papel y tinta por defecto**, también en la app de escritorio (antes era oscuro con ámbar). El oscuro sigue en Preferencias → Estilo.
+- **Portada**: sin tarjetas. Un índice como el de un manual, con puntos conductores y el estado de cada herramienta, y arriba, si lo hay, el combate o la sesión en curso o la de hoy.
+- **App de escritorio**: la cabecera solo aparece en el combate; en las demás pantallas manda su propio título. «Buscar» (Ctrl K) pasa a la barra lateral, que ahora nombra sus botones de abajo (Audio, Bloquear, Preferencias). Campaña, vista y estilo se cambian desde Preferencias.
+- Estados vacíos más sobrios y con la acción principal a la vista; el mes del calendario se escribe «Noviembre de 2026»; la rareza de los objetos lleva su color; los enlaces con forma de botón ya no salen violetas.
+
 ## [1.46.0] - 2026-11-21
 ### Añadido
 - **Invitaciones a la campaña**: el máster crea un código en «Campañas» (caduca a los 7 días, sirve para 10 personas) y el jugador lo escribe en «Unirme con un código». La campaña aparece en su dispositivo con el rol de jugador. Las campañas de tu cuenta donde eres jugador también se traen solas al iniciar sesión.

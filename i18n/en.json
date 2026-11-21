@@ -1421,5 +1421,9 @@
   "Unirme con un código": "Join with a code",
   "¿Quién entra al combate?": "Who joins the combat?",
   "Los que no marques podrás añadirlos más adelante, desde Jugadores o desde el propio combate.": "You can add the ones you leave unchecked later, from Players or from the combat itself.",
-  "Lanzar el encuentro": "Launch the encounter"
+  "Lanzar el encuentro": "Launch the encounter",
+  "Combate en curso": "Combat in progress",
+  "turno de": "turn of",
+  "Seguir el combate": "Continue the combat",
+  "Abrir la sesión": "Open the session"
 }
