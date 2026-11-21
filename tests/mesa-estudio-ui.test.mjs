@@ -92,7 +92,7 @@ const TAIL=`<script>
     ok('las plantillas sobreviven al almacenamiento',JSON.parse(Store.get('mesa-plantillas-v1')).length===1);
     ok('el borrador sobrevive al almacenamiento',JSON.parse(Store.get('mesa-estudio-v1')).capas.length>=3);
     // ejemplos
-    q('#ms-pl').value='e:1';window.confirm=()=>true;await click('[data-ms="plcargar"]');
+    q('#ms-pl').value='e:1';await click('[data-ms="plcargar"]');await click('dialog.ask button.primary');await wait(200);
     ok('un ejemplo sustituye la escena: imagen y orden de iniciativa',MS.capas.length===2&&MS.capas[1].tipo==='iniciativa');
     // datos rotos en el almacenamiento no rompen nada
     Store.set('mesa-estudio-v1',JSON.stringify({nombre:7,fondo:'url(x)',capas:[{tipo:'bomba'},{tipo:'texto',x:'abc',w:-5,t:{a:1}},null]}));

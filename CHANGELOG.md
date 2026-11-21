@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.62.0] - 2026-11-21
+### Cambiado
+- **Ventanas nativas**: los 14 cuadros de diálogo (cuenta, bestiario, copias, sesiones, preferencias…), el bloqueo de pantalla, el visor de documentos y la vista previa de impresión usan el elemento `<dialog>` del navegador: la página de detrás queda inerte, el foco no se escapa, Esc cierra, y el aviso («toast») y la confirmación flotante quedan siempre por encima. Se eliminan los parches de foco hechos a mano.
+- Las confirmaciones y preguntas (`confirm`/`prompt` del navegador) son ahora ventanas propias con el mismo aspecto que la app, con la opción segura seleccionada por defecto.
+- Las alturas de pantalla completa usan `dvh`, para que la barra del navegador del móvil no tape la parte baja; el desplazamiento no se «escapa» a la página de detrás.
+
 ## [1.61.1] - 2026-11-21
 ### Cambiado
 - **Fichas de la campaña más claras** (PNJ, lugares, tiendas, misiones, puzzles…): los datos cortos van en una fila de rejilla con etiquetas breves (las aclaraciones pasan a ser el texto de ayuda dentro del campo) y los textos largos, debajo y a ancho completo. Lo que es solo del máster (secreto, solución) se distingue con un recuadro suave y un candado.

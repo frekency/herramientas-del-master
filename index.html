@@ -983,6 +983,54 @@ const espera=fallos=>fallos<3?0:Math.min(300,5*2**(fallos-3));   // segundos de 
 return {aj,MINUTOS,validar,crear,verificar,tocaBloquear,espera};
 })();
 </script>
+<script id="capa">
+/* Capas flotantes nativas: los diálogos son <dialog> abiertos con showModal() (página inerte, foco contenido, capa superior, Esc) y la confirmación
+   flotante es un popover manual. El resto del código sigue mandando con la propiedad «hidden»; aquí se traduce a abrir y cerrar de verdad. */
+window.Capa=(()=>{
+  const abre=el=>{try{if(el instanceof HTMLDialogElement){if(!el.open&&el.isConnected)el.showModal();}else if(el.matches&&el.matches('[popover]')&&el.isConnected&&!el.matches(':popover-open'))el.showPopover();}catch{}};
+  const cierra=el=>{try{if(el instanceof HTMLDialogElement){if(el.open)el.close();}else if(el.matches&&el.matches('[popover]')&&el.matches(':popover-open'))el.hidePopover();}catch{}};
+  const sync=el=>el.hidden?cierra(el):abre(el);
+  const obs=new MutationObserver(ms=>{for(const m of ms)sync(m.target);});
+  function une(el){
+    if(!el||el.__capa)return;el.__capa=1;
+    const d=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+    Object.defineProperty(el,'hidden',{configurable:true,get(){return d.get.call(this);},set(v){d.set.call(this,v);sync(this);}});   // síncrono: lo que sigue a «hidden=false» ya ve el diálogo abierto
+    obs.observe(el,{attributes:true,attributeFilter:['hidden']});
+    if(el instanceof HTMLDialogElement){
+      el.addEventListener('cancel',e=>{   // Esc o gesto de atrás
+        if(el.id==='lockscr'||(el.id==='acctmodal'&&typeof acBloqueado==='function'&&acBloqueado())){e.preventDefault();return;}   // ni el bloqueo ni el acceso obligatorio se saltan con Esc
+        queueMicrotask(()=>{if(!e.defaultPrevented&&!el.hidden){el.hidden=true;if(typeof syncModalOpen==='function')syncModalOpen();}});   // el estado queda coherente sin esperar al evento «close»
+      });
+      el.addEventListener('close',()=>{if(el.id==='lockscr'&&!el.hidden){abre(el);return;}if(!el.hidden){el.hidden=true;if(typeof syncModalOpen==='function')syncModalOpen();}});
+    }
+  }
+  function init(){document.querySelectorAll('dialog.modal,dialog#lockscr,#cpop').forEach(e=>{une(e);sync(e);});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  return {une,sync,abre,cierra};
+})();
+/* Preguntas sencillas con el mismo aspecto que el resto de la app: Dlg.si('¿Seguro?') → Promise<boolean>; Dlg.texto('¿Por qué?') → Promise<string|null>. */
+window.Dlg=(()=>{
+  function ask(msg,o){
+    o=o||{};
+    return new Promise(res=>{
+      const d=document.createElement('dialog');d.className='ask';d.setAttribute('aria-labelledby','ask-t');
+      const f=document.createElement('form'),p=document.createElement('p');p.id='ask-t';p.className='askt';p.textContent=msg;f.append(p);
+      let inp=null;if(o.texto){inp=document.createElement('input');inp.type='text';inp.className='askin';inp.maxLength=500;inp.autocomplete='off';inp.setAttribute('aria-labelledby','ask-t');f.append(inp);}
+      const row=document.createElement('div');row.className='inline askrow';
+      const no=document.createElement('button');no.type='button';no.className='btn ghost';no.textContent=o.cancelar||'Cancelar';
+      const si=document.createElement('button');si.type='submit';si.className='btn '+(o.peligro?'danger':'primary');si.textContent=o.aceptar||'Aceptar';
+      if(!inp)no.autofocus=true;else inp.autofocus=true;   // en una confirmación, el foco empieza en la opción segura
+      row.append(no,si);f.append(row);d.append(f);
+      let hecho=false;const fin=v=>{if(hecho)return;hecho=true;res(inp?(v?inp.value:null):!!v);try{d.close();}catch{}d.remove();};
+      no.addEventListener('click',()=>fin(false));
+      f.addEventListener('submit',e=>{e.preventDefault();fin(true);});
+      d.addEventListener('cancel',()=>fin(false));d.addEventListener('close',()=>fin(false));
+      document.body.append(d);try{d.showModal();}catch{fin(false);}
+    });
+  }
+  return {si:(m,o)=>ask(m,o),texto:(m,o)=>ask(m,{...o,texto:true})};
+})();
+</script>
 <script id="notas-core">
 /* Notas de campaña: modelo, Markdown seguro y enlaces [[así]]. Sin DOM ni almacenamiento: se prueba aparte. */
 window.Notas=(()=>{
@@ -1391,6 +1439,16 @@ html.gate-web:not(.con-sesion) #acctmodal [data-pane="in"] .inline{justify-conte
 @media (prefers-reduced-motion:reduce){html.gate-web:not(.con-sesion) #acctmodal::before,html.gate-web:not(.con-sesion) #acctmodal::after,html.gate-web:not(.con-sesion) #acctmodal .mbox{animation:none}}
 html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #acctmodal [data-pane="in"]>p.pcsub,html.gate-web #acctmodal [data-pane="in"]>p.hint{display:none}
 .modal{position:fixed;inset:0;z-index:30;background:rgb(10 12 16/.55);display:flex;align-items:flex-start;justify-content:center;padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));overflow:auto}
+dialog.modal,dialog.cpzoom,dialog.prtprev,dialog#lockscr{margin:0;max-width:none;max-height:none;width:auto;height:auto;border:0;color:inherit}
+dialog:not([open]){display:none}
+dialog.ask{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);padding:18px;width:min(440px,calc(100% - 24px));margin:auto}
+dialog.ask::backdrop{background:rgb(10 12 16/.55)}
+.askt{margin:0 0 14px;white-space:pre-wrap;line-height:1.4}
+.askin{width:100%;box-sizing:border-box;font-size:16px;padding:10px;margin:0 0 14px}
+.askrow{justify-content:flex-end;gap:8px}
+.askrow .btn{min-height:44px;padding-inline:16px}
+dialog:modal{overscroll-behavior:contain}
+dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:contain}
 .mbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);width:min(1100px,100%);display:flex;flex-direction:column;max-height:100%;min-height:0}
 .mhead{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
 .mhead h2{font-size:20px}
@@ -1400,7 +1458,7 @@ html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #ac
 .bfilters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .bfilters input,.bfilters select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-width:0}
 .bfilters input{flex:1 1 160px}
-.blist{list-style:none;margin:0;padding:0;max-height:60vh;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.blist{list-style:none;margin:0;padding:0;max-height:60dvh;overflow:auto;border:1px solid var(--line);border-radius:8px}
 .blist li button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;width:100%;text-align:left;border:none;border-bottom:1px solid var(--line);background:none;padding:7px 10px;color:var(--fg)}
 .blist li button:hover{background:var(--surface-2)}
 .blist li button.on{background:color-mix(in srgb,var(--accent) 18%,var(--surface))}
@@ -1421,7 +1479,7 @@ html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #ac
 .esec{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
 .mfoot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 14px;border-top:1px solid var(--line)}
 
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;box-shadow:var(--shadow);font-weight:500;transition:.2s;pointer-events:none;max-width:calc(100% - 32px);z-index:40}
+.toast{inset:auto;margin:0;border:0;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;box-shadow:var(--shadow);font-weight:500;transition:.2s;pointer-events:none;max-width:calc(100% - 32px);z-index:40}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ===== grupo, encuentros, conjuros y páginas ===== */
 .txt{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-width:0}
@@ -2183,7 +2241,7 @@ html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #ac
 .esact{margin-top:6px;flex-wrap:wrap}
 @media (prefers-reduced-motion:no-preference){.endsum{animation:esin .35s cubic-bezier(.2,.8,.2,1)}@keyframes esin{from{opacity:0;transform:translateY(-6px)}}}
 /* ventanita de confirmación */
-.cpop{position:fixed;z-index:60;width:min(300px,calc(100vw - 24px));background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgb(0 0 0/.35);padding:12px 14px;display:grid;gap:10px}
+.cpop{inset:auto;margin:0;position:fixed;z-index:60;width:min(300px,calc(100vw - 24px));background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgb(0 0 0/.35);padding:12px 14px;display:grid;gap:10px}
 .cpop[hidden]{display:none}
 .cpop .cq{margin:0;font-size:15px;line-height:1.35}
 .cpop .inline{justify-content:flex-end;gap:8px}
@@ -2542,7 +2600,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-bar input[type=color],.ms-insp input[type=color]{width:44px;height:30px;padding:2px;border:1px solid var(--line);background:transparent;cursor:pointer}
 .ms-sep{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
 .ms-main{display:grid;grid-template-columns:220px minmax(0,1fr) 260px;gap:12px;align-items:start}
-.ms-lib,.ms-insp{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg));max-height:calc(100vh - 190px);overflow:auto}
+.ms-lib,.ms-insp{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg));max-height:calc(100dvh - 190px);overflow:auto}
 .ms-lib h3,.ms-insp h3{margin:4px 0 0;font:600 12px/1.2 var(--f-body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,inherit)}
 .ms-add{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ms-add .btn{justify-content:flex-start;text-align:left}
 .ms-docs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
@@ -2615,7 +2673,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cprow input[type=checkbox]{flex:none;width:18px;height:18px;padding:0}
 .cptext{padding:10px 12px}
 .cptitle{font-family:var(--f-display)}
-.cpul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:70vh;overflow:auto}
+.cpul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:70dvh;overflow:auto}
 .cpit{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:9px 6px 10px;border:0;border-bottom:1px dotted color-mix(in srgb,var(--fg) 40%,transparent);border-radius:0;background:transparent;color:var(--fg);text-decoration:none}
 .cpit:hover .nm{color:var(--accent)}.cpit.on{background:var(--surface,var(--bg));border:1px solid var(--line);border-left:1px solid var(--line);border-radius:6px;box-shadow:inset 0 -3px 0 var(--accent);padding:9px 10px 12px}
 .cpit .nm{font-family:var(--f-display);font-size:17px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cpit small{color:var(--muted);flex-basis:100%;font-size:12px}.cpit small:empty{display:none}
@@ -2650,7 +2708,7 @@ a.wl.auto{text-decoration-style:dotted}
 .mesapanel h3{margin:0;font-size:15px}
 .mpstate{margin:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}.mpstate b{color:var(--fg);font-size:15px}
 .mpcu{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.mpcu li{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}.mpcun{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.mesapanel{max-height:calc(100vh - 24px);overflow:auto}
+.mesapanel{max-height:calc(100dvh - 24px);overflow:auto}
 .mpbtns{display:flex;flex-wrap:wrap;gap:8px}
 .mesapanel .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
 .cpwrap{position:relative}
@@ -2812,7 +2870,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.61</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.62</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2992,6 +3050,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.62 <span>21 nov 2026</span></h3><ul>
+      <li><b>Ventanas nativas</b>: diálogos, bloqueo y avisos con el elemento estándar del navegador (foco, Esc y capa superior), y confirmaciones con el aspecto de la app en vez de los cuadros del navegador.</li>
+    </ul></li>
     <li><h3>v1.61 <span>21 nov 2026</span></h3><ul>
       <li><b>Puzzles y juegos</b>: diseña eventos (juegos de taberna, puzzles, combinaciones) con reglas, solución, pistas y recompensa. Los jugadores ven solo las pistas dadas y, si quieres, pueden probar la respuesta desde su móvil.</li>
     </ul></li>
@@ -3379,8 +3440,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 <footer class="legal" id="legal">Esta obra incluye material procedente del documento de referencia del sistema 5.2.1 («SRD 5.2.1») de Wizards of the Coast LLC, disponible en <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener">https://www.dndbeyond.com/srd</a>. La licencia sobre el SRD 5.2.1 se concede de acuerdo con la licencia internacional de atribución/reconocimiento 4.0 de Creative Commons, disponible en <a href="https://creativecommons.org/licenses/by/4.0/legalcode" target="_blank" rel="noopener">https://creativecommons.org/licenses/by/4.0/legalcode</a>. Herramienta no oficial, sin relación con Wizards of the Coast.</footer>
 
 <!-- Bestiario -->
-<div class="modal" id="bestmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="best-h">
+<dialog class="modal" id="bestmodal" hidden aria-labelledby="best-h">
+  <div class="mbox">
     <div class="mhead">
       <h2 id="best-h">Buscador</h2>
       <div class="inline">
@@ -3405,11 +3466,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
 <!-- Editor -->
-<div class="modal" id="editmodal" hidden>
-  <form class="mbox" id="editform" role="dialog" aria-modal="true" aria-labelledby="ed-h" autocomplete="off">
+<dialog class="modal" id="editmodal" hidden aria-labelledby="ed-h">
+  <form class="mbox" id="editform" autocomplete="off">
     <div class="mhead"><h2 id="ed-h">Editar criatura</h2><button type="button" class="btn ghost" data-act="closeedit" aria-label="Cerrar">✕</button></div>
     <div class="mbody">
       <div class="egrid">
@@ -3449,12 +3510,12 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     </div>
     <div class="mfoot"><button type="button" class="btn" data-act="closeedit">Cancelar</button><button class="btn primary" type="submit">Guardar en el bestiario</button></div>
   </form>
-</div>
+</dialog>
 <datalist id="types"></datalist>
 
 <!-- Personaje -->
-<div class="modal" id="lanzmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="lanz-h" style="width:min(460px,100%)">
+<dialog class="modal" id="lanzmodal" hidden aria-labelledby="lanz-h">
+  <div class="mbox" style="width:min(460px,100%)">
     <div class="mhead"><h2 id="lanz-h">¿Quién entra al combate?</h2><button type="button" class="btn ghost" data-act="lanzclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:12px">
       <div id="lanz-list" class="noi18n" style="display:grid;gap:6px"></div>
@@ -3462,10 +3523,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <div class="inline"><button type="button" class="btn primary" data-act="lanzgo">Lanzar el encuentro</button><button type="button" class="btn" data-act="lanzclose">Cancelar</button></div>
     </div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="pcmodal" hidden>
-  <form class="mbox" id="pcform" role="dialog" aria-modal="true" aria-labelledby="pc-h" autocomplete="off">
+<dialog class="modal" id="pcmodal" hidden aria-labelledby="pc-h">
+  <form class="mbox" id="pcform" autocomplete="off">
     <div class="mhead"><h2 id="pc-h">Personaje</h2><button type="button" class="btn ghost" data-act="closepc" aria-label="Cerrar">✕</button></div>
     <div class="mbody">
       <div class="egrid">
@@ -3512,12 +3573,12 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     </div>
     <div class="mfoot"><button type="button" class="btn" data-act="closepc">Cancelar</button><button class="btn primary" type="submit">Guardar personaje</button></div>
   </form>
-</div>
+</dialog>
 <datalist id="spells-dl"></datalist><datalist id="cm-obj-dl"></datalist><datalist id="cm-esp-dl"></datalist><datalist id="cm-tf-dl"></datalist>
 
 <!-- Copias -->
-<div class="modal" id="acctmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="ac-h" style="width:min(440px,100%)">
+<dialog class="modal" id="acctmodal" hidden aria-labelledby="ac-h">
+  <div class="mbox" style="width:min(440px,100%)">
     <div class="mhead"><h2 id="ac-h">Tu cuenta</h2><button class="btn ghost" data-act="acclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody acbody">
       <form class="acpane" data-pane="in">
@@ -3571,10 +3632,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <p class="acmsg" id="ac-msg" aria-live="polite"></p>
     </div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="itmodal" hidden>
-  <form class="mbox" id="itform" role="dialog" aria-modal="true" aria-labelledby="it-h" autocomplete="off" style="width:min(820px,100%)">
+<dialog class="modal" id="itmodal" hidden aria-labelledby="it-h">
+  <form class="mbox" id="itform" autocomplete="off" style="width:min(820px,100%)">
     <div class="mhead"><h2 id="it-h"></h2><button type="button" class="btn ghost" data-act="itclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody">
       <div class="egrid"><label class="f w2">Nombre<input id="it-n" required></label><span id="it-fields" style="display:contents"></span></div>
@@ -3583,17 +3644,17 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     </div>
     <div class="mfoot"><button type="button" class="btn" data-act="itclose">Cancelar</button><button class="btn primary" type="submit">Guardar en Mi contenido</button></div>
   </form>
-</div>
+</dialog>
 
-<div class="modal" id="qrmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="qr-h" style="width:min(720px,100%)">
+<dialog class="modal" id="qrmodal" hidden aria-labelledby="qr-h">
+  <div class="mbox" style="width:min(720px,100%)">
     <div class="mhead"><h2 id="qr-h"></h2><button class="btn ghost" data-act="qrclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" id="qr-mbody"></div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="prefmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="pf-h" style="width:min(440px,100%)">
+<dialog class="modal" id="prefmodal" hidden aria-labelledby="pf-h">
+  <div class="mbox" style="width:min(440px,100%)">
     <div class="mhead"><h2 id="pf-h">Preferencias</h2><button class="btn ghost" data-act="pfclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:12px">
       <label class="f">Distancias<select id="pf-dist"><option value="all">Todas a la vez (metros · pies · casillas)</option><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
@@ -3621,30 +3682,30 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
-<div id="lockscr" hidden role="dialog" aria-modal="true" aria-labelledby="lk-h">
+<dialog id="lockscr" hidden aria-labelledby="lk-h">
   <div class="lkbox"><svg class="ic lkic" aria-hidden="true"><use href="#i-lock"/></svg><h2 id="lk-h">Pantalla bloqueada</h2><p id="lk-msg" class="noi18n"></p>
     <form id="lk-form" autocomplete="off"><input id="lk-pin" type="password" inputmode="numeric" maxlength="64" autocomplete="off" aria-label="PIN"><button type="submit" class="btn primary">Desbloquear</button></form>
     <p id="lk-err" role="alert"></p></div>
-</div>
+</dialog>
 
-<div class="modal" id="sesmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="ses-h" style="width:min(520px,100%)">
+<dialog class="modal" id="sesmodal" hidden aria-labelledby="ses-h">
+  <div class="mbox" style="width:min(520px,100%)">
     <div class="mhead"><h2 id="ses-h"></h2><button type="button" class="btn ghost" data-act="sesclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" id="ses-body" style="display:grid;gap:12px"></div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="pjmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="pjm-h" style="width:min(560px,100%)">
+<dialog class="modal" id="pjmodal" hidden aria-labelledby="pjm-h">
+  <div class="mbox" style="width:min(560px,100%)">
     <div class="mhead"><h2 id="pjm-h"></h2><button type="button" class="btn ghost" data-act="pjclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" id="pjm-body" style="display:grid;gap:12px"></div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="campmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="camp-h" style="width:min(520px,100%)">
+<dialog class="modal" id="campmodal" hidden aria-labelledby="camp-h">
+  <div class="mbox" style="width:min(520px,100%)">
     <div class="mhead"><h2 id="camp-h">Campañas</h2><button class="btn ghost" data-act="campclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:12px">
       <p class="hint" style="display:block;margin:0">Cada campaña tiene su propio combate, grupo y encuentros. El bestiario, las tablas y los módulos son tuyos y valen para todas.</p>
@@ -3659,10 +3720,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
     </div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="delmodal" hidden>
-  <div class="mbox" role="alertdialog" aria-modal="true" aria-labelledby="del-h" style="width:min(460px,100%)">
+<dialog class="modal" id="delmodal" role="alertdialog" hidden aria-labelledby="del-h">
+  <div class="mbox" style="width:min(460px,100%)">
     <div class="mhead"><h2 id="del-h">Borrar campaña</h2><button class="btn ghost" data-act="delcancel" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:12px">
       <p style="margin:0">Vas a borrar la campaña <b id="del-nom" class="noi18n"></b>.</p>
@@ -3671,10 +3732,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <div class="inline"><button type="button" class="btn" data-act="delcancel">Cancelar</button><button type="button" class="btn danger" id="del-ok" data-act="delok" disabled>Borrar para siempre</button></div>
     </div>
   </div>
-</div>
+</dialog>
 
-<div class="modal" id="audmodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="aud-h" style="width:min(560px,100%)">
+<dialog class="modal" id="audmodal" hidden aria-labelledby="aud-h">
+  <div class="mbox" style="width:min(560px,100%)">
     <div class="mhead"><h2 id="aud-h">Enlaces de audio</h2><button class="btn ghost" data-act="audclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:10px">
       <p class="hint">Guarda aquí los enlaces de tu música y ambientes (YouTube, Spotify, una web…). Se abren en una pestaña aparte o en tu navegador, y la música suena allí; esta herramienta no la reproduce. Se guardan con la campaña.</p>
@@ -3682,9 +3743,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <div class="inline"><input id="aud-nom" class="inp" maxlength="60" placeholder="Nombre (taberna, combate…)" aria-label="Nombre"><input id="aud-url" class="inp" maxlength="500" placeholder="https://…" aria-label="Enlace" inputmode="url"><button type="button" class="btn primary" data-act="audadd">Guardar</button></div>
     </div>
   </div>
-</div>
-<div class="modal" id="iomodal" hidden>
-  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="io-h" style="width:min(640px,100%)">
+</dialog>
+<dialog class="modal" id="iomodal" hidden aria-labelledby="io-h">
+  <div class="mbox" style="width:min(640px,100%)">
     <div class="mhead"><h2 id="io-h">Copias de seguridad</h2><button class="btn ghost" data-act="closeio" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:10px">
       <h3>Copia completa</h3>
@@ -3708,10 +3769,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       </div>
     </div>
   </div>
-</div>
-<div class="toast" id="toast" role="status"></div>
+</dialog>
+<div class="toast" id="toast" popover="manual" role="status"></div>
 <div class="srl" id="turnlive" aria-live="polite"></div>
-<div class="cpop" id="cpop" role="alertdialog" aria-labelledby="cpop-q" hidden><p class="cq" id="cpop-q"><b>¿Seguro?</b> <span></span></p><div class="inline"><button type="button" class="btn" data-cp="no">Cancelar</button><button type="button" class="btn danger" data-cp="yes">Sí</button></div></div>
+<div class="cpop" id="cpop" popover="manual" role="alertdialog" aria-labelledby="cpop-q" hidden><p class="cq" id="cpop-q"><b>¿Seguro?</b> <span></span></p><div class="inline"><button type="button" class="btn" data-cp="no">Cancelar</button><button type="button" class="btn danger" data-cp="yes">Sí</button></div></div>
 
 <script>
 /* ---------- idioma ----------
@@ -3973,7 +4034,8 @@ function commit(fn,lbl=''){undoStack.push(JSON.stringify(state));undoLbls.push(l
   // sin etiqueta propia, «Deshecho» cuenta lo primero que la acción apuntó en el registro (p. ej. «Goblin 1 recibe 5 de daño»)
   if(!lbl){const i=state.log.indexOf(top),nw=i<0?state.log:state.log.slice(0,i);if(nw.length)undoLbls[undoLbls.length-1]=nw[nw.length-1].msg;}
   fixOrder();save();render();}
-let toastT;function toast(msg,ms=3200,canUndo=false){const t=$('#toast');t.textContent=msg;t.classList.toggle('act',canUndo);
+let toastT;function toast(msg,ms=3200,canUndo=false){const t=$('#toast');t.textContent=msg;try{t.hidePopover();t.showPopover();}catch{}   // vuelve a subirlo a la capa superior: si hay un diálogo abierto, el aviso queda por encima
+  t.classList.toggle('act',canUndo);
   if(canUndo){const b=document.createElement('button');b.type='button';b.className='tundo';b.dataset.act='toastundo';b.textContent=T('Deshacer');t.append(' ',b);ms=Math.max(ms,6000);}
   t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show','act'),ms);}
 function hpFrom(m){if(state.hpRoll&&m.hd){const r=roll(m.hd);if(r)return Math.max(1,r.v);}return m.hp||1;}
@@ -4536,14 +4598,15 @@ function msAct(a,b){
   else if(a==='llenar'&&c){c.x=0;c.y=0;c.w=100;c.h=100;msGeo(c);msCambio();}
   else if(a==='quitaimg'&&c){c.nid='';msOv();msInsp();msCambio();}
   else if(a==='confondo'&&c){c.fondo=b.checked?'#000000':'';msInsp();msCambio();}
-  else if(a==='nueva'){if(MS.capas.length&&!confirm(T('¿Vaciar la escena actual? Las plantillas guardadas no se tocan.')))return;MS.nombre='';MS.fondo='#0b0a09';MS.fundido=400;MS.capas=[];MS.sel=null;msBarra();msOv();msInsp();msCambio();}
+  else if(a==='nueva'){const vaciar=()=>{MS.nombre='';MS.fondo='#0b0a09';MS.fundido=400;MS.capas=[];MS.sel=null;msBarra();msOv();msInsp();msCambio();};if(!MS.capas.length)vaciar();else Dlg.si(T('¿Vaciar la escena actual? Las plantillas guardadas no se tocan.'),{peligro:true,aceptar:T('Vaciar')}).then(ok=>{if(ok)vaciar();});}
   else if(a==='plcargar'){
     const v=($('#ms-pl')||{}).value||'';let e=null;
     if(v.startsWith('u:')){const p=MS.pl.find(x=>x.id===v.slice(2));e=p&&p.esc;if(p&&!e.nombre)e.nombre=p.nombre;}
     else if(v.startsWith('e:')){const x=msEj()[+v.slice(2)];e=x&&{nombre:x[0],...x[1]};}
     if(!e)return;
-    if(MS.capas.length&&!confirm(T('Cargar la plantilla sustituye la escena que tienes preparada. ¿Seguir?')))return;
-    Object.assign(MS,msNormEsc(JSON.parse(JSON.stringify(e))));MS.sel=null;msBarra();msOv();msInsp();msCambio();toast(T('Plantilla cargada'));
+    const cargar=()=>{Object.assign(MS,msNormEsc(JSON.parse(JSON.stringify(e))));MS.sel=null;msBarra();msOv();msInsp();msCambio();toast(T('Plantilla cargada'));};
+    if(!MS.capas.length)return cargar();
+    Dlg.si(T('Cargar la plantilla sustituye la escena que tienes preparada. ¿Seguir?'),{aceptar:T('Cargar')}).then(ok=>{if(ok)cargar();});return;
   }
   else if(a==='plguardar'){
     const nombre=MS.nombre.trim();if(!nombre){toast(T('Ponle un nombre a la escena para guardarla'));return;}
@@ -4554,8 +4617,8 @@ function msAct(a,b){
   }
   else if(a==='plborrar'){
     const v=($('#ms-pl')||{}).value||'';if(!v.startsWith('u:'))return toast(T('Solo se borran tus plantillas, no los ejemplos'));
-    const p=MS.pl.find(x=>x.id===v.slice(2));if(!p||!confirm(T('¿Borrar la plantilla?')+' '+p.nombre))return;
-    MS.pl=MS.pl.filter(x=>x!==p);msPlSave();msPlSel();toast(T('Plantilla borrada'));
+    const p=MS.pl.find(x=>x.id===v.slice(2));if(!p)return;
+    Dlg.si(T('¿Borrar la plantilla?')+' '+p.nombre,{peligro:true,aceptar:T('Borrar')}).then(ok=>{if(!ok)return;MS.pl=MS.pl.filter(x=>x!==p);msPlSave();msPlSel();toast(T('Plantilla borrada'));});
   }
 }
 (function msInit(){
@@ -6326,7 +6389,7 @@ function cpCartaImg(it){
 function cpZoomCierra(){const z=$('#cpzoom');if(z){z.hidden=true;z.textContent='';}if(cpZ){try{cpZ.focus();}catch{}cpZ=null;}}
 function cpZoom(it){
   let z=$('#cpzoom');
-  if(!z){z=document.createElement('div');z.id='cpzoom';z.className='cpzoom';z.setAttribute('role','dialog');z.setAttribute('aria-modal','true');z.tabIndex=-1;
+  if(!z){z=document.createElement('dialog');z.id='cpzoom';z.className='cpzoom';z.setAttribute('aria-label',T('Documento a pantalla completa'));z.hidden=true;z.tabIndex=-1;Capa.une(z);
     z.addEventListener('click',cpZoomCierra);z.addEventListener('keydown',e=>{if(e.key==='Escape')cpZoomCierra();});document.body.append(z);}
   z.textContent='';const im=new Image();im.src=it.img;im.alt=cpName(it);z.append(im);
   const p=document.createElement('p');p.textContent=cpName(it);z.append(p);
@@ -7430,7 +7493,7 @@ function prtVistaPinta(){
 }
 function prtVista(titulo,panel,gen){
   let v=$('#prtprev');
-  if(!v){v=document.createElement('div');v.id='prtprev';v.className='prtprev';v.setAttribute('role','dialog');v.setAttribute('aria-modal','true');document.body.append(v);
+  if(!v){v=document.createElement('dialog');v.id='prtprev';v.className='prtprev';v.setAttribute('aria-label',T('Vista previa'));v.hidden=true;Capa.une(v);document.body.append(v);
     v.addEventListener('change',prtVistaPinta);
     v.addEventListener('input',e=>{if(e.target.id==='prts-n')prtVistaPinta();});
     v.addEventListener('keydown',e=>{if(e.key==='Escape')prtVistaCierra();});}
@@ -8035,7 +8098,7 @@ async function scForzar(dir){
       +'· '+dist.length+' '+T('elementos distintos se sustituirán')+'\n'
       +'· '+(sub?soloN.length+' '+T('de la cuenta se borrarán'):soloL.length+' '+T('de este dispositivo desaparecerán'))+'\n\n'
       +(sub?T('Lo que haya ahora en la cuenta se sustituye.'):T('Lo de este dispositivo que se pierda se guarda como copias recuperables.')+(pen?'\n'+T('Atención: hay cambios sin subir que se perderían de aquí.'):''))+'\n\n'+T('¿Continuar?');
-    if(!confirm(txt)){SC.busy=false;return;}
+    if(!(await Dlg.si(txt,{peligro:true,aceptar:T(dir==='subir'?'Subir todo':'Descargar todo')}))){SC.busy=false;return;}
     const now=Date.now();
     if(sub){
       for(const k of [...soloL,...dist]){const w=await scEscribir(cid,{clave:k,valor:snap[k],borrado:false,base:filas[k]||0});if(!w.ok)throw new Error(T('Otro dispositivo cambió «')+k+T('»: vuelve a intentarlo'));}
@@ -8168,7 +8231,7 @@ async function acAct(act,b){
     case 'acgo':acPane(b.dataset.to);break;
     case 'acexdel':{if(!hasExamples())break;removeExamples();$('#ac-exdel').disabled=true;toast(T('Datos de ejemplo eliminados. Lo tuyo se queda como estaba.'));break;}
     case 'acexample':{
-      if(state.creatures.length&&!confirm(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?')))break;
+      if(state.creatures.length&&!(await Dlg.si(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?'),{aceptar:T('Sustituir')})))break;
       insertExamples();acClose();location.hash='#combate';toast(T('Datos de ejemplo añadidos: personajes, combate, encuentro y tablas.'),4200);break;}
     case 'acsync':await syncPush(true);break;
     case 'acout':await syncPush();await SB.auth.signOut();if(WEB_NUBE){try{sessionStorage.clear();}catch{}location.reload();break;}acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
@@ -8281,7 +8344,7 @@ async function syncPull(){
   const meta=lsGet(SYNC_META)||{},same=meta.user===SB_USER.id;meta.user=SB_USER.id;if(!same||!meta.h)meta.h={};
   if(!data.length){lsSet(SYNC_META,meta);await syncPush(true);startSync();toast('Tus datos de este navegador se han guardado en tu cuenta');return;}
   const srv=Object.fromEntries(data.map(r=>[r.clave,r.valor]));
-  const preferLocal=!WEB_NUBE&&!same&&Object.values(SYNC_KEYS).some(k=>lsRaw(k))&&!confirm(T('Tu cuenta ya tiene datos guardados.\n\nAceptar: usar en este navegador los de tu cuenta.\nCancelar: guardar en tu cuenta los de este navegador.'));
+  const preferLocal=!WEB_NUBE&&!same&&Object.values(SYNC_KEYS).some(k=>lsRaw(k))&&!(await Dlg.si(T('Tu cuenta ya tiene datos guardados.\n\nElige qué versión es la correcta: la de tu cuenta, o la de este navegador.'),{aceptar:T('Usar la de mi cuenta'),cancelar:T('Guardar la de este navegador')}));
   let changed=false;
   for(const[cl,k] of Object.entries(SYNC_KEYS)){
     const raw=lsRaw(k);let loc=null;try{loc=raw==null?null:JSON.parse(raw);}catch{}
@@ -8360,13 +8423,13 @@ async function catAct(act,b){
       const isNew=!mods().list.some(m=>m.pub===id),add=importModule(JSON.stringify(data.contenido),'');
       add[0].pub=id;add[0].pubVer=data.version;saveMods();if(isNew)SB.rpc('sumar_descarga',{mid:id}).then(()=>loadCatalog());else renderCatalog();break;}
     case 'catdel':{const {error}=await SB.from('modulos_publicos').delete().eq('id',id);toast(error?'No se ha podido retirar: '+error.message:'Módulo retirado del catálogo');loadCatalog();break;}
-    case 'catreport':{const motivo=prompt(T('¿Por qué lo denuncias? (por ejemplo: «copia texto del Manual del Jugador»)'));if(!motivo||motivo.trim().length<3)return;
+    case 'catreport':{const motivo=await Dlg.texto(T('¿Por qué lo denuncias? (por ejemplo: «copia texto del Manual del Jugador»)'),{aceptar:T('Denunciar')});if(!motivo||motivo.trim().length<3)return;
       const {error}=await SB.from('denuncias').insert({modulo_id:id,user_id:SB_USER.id,motivo:motivo.trim().slice(0,500)});
       toast(error?(/duplicate/i.test(error.message)?'Ya lo habías denunciado':'No se ha podido enviar: '+error.message):'Denuncia enviada. Gracias');break;}
     case 'catpub':{const out=buildExport();if(out)publishModule(out);break;}
     case 'catpubmd':{const md=mods().list.find(m=>m.id===id);if(!md)return;
       if(!LICS.includes(md.lic)){toast('Este módulo no indica una licencia válida. Créalo desde «Crear un módulo con tu contenido» y publícalo desde allí');return;}
-      if(!confirm(T('¿Confirmas que este módulo es contenido tuyo o con licencia abierta?')+`\n\n${md.n}`))return;
+      if(!(await Dlg.si(T('¿Confirmas que este módulo es contenido tuyo o con licencia abierta?')+`\n\n${md.n}`,{aceptar:T('Sí, publicar')})))return;
       const out={modulo:md.n,abrev:md.ab,autor:md.autor||SB_NAME,version:md.version||'1.0',licencia:md.lic,descripcion:md.desc||''};
       for(const[k] of MOD_TYPES)if((md[k]||[]).length)out[k]=md[k];
       publishModule(out);break;}
