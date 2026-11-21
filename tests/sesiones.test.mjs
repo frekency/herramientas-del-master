@@ -33,17 +33,18 @@ test('nueva sesión: se crea con nombre automático y arranca',()=>{
   assert.ok(r.ok);assert.equal(r.sesion.nombre,'Sesión 2');assert.equal(r.sesion.campos.estado,'en curso');assert.equal(r.sesion.campos.fecha.length,10);
   assert.equal(N.nuevaSesion([],'  La mina  ',T0).sesion.nombre,'La mina');
 });
-test('finalizar con resumen: la sesión pasa a jugada y el diario recibe su entrada',()=>{
+test('finalizar con resumen: la sesión pasa a jugada y guarda el resumen en sus pestañas (sin diario)',()=>{
   const a=ses('La mina'),r=N.iniciarSesion([a],a.id,T0),f=N.finalizarSesion(r.items,a.id,{resumen:'  Bajaron a la mina.  ',compartir:true,ahora:T0+90*60000});
   assert.ok(f.ok);assert.equal(f.minutos,90);assert.equal(f.sesion.campos.estado,'jugada');assert.equal(f.sesion.campos.fin,String(T0+90*60000));
   assert.equal(N.activa(f.items),null);
-  assert.equal(f.diario.tipo,'diario');assert.equal(f.diario.texto,'Bajaron a la mina.');assert.equal(f.diario.visibilidad,'jugadores');assert.equal(f.diario.campos.sesion,'La mina');
-  assert.equal(f.items.length,2);
+  assert.equal(f.diario,null);assert.equal(f.items.length,1);
+  assert.equal(f.sesion.campos.resumen,'Bajaron a la mina.');assert.equal(f.sesion.campos.publico,'Bajaron a la mina.');
 });
-test('finalizar sin resumen no crea entrada y el diario es privado por defecto',()=>{
+test('finalizar sin resumen no escribe nada y sin compartir el resumen es solo del máster',()=>{
   const a=ses('A'),r=N.iniciarSesion([a],a.id,T0),f=N.finalizarSesion(r.items,a.id,{resumen:'   ',ahora:T0});
-  assert.ok(f.ok);assert.equal(f.diario,null);assert.equal(f.items.length,1);
-  const g=N.finalizarSesion(r.items,a.id,{resumen:'x',ahora:T0});assert.equal(g.diario.visibilidad,'dm');
+  assert.ok(f.ok);assert.equal(f.diario,null);assert.equal(f.items.length,1);assert.equal(f.sesion.campos.resumen,'');
+  const g=N.finalizarSesion(r.items,a.id,{resumen:'x',ahora:T0});assert.equal(g.sesion.campos.resumen,'x');assert.equal(g.sesion.campos.publico,'');
+  const h=N.finalizarSesion([{...r.sesion,campos:{...r.sesion.campos,resumen:'previo'}}],a.id,{resumen:'x',ahora:T0});assert.equal(h.sesion.campos.resumen,'previo\n\nx');
 });
 test('no se finaliza lo que no está en curso',()=>{
   const a=ses('A');assert.equal(N.finalizarSesion([a],a.id).error,'no_en_curso');assert.equal(N.finalizarSesion([],'z').error,'no_existe');

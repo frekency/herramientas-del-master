@@ -1111,19 +1111,16 @@ window.Notas=(()=>{
     if(items.length>=MAX.items)return {ok:false,error:'demasiados'};
     return iniciarSesion([...items,it],it.id,ahora);
   }
-  /* op: {resumen:'texto opcional', compartir:true|false, ahora} → la sesión pasa a «jugada» y, si hay resumen, se crea su entrada en el diario */
+  /* op: {resumen:'texto opcional', compartir:true|false, ahora} → la sesión pasa a «jugada» y el resumen se guarda en la propia sesión (pestaña del máster y, si se comparte, la de los jugadores) */
   function finalizarSesion(items,id,op){
     op=op||{};const ahora=Number.isFinite(+op.ahora)?+op.ahora:Date.now();
     const it=items.find(i=>i.id===id);if(!it||it.tipo!=='sesion')return {ok:false,error:'no_existe'};
     if(it.campos.estado!=='en curso')return {ok:false,error:'no_en_curso'};
-    const fin=norm({...it,campos:{...it.campos,estado:'jugada',fin:String(ahora)},editado:ahora});
-    let out=reemplaza(items,fin),diario=null;
-    const res=str(op.resumen,MAX.texto).trim();
-    if(res){
-      if(items.length>=MAX.items)return {ok:false,error:'demasiados'};
-      diario=norm({tipo:'diario',nombre:'Diario · '+(fin.nombre||'Sesión'),texto:res,visibilidad:op.compartir?'jugadores':'dm',campos:{fecha:fechaDe(ahora),sesion:fin.nombre}});
-      out=[...out,diario];
-    }
+    const res=str(op.resumen,MAX.texto).trim(),une=(v,t)=>str(v,MAX.texto).trim()?str(str(v,MAX.texto).trim()+'\n\n'+t,MAX.texto):t;
+    const campos={...it.campos,estado:'jugada',fin:String(ahora)};
+    if(res){campos.resumen=une(campos.resumen,res);if(op.compartir)campos.publico=une(campos.publico,res);}   // el resumen queda en las pestañas de la sesión
+    const fin=norm({...it,campos,editado:ahora});
+    let out=reemplaza(items,fin);const diario=null;
     /* si se sabe cuándo es la siguiente, queda planeada en el calendario (salvo que ya haya una planeada ese día) */
     let proxima=null;const pf=typeof op.proxima==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(op.proxima)?op.proxima:'';
     if(pf&&!out.some(i=>i.tipo==='sesion'&&i.campos.estado==='planeada'&&i.campos.fecha===pf)&&out.length<MAX.items){
@@ -7544,7 +7541,7 @@ function sesInicioHTML(){
 }
 function sesFinHTML(a){
   return '<p class="pcsub noi18n"><b>'+esc(cpName(a))+'</b> · '+esc(sesDur(Notas.minutosDe(a,sesAhora())))+'</p>'
-   +'<label class="f">'+esc(T('Resumen de lo ocurrido (opcional)'))+'<textarea id="ses-res" rows="7" maxlength="20000" placeholder="'+esc(T('Va al diario de la campaña. Déjalo vacío si no hace falta.'))+'"></textarea></label>'
+   +'<label class="f">'+esc(T('Resumen de lo ocurrido (opcional)'))+'<textarea id="ses-res" rows="7" maxlength="20000" placeholder="'+esc(T('Se guarda en la sesión. Déjalo vacío si no hace falta.'))+'"></textarea></label>'
    +'<label class="f">'+esc(T('Fecha de la próxima sesión (opcional)'))+'<input type="date" id="ses-next" min="'+Notas.fechaDe(sesAhora())+'"></label>'
    +'<label class="chk"><input type="checkbox" id="ses-pub"> '+esc(T('Compartir el resumen con los jugadores'))+'</label>'
    +'<div class="inline"><button type="button" class="btn primary" data-act="sesfin">'+esc(T('Finalizar sesión'))+'</button><button type="button" class="btn ghost" data-act="sesclose">'+esc(T('Seguir jugando'))+'</button></div>';
@@ -7563,7 +7560,7 @@ function sesActuar(act){
     const a=Notas.activa(CP);if(!a){sesCierra();return;}
     const r=Notas.finalizarSesion(CP,a.id,{resumen:$('#ses-res').value,compartir:$('#ses-pub').checked,proxima:$('#ses-next').value,ahora:sesAhora()});
     if(!r.ok){toast(T('No se ha podido finalizar la sesión'));return;}
-    sesGuarda(r.items);sesCierra();toast(T(r.diario?'Sesión finalizada. El resumen está en el diario':'Sesión finalizada')+(r.proxima?' · '+T('Próxima sesión planeada'):''));bkAuto();
+    sesGuarda(r.items);sesCierra();toast(T($('#ses-res').value.trim()?'Sesión finalizada. El resumen está en la sesión':'Sesión finalizada')+(r.proxima?' · '+T('Próxima sesión planeada'):''));bkAuto();
   }
 }
 document.addEventListener('change',e=>{if(e.target.id==='ses-sel'){const w=$('#ses-nomw');if(w)w.hidden=!!e.target.value;}});

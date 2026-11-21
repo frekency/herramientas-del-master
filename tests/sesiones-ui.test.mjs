@@ -47,9 +47,9 @@ const TAIL=`<script>
     ok('la ventana de finalizar pide un resumen opcional',!mod().hidden&&!!document.getElementById('ses-res')&&!!document.getElementById('ses-pub'));
     document.getElementById('ses-res').value='Bajaron a la mina y hallaron un cofre.';document.getElementById('ses-pub').checked=true;
     await click('[data-act="sesfin"]');
-    const ns=notas(),d=ns.find(n=>n.tipo==='diario');
+    const ns=notas(),d=ns.find(n=>n.nombre==='La mina');
     ok('la sesión queda jugada',ns.find(n=>n.nombre==='La mina').campos.estado==='jugada');
-    ok('el resumen va al diario, compartido',!!d&&d.texto.startsWith('Bajaron')&&d.visibilidad==='jugadores'&&d.campos.sesion==='La mina');
+    ok('el resumen queda en la sesión, también para los jugadores, y no hay entrada de diario',d.campos.resumen.startsWith('Bajaron')&&d.campos.publico.startsWith('Bajaron')&&!ns.some(n=>n.tipo==='diario'));
     ok('la barra vuelve a ofrecer iniciar',!bar().classList.contains('on')&&!!bar().querySelector('[data-act="sesstart"]'));
     // calendario de sesiones
     location.hash='#campana/sesion';await wait(400);
@@ -72,7 +72,7 @@ const TAIL=`<script>
     document.getElementById('ses-nom').value='Epílogo';await click('[data-act="sesgo"]');
     ok('la nueva arranca en curso',notas().some(n=>n.nombre==='Epílogo'&&n.campos.estado==='en curso'));
     await click('[data-act="sesend"]');await click('[data-act="sesfin"]');
-    ok('finalizar sin resumen no añade al diario',notas().filter(n=>n.tipo==='diario').length===1&&notas().find(n=>n.nombre==='Epílogo').campos.estado==='jugada');
+    ok('finalizar sin resumen no añade al diario',notas().filter(n=>n.tipo==='diario').length===0&&notas().find(n=>n.nombre==='Epílogo').campos.estado==='jugada');
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
