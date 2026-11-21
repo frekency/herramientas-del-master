@@ -38,6 +38,38 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .fila.caido{opacity:.45;text-decoration:line-through}
 .fila .flecha{color:var(--ac);width:1em;text-align:center}
 #aviso{position:fixed;right:14px;bottom:10px;color:var(--muted);font-size:13px}
+/* escenas: lienzo 16:9 con capas colocadas en % (la misma página sirve de vista previa dentro del estudio) */
+#esc{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--fondo,#0b0a09)}
+#lienzo{position:relative;aspect-ratio:16/9;width:min(100vw,calc(100vh*16/9));container-type:size;overflow:hidden;background:var(--fondo,#0b0a09)}
+.capa{position:absolute;box-sizing:border-box}
+.capa.imagen img{width:100%;height:100%;display:block}
+.capa.imagen.marco{padding:.8cqh .8cqh 3cqh;background:#fffdf6;box-shadow:0 .6cqh 3cqh #000a}
+.capa.imagen.marco img{background:#fffdf6}
+.capa .pie{position:absolute;left:0;right:0;bottom:0;padding:.6em 1em;background:linear-gradient(transparent,#000b);color:#fff;font-size:3cqh;font-weight:600;text-align:center}
+.capa.imagen.marco .pie{background:none;color:#3b2a14;padding:0 0 .6cqh}
+.capa .pie:empty{display:none}
+.capa.texto{display:flex;align-items:center;justify-content:center;padding:.1em .35em;overflow:hidden}
+.capa.texto>div{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.2;font-size:calc(var(--tam,6)*1cqh);width:100%}
+.capa.texto.izq{justify-content:flex-start}.capa.texto.der{justify-content:flex-end}
+.capa.texto.sans>div{font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}.capa.texto.serif>div{font-family:Georgia,"Times New Roman",serif}
+.capa.texto.manuscrita>div{font-family:"Segoe Script","Bradley Hand","Comic Sans MS",cursive}
+.capa.negrita>div{font-weight:800}
+.capa.iniciativa,.capa.cuentas{container-type:size;overflow:hidden;display:flex;flex-direction:column;gap:1cqh}
+.capa .ih{display:flex;align-items:baseline;gap:2cqw;font-size:calc(100cqh/(var(--n) + 2)*.46);font-weight:700;color:var(--ac)}
+.capa .ih small{color:var(--muted);font-weight:600;font-size:.6em}
+.capa .ih .cu2{margin-left:auto;font-variant-numeric:tabular-nums}
+.capa .fl{display:flex;align-items:center;gap:2cqw;padding:0 3cqw;flex:1;min-height:0;background:var(--row);border-left:1.2cqw solid var(--c,#888);border-radius:1.4cqw;font-size:calc(100cqh/(var(--n) + 2)*.5);font-weight:600}
+.capa .fl .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.capa .fl.actual{background:color-mix(in srgb,var(--ac) 22%,var(--row));outline:.4cqh solid var(--ac)}
+.capa .fl.caido{opacity:.45;text-decoration:line-through}
+.capa .fl .flecha{color:var(--ac);width:1em;text-align:center}
+.capa .cc{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border:.5cqh solid var(--ac);border-radius:2cqh;background:#000b;text-align:center}
+.capa .cc .t{font-size:calc(100cqh/var(--n)*.5);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.capa .cc .nn{font-size:calc(100cqh/var(--n)*.16);color:var(--muted)}
+.capa .cc.pausa .t{color:var(--muted)}.capa .cc.fin{border-color:#d0453c}.capa .cc.fin .t{color:#ff6a5e}
+.capa .vacio{color:var(--muted);font-size:4cqh;margin:auto}
+body.previa{cursor:default}body.previa #aviso{display:none!important}
+
 </style>
 </head>
 <body>
@@ -45,27 +77,103 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 <div id="img"><div class="cap"></div></div>
 <div id="ini"><header><h1>Iniciativa</h1><span class="ronda"></span><span class="cuenta" hidden></span></header><div id="lista"></div></div>
 <div id="avi"><h1></h1><p></p></div>
+<div id="esc"></div>
 <div id="cuentas" aria-live="polite"></div>
 <div id="aviso">F11 o doble clic: pantalla completa</div>
 <script>
-const $=s=>document.querySelector(s),vistas=['#nada','#img','#ini','#avi'];
-function ver(v){document.body.classList.toggle('solo',v==='#nada');for(const s of vistas)$(s).style.display=s===v?(s==='#ini'||s==='#img'||s==='#avi'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
+const $=s=>document.querySelector(s),vistas=['#nada','#img','#ini','#avi','#esc'];
+const P=window.__Mesa||(()=>{/* dentro del estudio la propia página hace de vista previa: recibe las escenas por postMessage */
+  const o=location.origin;document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('previa'));
+  return {onMostrar:cb=>addEventListener('message',e=>{if(e.source===parent&&e.origin===o&&e.data&&typeof e.data==='object')cb(e.data);}),listo:()=>parent.postMessage({mesaListo:1},o),pantallaCompleta(){}};})();
+let modo='legacy',escena=null,iniData=null,cuData=null;
+function ver(v){document.body.classList.toggle('solo',v==='#nada');for(const s of vistas)$(s).style.display=s===v?(s==='#esc'||s==='#ini'||s==='#img'||s==='#avi'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
+
+/* ---- escenas ---- */
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;};
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function pintaIni(c){
+  c.textContent='';const d=iniData;
+  if(!d||!d.lista.length){c.style.setProperty('--n',3);c.append(el('div','vacio','Sin combate'));return;}
+  let L=d.lista;const MAX=10;
+  if(L.length>MAX){const i=Math.max(0,L.findIndex(e=>e.actual));const a=Math.min(Math.max(0,i-3),L.length-MAX);L=L.slice(a,a+MAX);}
+  c.style.setProperty('--n',L.length);
+  const h=el('div','ih');h.append(el('span','',d.activo?'Ronda '+d.ronda:'Iniciativa'));
+  if(d.cuenta){const q=el('span','cu2',(d.cuenta.pausa?'⏸ ':'')+mmss(d.cuenta.seg));q.prepend(el('small','',d.cuenta.n+' '));h.append(q);}
+  c.append(h);
+  for(const e of L){const f=el('div','fl'+(e.actual?' actual':'')+(e.caido?' caido':''));f.style.setProperty('--c',e.color);
+    f.append(el('span','flecha',e.actual?'▶':''),el('span','n',e.n));c.append(f);}
+}
+function pintaCuentas(c){
+  c.textContent='';const L=(cuData&&cuData.lista)||[];
+  if(!L.length){c.style.setProperty('--n',2);c.append(el('div','vacio','Sin cuentas atrás'));return;}
+  c.style.setProperty('--n',L.length);
+  for(const q of L){const b=el('div','cc'+(q.pausa?' pausa':'')+(q.fin?' fin':''));b.append(el('div','nn',q.n),el('div','t',(q.fin?'':q.pausa?'⏸ ':'')+mmss(q.seg)));c.append(b);}
+}
+function construir(p){
+  const L=el('div','');L.id='lienzo';L.style.setProperty('--fondo',p.fondo);
+  for(const c of p.capas){
+    if(!c.visible)continue;
+    const d=el('div','capa '+c.tipo);d.dataset.id=c.id;
+    d.style.cssText='left:'+c.x+'%;top:'+c.y+'%;width:'+c.w+'%;height:'+c.h+'%;opacity:'+c.op;
+    if(c.tipo==='imagen'){const im=new Image();im.alt=c.titulo||'';im.src=c.src;im.style.objectFit=c.ajuste==='cubrir'?'cover':'contain';d.append(im);
+      if(c.marco)d.classList.add('marco');d.append(el('div','pie',c.titulo));}
+    else if(c.tipo==='texto'){d.classList.add(c.alin==='izq'?'izq':c.alin==='der'?'der':'cen',c.fuente);if(c.negrita)d.classList.add('negrita');
+      d.style.setProperty('--tam',c.tam);d.style.color=c.color;if(c.fondo)d.style.background=c.fondo;
+      const t=el('div','',c.t);t.style.textAlign=c.alin==='izq'?'left':c.alin==='der'?'right':'center';d.append(t);}
+    else if(c.tipo==='iniciativa')pintaIni(d);
+    else if(c.tipo==='cuentas')pintaCuentas(d);
+    L.append(d);
+  }
+  return L;
+}
+let escTok=0;
+async function ponerEscena(p){
+  const tok=++escTok,E=$('#esc'),nuevo=construir(p);
+  await Promise.all([...nuevo.querySelectorAll('img')].map(i=>i.decode?i.decode().catch(()=>{}):0));
+  if(tok!==escTok)return;
+  const viejo=$('#lienzo');
+  E.style.setProperty('--fondo',p.fondo);
+  const ms=viejo?p.fundido:0;
+  nuevo.style.transition='opacity '+ms+'ms';
+  if(ms)nuevo.style.opacity=0;
+  E.append(nuevo);
+  if(ms){nuevo.getBoundingClientRect();nuevo.style.opacity=1;}
+  if(viejo){viejo.id='';setTimeout(()=>viejo.remove(),ms+60);}
+  actualizaOverlay();
+}
+function quitaEscena(){escena=null;escTok++;const v=$('#lienzo');if(v)v.remove();}
+function actualizaVivas(){
+  const c=$('#lienzo');
+  if(c){c.querySelectorAll('.capa.iniciativa').forEach(pintaIni);c.querySelectorAll('.capa.cuentas').forEach(pintaCuentas);}
+  actualizaOverlay();
+}
+function actualizaOverlay(){
+  /* si la escena ya trae una capa de cuentas atrás, la esquina de siempre se queda quieta */
+  $('#cuentas').style.display=modo==='escena'&&escena&&escena.capas.some(c=>c.tipo==='cuentas'&&c.visible)?'none':'';
+}
 function mostrar(p){
   if(!p)return;
+  if(p.tipo==='escena'){modo='escena';escena=p;ver('#esc');ponerEscena(p);return;}
   if(p.tipo==='cuentas'){
+    cuData=p;
     const C=$('#cuentas');C.textContent='';
     for(const c of p.lista){const d=document.createElement('div');d.className='cu'+(c.pausa?' pausa':'')+(c.fin?' fin':'');
       const n=document.createElement('div');n.className='n';n.textContent=c.n;
       const t=document.createElement('div');t.className='t';t.textContent=(c.fin?'':c.pausa?'⏸ ':'')+String(Math.floor(c.seg/60)).padStart(2,'0')+':'+String(c.seg%60).padStart(2,'0');
       d.append(n,t);C.append(d);}
+    actualizaVivas();
     return;}
-  if(p.tipo==='limpiar'){ver('#nada');return;}
+  if(p.tipo==='limpiar'){modo='legacy';quitaEscena();ver('#nada');actualizaOverlay();return;}
   if(p.tipo==='imagen'){
+    modo='legacy';quitaEscena();actualizaOverlay();
     $('#img img')?.remove();
     const im=new Image();im.alt=p.titulo||'';im.src=p.src;$('#img').prepend(im);
     $('#img .cap').textContent=p.titulo||'';ver('#img');return;}
-  if(p.tipo==='aviso'){$('#avi h1').textContent=p.titulo||'';$('#avi p').textContent=p.texto||'';ver('#avi');return;}
+  if(p.tipo==='aviso'){modo='legacy';quitaEscena();actualizaOverlay();$('#avi h1').textContent=p.titulo||'';$('#avi p').textContent=p.texto||'';ver('#avi');return;}
   if(p.tipo==='iniciativa'){
+    iniData=p;
+    if(modo==='escena'&&!p.abrir){actualizaVivas();return;}
+    modo='legacy';quitaEscena();actualizaOverlay();
     const c=$('#ini .cuenta');
     if(p.cuenta){const s=p.cuenta.seg,m=String(Math.floor(s/60)).padStart(2,'0'),x=String(s%60).padStart(2,'0');
       c.textContent='';const sm=document.createElement('small');sm.textContent=p.cuenta.n;c.append(sm,(p.cuenta.pausa?'⏸ ':'')+m+':'+x);c.classList.toggle('pausa',!!p.cuenta.pausa);c.hidden=false;}
@@ -83,10 +191,10 @@ function mostrar(p){
     ver('#ini');
   }
 }
-window.__Mesa.onMostrar(mostrar);
-window.__Mesa.listo();
-addEventListener('dblclick',()=>window.__Mesa.pantallaCompleta());
-addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();window.__Mesa.pantallaCompleta();}});
+P.onMostrar(mostrar);
+P.listo();
+addEventListener('dblclick',()=>P.pantallaCompleta());
+addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();P.pantallaCompleta();}});
 </script>
 </body>
 </html>

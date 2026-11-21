@@ -65,3 +65,56 @@ test('cuentas: máximo cuatro, solo etiqueta, segundos, pausa y fin', () => {
   assert.deepEqual(validar({ tipo: 'cuentas' }), { tipo: 'cuentas', lista: [] });
   assert.ok(!JSON.stringify(v).includes('secreto'));
 });
+
+// ---- escenas ----
+const PNG = 'data:image/png;base64,iVBORw0KGgo=';
+test('escena: capas válidas con posición y tamaño acotados', () => {
+  const v = validar({ tipo: 'escena', nombre: 'Taberna', fondo: '#112233', capas: [
+    { id: 'a', tipo: 'imagen', src: PNG, x: 10, y: 20, w: 50, h: 60, ajuste: 'cubrir', titulo: 'Mapa' },
+    { id: 'b', tipo: 'texto', t: 'Hola', tam: 8, color: '#fff', alin: 'der', fuente: 'serif', negrita: true, x: 0, y: 0, w: 100, h: 10 },
+    { id: 'c', tipo: 'iniciativa', x: 70, y: 0, w: 30, h: 100 },
+    { id: 'd', tipo: 'cuentas', x: 70, y: 80, w: 30, h: 20 },
+  ] });
+  assert.equal(v.tipo, 'escena');
+  assert.equal(v.fondo, '#112233');
+  assert.equal(v.capas.length, 4);
+  assert.equal(v.capas[0].ajuste, 'cubrir');
+  assert.equal(v.capas[1].alin, 'der');
+  assert.equal(v.capas[1].fuente, 'serif');
+});
+test('escena: números fuera de rango se acotan y lo que no es número vuelve al valor por defecto', () => {
+  const v = validar({ tipo: 'escena', capas: [{ tipo: 'texto', t: 'x', x: 9999, y: -9999, w: 0, h: 'abc', tam: 1000, op: 7 }] });
+  const c = v.capas[0];
+  assert.equal(c.x, 150); assert.equal(c.y, -50); assert.equal(c.w, 1); assert.equal(c.h, 50); assert.equal(c.tam, 60); assert.equal(c.op, 1);
+});
+test('escena: solo pasan imágenes data: y tipos de capa conocidos; el resto se descarta', () => {
+  const v = validar({ tipo: 'escena', capas: [
+    { tipo: 'imagen', src: 'https://evil.example/x.png' },
+    { tipo: 'imagen', src: 'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=' },
+    { tipo: 'script', src: PNG },
+    { tipo: 'imagen', src: PNG },
+    null, 7,
+  ] });
+  assert.equal(v.capas.length, 1);
+  assert.equal(v.capas[0].tipo, 'imagen');
+});
+test('escena: textos y colores se limpian; nada de HTML ni estilos inventados', () => {
+  const v = validar({ tipo: 'escena', fondo: 'url(javascript:alert(1))', capas: [{ tipo: 'texto', t: '<img src=x onerror=1>'.repeat(300), color: 'red;position:fixed', fondo: 'expression(1)', fuente: 'Comic Sans; x', alin: 'abajo' }] });
+  assert.equal(v.fondo, '#0b0a09');
+  const c = v.capas[0];
+  assert.ok(c.t.length <= 2000);
+  assert.equal(c.color, '#f1ece0'); assert.equal(c.fondo, ''); assert.equal(c.fuente, 'sans'); assert.equal(c.alin, 'centro');
+});
+test('escena: tope de capas, ids únicos y campos ajenos descartados', () => {
+  const capas = Array.from({ length: 80 }, () => ({ tipo: 'iniciativa', id: 'igual', extra: 'x', datos: { pg: 5 } }));
+  const v = validar({ tipo: 'escena', capas });
+  assert.equal(v.capas.length, 40);
+  assert.equal(new Set(v.capas.map(c => c.id)).size, 40);
+  assert.ok(!('extra' in v.capas[0]) && !('datos' in v.capas[0]));
+});
+test('escena: el peso total de imágenes tiene tope y una escena sin capas es válida', () => {
+  const grande = 'data:image/png;base64,' + 'A'.repeat(5_900_000);
+  assert.equal(validar({ tipo: 'escena', capas: Array.from({ length: 5 }, () => ({ tipo: 'imagen', src: grande })) }), null);
+  assert.deepEqual(validar({ tipo: 'escena', capas: [] }).capas, []);
+  assert.equal(validar({ tipo: 'escena', capas: 'no' }), null);
+});

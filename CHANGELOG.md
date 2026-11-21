@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.54.0] - 2026-11-21
+### Añadido
+- **Estudio de la ventana de mesa** (app de escritorio): una página nueva, «Ventana de mesa», para preparar la escena antes de enseñarla, como en una mesa de mezclas. Vista previa 16:9 fiel a lo que verán los jugadores; capas de imagen, texto, orden de iniciativa y cuentas atrás que se arrastran, se redimensionan (con imán a los bordes y al centro; Alt lo desactiva) y se mueven con las flechas; zonas de imágenes que se rellenan con un clic desde la galería; orden, visibilidad, opacidad, marco de fotografía y tipografías para el texto. «Enviar a la mesa» manda la escena con una transición (corte, fundido); con «En vivo» los cambios llegan solos. Plantillas de escena por campaña (y cuatro ejemplos). En el navegador la página explica que es de escritorio.
+- La ventana de los jugadores pinta las escenas con el orden de iniciativa y las cuentas atrás en vivo dentro de sus capas; lo que entra se valida con una lista blanca (solo imágenes png/jpeg/webp, colores y fuentes conocidos, tope de capas y de peso), así que nunca llegan PG, CA ni notas.
+
+### Cambiado
+- El Inicio ya no repite las novedades: se ven al pulsar la versión.
+- El acceso «Ventana de mesa» de la barra lateral abre el estudio; el panel de cuentas atrás y del orden sigue disponible desde él.
+
 ## [1.53.0] - 2026-11-21
 ### Añadido
 - **Galería de documentos** en Campaña: handouts, cartas, carteles e ilustraciones (imagen de hasta 1600 px). Visor a pantalla completa, «Mostrar en la mesa» en la app de escritorio y compartir con los jugadores cuando quieras (nacen ocultos). Un documento solo de texto se muestra como carta sobre pergamino.

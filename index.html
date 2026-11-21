@@ -1319,7 +1319,6 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .addgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .addgrid .full{grid-column:1/-1}
 .hint{font-size:12px;color:var(--muted);margin:0;max-width:62ch;text-wrap:pretty}
-#changelog-home li{max-width:68ch;text-wrap:pretty}
 .sugg-wrap{position:relative}
 .sugg{position:absolute;left:0;right:0;top:100%;z-index:4;margin:2px 0 0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);max-height:280px;overflow:auto}
 .sugg li button{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;border:none;background:none;padding:6px 8px;border-radius:6px;color:var(--fg)}
@@ -2483,6 +2482,53 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 /* el detalle es un folio: papel con el borde de las hojas de debajo */
 .cpdet:has(.cphead){background:var(--surface,var(--bg));border:1px solid var(--line);border-radius:4px 4px 8px 8px;padding:22px 26px 24px;box-shadow:0 1px 0 var(--line),0 5px 0 -2px var(--surface,var(--bg)),0 6px 0 -2px var(--line),0 10px 0 -4px var(--surface,var(--bg)),0 11px 0 -4px var(--line)}
 .cpdet .cppubbox h4,.cpdet .cpck h4,.cpdet .cptoolbar h4,.cpdet .cpback h4,.cpdet .cpcr h4{font-family:var(--f-display);font-size:19px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--accent)}
+/* ===== Estudio de la mesa ===== */
+.ms{display:grid;gap:12px}
+.ms-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 12px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg))}
+.ms-bar .f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted,inherit)}
+.ms-bar .ms-nombre{flex:1 1 220px}.ms-bar .ms-nombre input{width:100%}
+.ms-bar input[type=color],.ms-insp input[type=color]{width:44px;height:30px;padding:2px;border:1px solid var(--line);background:transparent;cursor:pointer}
+.ms-sep{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+.ms-main{display:grid;grid-template-columns:220px minmax(0,1fr) 260px;gap:12px;align-items:start}
+.ms-lib,.ms-insp{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg));max-height:calc(100vh - 190px);overflow:auto}
+.ms-lib h3,.ms-insp h3{margin:4px 0 0;font:600 12px/1.2 var(--f-body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,inherit)}
+.ms-add{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ms-add .btn{justify-content:flex-start;text-align:left}
+.ms-docs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.ms-docs button{display:grid;grid-template-columns:44px 1fr;column-gap:8px;align-items:center;width:100%;padding:4px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--fg);text-align:left;cursor:pointer}
+.ms-docs button:hover,.ms-docs button:focus-visible{border-color:var(--line);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.ms-docs img,.ms-docs .ph{grid-row:1/3;width:44px;height:44px;object-fit:cover;background:#fffdf6;border:1px solid var(--line);display:grid;place-items:center;color:#8a6d3b}
+.ms-docs .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ms-docs small{color:var(--muted,inherit);font-size:11px}
+.ms-docs .empty{font-size:13px;color:var(--muted,inherit);padding:6px}
+.ms-center{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ms-stage{position:relative;aspect-ratio:16/9;width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:4px;overflow:hidden;box-shadow:0 2px 10px #0004}
+.ms-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;background:#0b0a09}
+.ms-ov{position:absolute;inset:0;touch-action:none}
+.msb{position:absolute;box-sizing:border-box;border:1px dashed color-mix(in srgb,#fff 55%,transparent);cursor:move;outline:none}
+.msb:hover{border-color:#fff}
+.msb.sel{border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.msb:focus-visible{outline:2px solid #fff;outline-offset:1px}
+.msb.vacia{background:repeating-linear-gradient(45deg,#ffffff14 0 8px,#ffffff08 8px 16px)}
+.msb-tag{position:absolute;left:0;top:0;max-width:100%;padding:1px 6px;font:600 11px/1.5 var(--f-body,system-ui);background:#000c;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+.msb-h{position:absolute;width:12px;height:12px;background:var(--accent);border:2px solid #fff;border-radius:2px;display:none}
+.msb.sel .msb-h{display:block}
+.msb-h.nw{left:-7px;top:-7px;cursor:nwse-resize}.msb-h.ne{right:-7px;top:-7px;cursor:nesw-resize}.msb-h.sw{left:-7px;bottom:-7px;cursor:nesw-resize}.msb-h.se{right:-7px;bottom:-7px;cursor:nwse-resize}
+.ms-under{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ms-enviar{padding:10px 22px;font-size:15px}
+.ms-st{margin-left:auto;font-size:13px;color:var(--muted,inherit)}.ms-st.vivo{color:var(--ok,inherit);font-weight:600}
+.ms-capas{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.ms-capas li{display:grid;grid-template-columns:1fr auto auto auto;gap:2px;align-items:center;border:1px solid var(--line);border-radius:4px}
+.ms-capas li.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}.ms-capas li.off .nm{opacity:.5}
+.ms-capas .nm{border:0;background:transparent;color:var(--fg);text-align:left;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;font-size:13px}
+.ms-capas .tt{color:var(--muted,inherit);font-size:11px;text-transform:uppercase;margin-right:4px}
+.ms-capas .ib{border:0;background:transparent;color:var(--fg);width:28px;height:30px;cursor:pointer;font-size:11px}
+.ms-capas .ib[aria-pressed=false]{opacity:.4}
+.ms-insp .f,.ms-lib .f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted,inherit)}
+.ms-insp input[type=number],.ms-insp input[type=text],.ms-insp select,.ms-insp textarea,.ms-lib input[type=search]{width:100%;box-sizing:border-box}
+.ms-geo{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ms-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+#ms-web{max-width:62ch}
+@media (max-width:1100px){.ms-main{grid-template-columns:minmax(0,1fr) 240px}.ms-lib{grid-column:1/-1;max-height:none;order:3}}
+@media (max-width:760px){.ms-main{grid-template-columns:minmax(0,1fr)}.ms-insp{max-height:none}}
 .cpck>.btn{align-self:flex-start}
 .hoimg{display:block;padding:8px;border:1px solid var(--line);background:#fffdf6;box-shadow:0 2px 8px #0003;cursor:zoom-in;line-height:0;max-width:100%}
 .hoimg img{max-width:100%;max-height:520px;width:auto;height:auto;display:block;margin:0 auto}
@@ -2702,7 +2748,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.53</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.54</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2727,9 +2773,6 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <li><a class="ixr" href="#compendio/objetos"><span class="ixn">Objetos, dotes y más</span><span class="ixs" id="hs-comp"></span><span class="ixd">Objetos mágicos y equipo, dotes, clases, especies y trasfondos, con buscador y filtros.</span></a></li>
     <li><a class="ixr" href="#modulos"><span class="ixn">Módulos</span><span class="ixs" id="hs-mods"></span><span class="ixd">Añade tu copia de los manuales o carga módulos homebrew. También puedes crear los tuyos.</span></a></li>
   </ol>
-  <div class="vhead" style="margin-top:28px"><h2>Novedades</h2><span class="pcsub">Últimas versiones</span></div>
-  <ol class="changelog" id="changelog-home"></ol>
-  <p class="clmore"><a href="#cambios">Ver historial completo →</a></p>
 </section>
 
 <section class="vpage" id="view-compendio" hidden>
@@ -2770,6 +2813,22 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="cmtabs" role="tablist" aria-label="Apartados del compendio" data-cmnav></div>
   <p class="crumbs" id="fc-crumbs"></p>
   <div class="ficha" id="fc-body"></div>
+</section>
+
+<section class="vpage" id="view-mesa" hidden>
+  <div class="vhead"><h2>Ventana de mesa</h2><span class="pcsub">Prepara la escena y envíala a los jugadores</span></div>
+  <p class="empty" id="ms-web" hidden>La ventana de mesa es una pantalla aparte para los jugadores (un monitor o una tele) y solo existe en la app de escritorio. Aquí podrás preparar escenas con imágenes, textos, el orden de iniciativa y cuentas atrás, y enviarlas con un botón.</p>
+  <div class="ms" id="ms-app">
+    <div class="ms-bar" id="ms-bar"></div>
+    <div class="ms-main">
+      <aside class="ms-lib" id="ms-lib" aria-label="Biblioteca"></aside>
+      <div class="ms-center">
+        <div class="ms-stage"><iframe id="ms-prev" title="Vista previa de la mesa" tabindex="-1"></iframe><div class="ms-ov" id="ms-ov"></div></div>
+        <div class="ms-under" id="ms-under"></div>
+      </div>
+      <aside class="ms-insp" id="ms-insp" aria-label="Capas y propiedades"></aside>
+    </div>
+  </div>
 </section>
 
 <section class="vpage" id="view-modulos" hidden>
@@ -2869,6 +2928,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.54 <span>21 nov 2026</span></h3><ul>
+      <li><b>Estudio de la ventana de mesa</b> (escritorio): prepara la escena con vista previa y envíala cuando quieras. Capas de imagen, texto, orden de iniciativa y cuentas atrás que se arrastran y se redimensionan, zonas de imágenes que se rellenan con un clic, transiciones, modo «en vivo» y plantillas por campaña.</li>
+      <li>El Inicio ya no repite las novedades: se ven al pulsar la versión.</li>
+    </ul></li>
+
     <li><h3>v1.53 <span>21 nov 2026</span></h3><ul>
       <li><b>Galería de documentos</b> en Campaña: handouts, cartas, carteles e ilustraciones. Se ven a pantalla completa, se muestran en la ventana de mesa (escritorio) y se comparten con los jugadores cuando tú quieras. Un documento solo de texto se enseña como carta sobre pergamino.</li>
     </ul></li>
@@ -4074,7 +4138,7 @@ function render(){
     if(state.active&&!mesaWasActive){let a=true;try{a=Store.get('mesa-auto')!=='0';}catch{}if(a){mesaIni=true;mesaEst.que='iniciativa';mesaEst.congelado=false;}}
     else if(!state.active&&mesaWasActive&&mesaIni){mesaIni=false;mesaEst.que='nada';window.__AppShell.mesa.enviar({tipo:'limpiar'});}
     mesaWasActive=!!state.active;
-    if(mesaIni)mesaSendIni(false);
+    if(mesaIni||mesaEscIniOn())mesaSendIni(false);
   }
   evCheck();evRender();
 }
@@ -4114,13 +4178,14 @@ function mesaPanelEl(){let p=$('#mesapanel');if(!p){p=document.createElement('di
   p.addEventListener('click',e=>{const b=e.target.closest('[data-mp]');if(b)mesaPanelAct(b.dataset.mp,b.dataset.id);});
   p.addEventListener('change',e=>{if(e.target.dataset.mpauto!==undefined){try{Store.set('mesa-auto',e.target.checked?'1':'0');}catch{}}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden){p.hidden=true;}});
-  document.addEventListener('mousedown',e=>{if(!p.hidden&&!e.target.closest('#mesapanel,.sbmesa'))p.hidden=true;});}
+  document.addEventListener('mousedown',e=>{if(!p.hidden&&!e.target.closest('#mesapanel,.sbmesa,[data-ms="popover"]'))p.hidden=true;});}
   return p;}
 function mesaPanelToggle(){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
 function mesaPanelRender(){
+  msEstado();
   const p=$('#mesapanel');if(!p||p.hidden)return;
   const E=mesaEst;let auto=true;try{auto=Store.get('mesa-auto')!=='0';}catch{}
-  const que=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='iniciativa'?T('Orden de iniciativa')+(E.congelado?' ('+T('congelado')+')':''):E.que==='imagen'?T('Imagen')+(E.titulo?': '+E.titulo:''):E.que==='aviso'?T('Aviso')+(E.titulo?': '+E.titulo:''):T('Nada (pantalla en negro)');
+  const que=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='iniciativa'?T('Orden de iniciativa')+(E.congelado?' ('+T('congelado')+')':''):E.que==='escena'?T('Escena')+(E.titulo?': '+E.titulo:''):E.que==='imagen'?T('Imagen')+(E.titulo?': '+E.titulo:''):E.que==='aviso'?T('Aviso')+(E.titulo?': '+E.titulo:''):T('Nada (pantalla en negro)');
   p.innerHTML='<h3>'+esc(T('Ventana de mesa'))+'</h3><p class="mpstate"><span>'+esc(T('En la mesa'))+'</span><b>'+esc(que)+'</b></p>'
    +'<div class="mpbtns">'
    +'<button type="button" class="btn sm primary" data-mp="orden">'+esc(T('Mostrar el orden'))+'</button>'
@@ -4151,6 +4216,308 @@ function mesaIniData(){
 }
 var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false};
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
+/* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
+const MS={nombre:'',fondo:'#0b0a09',fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
+const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},cuentas:{x:72,y:76,w:25,h:19}};
+const msId=()=>'c'+Math.random().toString(36).slice(2,9);
+const msNum=(v,a,b,d)=>{const n=Number(v);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):d;};
+const msCol=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:d;
+function msNorm(c){
+  if(!c||typeof c!=='object'||!MS_DEF[c.tipo])return null;
+  const d=MS_DEF[c.tipo],o={tipo:c.tipo,id:/^[\w-]{1,40}$/.test(c.id||'')?c.id:msId(),x:msNum(c.x,-50,150,d.x),y:msNum(c.y,-50,150,d.y),w:msNum(c.w,1,200,d.w),h:msNum(c.h,1,200,d.h),visible:c.visible!==false,op:msNum(c.op,0,1,1)};
+  if(c.tipo==='imagen'){o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='cubrir'?'cubrir':'contener';o.titulo=String(c.titulo||'').slice(0,200);o.marco=!!c.marco;}
+  if(c.tipo==='texto'){o.t=String(c.t??'').slice(0,2000);o.tam=msNum(c.tam,1,60,6);o.color=msCol(c.color,'#f1ece0');o.fondo=msCol(c.fondo,'');o.alin=['izq','centro','der'].includes(c.alin)?c.alin:'centro';o.fuente=['sans','serif','manuscrita'].includes(c.fuente)?c.fuente:'sans';o.negrita=!!c.negrita;}
+  return o;
+}
+function msNormEsc(e){
+  e=e&&typeof e==='object'?e:{};const ids=new Set(),capas=[];
+  for(const c of (Array.isArray(e.capas)?e.capas:[]).slice(0,40)){const o=msNorm(c);if(!o)continue;if(ids.has(o.id))o.id=msId();ids.add(o.id);capas.push(o);}
+  return {nombre:String(e.nombre||'').slice(0,80),fondo:msCol(e.fondo,'#0b0a09'),fundido:msNum(e.fundido,0,3000,400),capas};
+}
+function msLoad(){
+  try{Object.assign(MS,msNormEsc(JSON.parse(Store.get('mesa-estudio-v1')||'null')));}catch{}
+  try{const p=JSON.parse(Store.get('mesa-plantillas-v1')||'[]');MS.pl=(Array.isArray(p)?p:[]).filter(x=>x&&typeof x.id==='string'&&x.esc).slice(0,50).map(x=>({id:x.id.slice(0,40),nombre:String(x.nombre||'').slice(0,80),esc:msNormEsc(x.esc)}));}catch{MS.pl=[];}
+  if(!MS.capas.some(c=>c.id===MS.sel))MS.sel=null;
+}
+const msSave=()=>{try{Store.set('mesa-estudio-v1',JSON.stringify({nombre:MS.nombre,fondo:MS.fondo,fundido:MS.fundido,capas:MS.capas}));}catch{}};
+const msPlSave=()=>{try{Store.set('mesa-plantillas-v1',JSON.stringify(MS.pl));}catch{}};
+const msApp=()=>!!(window.__AppShell&&window.__AppShell.mesa);
+const msVivo=()=>msApp()&&mesaEst.abierta&&mesaEst.que==='escena';
+const msCapa=id=>MS.capas.find(c=>c.id===id)||null;
+const msSelC=()=>msCapa(MS.sel);
+function msEj(){return [
+  [T('Imagen a pantalla completa'),{fondo:'#000000',capas:[{tipo:'imagen',x:0,y:0,w:100,h:100}]}],
+  [T('Imagen con el orden de iniciativa'),{capas:[{tipo:'imagen',x:2,y:4,w:66,h:92},{tipo:'iniciativa',x:71,y:4,w:27,h:92}]}],
+  [T('Cartel: título e imagen'),{capas:[{tipo:'texto',x:5,y:3,w:90,h:14,t:T('Título'),tam:9,fuente:'serif',negrita:true},{tipo:'imagen',x:15,y:20,w:70,h:76,marco:true}]}],
+  [T('Texto sobre fondo liso'),{fondo:'#14110d',capas:[{tipo:'texto',x:10,y:20,w:80,h:60,t:T('Escribe aquí el texto'),tam:7,fuente:'serif'}]}],
+];}
+const msNom=c=>{
+  if(c.tipo==='imagen'){const it=c.nid&&cpGet(c.nid);return c.titulo||(it?cpName(it):T('Zona de imágenes'));}
+  if(c.tipo==='texto')return (c.t||'').replace(/\s+/g,' ').trim().slice(0,28)||T('Texto');
+  return c.tipo==='iniciativa'?T('Orden de iniciativa'):T('Cuentas atrás');
+};
+const msCartas=new Map();
+function msSrc(nid){
+  const it=nid&&cpGet(nid);if(!it)return '';
+  if(it.img)return it.img;
+  if(it.tipo==='handout'&&it.texto){const k=it.id+'|'+it.nombre+'|'+it.texto;if(!msCartas.has(k)){if(msCartas.size>8)msCartas.clear();msCartas.set(k,cpCartaImg(it));}return msCartas.get(k);}
+  return '';
+}
+function msEscena(prev){
+  const capas=[];
+  for(const c of MS.capas){
+    if(!c.visible)continue;
+    const o={...c};
+    if(c.tipo==='imagen'){delete o.nid;o.src=msSrc(c.nid);if(!o.src)continue;}
+    capas.push(o);
+  }
+  return {tipo:'escena',nombre:MS.nombre,fondo:MS.fondo,fundido:prev?0:MS.fundido,capas};
+}
+/* vista previa: la propia página de la mesa dentro de un marco, que recibe lo mismo que la ventana real */
+let msPT=0;
+function msPrev(){
+  clearTimeout(msPT);
+  msPT=setTimeout(()=>{const f=$('#ms-prev');if(!f||!f.contentWindow||!MS.listo)return;const w=f.contentWindow,o=location.origin;
+    w.postMessage(msEscena(true),o);msVivasPrev();},60);
+}
+function msVivasPrev(){
+  const f=$('#ms-prev');if(!f||!f.contentWindow||!MS.listo)return;const w=f.contentWindow,o=location.origin;
+  try{w.postMessage(mesaIniData(),o);w.postMessage({tipo:'cuentas',lista:Cuentas.paraMesa(CUL,Date.now())},o);}catch{}
+}
+window.addEventListener('message',e=>{const f=$('#ms-prev');if(f&&e.source===f.contentWindow&&e.origin===location.origin&&e.data&&e.data.mesaListo){MS.listo=true;msPrev();}});
+setInterval(()=>{const v=$('#view-mesa');if(v&&!v.hidden&&MS.capas.some(c=>c.visible&&(c.tipo==='iniciativa'||c.tipo==='cuentas')))msVivasPrev();},1000);
+/* envío a la mesa */
+function msEnviar(rapido){
+  const S=window.__AppShell;if(!S||!S.mesa)return;
+  const e=msEscena(false);if(rapido)e.fundido=0;
+  S.mesa.enviar(e);
+  mesaIni=false;mesaEst.que='escena';mesaEst.titulo=MS.nombre;mesaEst.congelado=false;mesaEst.abierta=true;
+  mesaEscIni=MS.capas.some(c=>c.visible&&c.tipo==='iniciativa');
+  if(mesaEscIni)mesaSendIni(false);
+  cuentasMesa();msEstado();
+}
+function msLimpiar(){const S=window.__AppShell;if(!S||!S.mesa)return;mesaIni=false;mesaEscIni=false;mesaEst.que='nada';mesaEst.congelado=false;S.mesa.enviar({tipo:'limpiar'});msEstado();mesaPanelRender();}
+let msLT=0;
+function msLive(){if(!MS.live||!msVivo())return;clearTimeout(msLT);msLT=setTimeout(()=>msEnviar(true),250);}
+function msCambio(){msSave();msPrev();msLive();}
+/* estado y barras */
+function msEstado(){
+  const st=$('#ms-st');if(!st)return;
+  const E=mesaEst;
+  st.textContent=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='escena'?T('En la mesa')+': '+(E.titulo||T('Escena')):E.que==='nada'?T('La mesa está vacía'):T('En la mesa')+': '+(E.que==='iniciativa'?T('Orden de iniciativa'):E.que==='imagen'?T('Imagen'):T('Aviso'));
+  st.classList.toggle('vivo',!!E.abierta&&E.que!=='nada');
+  const ab=$('#ms-win');if(ab){ab.textContent=E.abierta?T('Cerrar la ventana'):T('Abrir la ventana');ab.dataset.ms=E.abierta?'cerrarwin':'abrirwin';}
+  const lm=$('#ms-limpiar');if(lm)lm.disabled=!E.abierta||E.que==='nada';
+}
+function msPlSel(){
+  const s=$('#ms-pl');if(!s)return;
+  s.innerHTML='<optgroup label="'+esc(T('Mis plantillas'))+'">'+(MS.pl.length?MS.pl.map(p=>'<option value="u:'+esc(p.id)+'">'+esc(p.nombre)+'</option>').join(''):'<option value="" disabled>'+esc(T('Ninguna todavía'))+'</option>')+'</optgroup>'
+   +'<optgroup label="'+esc(T('Ejemplos'))+'">'+msEj().map((x,i)=>'<option value="e:'+i+'">'+esc(x[0])+'</option>').join('')+'</optgroup>';
+  if(MS.pl.length)s.value='u:'+MS.pl[0].id;else s.value='e:0';
+}
+function msBarra(){
+  const sel=(v,l)=>'<option value="'+v+'"'+(MS.fundido===v?' selected':'')+'>'+esc(l)+'</option>';
+  $('#ms-bar').innerHTML='<label class="f ms-nombre">'+esc(T('Nombre de la escena'))+'<input type="text" data-msg="nombre" maxlength="80" value="'+esc(MS.nombre)+'" placeholder="'+esc(T('Ej.: La taberna del Dragón'))+'"></label>'
+   +'<label class="f">'+esc(T('Fondo'))+'<input type="color" data-msg="fondo" value="'+esc(MS.fondo)+'"></label>'
+   +'<label class="f">'+esc(T('Transición'))+'<select data-msg="fundido">'+sel(0,T('Corte seco'))+sel(400,T('Fundido rápido'))+sel(1000,T('Fundido suave'))+sel(2000,T('Fundido lento'))+'</select></label>'
+   +'<span class="ms-sep"></span>'
+   +'<label class="f">'+esc(T('Plantilla'))+'<select id="ms-pl"></select></label>'
+   +'<button type="button" class="btn sm" data-ms="plcargar">'+esc(T('Cargar'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="plguardar">'+esc(T('Guardar como plantilla'))+'</button>'
+   +'<button type="button" class="btn sm ghost" data-ms="plborrar">'+esc(T('Borrar plantilla'))+'</button>'
+   +'<button type="button" class="btn sm ghost" data-ms="nueva">'+esc(T('Escena nueva'))+'</button>';
+  msPlSel();
+  $('#ms-under').innerHTML='<button type="button" class="btn primary ms-enviar" data-ms="enviar">'+ic('eye')+' '+esc(T('Enviar a la mesa'))+'</button>'
+   +'<button type="button" class="btn" id="ms-limpiar" data-ms="limpiar">'+esc(T('Limpiar la mesa'))+'</button>'
+   +'<label class="chk"><input type="checkbox" data-msg="live"'+(MS.live?' checked':'')+'> '+esc(T('En vivo: los cambios llegan solos'))+'</label>'
+   +'<span class="ms-st" id="ms-st" role="status"></span>'
+   +'<button type="button" class="btn sm ghost" id="ms-win" data-ms="abrirwin"></button>'
+   +'<button type="button" class="btn sm ghost" data-ms="popover">'+esc(T('Cuentas atrás y orden…'))+'</button>';
+  msEstado();
+}
+function msBiblio(){
+  const q=MS.q.trim().toLowerCase();
+  const L=CP.filter(i=>!i.id.startsWith('pub_')&&(i.img||(i.tipo==='handout'&&i.texto))&&(!q||cpName(i).toLowerCase().includes(q))).sort((a,b)=>(b.tipo==='handout')-(a.tipo==='handout')||cpName(a).localeCompare(cpName(b),'es')).slice(0,120);
+  $('#ms-docs').innerHTML=L.length?L.map(i=>'<li><button type="button" data-ms="img" data-id="'+esc(i.id)+'">'+(i.img?'<img src="'+i.img+'" alt="" loading="lazy">':'<span class="ph">'+ic('scroll')+'</span>')+'<span class="nm">'+esc(cpName(i))+'</span><small>'+esc(i.tipo==='handout'?T('Documento'):'')+'</small></button></li>').join('')
+    :'<li class="empty">'+esc(q?T('Nada coincide'):T('Aún no hay imágenes. Añádelas en Campaña → Galería, o como imagen de un PNJ o lugar.'))+'</li>';
+}
+function msLibHTML(){
+  $('#ms-lib').innerHTML='<h3>'+esc(T('Añadir a la escena'))+'</h3><div class="ms-add">'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="imagen">'+ic('image')+' '+esc(T('Zona de imágenes'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="texto">'+esc(T('Texto'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="iniciativa">'+esc(T('Orden de iniciativa'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+esc(T('Cuentas atrás'))+'</button></div>'
+   +'<h3>'+esc(T('Imágenes y documentos'))+'</h3><p class="hint">'+esc(T('Pulsa una para ponerla en la zona elegida; si no hay zona elegida, se crea una nueva.'))+'</p>'
+   +'<input type="search" data-msq placeholder="'+esc(T('Buscar…'))+'" aria-label="'+esc(T('Buscar imágenes'))+'" value="'+esc(MS.q)+'"><ul class="ms-docs" id="ms-docs"></ul>';
+  msBiblio();
+}
+/* capa de edición sobre la vista previa: cajas que se arrastran y se redimensionan */
+function msBox(c){
+  const sel=c.id===MS.sel;
+  return '<div class="msb t-'+c.tipo+(sel?' sel':'')+(c.tipo==='imagen'&&!msSrc(c.nid)?' vacia':'')+'" data-id="'+esc(c.id)+'" tabindex="0" role="button" aria-label="'+esc(msNom(c))+'" style="'+msPos(c)+'">'
+   +'<span class="msb-tag">'+esc(msNom(c))+'</span>'+['nw','ne','sw','se'].map(h=>'<i class="msb-h '+h+'" data-h="'+h+'"></i>').join('')+'</div>';
+}
+const msPos=c=>'left:'+c.x+'%;top:'+c.y+'%;width:'+c.w+'%;height:'+c.h+'%';
+function msOv(){$('#ms-ov').innerHTML=MS.capas.filter(c=>c.visible).map(msBox).join('');}
+function msSelecciona(id,enfoca){
+  MS.sel=id;
+  document.querySelectorAll('#ms-ov .msb').forEach(b=>b.classList.toggle('sel',b.dataset.id===id));
+  msInsp();
+  if(enfoca){const b=document.querySelector('#ms-ov .msb[data-id="'+id+'"]');if(b)b.focus();}
+}
+function msGeo(c){
+  const b=document.querySelector('#ms-ov .msb[data-id="'+c.id+'"]');if(b)b.style.cssText=msPos(c);
+  if(c.id===MS.sel)for(const k of ['x','y','w','h']){const i=document.querySelector('#ms-insp [data-msf="'+k+'"]');if(i&&document.activeElement!==i)i.value=Math.round(c[k]*10)/10;}
+}
+function msInsp(){
+  const L=[...MS.capas].reverse().map(c=>'<li class="'+(c.id===MS.sel?'on':'')+(c.visible?'':' off')+'"><button type="button" class="nm" data-ms="sel" data-id="'+esc(c.id)+'"><span class="tt">'+esc(c.tipo==='imagen'?T('Imagen'):c.tipo==='texto'?T('Texto'):c.tipo==='iniciativa'?T('Iniciativa'):T('Cuentas'))+'</span> '+esc(msNom(c))+'</button>'
+    +'<button type="button" class="ib" data-ms="vis" data-id="'+esc(c.id)+'" aria-pressed="'+c.visible+'" aria-label="'+esc(T('Mostrar u ocultar'))+'" title="'+esc(T('Mostrar u ocultar'))+'">'+ic('eye')+'</button>'
+    +'<button type="button" class="ib" data-ms="subir" data-id="'+esc(c.id)+'" aria-label="'+esc(T('Subir una capa'))+'" title="'+esc(T('Subir una capa'))+'">▲</button>'
+    +'<button type="button" class="ib" data-ms="bajar" data-id="'+esc(c.id)+'" aria-label="'+esc(T('Bajar una capa'))+'" title="'+esc(T('Bajar una capa'))+'">▼</button></li>').join('');
+  const c=msSelC();let p='';
+  if(c){
+    const n=(k,l,mn,mx,st)=>'<label class="f">'+esc(l)+'<input type="number" data-msf="'+k+'" data-t="n" min="'+mn+'" max="'+mx+'" step="'+(st||1)+'" value="'+Math.round(c[k]*10)/10+'"></label>';
+    const sl=(k,l,opts)=>'<label class="f">'+esc(l)+'<select data-msf="'+k+'">'+opts.map(o=>'<option value="'+o[0]+'"'+(c[k]===o[0]?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select></label>';
+    const ck=(k,l)=>'<label class="chk"><input type="checkbox" data-msf="'+k+'" data-t="b"'+(c[k]?' checked':'')+'> '+esc(l)+'</label>';
+    p='<h3>'+esc(msNom(c))+'</h3><div class="ms-geo">'+n('x','X %',-50,150)+n('y','Y %',-50,150)+n('w',T('Ancho')+' %',1,200)+n('h',T('Alto')+' %',1,200)+'</div>'
+     +'<label class="f">'+esc(T('Opacidad'))+'<input type="range" data-msf="op" data-t="n" min="0" max="1" step="0.05" value="'+c.op+'"></label>';
+    if(c.tipo==='imagen')p+='<p class="hint">'+esc(c.nid&&cpGet(c.nid)?T('Imagen')+': '+cpName(cpGet(c.nid)):T('Zona vacía: elige una imagen de la lista de la izquierda.'))+'</p>'
+      +sl('ajuste',T('Ajuste'),[['contener',T('Entera (sin recortar)')],['cubrir',T('Rellenar (recorta)')]])+ck('marco',T('Marco de fotografía'))
+      +'<label class="f">'+esc(T('Pie de imagen'))+'<input type="text" data-msf="titulo" maxlength="200" value="'+esc(c.titulo)+'"></label>'
+      +(c.nid?'<button type="button" class="btn sm ghost" data-ms="quitaimg">'+esc(T('Vaciar la zona'))+'</button>':'');
+    if(c.tipo==='texto')p+='<label class="f">'+esc(T('Texto'))+'<textarea data-msf="t" maxlength="2000" rows="4">'+esc(c.t)+'</textarea></label>'
+      +'<div class="ms-geo">'+n('tam',T('Tamaño'),1,60)+'<label class="f">'+esc(T('Color'))+'<input type="color" data-msf="color" value="'+esc(c.color)+'"></label></div>'
+      +sl('fuente',T('Letra'),[['sans',T('Sin serifa')],['serif',T('Con serifa')],['manuscrita',T('Manuscrita')]])+sl('alin',T('Alineación'),[['izq',T('Izquierda')],['centro',T('Centro')],['der',T('Derecha')]])
+      +ck('negrita',T('Negrita'))
+      +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con fondo de color'))+'</label>'+(c.fondo?'<label class="f">'+esc(T('Color del fondo'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label>':'');
+    if(c.tipo==='iniciativa')p+='<p class="hint">'+esc(T('Muestra el orden del combate en curso, sin PG ni CA.'))+'</p>';
+    if(c.tipo==='cuentas')p+='<p class="hint">'+esc(T('Muestra las cuentas atrás marcadas para la mesa.'))+'</p>';
+    p+='<div class="ms-acts"><button type="button" class="btn sm" data-ms="centrar">'+esc(T('Centrar'))+'</button><button type="button" class="btn sm" data-ms="llenar">'+esc(T('Pantalla completa'))+'</button>'
+      +'<button type="button" class="btn sm" data-ms="dup">'+esc(T('Duplicar'))+'</button><button type="button" class="btn sm danger" data-ms="del">'+esc(T('Quitar de la escena'))+'</button></div>';
+  }else p='<p class="hint">'+esc(MS.capas.length?T('Elige una capa para editarla.'):T('La escena está vacía. Añade una zona de imágenes, un texto o el orden de iniciativa desde la izquierda.'))+'</p>';
+  $('#ms-insp').innerHTML='<h3>'+esc(T('Capas'))+'</h3><ol class="ms-capas">'+(L||'')+'</ol>'+p;
+}
+function msRender(){
+  const app=msApp();
+  $('#ms-web').hidden=app;$('#ms-app').hidden=!app;
+  if(!app)return;
+  msLoad();msBarra();msLibHTML();msOv();msInsp();
+  const f=$('#ms-prev');if(f&&!f.getAttribute('src')){MS.listo=false;f.setAttribute('src','mesa.html');}else msPrev();
+}
+function msAnade(tipo,extra){
+  if(MS.capas.length>=40){toast(T('Demasiadas capas'));return null;}
+  const c=msNorm({tipo,id:msId(),...MS_DEF[tipo],...extra});
+  MS.capas.push(c);MS.sel=c.id;msOv();msInsp();msCambio();return c;
+}
+function msPonerImagen(id){
+  const it=cpGet(id);if(!it)return;
+  let c=msSelC();
+  if(!c||c.tipo!=='imagen'){c=msAnade('imagen');if(!c)return;}
+  c.nid=id;if(!c.titulo)c.titulo='';
+  msOv();msInsp();msCambio();
+}
+function msAct(a,b){
+  const c=msSelC(),id=b.dataset.id;
+  if(a==='enviar')msEnviar(false);
+  else if(a==='limpiar')msLimpiar();
+  else if(a==='abrirwin'){window.__AppShell.mesa.abrir();}
+  else if(a==='cerrarwin'){window.__AppShell.mesa.cerrar();mesaIni=false;mesaEscIni=false;mesaEst.que='nada';mesaEst.congelado=false;msEstado();}
+  else if(a==='popover'){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
+  else if(a==='add')msAnade(b.dataset.t,b.dataset.t==='texto'?{t:T('Escribe aquí el texto')}:undefined);
+  else if(a==='img')msPonerImagen(id);
+  else if(a==='sel')msSelecciona(id);
+  else if(a==='vis'){const x=msCapa(id);if(x){x.visible=!x.visible;if(!x.visible&&MS.sel===x.id)MS.sel=null;msOv();msInsp();msCambio();}}
+  else if(a==='subir'||a==='bajar'){const i=MS.capas.findIndex(x=>x.id===id),j=a==='subir'?i+1:i-1;if(i>=0&&j>=0&&j<MS.capas.length){[MS.capas[i],MS.capas[j]]=[MS.capas[j],MS.capas[i]];msOv();msInsp();msCambio();}}
+  else if(a==='del'&&c){MS.capas=MS.capas.filter(x=>x!==c);MS.sel=null;msOv();msInsp();msCambio();}
+  else if(a==='dup'&&c){const d=msNorm({...c,id:msId(),x:c.x+3,y:c.y+3});if(d&&MS.capas.length<40){MS.capas.splice(MS.capas.indexOf(c)+1,0,d);MS.sel=d.id;msOv();msInsp();msCambio();}}
+  else if(a==='centrar'&&c){c.x=Math.round((100-c.w)/2*10)/10;c.y=Math.round((100-c.h)/2*10)/10;msGeo(c);msCambio();}
+  else if(a==='llenar'&&c){c.x=0;c.y=0;c.w=100;c.h=100;msGeo(c);msCambio();}
+  else if(a==='quitaimg'&&c){c.nid='';msOv();msInsp();msCambio();}
+  else if(a==='confondo'&&c){c.fondo=b.checked?'#000000':'';msInsp();msCambio();}
+  else if(a==='nueva'){if(MS.capas.length&&!confirm(T('¿Vaciar la escena actual? Las plantillas guardadas no se tocan.')))return;MS.nombre='';MS.fondo='#0b0a09';MS.fundido=400;MS.capas=[];MS.sel=null;msBarra();msOv();msInsp();msCambio();}
+  else if(a==='plcargar'){
+    const v=($('#ms-pl')||{}).value||'';let e=null;
+    if(v.startsWith('u:')){const p=MS.pl.find(x=>x.id===v.slice(2));e=p&&p.esc;if(p&&!e.nombre)e.nombre=p.nombre;}
+    else if(v.startsWith('e:')){const x=msEj()[+v.slice(2)];e=x&&{nombre:x[0],...x[1]};}
+    if(!e)return;
+    if(MS.capas.length&&!confirm(T('Cargar la plantilla sustituye la escena que tienes preparada. ¿Seguir?')))return;
+    Object.assign(MS,msNormEsc(JSON.parse(JSON.stringify(e))));MS.sel=null;msBarra();msOv();msInsp();msCambio();toast(T('Plantilla cargada'));
+  }
+  else if(a==='plguardar'){
+    const nombre=MS.nombre.trim();if(!nombre){toast(T('Ponle un nombre a la escena para guardarla'));return;}
+    const esc=msNormEsc({nombre,fondo:MS.fondo,fundido:MS.fundido,capas:MS.capas});
+    const ya=MS.pl.find(x=>x.nombre.toLowerCase()===nombre.toLowerCase());
+    if(ya){ya.esc=esc;ya.nombre=nombre;}else{if(MS.pl.length>=50){toast(T('Demasiadas plantillas'));return;}MS.pl.unshift({id:msId(),nombre,esc});}
+    msPlSave();msPlSel();const s=$('#ms-pl');if(s)s.value='u:'+(ya||MS.pl[0]).id;toast(T('Plantilla guardada'));
+  }
+  else if(a==='plborrar'){
+    const v=($('#ms-pl')||{}).value||'';if(!v.startsWith('u:'))return toast(T('Solo se borran tus plantillas, no los ejemplos'));
+    const p=MS.pl.find(x=>x.id===v.slice(2));if(!p||!confirm(T('¿Borrar la plantilla?')+' '+p.nombre))return;
+    MS.pl=MS.pl.filter(x=>x!==p);msPlSave();msPlSel();toast(T('Plantilla borrada'));
+  }
+}
+(function msInit(){
+  const v=$('#view-mesa');if(!v)return;
+  v.addEventListener('click',e=>{const b=e.target.closest('[data-ms]');if(b&&b.type!=='checkbox')msAct(b.dataset.ms,b);});
+  v.addEventListener('change',e=>{
+    const t=e.target;
+    if(t.dataset.ms==='confondo')return msAct('confondo',t);
+    if(t.dataset.msg==='live'){MS.live=t.checked;if(MS.live&&msVivo())msEnviar(true);return;}
+    if(t.dataset.msf&&(t.tagName==='SELECT'||t.type==='checkbox')){msCampo(t);msOv();msInsp();msCambio();}
+  });
+  v.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.dataset.msq!==undefined){MS.q=t.value;msBiblio();return;}
+    if(t.dataset.msg){const k=t.dataset.msg;if(k==='nombre')MS.nombre=t.value.slice(0,80);else if(k==='fondo')MS.fondo=msCol(t.value,'#0b0a09');else if(k==='fundido')MS.fundido=msNum(t.value,0,3000,400);if(k!=='live')msCambio();return;}
+    if(t.dataset.msf&&t.tagName!=='SELECT'&&t.type!=='checkbox'){const c=msCampo(t);if(!c)return;if(['x','y','w','h'].includes(t.dataset.msf))msGeo(c);else if(t.dataset.msf==='titulo'||t.dataset.msf==='t'){const b=document.querySelector('#ms-ov .msb[data-id="'+c.id+'"] .msb-tag');if(b)b.textContent=msNom(c);}msCambio();}
+  });
+  /* arrastrar y redimensionar con el puntero; con el teclado, las flechas mueven (Mayús: de 5 en 5) */
+  let dr=null;
+  const sn=(v,pts)=>{let m=0.5*Math.round(v*2),d=1.4;for(const p of pts){if(Math.abs(v-p)<d){d=Math.abs(v-p);m=p;}}return m;};
+  $('#ms-ov').addEventListener('pointerdown',e=>{
+    const b=e.target.closest('.msb');if(!b||e.button!==0)return;
+    const c=msCapa(b.dataset.id);if(!c)return;
+    if(MS.sel!==c.id)msSelecciona(c.id);
+    dr={c,b,h:(e.target.closest('.msb-h')||{dataset:{}}).dataset.h||'move',sx:e.clientX,sy:e.clientY,x:c.x,y:c.y,w:c.w,hh:c.h,r:$('#ms-ov').getBoundingClientRect(),alt:e.altKey};
+    try{b.setPointerCapture(e.pointerId);}catch{}
+    e.preventDefault();
+  });
+  $('#ms-ov').addEventListener('pointermove',e=>{
+    if(!dr)return;const {c,h,r}=dr,dx=(e.clientX-dr.sx)/r.width*100,dy=(e.clientY-dr.sy)/r.height*100,fr=!e.altKey;
+    if(h==='move'){
+      let x=dr.x+dx,y=dr.y+dy;
+      if(fr){const ax=[sn(x,[0])-x,sn(x+c.w,[100])-(x+c.w),sn(x+c.w/2,[50])-(x+c.w/2)].sort((a,b)=>Math.abs(a)-Math.abs(b))[0];
+        const ay=[sn(y,[0])-y,sn(y+c.h,[100])-(y+c.h),sn(y+c.h/2,[50])-(y+c.h/2)].sort((a,b)=>Math.abs(a)-Math.abs(b))[0];
+        x+=Math.abs(ax)<1.4?ax:0;y+=Math.abs(ay)<1.4?ay:0;}
+      c.x=Math.round(Math.min(150-c.w,Math.max(-50,x))*10)/10;c.y=Math.round(Math.min(150-c.h,Math.max(-50,y))*10)/10;
+    }else{
+      let x=dr.x,y=dr.y,w=dr.w,hh=dr.hh;
+      if(h.includes('e'))w=dr.w+dx;if(h.includes('w')){w=dr.w-dx;x=dr.x+dx;}
+      if(h.includes('s'))hh=dr.hh+dy;if(h.includes('n')){hh=dr.hh-dy;y=dr.y+dy;}
+      if(fr){if(h.includes('e'))w=sn(x+w,[100,50])-x;if(h.includes('s'))hh=sn(y+hh,[100,50])-y;if(h.includes('w')){const nx=sn(x,[0,50]);w+=x-nx;x=nx;}if(h.includes('n')){const ny=sn(y,[0,50]);hh+=y-ny;y=ny;}}
+      if(w<3){if(h.includes('w'))x-=3-w;w=3;}if(hh<3){if(h.includes('n'))y-=3-hh;hh=3;}
+      c.x=Math.round(x*10)/10;c.y=Math.round(y*10)/10;c.w=Math.round(w*10)/10;c.h=Math.round(hh*10)/10;
+    }
+    msGeo(c);
+  });
+  const fin=()=>{if(dr){dr=null;msCambio();}};
+  $('#ms-ov').addEventListener('pointerup',fin);$('#ms-ov').addEventListener('pointercancel',fin);
+  $('#ms-ov').addEventListener('keydown',e=>{
+    const b=e.target.closest('.msb');if(!b)return;const c=msCapa(b.dataset.id);if(!c)return;
+    const st=e.shiftKey?5:1,d={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];
+    if(d){e.preventDefault();c.x=Math.round((c.x+d[0])*10)/10;c.y=Math.round((c.y+d[1])*10)/10;msGeo(c);msCambio();}
+    else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();msAct('del',b);}
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();msSelecciona(c.id);}
+  });
+  $('#ms-ov').addEventListener('click',e=>{if(e.target.id==='ms-ov'){MS.sel=null;document.querySelectorAll('#ms-ov .msb').forEach(b=>b.classList.remove('sel'));msInsp();}});
+})();
+function msCampo(t){
+  const c=msSelC();if(!c)return null;const k=t.dataset.msf;
+  const v=t.dataset.t==='n'?msNum(t.value,-50,200,c[k]):t.type==='checkbox'?t.checked:t.value;
+  const n=msNorm({...c,[k]:v});if(!n)return c;c[k]=n[k];return c;
+}
+var mesaEscIni=false;
+const mesaEscIniOn=()=>mesaEscIni&&mesaEst.que==='escena';
 let lastTurnKey=null;
 /* raíl de fichas de la «Pantalla del máster»: una ficha por criatura, la del turno levantada */
 function railHTML(s){
@@ -5601,7 +5968,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
@@ -5617,11 +5984,11 @@ function showView(){
   if(v2==='tablas')renderTables();
   if(v2==='referencia')renderRef();
   if(v2==='modulos'){renderMods();loadCatalog();}
+  if(v2==='mesa')msRender();
   if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
 }
 function renderHome(){
-  const cl=$('#changelog-home');if(!cl.children.length)cl.append(...[...$('#changelog-full').children].slice(0,3).map(li=>li.cloneNode(true)));
   const n=state.creatures.length;
   {const h=$('#hs-hoy');let html='';
    try{
@@ -7197,10 +7564,7 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   const R=document.documentElement,S=window.__AppShell;
   /* ventana de mesa (lo que ven los jugadores): acceso en la barra lateral y botón de orden en el combate */
   if(S.mesa){
-    const a=document.createElement('a');a.href='#mesa';a.className='sbmesa';a.innerHTML=ic('eye')+' '+T('Ventana de mesa');
-    a.addEventListener('click',e=>{e.preventDefault();mesaPanelToggle();});
     if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(v)setTimeout(cuentasMesa,600);if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;}mesaPanelRender();});
-    $('.pagenav').insertBefore(a,$('.pagenav .navver'));
     const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
     if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}
   }

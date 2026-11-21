@@ -60,7 +60,7 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
 });
 
 // Ventana de la mesa: la que ven los jugadores (imágenes y orden de iniciativa). La abre el máster.
-let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, ultimoCuentas = { tipo: 'cuentas', lista: [] }, master = null;
+let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, master = null;
 const avisarMesa = () => {
   if (master && !master.isDestroyed()) master.webContents.send('mesa:estado', !!(mesa && !mesa.isDestroyed()));
 };
@@ -91,16 +91,20 @@ function registrarMesa() {
       if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
       return;
     }
-    ultimoMesa = v;
+    // lo que se está viendo (escena, imagen, aviso, iniciativa o nada) y, aparte, los últimos datos de iniciativa:
+    // dentro de una escena la iniciativa es una capa que solo necesita sus datos
+    if (v.tipo === 'iniciativa') ultimaIni = v;
+    if (v.tipo !== 'iniciativa' || v.abrir || !(ultimoMesa && ultimoMesa.tipo === 'escena')) ultimoMesa = v;
     const abierta = mesa && !mesa.isDestroyed();
     // el orden de iniciativa solo abre la ventana la primera vez que el máster lo pide; después se limita a actualizarla
-    if (!abierta && (v.tipo === 'imagen' || (v.tipo === 'iniciativa' && v.abrir))) abrirMesa();
+    if (!abierta && (v.tipo === 'imagen' || v.tipo === 'escena' || (v.tipo === 'iniciativa' && v.abrir))) abrirMesa();
     if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
   });
   ipcMain.on('mesa:listo', e => {
     if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents) return;
     mesaLista = true;
     mesa.webContents.send('mesa:mostrar', ultimoMesa);
+    if (ultimaIni && ultimoMesa.tipo === 'escena') mesa.webContents.send('mesa:mostrar', ultimaIni);
     mesa.webContents.send('mesa:mostrar', ultimoCuentas);
   });
   ipcMain.on('mesa:pantalla', e => {
