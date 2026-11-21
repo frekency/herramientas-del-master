@@ -1401,5 +1401,9 @@
   "Permisos": "Permissions",
   "Elemento": "Item",
   "Tu versión, sustituida por otro dispositivo": "Your version, replaced by another device",
-  "Versión de otro dispositivo, sustituida por la tuya": "Version from another device, replaced by yours"
+  "Versión de otro dispositivo, sustituida por la tuya": "Version from another device, replaced by yours",
+  "También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:": "Also as a desktop app, with automatic backup, screen lock and updates:",
+  "Otros sistemas y versiones": "Other systems and versions",
+  "Descargar para Mac": "Download for Mac",
+  "Descargar para Windows": "Download for Windows"
 }

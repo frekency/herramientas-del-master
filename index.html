@@ -2607,6 +2607,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <h1 class="htitle">Herramientas útiles para el Máster</h1>
     <p class="hsub">Lleva el combate, el grupo y las consultas de reglas desde una sola página, sin perder la cuenta de nada.</p>
   </div>
+  <div class="mdbanner" id="hs-app" hidden><span>También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:</span><a class="btn primary" id="hs-app-dl" href="#">Descargar</a><a id="hs-app-otros" href="#" target="_blank" rel="noopener">Otros sistemas y versiones</a></div>
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="vhead tools-h"><h2>Herramientas</h2><span class="pcsub">Para llevar la partida</span></div>
   <div class="tools-grid">
@@ -6885,6 +6886,21 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
 }
 $('#camp').addEventListener('change',e=>{const v=e.target.value;if(v==='__mgr'){renderCamps();campOpen();return;}if(Store.campaigns.select(v))location.reload();});
 $('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-camp]');if(!i)return;if(!Store.campaigns.rename(i.dataset.camp,i.value))toast('Pon un nombre a la campaña');renderCamps();});
+/* Descarga de la app de escritorio: solo en la web; elige el archivo según el sistema desde la última versión publicada en GitHub */
+(()=>{
+  const b=$('#hs-app');if(!b||window.__AppShell)return;
+  const ua=navigator.userAgent||'',pl=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||'';
+  if(/Android|iPhone|iPad|iPod/i.test(ua))return;
+  const so=/Mac/i.test(pl)||/Mac OS X/.test(ua)?'mac':/Win/i.test(pl)||/Windows/.test(ua)?'win':'';
+  const REL='https://github.com/frekency/herramientas-del-master/releases/latest',a=$('#hs-app-dl');
+  b.hidden=false;$('#hs-app-otros').href=REL;
+  if(!so){a.hidden=true;return;}
+  const txt=T(so==='mac'?'Descargar para Mac':'Descargar para Windows');a.href=REL;a.textContent=txt;
+  fetch('https://api.github.com/repos/frekency/herramientas-del-master/releases/latest').then(r=>r.ok?r.json():null).then(r=>{
+    const f=r&&(r.assets||[]).find(x=>so==='mac'?/\.dmg$/.test(x.name):/setup.*\.exe$/.test(x.name));
+    if(f&&/^https:\/\/github\.com\//.test(f.browser_download_url)){a.href=f.browser_download_url;a.textContent=txt+(/^v\d/.test(r.tag_name)?' ('+r.tag_name+')':'');}
+  }).catch(()=>{});
+})();
 $('#camp-form').addEventListener('submit',e=>{e.preventDefault();const n=$('#camp-new').value;
   try{const id=Store.campaigns.create(n);Store.campaigns.select(id);toast('Campaña creada');location.reload();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}});
 renderCamps();

@@ -1401,5 +1401,9 @@
   "Permisos": "Berechtigungen",
   "Elemento": "Element",
   "Tu versión, sustituida por otro dispositivo": "Deine Version, von einem anderen Gerät ersetzt",
-  "Versión de otro dispositivo, sustituida por la tuya": "Version eines anderen Geräts, durch deine ersetzt"
+  "Versión de otro dispositivo, sustituida por la tuya": "Version eines anderen Geräts, durch deine ersetzt",
+  "También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:": "Auch als Desktop-App, mit automatischer Sicherung, Bildschirmsperre und Updates:",
+  "Otros sistemas y versiones": "Andere Systeme und Versionen",
+  "Descargar para Mac": "Für Mac herunterladen",
+  "Descargar para Windows": "Für Windows herunterladen"
 }
