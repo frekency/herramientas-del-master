@@ -1442,7 +1442,7 @@ html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #ac
 .modal{position:fixed;inset:0;z-index:30;background:rgb(10 12 16/.55);display:flex;align-items:flex-start;justify-content:center;padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));overflow:auto}
 dialog.modal,dialog.cpzoom,dialog.prtprev,dialog#lockscr{margin:0;max-width:none;max-height:none;width:auto;height:auto;border:0;color:inherit}
 dialog:not([open]){display:none}
-.intro{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:18px;background:var(--bg,#0b0a09);color:var(--fg);cursor:pointer;animation:introOut 390ms 3250ms cubic-bezier(.4,0,.2,1) forwards}
+.intro{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:18px;background:var(--bg,#0b0a09);color:var(--fg);animation:introOut 390ms 3250ms cubic-bezier(.4,0,.2,1) forwards}
 .intro[hidden]{display:none}
 .intro-d20{width:clamp(84px,22vmin,150px);height:auto;overflow:visible}
 .intro-d20 .ist{fill:none;stroke:var(--fg);stroke-width:.55;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:introDraw 1720ms var(--d,0ms) cubic-bezier(.45,0,.55,1) forwards}
@@ -1453,7 +1453,7 @@ dialog:not([open]){display:none}
 @keyframes introWrite{to{clip-path:inset(0 0 0 0)}}
 @keyframes introInk{to{color:var(--fg);-webkit-text-stroke-width:0}}
 @keyframes introOut{to{opacity:0;visibility:hidden}}
-@media (prefers-reduced-motion:reduce){.intro{display:none}}
+@media (prefers-reduced-motion:reduce){.intro-d20 .ist{animation:none;stroke-dashoffset:0}.intro-d20 .ifill{animation:none;opacity:.28}.intro-n{animation:none;clip-path:none;color:var(--fg);-webkit-text-stroke-width:0}.intro{animation:introOut 390ms 1400ms cubic-bezier(.4,0,.2,1) forwards}}
 dialog.ask{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);padding:18px;width:min(440px,calc(100% - 24px));margin:auto}
 dialog.ask::backdrop{background:rgb(10 12 16/.55)}
 .askt{margin:0 0 14px;white-space:pre-wrap;line-height:1.4}
@@ -7893,15 +7893,14 @@ function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_US
 let AC_LOCAL=false,AC_RED=false;
 const acPrevio=()=>{try{return Store.get('acceso-previo')==='1'||SB_STORED();}catch{return false;}};
 const acBloqueado=()=>document.documentElement.classList.contains('gate-web')&&!SB_USER&&!AC_LOCAL;
-/* Intro de la pantalla de acceso: el d20 se dibuja, se rellena y deja paso al formulario. Una vez por sesión; cualquier tecla, clic o toque la salta; sin movimiento, no se enseña. */
+/* Intro de la pantalla de acceso: el d20 se dibuja, se rellena y deja paso al formulario. Siempre se ve entera (no se puede saltar); con «reducir movimiento» se enseña ya dibujada, sin animar. */
 function introPlay(){
   const el=document.getElementById('intro');if(!el||!el.hidden)return;
-  try{if(sessionStorage.getItem('intro-visto')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;}catch{}
   el.hidden=false;
-  const fin=()=>{el.hidden=true;document.removeEventListener('keydown',fin,true);el.removeEventListener('animationend',fin2);try{sessionStorage.setItem('intro-visto','1');}catch{}};
+  const fin=()=>{clearTimeout(t);el.removeEventListener('animationend',fin2);el.hidden=true;};
   const fin2=e=>{if(e.animationName==='introOut')fin();};
-  el.addEventListener('animationend',fin2);el.addEventListener('click',fin);document.addEventListener('keydown',fin,true);
-  el.style.animation='none';void el.offsetWidth;el.style.animation='';   // empieza en cero aunque el diálogo ya estuviera montado
+  const t=setTimeout(fin,4400);   // por si el navegador no avisa del fin de la animación
+  el.addEventListener('animationend',fin2);
 }
 function acLocalVis(){const b=$('#ac-red-box');if(!b)return;const off=AC_RED||navigator.onLine===false;b.hidden=!off;if(!off)return;
   const p=acPrevio();$('#ac-red-txt').textContent=T(p?'Parece que no hay conexión. Puedes seguir con la copia local de este equipo y entrar cuando vuelva internet.':'Parece que no hay conexión. La primera vez hace falta internet para entrar con tu cuenta.');$('#ac-local-btn').hidden=!p;}

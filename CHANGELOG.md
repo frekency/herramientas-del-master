@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.63.1] - 2026-11-21
+### Cambiado
+- La intro del acceso se ve **siempre entera**: ya no se salta con un clic o una tecla y sale cada vez que aparece la pantalla de acceso. Con «reducir movimiento» se enseña el logo ya dibujado, sin animar.
+
 ## [1.63.0] - 2026-11-21
 ### Añadido
 - **Intro en la pantalla de acceso**: antes del formulario, el d20 se dibuja con trazo, se rellena, aparece el nombre «Herramientas del Máster» y todo se desvanece dejando paso al login (unos 3,6 s). Sale una vez por sesión; cualquier clic, toque o tecla la salta; con «reducir movimiento» activado no se muestra.
