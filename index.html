@@ -1337,6 +1337,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .opts label{display:flex;gap:8px;align-items:center}
 
 /* ventanas */
+/* web privada: sin sesión solo se ve el acceso, sin crear cuenta ni Discord (entra solo quien tiene invitación) */
+html.gate-web:not(.con-sesion) #acctmodal{background:var(--bg,#0b0a09);z-index:99}
+html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #acctmodal [data-to="signup"],html.gate-web #acctmodal [data-pane="in"]>p.pcsub,html.gate-web #acctmodal [data-pane="in"]>p.hint{display:none}
 .modal{position:fixed;inset:0;z-index:30;background:rgb(10 12 16/.55);display:flex;align-items:flex-start;justify-content:center;padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));overflow:auto}
 .mbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);width:min(1100px,100%);display:flex;flex-direction:column;max-height:100%;min-height:0}
 .mhead{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
@@ -1485,7 +1488,6 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .acpane[hidden]{display:none}
 .aclinks{margin:0;font-size:13px;color:var(--muted)}
 .aclink{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
-.btn.discord{background:#5865f2;border-color:#5865f2;color:#fff;justify-content:center;gap:8px;display:inline-flex;align-items:center}
 .acor{margin:0;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
 .acor::before,.acor::after{content:"";flex:1;border-top:1px solid var(--line)}
 .acmsg{margin:0;font-size:13px;min-height:1em;color:#e07a5f}
@@ -2748,7 +2750,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.56</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.57</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2928,6 +2930,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.57 <span>21 nov 2026</span></h3><ul>
+      <li><b>Acceso solo con cuenta</b> (web y escritorio): la primera vez se pide correo y contraseña; entra quien tenga invitación. Sin conexión, la copia local solo se ofrece donde ya se entró.</li>
+      <li><b>Distancias</b> en metros, pies y casillas a la vez (opción «Todas a la vez» en Preferencias).</li>
+      <li>Se quitan los demás idiomas, el acceso con Discord y las páginas legales.</li>
+    </ul></li>
     <li><h3>v1.56 <span>21 nov 2026</span></h3><ul>
       <li><b>Tiendas con oro y descuentos</b>: oro disponible para comprar objetos y descuento, que puede activarse al completar una misión.</li>
       <li><b>PNJ</b>: actitud hacia los jugadores, eventos con ellos y cajas de texto más grandes.</li>
@@ -3041,7 +3048,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li>De momento, criaturas, conjuros y compendio se ven en inglés en esos idiomas; el SRD oficial en alemán, francés e italiano llegará pronto. En portugués no hay SRD oficial.</li></ul></li>
     <li><h3>v1.27 <span>3 nov 2026</span></h3><ul>
       <li>Pantalla de carga breve al abrir la web, en tu idioma.</li>
-      <li>Las traducciones de la interfaz van en archivos aparte (<code>i18n/en.json</code>): solo se descargan si usas otro idioma.</li></ul></li>
+</ul></li>
     <li><h3>v1.26 <span>3 nov 2026</span></h3><ul>
       <li><b>Idioma</b>: la web también está en inglés. Se elige en <b>⚙ Preferencias</b> (se guarda en tu cuenta). En inglés, la interfaz se traduce y las criaturas, los conjuros y el compendio salen del SRD 5.2.1 oficial en inglés.</li>
       <li>Al cambiar de idioma, si usabas las unidades por defecto, pasan a las del idioma (pies y libras en inglés; metros y kilos en español).</li></ul></li>
@@ -3065,7 +3072,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li>Buscador y filtros por categoría, rareza y fuente. Al abrir una entrada, sus dados y CD se pueden tirar con un clic.</li>
       <li>Los objetos, dotes, clases, especies y trasfondos de tus módulos también salen en el compendio y sustituyen a los del SRD con el mismo nombre.</li></ul></li>
     <li><h3>v1.20 <span>3 nov 2026</span></h3><ul>
-      <li>Páginas de <a href="terminos.html">condiciones del servicio</a> y <a href="privacidad.html">política de privacidad</a>, enlazadas en el pie y en la ventana de cuenta.</li></ul></li>
+      <li>Páginas de condiciones del servicio y política de privacidad, enlazadas en el pie y en la ventana de cuenta.</li></ul></li>
     <li><h3>v1.19 <span>3 nov 2026</span></h3><ul>
       <li><b>Cuentas con Discord</b> (en la versión web): pulsa «👤 Entrar», entra con Discord y elige tu nombre de usuario la primera vez.</li>
       <li>Con la sesión iniciada, personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo. Tus copias de los manuales siguen siendo solo tuyas.</li>
@@ -3294,7 +3301,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </aside>
 </main>
 
-<footer class="legal" id="legal">Esta obra incluye material procedente del documento de referencia del sistema 5.2.1 («SRD 5.2.1») de Wizards of the Coast LLC, disponible en <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener">https://www.dndbeyond.com/srd</a>. La licencia sobre el SRD 5.2.1 se concede de acuerdo con la licencia internacional de atribución/reconocimiento 4.0 de Creative Commons, disponible en <a href="https://creativecommons.org/licenses/by/4.0/legalcode" target="_blank" rel="noopener">https://creativecommons.org/licenses/by/4.0/legalcode</a>. Herramienta no oficial, sin relación con Wizards of the Coast. · <a href="terminos.html">Condiciones del servicio</a> · <a href="privacidad.html">Política de privacidad</a></footer>
+<footer class="legal" id="legal">Esta obra incluye material procedente del documento de referencia del sistema 5.2.1 («SRD 5.2.1») de Wizards of the Coast LLC, disponible en <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener">https://www.dndbeyond.com/srd</a>. La licencia sobre el SRD 5.2.1 se concede de acuerdo con la licencia internacional de atribución/reconocimiento 4.0 de Creative Commons, disponible en <a href="https://creativecommons.org/licenses/by/4.0/legalcode" target="_blank" rel="noopener">https://creativecommons.org/licenses/by/4.0/legalcode</a>. Herramienta no oficial, sin relación con Wizards of the Coast.</footer>
 
 <!-- Bestiario -->
 <div class="modal" id="bestmodal" hidden>
@@ -3443,10 +3450,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
         <label class="f">Correo<input id="ac-in-mail" type="email" autocomplete="email" required maxlength="120"></label>
         <label class="f">Contraseña<input id="ac-in-pass" type="password" autocomplete="current-password" required maxlength="72"></label>
         <button class="btn primary">Entrar</button>
+        <div id="ac-red-box" hidden><p class="hint" id="ac-red-txt" style="display:block;margin:0 0 6px"></p><button type="button" class="btn" id="ac-local-btn" data-act="aclocal" hidden>Usar la copia local (sin conexión)</button></div>
         <div class="inline"><button type="button" class="btn ghost sm" data-act="acgo" data-to="signup">Crear una cuenta</button><button type="button" class="btn ghost sm" data-act="acgo" data-to="reset">Olvidé mi contraseña</button></div>
-        <p class="pcsub" style="margin:0;text-align:center">o</p>
-        <button type="button" class="btn discord" data-act="acdiscord"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4a12.9 12.9 0 0 1-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Entrar con Discord</button>
-        <p class="hint" style="display:block;margin:0">Con Discord solo usamos tu identificador y tu nombre; no leemos tus servidores ni mensajes. Al entrar aceptas las <a href="terminos.html" target="_blank">condiciones del servicio</a> y la <a href="privacidad.html" target="_blank">política de privacidad</a>.</p>
       </form>
       <form class="acpane" data-pane="signup" hidden>
         <p style="margin:0">Crea tu cuenta con un correo y una contraseña. Te enviaremos un mensaje para confirmar el correo.</p>
@@ -3455,7 +3460,6 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
         <label class="f">Contraseña (mínimo 8 caracteres)<input id="ac-su-pass" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
         <label class="f">Repite la contraseña<input id="ac-su-pass2" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
         <button class="btn primary">Crear cuenta</button>
-        <p class="hint" style="display:block;margin:0">Al crearla aceptas las <a href="terminos.html" target="_blank">condiciones del servicio</a> y la <a href="privacidad.html" target="_blank">política de privacidad</a>.</p>
         <button type="button" class="btn ghost sm" data-act="acgo" data-to="in">← Ya tengo cuenta</button>
       </form>
       <form class="acpane" data-pane="reset" hidden>
@@ -3515,8 +3519,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="pf-h" style="width:min(440px,100%)">
     <div class="mhead"><h2 id="pf-h">Preferencias</h2><button class="btn ghost" data-act="pfclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody" style="display:grid;gap:12px">
-      <label class="f">Idioma<select id="pf-lang" class="noi18n"></select></label>
-      <label class="f">Distancias<select id="pf-dist"><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
+      <label class="f">Distancias<select id="pf-dist"><option value="all">Todas a la vez (metros · pies · casillas)</option><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <label class="f">Tema<select id="pf-theme"><option value="">Automático (como el sistema)</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
       <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
@@ -3624,7 +3627,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
    La página se escribe en español. En inglés, un observador traduce al vuelo los textos de la interfaz (nodos de texto
    completos y los atributos placeholder, title y aria-label) con este diccionario; los datos (criaturas, conjuros,
    compendio) se cargan de los archivos del SRD en inglés. # = cualquier número. */
-const LANGS={es:'Español',en:'English',fr:'Français',pt:'Português',it:'Italiano',de:'Deutsch'};
+const LANGS={es:'Español'};   // la app es solo en español (se quitaron los demás idiomas)
 let LANG='es';try{const l=JSON.parse(Store.get('combat-prefs-v1')||'{}').lang;if(l in LANGS)LANG=l;}catch(e){}
 document.documentElement.lang=LANG;
 let I18N={},I18N_RX=[];
@@ -3669,16 +3672,10 @@ function i18nStart(dict){
 // El historial de cambios de cada idioma va aparte, en i18n/changelog.<idioma>.html.
 function loadDone(){const el=document.getElementById('loading');if(!el)return;el.classList.add('out');setTimeout(()=>el.remove(),260);}
 const whenReady=f=>document.readyState==='loading'?addEventListener('DOMContentLoaded',f):f();
-if(LANG!=='es')try{
-  const get=u=>{const x=new XMLHttpRequest();x.open('GET',u,false);x.send();return (x.status===200||x.status===0)&&x.responseText?x.responseText:'';};
-  const cl=get(`i18n/changelog.${LANG}.html`),ol=document.getElementById('changelog-full');
-  if(cl&&ol)ol.innerHTML=cl;
-  const d=get(`i18n/${LANG}.json`);if(d)i18nStart(JSON.parse(d));
-}catch(e){}
 whenReady(()=>requestAnimationFrame(loadDone));
 // Idioma de los datos: el del SRD oficial si existe; si no, inglés.
-const DATA_LANG={es:'es',en:'en',fr:'fr',de:'de',it:'it'}[LANG]||'en';
-const DATA_FILES=(l=>({best:'datos/'+l+'/bestiario.json',spells:'datos/'+l+'/conjuros.json',comp:'datos/'+l+'/compendio.json'}))(['es','en','fr','de','it'].includes(DATA_LANG)?DATA_LANG:'es');
+const DATA_LANG='es';
+const DATA_FILES={best:'datos/es/bestiario.json',spells:'datos/es/conjuros.json',comp:'datos/es/compendio.json'};
 </script>
 <script>
 const COND=[['agarrado','Agarrado'],['apresado','Apresado'],['asustado','Asustado'],['aturdido','Aturdido'],['cegado','Cegado'],['derribado','Derribado'],['ensordecido','Ensordecido'],['envenenado','Envenenado'],['hechizado','Hechizado'],['incapacitado','Incapacitado'],['inconsciente','Inconsciente'],['invisible','Invisible'],['paralizado','Paralizado'],['petrificado','Petrificado'],['concentracion','Concentración'],['agotamiento','Agotamiento']];
@@ -4784,7 +4781,7 @@ function fillCompDL(){
     $(id).innerHTML=compList(tab).map(x=>`<option value="${esc(x.n)}">${esc(tab==='objetos'?x.t||OBJ_KIND[x.k]||'':x._src)}</option>`).join('');
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
-function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
+function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal',...(acBloqueado()?[]:['#acctmodal']),'#prefmodal','#qrmodal','#itmodal','#campmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
 function syncModalOpen(){document.body.classList.toggle('modal-open',['#lanzmodal','#audmodal','#sesmodal','#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
@@ -5804,7 +5801,7 @@ function extraAct(act,b,c,e){
     case 'sumclose':state.summary=null;save();render();break;
     case 'toastundo':$('#toast').classList.remove('show','act');undo();break;
     case 'navtoggle':{if(document.documentElement.classList.contains('app-escritorio')){const m=document.documentElement.classList.toggle('sb-min');try{Store.set('app-sidebar',m?'min':'max');}catch(e){}b.setAttribute('aria-expanded',!m);break;}const n=$('.pagenav'),o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);break;}
-    case 'pfopen':updRefresca();$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-lang').value=LANG;$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;lkPrefs();syncModalOpen();break;
+    case 'pfopen':updRefresca();$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;lkPrefs();syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'sesstart':case 'seshoy':case 'sesgo':case 'sesend':case 'sesfin':sesActuar(act);break;
     case 'sesclose':sesCierra();break;
@@ -7163,7 +7160,7 @@ function itAct(act,b){
    a la unidad oficial (pies, millas y libras) y se muestran en la que elija cada cual. Equivalencias de los manuales:
    5 pies = 1,5 m = 1 casilla · 1 milla = 1,5 km · 1 lb = 0,5 kg. */
 const PREFKEY='combat-prefs-v1';
-const PREF_DEF=l=>l==='en'?{dist:'ft',peso:'lb'}:{dist:'m',peso:'kg'};
+const PREF_DEF=l=>l==='en'?{dist:'ft',peso:'lb'}:{dist:'all',peso:'kg'};   // por defecto, las distancias salen en metros, pies y casillas a la vez
 /* ---- impresión: cuaderno del máster de una sesión y hojas de personaje (web y escritorio) ---- */
 const PRT_SECC=[['plan','Plan y escenas',1],['enc','Encuentros y fichas de criatura',1],['ini','Hoja de iniciativa y PG en blanco',1],['npc','PNJ',1],['lugar','Lugares',1],['tienda','Tiendas',1],['mision','Misiones',1],['hoja','Hoja de personaje en blanco',0]];
 const prtCaja=(l,x,c)=>'<div class="hj '+(c||'')+'"><b>'+esc(T(l))+'</b><span>'+(x==null?'':esc(String(x)))+'</span></div>';
@@ -7521,11 +7518,13 @@ const uFmt=v=>(Math.round(v*100)/100).toLocaleString(LANG);
 function uShow(k,a,b){
   const two=f=>b!=null?`${uFmt(f(a))}/${uFmt(f(b))}`:uFmt(f(a)),one=f=>f(b??a)===1;
   if(k==='d'){
-    if(PREFS.dist==='ft')return `${two(v=>v)} ${T(one(v=>v)?'pie':'pies')}`;
-    if(PREFS.dist==='sq')return `${two(v=>v/5)} ${T(one(v=>v/5)?'casilla':'casillas')}`;
-    return `${two(v=>v*.3)} m`;
+    const dm=`${two(v=>v*.3)} m`,dft=`${two(v=>v)} ${T(one(v=>v)?'pie':'pies')}`,dsq=`${two(v=>v/5)} ${T(one(v=>v/5)?'casilla':'casillas')}`;
+    if(PREFS.dist==='all')return `${dm} · ${dft} · ${dsq}`;
+    if(PREFS.dist==='ft')return dft;
+    if(PREFS.dist==='sq')return dsq;
+    return dm;
   }
-  if(k==='l')return PREFS.dist==='m'?`${two(v=>v*1.5)} km`:`${two(v=>v)} ${T(one(v=>v)?'milla':'millas')}`;
+  if(k==='l'){const km=`${two(v=>v*1.5)} km`,mi=`${two(v=>v)} ${T(one(v=>v)?'milla':'millas')}`;return PREFS.dist==='all'?`${km} · ${mi}`:PREFS.dist==='m'?km:mi;}
   return PREFS.peso==='lb'?`${two(v=>v)} lb`:`${two(v=>v/2)} kg`;
 }
 function uPaint(s){
@@ -7557,14 +7556,6 @@ $('#pf-peso').addEventListener('change',e=>setPref('peso',e.target.value));
 // las mismas que en la barra: se cambian allí para no duplicar la lógica
 $('#pf-theme').addEventListener('change',e=>{const v=e.target.value;if(v)document.documentElement.dataset.theme=v;else delete document.documentElement.dataset.theme;try{Store.set('combat-theme',v);}catch(err){}});
 for(const k of ['view','skin'])$('#pf-'+k).addEventListener('change',e=>{const b=$('#'+k);b.value=e.target.value;b.dispatchEvent(new Event('change'));});
-$('#pf-lang').innerHTML=Object.entries(LANGS).map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
-$('#pf-lang').addEventListener('change',async e=>{
-  const l=e.target.value in LANGS?e.target.value:'es',d0=PREF_DEF(LANG);
-  if(PREFS.dist===d0.dist&&PREFS.peso===d0.peso)Object.assign(PREFS,PREF_DEF(l));   // si usabas las unidades por defecto, pasan a las del idioma nuevo
-  PREFS.lang=l;lsSet(PREFKEY,PREFS);
-  try{if(SB_USER)await syncPush();}catch(err){}
-  location.reload();
-});
 
 window.claude?.hot?.snapshot?.(()=>state);
 // Estado de la cuenta: declarado antes de boot() porque las vistas lo consultan al pintar
@@ -7660,29 +7651,39 @@ function acPane(p){
   const f=document.querySelector(`#acctmodal [data-pane="${p}"] input`);if(f)setTimeout(()=>f.focus(),30);
   renderAcct();
 }
-function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));
+function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));acLocalVis();
   $('#ac-srdv').textContent=OFFICIAL_FREE.find(o=>o.id==='srd521')?.n||'SRD';$('#ac-srdl').textContent=`${T('Datos en')} ${LANGS[DATA_LANG]}`;
   $('#ac-exdel').disabled=!hasExamples();}
-function acClose(){$('#acctmodal').hidden=true;syncModalOpen();}
+/* El acceso se pide la primera vez en cada equipo (después la sesión queda guardada). Sin conexión solo se ofrece la copia local
+   si en este equipo ya se entró alguna vez; si no, hace falta internet y una cuenta para empezar. */
+let AC_LOCAL=false,AC_RED=false;
+const acPrevio=()=>{try{return Store.get('acceso-previo')==='1'||SB_STORED();}catch{return false;}};
+const acBloqueado=()=>document.documentElement.classList.contains('gate-web')&&!SB_USER&&!AC_LOCAL;
+function acLocalVis(){const b=$('#ac-red-box');if(!b)return;const off=AC_RED||navigator.onLine===false;b.hidden=!off;if(!off)return;
+  const p=acPrevio();$('#ac-red-txt').textContent=T(p?'Parece que no hay conexión. Puedes seguir con la copia local de este equipo y entrar cuando vuelva internet.':'Parece que no hay conexión. La primera vez hace falta internet para entrar con tu cuenta.');$('#ac-local-btn').hidden=!p;}
+addEventListener('online',()=>{if(AC_RED&&!SB){location.reload();return;}AC_RED=false;acLocalVis();});addEventListener('offline',acLocalVis);   // web privada sin sesión: el acceso no se puede cerrar
+function acClose(){if(acBloqueado())return;$('#acctmodal').hidden=true;syncModalOpen();}
 const SB_STORED=()=>{try{return !!Store.native.get('sb-'+SB_REF+'-auth-token');}catch(e){return false;}};   // supabase-js guarda la sesión en el localStorage del navegador
 function renderAcct(){
   const lwOff=(()=>{try{return Store.get('combat-localwarn-off')==='1';}catch(e){return false;}})();
   document.querySelectorAll('.localwarn').forEach(el=>el.hidden=lwOff||!(SB&&!SB_USER&&!SB_STORED()));
   const b=$('#acct-btn');b.hidden=!SB;b.innerHTML=ic('user')+' '+(SB_USER?esc(SB_NAME||T('Mi cuenta')):T('Entrar'));
   $('#ac-user').textContent=SB_NAME||'—';
-  {const pr=SB_USER&&SB_USER.app_metadata&&SB_USER.app_metadata.provider;$('#ac-via').textContent=!SB_USER?'':pr==='discord'?T('con Discord'):(SB_USER.email||'');}
+  {const pr=SB_USER&&SB_USER.app_metadata&&SB_USER.app_metadata.provider;$('#ac-via').textContent=!SB_USER?'':(SB_USER.email||'');}
 }
 const acStatus=t=>{$('#ac-sync').textContent=t;};
 async function sbInit(){
   if(window.claude)return;
-  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.integrity='sha384-2zrRDgDHSYB/GN3nFW3fsZXoxEhKIr3N2h63Tc6DEOB9JJdFIu8xMJT2Cph/gBil';s.crossOrigin='anonymous';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{return;}
+  document.documentElement.classList.add('gate-web');   // acceso obligatorio (web y escritorio): solo entra quien tiene cuenta
+  try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.integrity='sha384-2zrRDgDHSYB/GN3nFW3fsZXoxEhKIr3N2h63Tc6DEOB9JJdFIu8xMJT2Cph/gBil';s.crossOrigin='anonymous';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{if(acPrevio())AC_LOCAL=true;else{AC_RED=true;setTimeout(()=>acOpen('in'),0);}return;}   // sin internet: con acceso previo sigue la copia local; si no, hace falta conexión
+  const INVITADO=/type=invite/.test(location.hash);   // el enlace del correo de invitación: hay que elegir contraseña
   SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true}});
   if(new URLSearchParams(location.search).has('error_description')){const m=new URLSearchParams(location.search).get('error_description');history.replaceState(null,'',location.pathname+location.hash);toast('No se ha podido entrar: '+m);}
   renderAcct();if(location.hash==='#modulos'){renderMods();loadCatalog();}
   SB.auth.onAuthStateChange((ev,session)=>{
-    const u=session?.user||null,was=SB_USER?.id;SB_USER=u;
-    if(ev==='PASSWORD_RECOVERY'){setTimeout(()=>acOpen('newpass'),0);return;}
-    if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(location.hash==='#modulos')renderMods();return;}
+    const u=session?.user||null,was=SB_USER?.id;SB_USER=u;document.documentElement.classList.toggle('con-sesion',!!u);if(u){try{Store.set('acceso-previo','1');}catch{}}
+    if(ev==='PASSWORD_RECOVERY'||(INVITADO&&u&&ev==='SIGNED_IN')){setTimeout(()=>acOpen('newpass'),0);return;}
+    if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(acBloqueado())setTimeout(()=>acOpen('in'),0);if(location.hash==='#modulos')renderMods();return;}
     if(u.id!==was)setTimeout(acSignedIn,0);   // fuera del callback, como pide supabase-js
   });
   acEscritorio();
@@ -7943,13 +7944,7 @@ $('#acctmodal').addEventListener('submit',async e=>{
 async function acAct(act,b){
   switch(act){
     case 'acopen':acOpen();break;
-    case 'acdiscord':{
-      if(window.__AppShell&&window.__AppShell.auth){   // escritorio: se entra en el navegador del sistema y se vuelve por herramientasdelmaster://
-        const {data,error}=await SB.auth.signInWithOAuth({provider:'discord',options:{redirectTo:'herramientasdelmaster://auth',skipBrowserRedirect:true}});
-        if(error||!data||!data.url){acMsg(acErr(error||{message:'no_url'}));break;}
-        const ok=await window.__AppShell.auth.abrir(data.url);acMsg(ok?T('Termina el inicio de sesión en el navegador; al acabar volverás aquí'):T('No se ha podido abrir el navegador'));break;}
-      try{sessionStorage.setItem('oauth-hash',location.hash);}catch{}
-      const {error}=await SB.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});if(error)acMsg(acErr(error));break;}
+    case 'aclocal':if(acPrevio()){AC_LOCAL=true;acClose();toast(T('Trabajando con la copia local'));}break;
     case 'acclose':acClose();break;
     case 'acgo':acPane(b.dataset.to);break;
     case 'acexdel':{if(!hasExamples())break;removeExamples();$('#ac-exdel').disabled=true;toast(T('Datos de ejemplo eliminados. Lo tuyo se queda como estaba.'));break;}

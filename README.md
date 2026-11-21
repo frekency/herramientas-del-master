@@ -10,16 +10,13 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 | Archivo | Qué es |
 |---|---|
 | `index.html` | La aplicación completa (HTML + CSS + JS). |
-| `datos/<idioma>/` | Datos del SRD 5.2.1 (CC-BY-4.0, Wizards of the Coast) en `es`, `en`, `fr`, `de` e `it`. Cada carpeta tiene `bestiario.json` (criaturas), `conjuros.json` (los 339 conjuros, con su nombre en inglés) y `compendio.json` (objetos, dotes, trasfondos, especies y clases). Es lo único que se publica en abierto. |
+| `datos/<idioma>/` | Datos del SRD 5.2.1 (CC-BY-4.0, Wizards of the Coast) en español (`datos/es/`; la app es solo en español). Cada carpeta tiene `bestiario.json` (criaturas), `conjuros.json` (los 339 conjuros, con su nombre en inglés) y `compendio.json` (objetos, dotes, trasfondos, especies y clases). Es lo único que se publica en abierto. |
 | `datos/privado/conjuros.json` | Conjuros generados a partir del CSV personal (manuales). **Uso personal**: no se publica en abierto ni se sube al repositorio (la carpeta `datos/privado/` está en `.gitignore`). |
 | `tools/build_srd.py` | Descarga y compacta el SRD 2024 en inglés desde Open5e. |
 | `tools/build_es.py` | Extrae los textos del PDF oficial en español y los empareja con los datos en inglés. |
 | `datos/privado/libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`). **Uso personal**: ignorado por git. |
 | `tools/build_spells.py` | Convierte el CSV de conjuros a `datos/privado/conjuros.json`. |
 | `tools/build_srd_spells.py` | Extrae los conjuros del PDF oficial en español (`pdftotext`) y les pone el nombre en inglés de Open5e. |
-| `tools/build_fr.py`, `tools/build_spells_fr.py`, `tools/build_compendio_fr.py` | Extraen el SRD 5.2.1 en francés del PDF oficial (`pdftotext -enc UTF-8` para criaturas y conjuros, `stream.py` para el compendio) y lo emparejan con los datos en inglés. |
-| `tools/build_de.py`, `tools/build_spells_de.py`, `tools/build_compendio_de.py` | Extraen el SRD 5.2.1 en alemán. Las criaturas combinan dos lecturas de `pdftotext` (normal y `-raw`, guardada como `r_raw.txt`); conjuros y compendio salen de `stream.py`. |
-| `tools/build_it.py`, `tools/build_spells_it.py`, `tools/build_compendio_it.py` | Extraen el SRD 5.2.1 en italiano con el mismo método que la versión alemana. |
 
 ## Contenido libre y libros opcionales
 - De serie solo va contenido del **SRD 5.2.1** (CC-BY-4.0): bestiario y conjuros. Es lo único que se publica en abierto.
@@ -37,8 +34,7 @@ Sin dependencias: usan el ejecutor de tests de Node (`node --test`). Se lanzan c
 
 | Archivo | Qué comprueba |
 |---|---|
-| `tests/datos.test.mjs` | Criaturas, conjuros y compendio de cada idioma: mismo contenido que el inglés, campos obligatorios, sin caracteres basura del PDF. |
-| `tests/i18n.test.mjs` | Los cinco diccionarios con las mismas claves, los textos de `T('…')` traducidos y la versión igual en `VERSION`, `CHANGELOG.md`, el menú y los changelogs. |
+| `tests/datos.test.mjs` | Criaturas, conjuros y compendio en español: campos obligatorios, sin caracteres basura del PDF. |
 | `tests/seguridad.test.mjs` | Sin secretos en git, clave publicable de Supabase, manuales fuera del repositorio, scripts externos con versión e integridad (SRI), RLS y límites en `supabase/schema.sql`. |
 | `tests/navegador.test.mjs` | Abre la página en Edge o Chrome sin ventana con módulos, grupo, bestiario y copia de seguridad maliciosos (código en todos los campos) y con datos de tipos absurdos; recorre todas las vistas y comprueba que nada se ejecuta ni rompe la página. También prueba las tiradas y las rarezas en todos los idiomas. Se salta si no hay navegador (`BROWSER=ruta` para indicar otro). |
 
@@ -52,11 +48,11 @@ El contenido del SRD 5.2.1 se usa bajo CC-BY-4.0: «This work includes material 
 
 ## Cuentas y catálogo (Supabase)
 
-Las cuentas son solo con Discord (no se envían correos).
+El acceso es **solo por invitación**, con correo y contraseña (sin Discord). La app (web y escritorio) pide la cuenta la primera vez en cada equipo; sin conexión, la copia local solo se ofrece en un equipo donde ya se haya entrado.
 
 1. En Supabase → **SQL Editor**, ejecuta `supabase/schema.sql` (se puede repetir sin problema).
-2. En el portal de desarrolladores de Discord, crea una aplicación y añade en **OAuth2 → Redirects** `https://mjzolxysvxoauvaxuqcq.supabase.co/auth/v1/callback`.
-3. En Supabase → **Authentication → Sign In / Providers → Discord**, actívalo con el Client ID y el Client Secret de Discord.
+2. En **Authentication → Sign In / Providers**, deja activo Email y **desactiva «Allow new users to sign up»**. Invita a cada persona desde **Authentication → Users → Invite user**.
+3. En Cloudflare, quita la protección de Access de la web (el acceso lo controla la propia app con Supabase).
 4. En **Authentication → URL Configuration**, pon la dirección de Cloudflare (`https://herramientas-del-master.sotoaeduardo.workers.dev`) como Site URL y añádela (con `/**`) a Redirect URLs.
 5. La URL y la clave publicable del proyecto están en `index.html` (`SB_URL`, `SB_KEY`). Nunca pongas ahí la clave `service_role`/secret.
 

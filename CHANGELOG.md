@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.0] - 2026-11-21
+### Añadido
+- **Acceso solo con cuenta** (web y escritorio): la primera vez en cada equipo se pide correo y contraseña, sin crear cuentas ni Discord; entra quien tenga invitación. Sin conexión, la copia local solo se ofrece en un equipo donde ya se haya entrado.
+- **Distancias en tres unidades a la vez** (metros · pies · casillas), con una opción nueva «Todas a la vez» en Preferencias, que es la predeterminada.
+### Eliminado
+- Idiomas distintos del español (interfaz y datos), el acceso con Discord y las páginas de condiciones y privacidad.
+
 ## [1.56.0] - 2026-11-21
 ### Añadido
 - **Tiendas**: oro disponible para comprar objetos, descuento y, opcionalmente, una misión que lo activa (los jugadores solo ven el descuento cuando la misión está completada).

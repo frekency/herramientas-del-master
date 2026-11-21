@@ -1,16 +1,14 @@
-// Datos del SRD: que cada idioma tenga el mismo contenido que el inglés y con los campos que usa la página.
+// Datos del SRD (solo español): con los campos que usa la página.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {json,read,DATA_LANGS,BEST} from './lib.mjs';
 
 const SCHOOLS=new Set(['abjuracion','adivinacion','conjuracion','encantamiento','evocacion','ilusionismo','nigromancia','transmutacion']);
-const EN_SPELLS=json('datos/en/conjuros.json'),EN_NAMES=new Set(EN_SPELLS.map(s=>s.n));
-const EN_BEST=json('datos/en/bestiario.json'),EN_COMP=json('datos/en/compendio.json');
 
 for(const l of DATA_LANGS){
-  test(`criaturas ${l}: mismas que en inglés y con los campos básicos`,()=>{
+  test(`criaturas ${l}: con los campos básicos`,()=>{
     const b=json(BEST[l]);
-    assert.equal(b.length,EN_BEST.length);
+    assert.ok(b.length>300,'faltan criaturas');
     for(const m of b){
       assert.ok(m.n&&typeof m.n==='string',`sin nombre: ${JSON.stringify(m).slice(0,80)}`);
       assert.ok(Number.isFinite(+m.ac)&&Number.isFinite(+m.hp),`${m.n}: CA/PG`);
@@ -20,10 +18,10 @@ for(const l of DATA_LANGS){
   });
   test(`conjuros ${l}: 339, todos con nombre inglés único`,()=>{
     const s=json(`datos/${l}/conjuros.json`);
-    assert.equal(s.length,EN_SPELLS.length);
+    assert.equal(s.length,339);
     const seen=new Set();
     for(const x of s){
-      assert.ok(EN_NAMES.has(x.en),`${x.n}: nombre inglés desconocido «${x.en}»`);
+      assert.ok(x.en&&typeof x.en==='string',`${x.n}: sin nombre inglés`);
       assert.ok(!seen.has(x.en),`${x.en} repetido`);seen.add(x.en);
       assert.ok(Number.isInteger(x.lv)&&x.lv>=0&&x.lv<=9,`${x.n}: nivel`);
       assert.ok(SCHOOLS.has(x.sch),`${x.n}: escuela «${x.sch}»`);
@@ -31,13 +29,10 @@ for(const l of DATA_LANGS){
       assert.ok(x.d&&x.d.length>20,`${x.n}: sin descripción`);
     }
   });
-  test(`compendio ${l}: mismas secciones y recuentos parecidos al inglés`,()=>{
+  test(`compendio ${l}: secciones con nombre en cada entrada`,()=>{
     const c=json(`datos/${l}/compendio.json`);
-    for(const [k,v] of Object.entries(EN_COMP)){
-      assert.ok(Array.isArray(c[k]),`falta ${k}`);
-      assert.ok(Math.abs(c[k].length-v.length)<=2,`${k}: ${c[k].length} frente a ${v.length} en inglés`);
-      for(const x of c[k])assert.ok(x.n&&typeof x.n==='string',`${k}: entrada sin nombre`);
-    }
+    for(const k of ['objetos'])assert.ok(Array.isArray(c[k])&&c[k].length>0,`falta ${k}`);
+    for(const [k,v] of Object.entries(c))if(Array.isArray(v))for(const x of v)assert.ok(x.n&&typeof x.n==='string',`${k}: entrada sin nombre`);
     for(const o of c.objetos.filter(o=>o.k==='magico'))
       assert.ok(String(o.r).length<90,`${o.n}: la rareza lleva texto pegado («${o.r.slice(0,60)}…»)`);
   });

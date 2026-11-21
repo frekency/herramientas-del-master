@@ -39,7 +39,7 @@ const TAIL=`<script>
     const msg=()=>document.getElementById('ac-msg').textContent;
     document.getElementById('acct-btn').hidden=false;
     document.querySelector('[data-act="acopen"]').click();await wait(150);
-    ok('al abrir la cuenta se ve el formulario de correo y contraseña',visible()==='in'&&!!document.getElementById('ac-in-mail')&&!!document.querySelector('[data-act="acdiscord"]'));
+    ok('al abrir la cuenta se ve el formulario de correo y contraseña',visible()==='in'&&!!document.getElementById('ac-in-mail'));
     // entrar
     rellena('ac-in-mail','ana@ejemplo.com');rellena('ac-in-pass','secreta123');await envia('in');
     ok('entrar llama a signInWithPassword con lo escrito',calls.some(c=>c[0]==='in'&&c[1]==='ana@ejemplo.com'&&c[2]==='secreta123')&&document.getElementById('acctmodal').hidden);

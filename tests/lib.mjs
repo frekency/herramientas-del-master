@@ -13,8 +13,8 @@ export const PAGE=read('index.html');
 export const SCRIPTS=[...PAGE.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
 
 // Idiomas de la interfaz (además del español, que es el texto original) y de los datos del SRD
-export const UI_LANGS=['en','fr','pt','it','de'];
-export const DATA_LANGS=['es','en','fr','de','it'];   // carpetas datos/<idioma>/
+export const UI_LANGS=[];   // la interfaz es solo en español
+export const DATA_LANGS=['es'];   // carpetas datos/<idioma>/
 export const BEST=Object.fromEntries(DATA_LANGS.map(l=>[l,`datos/${l}/bestiario.json`]));
 
 /* Test de navegador: la página se carga en Edge/Chrome sin cabeza y el flujo se sondea en tiempo virtual, así que con la máquina cargada
