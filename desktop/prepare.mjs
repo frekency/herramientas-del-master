@@ -14,12 +14,11 @@ mkdirSync(out, { recursive: true });
 
 const EXCLUIR = new Set(['package.json']);
 const incluir = f =>
-  !EXCLUIR.has(f) && (f === 'index.html' || f === 'privacidad.html' || f === 'terminos.html');
+  !EXCLUIR.has(f) && f === 'index.html';
 
 for (const f of readdirSync(root, { withFileTypes: true })) {
   if (f.isFile() && incluir(f.name)) cpSync(join(root, f.name), join(out, f.name));
 }
-cpSync(join(root, 'i18n'), join(out, 'i18n'), { recursive: true });
 cpSync(join(root, 'datos'), join(out, 'datos'), { recursive: true, filter: s => !s.replace(/\\/g, '/').includes('/datos/privado') });
 cpSync(join(here, 'mesa.html'), join(out, 'mesa.html'));
 
