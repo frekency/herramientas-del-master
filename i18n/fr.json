@@ -1401,5 +1401,18 @@
   "Permisos": "Permissions",
   "Elemento": "Élément",
   "Tu versión, sustituida por otro dispositivo": "Votre version, remplacée par un autre appareil",
-  "Versión de otro dispositivo, sustituida por la tuya": "Version d’un autre appareil, remplacée par la vôtre"
+  "Versión de otro dispositivo, sustituida por la tuya": "Version d’un autre appareil, remplacée par la vôtre",
+  "Código copiado": "Code copié",
+  "Invitar jugadores": "Inviter des joueurs",
+  "Crear código": "Créer un code",
+  "Pásale el código al jugador: lo escribe en «Unirme con un código». Caduca a los 7 días y sirve para 10 personas.": "Donnez le code au joueur : il le saisit dans « Rejoindre avec un code ». Il expire au bout de 7 jours et sert pour 10 personnes.",
+  "caduca": "expire",
+  "No se ha podido crear el código": "Impossible de créer le code",
+  "Inicia sesión para unirte": "Connectez-vous pour rejoindre",
+  "No se ha podido unir": "Impossible de rejoindre",
+  "Invitación no válida o caducada": "Invitation invalide ou expirée",
+  "Ya tienes esta campaña": "Vous avez déjà cette campagne",
+  "Te has unido: ábrela para bajar su contenido": "Vous avez rejoint : ouvrez-la pour télécharger son contenu",
+  "Código de invitación": "Code d’invitation",
+  "Unirme con un código": "Rejoindre avec un code"
 }

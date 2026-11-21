@@ -79,9 +79,13 @@ function serve(){
 test('el bloqueo de pantalla pide PIN, recuerda el estado y se bloquea solo',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-lock-'));
   try{
-    const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',
-      `--user-data-dir=${prof}`,'--virtual-time-budget=900000','--dump-dom',`http://127.0.0.1:${port}/__bloqueo.html`],{maxBuffer:64<<20,timeout:110000},(e,out)=>e&&!out?ko(e):ok(out)));
-    const m=dom.match(/<pre id="__res">([\s\S]*?)<\/pre>/);
+    // El PIN se calcula en tiempo real y el navegador sin cabeza a veces vuelca la página antes de acabar el flujo (sobre todo con otros tests en paralelo): se reintenta
+    let dom='',m=null;
+    for(let intento=0;intento<3&&!m;intento++){
+      dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',
+        `--user-data-dir=${prof}-${intento}`,'--virtual-time-budget=900000','--dump-dom',`http://127.0.0.1:${port}/__bloqueo.html`],{maxBuffer:64<<20,timeout:110000},(e,out)=>e&&!out?ko(e):ok(out)));
+      m=dom.match(/<pre id="__res">([\s\S]*?)<\/pre>/);
+    }
     assert.ok(m,'la página no terminó el flujo: '+dom.slice(-300));
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');

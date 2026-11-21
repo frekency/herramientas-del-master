@@ -1401,5 +1401,18 @@
   "Permisos": "Permessi",
   "Elemento": "Elemento",
   "Tu versión, sustituida por otro dispositivo": "La tua versione, sostituita da un altro dispositivo",
-  "Versión de otro dispositivo, sustituida por la tuya": "Versione di un altro dispositivo, sostituita dalla tua"
+  "Versión de otro dispositivo, sustituida por la tuya": "Versione di un altro dispositivo, sostituita dalla tua",
+  "Código copiado": "Codice copiato",
+  "Invitar jugadores": "Invita giocatori",
+  "Crear código": "Crea codice",
+  "Pásale el código al jugador: lo escribe en «Unirme con un código». Caduca a los 7 días y sirve para 10 personas.": "Passa il codice al giocatore: lo inserisce in «Unisciti con un codice». Scade dopo 7 giorni e vale per 10 persone.",
+  "caduca": "scade",
+  "No se ha podido crear el código": "Impossibile creare il codice",
+  "Inicia sesión para unirte": "Accedi per unirti",
+  "No se ha podido unir": "Impossibile unirsi",
+  "Invitación no válida o caducada": "Invito non valido o scaduto",
+  "Ya tienes esta campaña": "Hai già questa campagna",
+  "Te has unido: ábrela para bajar su contenido": "Ti sei unito: aprila per scaricarne il contenuto",
+  "Código de invitación": "Codice di invito",
+  "Unirme con un código": "Unisciti con un codice"
 }

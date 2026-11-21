@@ -72,14 +72,19 @@ const TAIL=`<script>
     ok('la contraseña nueva se guarda',calls.some(c=>c[0]==='np'&&c[1]==='nueva-clave-1')&&msg()==='Contraseña cambiada');
     // campañas de la cuenta: al iniciar sesión se añaden solas, salvo las que se quitaron a propósito
     SB_USER={id:'u1'};
-    SB.from=()=>({select:()=>({eq:()=>({order:async()=>({data:[{id:'11111111-1111-1111-1111-111111111111',nombre:'Faro'},{id:'22222222-2222-2222-2222-222222222222',nombre:'Cripta'}],error:null})})})});
+    SB.from=()=>({select:()=>({eq:async()=>({data:[{campana_id:'11111111-1111-1111-1111-111111111111',rol:'jugador',campanas:{nombre:'Faro'}},{campana_id:'22222222-2222-2222-2222-222222222222',rol:'jugador',campanas:{nombre:'Cripta'}}],error:null})})});
     scSoltar('22222222-2222-2222-2222-222222222222');
     await scRemotas(true);await wait(200);
     const nombres=Store.campaigns.list().map(c=>c.nombre);
     ok('las campañas de la cuenta se añaden solas al iniciar sesión',nombres.includes('Faro')&&Store.campaigns.remote(Store.campaigns.list().find(c=>c.nombre==='Faro').id)==='11111111-1111-1111-1111-111111111111');
     ok('una campaña quitada a propósito no vuelve sola',!nombres.includes('Cripta'));
     await scRemotas(true);await wait(100);
+    ok('la campaña de la que se es jugador se trae con ese rol',Store.campaigns.list().find(c=>c.nombre==='Faro').rol==='jugador');
     ok('no se duplican al repetirse',Store.campaigns.list().filter(c=>c.nombre==='Faro').length===1);
+    SB.rpc=async()=>({data:'33333333-3333-3333-3333-333333333333',error:null});SB.from=()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:{nombre:'Torre'}})})})});
+    await scUnirse(' abc ');const torre=Store.campaigns.list().find(c=>c.nombre==='Torre');
+    ok('canjear un código crea la campaña de la cuenta con rol jugador',!!torre&&torre.rol==='jugador'&&Store.campaigns.remote(torre.id)==='33333333-3333-3333-3333-333333333333');
+    await scUnirse('abc');ok('canjear dos veces no la duplica',Store.campaigns.list().filter(c=>c.nombre==='Torre').length===1);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);

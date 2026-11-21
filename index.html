@@ -3350,6 +3350,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <div class="scrow" id="camp-sc"></div>
       <div class="scremote" id="camp-remote"></div>
       <div class="scconf" id="camp-conf"></div>
+      <div class="scremote" id="camp-inv"></div>
+      <form class="inline" id="camp-join" hidden><input class="txt noi18n" id="camp-code" maxlength="20" autocomplete="off" aria-label="Código de invitación" placeholder="Código de invitación" style="flex:1 1 200px"><button class="btn" type="submit">Unirme con un código</button></form>
       <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
     </div>
   </div>
@@ -5369,8 +5371,11 @@ function extraAct(act,b,c,e){
     case 'cpimgrm':{const it=cpGet(cpSel);if(!it)break;it.img=null;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();window.__campLabel&&window.__campLabel();break;
     case 'scvinc':scVincular(b.dataset.id);break;
-    case 'sctraer':scTraer(b.dataset.id,b.dataset.n);break;
+    case 'sctraer':scTraer(b.dataset.id,b.dataset.n,false,b.dataset.rol);break;
     case 'scahora':scRun(true);break;
+    case 'scinv':scInvCrear();break;
+    case 'scinvcopia':{const c=b.dataset.c;try{navigator.clipboard.writeText(c).then(()=>toast(T('Código copiado')),()=>toast(c));}catch{toast(c);}break;}
+    case 'scinvdel':{SB.from('invitaciones_campana').delete().eq('codigo',b.dataset.c).then(()=>scInvCarga());break;}
     case 'scconf':SC.confOpen=!SC.confOpen;scConfPinta();break;
     case 'screc':{const i=+b.dataset.i;if(scConfRecuperar(i)){toast(T('Versión recuperada; se subirá en la próxima sincronización'));scConfPinta();scRun(false);}break;}
     case 'scdesc':{const i=+b.dataset.i;if(SC.l.conflictos[i]){SC.l.conflictos.splice(i,1);scSave();scConfPinta();}break;}
@@ -6887,6 +6892,7 @@ $('#camp').addEventListener('change',e=>{const v=e.target.value;if(v==='__mgr'){
 $('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-camp]');if(!i)return;if(!Store.campaigns.rename(i.dataset.camp,i.value))toast('Pon un nombre a la campaña');renderCamps();});
 $('#camp-form').addEventListener('submit',e=>{e.preventDefault();const n=$('#camp-new').value;
   try{const id=Store.campaigns.create(n);Store.campaigns.select(id);toast('Campaña creada');location.reload();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}});
+$('#camp-join').addEventListener('submit',e=>{e.preventDefault();scUnirse($('#camp-code').value);});
 renderCamps();
 
 /* ---------- cuentas y sincronización (Supabase) ---------- */
@@ -7047,18 +7053,20 @@ const scSoltadas=()=>{try{const a=JSON.parse(Store.root.get('camp-soltadas-v1')|
 const scSoltar=rid=>{if(!rid)return;try{Store.root.set('camp-soltadas-v1',JSON.stringify([...new Set([...scSoltadas(),rid])]));}catch{}};
 async function scRemotas(auto){
   const box=$('#camp-remote');if(!box)return;
-  if(!SB||!SB_USER){box.textContent='';return;}
-  const {data,error}=await SB.from('campanas').select('id,nombre').eq('master_id',SB_USER.id).order('creado');
-  if(error||!data){return;}
+  const jf=$('#camp-join');if(jf)jf.hidden=!(SB&&SB_USER);
+  if(!SB||!SB_USER){box.textContent='';const iv=$('#camp-inv');if(iv)iv.textContent='';return;}
+  const {data:mi,error}=await SB.from('miembros_campana').select('campana_id,rol,campanas(nombre)').eq('user_id',SB_USER.id);
+  if(error||!mi){return;}
+  const data=mi.filter(m=>m.campanas).map(m=>({id:m.campana_id,nombre:m.campanas.nombre,rol:m.rol})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
   const ya=new Set(Store.campaigns.list().map(c=>c.remoto).filter(Boolean));let libres=data.filter(c=>!ya.has(c.id));
   if(auto){   // al iniciar sesión, las campañas de la cuenta que faltan aquí se añaden solas; su contenido baja al abrirlas
     const sol=new Set(scSoltadas()),nuevas=libres.filter(c=>!sol.has(c.id));
-    if(nuevas.length){for(const c of nuevas)scTraer(c.id,c.nombre,true);toast(T(nuevas.length===1?'Se ha añadido una campaña de tu cuenta: ábrela para ver su contenido':'Se han añadido campañas de tu cuenta: ábrelas para ver su contenido'),5000);renderCamps();return;}
+    if(nuevas.length){for(const c of nuevas)scTraer(c.id,c.nombre,true,c.rol);toast(T(nuevas.length===1?'Se ha añadido una campaña de tu cuenta: ábrela para ver su contenido':'Se han añadido campañas de tu cuenta: ábrelas para ver su contenido'),5000);renderCamps();return;}
   }
-  box.innerHTML=libres.length?'<span class="scrow">'+esc(T('Campañas de tu cuenta que aún no están aquí'))+'</span>'+libres.map(c=>'<div class="scrow"><b class="noi18n">'+esc(c.nombre)+'</b><button type="button" class="btn sm" data-act="sctraer" data-id="'+esc(c.id)+'" data-n="'+esc(c.nombre)+'">'+esc(T('Traer'))+'</button></div>').join(''):'';
+  box.innerHTML=libres.length?'<span class="scrow">'+esc(T('Campañas de tu cuenta que aún no están aquí'))+'</span>'+libres.map(c=>'<div class="scrow"><b class="noi18n">'+esc(c.nombre)+'</b><button type="button" class="btn sm" data-act="sctraer" data-id="'+esc(c.id)+'" data-n="'+esc(c.nombre)+'" data-rol="'+esc(c.rol)+'">'+esc(T('Traer'))+'</button></div>').join(''):'';
   const hay=Store.campaigns.remote(Store.campaigns.active());
   $('#camp-sc').innerHTML=hay?esc(SC.msg||'')+' <button type="button" class="btn sm ghost" data-act="scahora">'+esc(T('Sincronizar ahora'))+'</button>':'';
-  if(!SC.cargada)scLoad();scConfPinta();
+  if(!SC.cargada)scLoad();scConfPinta();scInvCarga();
 }
 /* ---- copias de conflicto: lo que perdió cuando dos dispositivos editaron lo mismo; se puede recuperar o descartar ---- */
 const SC_TIPO={nota:'Nota',enc:'Encuentro',pj:'Jugador',fch:'Personaje',grp:'Grupo',cfg:'Permisos'};
@@ -7079,8 +7087,41 @@ function scConfRecuperar(i){
   SC.l=r.l;scApply({bajados:[c.clave],borrados:[]});
   SC.l.conflictos.splice(i,1);scSave();return true;
 }
-function scTraer(rid,nombre,callado){
-  try{const id=Store.campaigns.create(nombre);Store.campaigns.setRemote(id,rid);if(!callado){toast(T('Campaña traída: ábrela para bajar su contenido'));renderCamps();}}catch(err){if(!callado)toast(err.message);}
+/* ---- invitaciones: el máster da un código (caduca a los 7 días, 10 usos) y el jugador lo canjea en «Unirme con un código» ---- */
+const SC_INV={l:[]};
+const scEsMaster=()=>{const C=Store.campaigns,c=C.list().find(x=>x.id===C.active());return !!(c&&C.remote(c.id)&&c.rol!=='jugador');};
+function scInvPinta(){
+  const b=$('#camp-inv');if(!b)return;
+  if(!SB||!SB_USER||!scEsMaster()){b.innerHTML='';return;}
+  b.innerHTML='<div class="scrow"><b>'+esc(T('Invitar jugadores'))+'</b> <button type="button" class="btn sm" data-act="scinv">'+esc(T('Crear código'))+'</button></div>'
+   +(SC_INV.l.length?'<p class="hint" style="display:block;margin:0">'+esc(T('Pásale el código al jugador: lo escribe en «Unirme con un código». Caduca a los 7 días y sirve para 10 personas.'))+'</p>':'')
+   +SC_INV.l.map(i=>'<div class="scrow"><code class="noi18n">'+esc(i.codigo)+'</code> <span class="pcsub">'+esc(T('caduca'))+' '+esc(new Date(i.caduca).toLocaleDateString())+' · '+i.usos+'/'+i.usos_max+'</span> '
+     +'<button type="button" class="btn sm ghost" data-act="scinvcopia" data-c="'+esc(i.codigo)+'">'+esc(T('Copiar'))+'</button><button type="button" class="btn sm ghost" data-act="scinvdel" data-c="'+esc(i.codigo)+'">'+esc(T('Borrar'))+'</button></div>').join('');
+}
+async function scInvCarga(){
+  const cid=Store.campaigns.remote(Store.campaigns.active());
+  if(!SB||!SB_USER||!cid||!scEsMaster()){SC_INV.l=[];scInvPinta();return;}
+  const {data,error}=await SB.from('invitaciones_campana').select('codigo,caduca,usos,usos_max').eq('campana_id',cid).gt('caduca',new Date().toISOString()).order('creado');
+  SC_INV.l=!error&&Array.isArray(data)?data:[];scInvPinta();
+}
+async function scInvCrear(){
+  const cid=Store.campaigns.remote(Store.campaigns.active());if(!SB||!SB_USER||!cid)return;
+  const {error}=await SB.from('invitaciones_campana').insert({campana_id:cid});
+  if(error){toast(T('No se ha podido crear el código')+': '+error.message);return;}
+  await scInvCarga();
+}
+async function scUnirse(codigo){
+  if(!SB||!SB_USER){toast(T('Inicia sesión para unirte'));return;}
+  const c=String(codigo||'').trim();if(!c)return;
+  const {data:rid,error}=await SB.rpc('unirse_campana',{c});
+  if(error||!rid){toast(T('No se ha podido unir')+': '+(error&&error.message||T('Invitación no válida o caducada')));return;}
+  if(Store.campaigns.list().some(x=>Store.campaigns.remote(x.id)===rid)){toast(T('Ya tienes esta campaña'));return;}
+  const {data:cp}=await SB.from('campanas').select('nombre').eq('id',rid).maybeSingle();
+  scTraer(rid,(cp&&cp.nombre)||'Campaña','callado','jugador');
+  $('#camp-code').value='';renderCamps();toast(T('Te has unido: ábrela para bajar su contenido'),5000);
+}
+function scTraer(rid,nombre,callado,rol){
+  try{const id=Store.campaigns.create(nombre);Store.campaigns.setRemote(id,rid);if(rol==='jugador')Store.campaigns.setRol(id,'jugador');if(!callado){toast(T('Campaña traída: ábrela para bajar su contenido'));renderCamps();}}catch(err){if(!callado)toast(err.message);}
 }
 setInterval(()=>{if(!document.hidden&&SB_USER&&Store.campaigns.remote(Store.campaigns.active()))scRun(false);},30000);
 addEventListener('online',()=>scRun(false));
