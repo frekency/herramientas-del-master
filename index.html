@@ -7579,7 +7579,7 @@ function renderCamps(){
   const C=Store.campaigns,act=C.active();
   const lista=C.list().filter(c=>!(WEB_NUBE&&c.id===C.BASE&&C.list().some(x=>x.remoto)));   // en la web, con campañas de la cuenta, no se enseña la local vacía
   $('#camp').innerHTML=lista.map(c=>`<option value="${esc(c.id)}"${c.id===act?' selected':''}>${esc(c.nombre)}</option>`).join('')+`<option value="__mgr">${esc(T('Gestionar campañas…'))}</option>`;
-  $('#camp-list').innerHTML=C.list().map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${SB_USER?(C.remote(c.id)?`<span class="chip" title="${esc(T('Sincronizada con tu cuenta'))}">${esc(T('Sincronizada'))}</span>`:`<button class="btn sm" data-act="scvinc" data-id="${esc(c.id)}">${esc(T('Sincronizar'))}</button>`):''}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
+  $('#camp-list').innerHTML=lista.map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${SB_USER?(C.remote(c.id)?`<span class="chip" title="${esc(T('Sincronizada con tu cuenta'))}">${esc(T('Sincronizada'))}</span>`:`<button class="btn sm" data-act="scvinc" data-id="${esc(c.id)}">${esc(T('Sincronizar'))}</button>`):''}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
   $('#camp-new').placeholder=T('Nombre de la nueva campaña');
   scRemotas();
 }
@@ -7980,7 +7980,7 @@ async function syncPull(){
   const meta=lsGet(SYNC_META)||{},same=meta.user===SB_USER.id;meta.user=SB_USER.id;if(!same||!meta.h)meta.h={};
   if(!data.length){lsSet(SYNC_META,meta);await syncPush(true);startSync();toast('Tus datos de este navegador se han guardado en tu cuenta');return;}
   const srv=Object.fromEntries(data.map(r=>[r.clave,r.valor]));
-  const preferLocal=!same&&Object.values(SYNC_KEYS).some(k=>lsRaw(k))&&!confirm(T('Tu cuenta ya tiene datos guardados.\n\nAceptar: usar en este navegador los de tu cuenta.\nCancelar: guardar en tu cuenta los de este navegador.'));
+  const preferLocal=!WEB_NUBE&&!same&&Object.values(SYNC_KEYS).some(k=>lsRaw(k))&&!confirm(T('Tu cuenta ya tiene datos guardados.\n\nAceptar: usar en este navegador los de tu cuenta.\nCancelar: guardar en tu cuenta los de este navegador.'));
   let changed=false;
   for(const[cl,k] of Object.entries(SYNC_KEYS)){
     const raw=lsRaw(k);let loc=null;try{loc=raw==null?null:JSON.parse(raw);}catch{}

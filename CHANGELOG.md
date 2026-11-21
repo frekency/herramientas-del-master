@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.3] - 2026-11-21
+### Corregido
+- Web: el gestor de campañas ya no enseña la campaña local vacía, y al entrar manda siempre la cuenta (ya no pregunta «navegador o cuenta»). Sin avisos de actualización de la app en la web.
+
 ## [1.57.2] - 2026-11-21
 ### Cambiado
 - **Web sin datos en el navegador**: los datos viven en la cuenta y solo se guardan, de forma temporal, mientras la pestaña está abierta. Al iniciar sesión se abre sola la primera campaña de la cuenta, ya no aparece la campaña local vacía y al cerrar la pestaña con cambios sin subir el navegador avisa.
