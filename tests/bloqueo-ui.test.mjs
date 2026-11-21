@@ -26,7 +26,7 @@ const TAIL=`<script>
   try{
     await wait(1200);
     Bloqueo.aj.iteraciones=2000;
-    const until=async f=>{for(let i=0;i<150&&!f();i++){await Bloqueo.crear('0000');await wait(10);}};   // el cálculo del PIN es real y el tiempo virtual no lo espera: se gasta tiempo real calculando
+    const until=async f=>{for(let i=0;i<1000&&!f();i++){await Bloqueo.crear('0000');await wait(10);}};   // el cálculo del PIN es real y el tiempo virtual no lo espera: se gasta tiempo real calculando
     const set=(s,v)=>{const e=document.querySelector(s);e.value=v;e.dispatchEvent(new Event('change',{bubbles:true}));};
     ok('el botón del candado aparece en la app de escritorio',!document.getElementById('lock-btn').hidden);
     // sin PIN no bloquea: lleva a preferencias
