@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.45.0] - 2026-11-21
+### Añadido
+- **Actualizaciones automáticas** de la app de escritorio desde las versiones de GitHub: en Windows se descargan solas y se instalan al cerrar; en Mac y en la versión portable solo avisan y abren la página de la versión. Se comprueban al arrancar, cada 6 horas y con «Buscar actualizaciones» en Preferencias.
+- **Copias de conflicto** en la campaña: cuando dos dispositivos cambian lo mismo, la versión perdida se puede ver, recuperar o descartar.
+### Cambiado
+- Los instaladores ya no incluyen nunca `datos/privado/`: solo llevan datos libres (SRD). Los libros se importan desde la app y viven en el perfil del usuario.
+- Las versiones se compilan y publican en GitHub al subir una etiqueta `v*`.
+
 ## [1.44.0] - 2026-11-20
 ### Añadido
 - **Hoja de personaje en PDF de 2 páginas**, al estilo de la hoja oficial: datos, combate, características con salvaciones y habilidades, armas, recursos, rasgos y magia con tabla de conjuros. También en blanco.
