@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.52.0] - 2026-11-21
+### Cambiado
+- **Encuentros de la campaña con aire de cuaderno**: el constructor es un folio con secciones separadas por filetes y la lista, un índice. Las nueve pestañas de Campaña caben en una fila.
+
 ## [1.51.0] - 2026-11-21
 ### Añadido
 - **PNJ, lugares, tiendas y misiones: el máster decide qué ven los jugadores.** Una descripción pública y, según el caso, el mapa con sus chinchetas, el inventario con precios o el estado y los objetivos. El resto de la ficha sigue siendo solo del máster.

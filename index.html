@@ -2447,13 +2447,18 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .scremote{display:flex;flex-direction:column;gap:6px}
 .epgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
 .epside{flex:1 1 240px;max-width:320px;min-width:0;display:flex;flex-direction:column;gap:10px}
-.eplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.eplist a{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);text-decoration:none}
-.eplist a[aria-current="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.eplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.eplist a{display:flex;flex-direction:column;gap:3px;padding:9px 6px 10px;border:0;border-bottom:1px dotted color-mix(in srgb,var(--fg) 40%,transparent);border-radius:0;background:transparent;color:var(--fg);text-decoration:none;font-family:var(--f-display);font-size:17px;font-weight:700}
+.eplist a:hover{color:var(--accent)}
+.eplist a[aria-current="true"]{background:var(--surface,var(--bg));border:1px solid var(--line);border-radius:6px;box-shadow:inset 0 -3px 0 var(--accent);padding:9px 10px 12px}
+.eplist small{font-family:var(--f-body,inherit);font-weight:400}
 .eplist small{color:var(--muted)}
-.epdet{flex:3 1 460px;min-width:0;display:flex;flex-direction:column;gap:14px}
-.epbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;display:flex;flex-direction:column;gap:10px}
-.epbox h3{margin:0;font-size:14px}
+.epdet{flex:3 1 460px;min-width:0;display:flex;flex-direction:column;gap:16px;background:var(--surface,var(--bg));border:1px solid var(--line);border-radius:4px 4px 8px 8px;padding:22px 26px 24px;box-shadow:0 1px 0 var(--line),0 5px 0 -2px var(--surface,var(--bg)),0 6px 0 -2px var(--line),0 10px 0 -4px var(--surface,var(--bg)),0 11px 0 -4px var(--line)}
+.epdet:empty{display:none}
+.epbox{border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;padding:14px 0 0;display:flex;flex-direction:column;gap:10px}
+.epbox:first-child{border-top:0;padding-top:0}
+.epbox:first-child input{font-family:var(--f-display);font-size:22px;font-weight:700}
+.epbox h3{margin:0;font-family:var(--f-display);font-size:19px;font-weight:700;color:var(--accent)}
 .eprow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .eprow label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
 .eprow input,.eprow select,.epbox input,.epbox select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-width:0}
@@ -2468,7 +2473,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ephits{display:flex;flex-wrap:wrap;gap:6px}
 .epfoot{display:flex;flex-wrap:wrap;gap:8px}
 .cptabs{display:flex;gap:2px;margin:6px 0 18px;border-bottom:2px solid var(--fg);overflow-x:auto;scrollbar-width:none}
-.cptabs a{display:inline-flex;align-items:center;gap:7px;padding:7px 11px 6px;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));color:var(--muted);text-decoration:none;font-size:14px;white-space:nowrap;margin-top:5px;position:relative;top:0}
+.cptabs a{display:inline-flex;align-items:center;gap:7px;padding:7px 9px 6px;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));color:var(--muted);text-decoration:none;font-size:14px;white-space:nowrap;margin-top:5px;position:relative;top:0}
 .cptabs a:hover{color:var(--fg);margin-top:2px;padding-top:10px}
 .cptabs a[aria-selected="true"]{border-color:var(--fg);color:var(--fg);background:var(--surface,var(--bg));font-weight:700;margin-top:0;padding-top:11px;margin-bottom:-2px;padding-bottom:8px;box-shadow:inset 0 3px 0 var(--accent)}
 .cpgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
@@ -2686,7 +2691,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.51</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.52</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2853,6 +2858,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.52 <span>21 nov 2026</span></h3><ul>
+      <li><b>Encuentros de la campaña con aire de cuaderno</b>: el constructor es un folio con secciones separadas por filetes y la lista, un índice. Las nueve pestañas de Campaña caben en una fila.</li>
+    </ul></li>
     <li><h3>v1.51 <span>21 nov 2026</span></h3><ul>
       <li><b>PNJ, lugares, tiendas y misiones: tú decides qué ven los jugadores</b>. Una descripción pública y, según el caso, el mapa, el inventario o los objetivos, sin abrir el resto de la ficha.</li>
       <li>PNJ con aspecto y voz, qué quiere y secreto. La lista marca lo que el jugador ve y el progreso de las misiones.</li>
