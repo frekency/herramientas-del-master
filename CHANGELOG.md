@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.61.0] - 2026-11-21
+### Añadido
+- **Puzzles y juegos**: nueva sección en la campaña para diseñar eventos: un juego de taberna, un puzzle, una combinación para pasar una prueba. Lleva estado, reglas, solución (solo máster), qué pasa si fallan, recompensa y pistas. Los jugadores ven la descripción y solo las pistas que marques como dadas.
+- **Probar una respuesta desde el móvil**: si lo activas, el jugador escribe su respuesta o combinación en su dispositivo y la app le dice si es correcta (sin distinguir mayúsculas, acentos ni signos). La respuesta no viaja: solo una huella.
+### Corregido
+- Las pestañas de la sesión (1.60) se mezclaban con el estilo de la barra de la campaña y de las tablas; ahora tienen estilo propio.
+
 ## [1.60.2] - 2026-11-21
 ### Corregido
 - Los instaladores de escritorio (Windows y Mac) no se compilaban desde que se retiraron los idiomas: el empaquetado buscaba la carpeta `i18n`, que ya no existe. Corregido; esta versión vuelve a generar instalador.

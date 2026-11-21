@@ -142,3 +142,9 @@ test('sesión: resumen del máster y resumen para jugadores; siempre es del más
   assert.equal(s.visibilidad,'dm');assert.equal(s.campos.resumen.length,20000);assert.equal(s.campos.publico.length,20000);
   assert.equal(N.norm({tipo:'sesion',nombre:'s'}).campos.resumen,'');
 });
+
+test('puzzle: campos saneados y siempre del máster',()=>{
+  const p=N.norm({tipo:'puzzle',nombre:'Cofre',visibilidad:'jugadores',campos:{estado:'raro',solucion:'1-2-3',pistas:[{t:'Mira el reloj',ok:true},{t:'x',ok:false}],jugable:1,respuesta:'123'}});
+  assert.equal(p.visibilidad,'dm');assert.equal(p.campos.estado,'pendiente');assert.equal(p.campos.pistas.length,2);assert.equal(p.campos.jugable,true);
+  assert.ok(N.TIPOS.some(t=>t[0]==='puzzle'));
+});
