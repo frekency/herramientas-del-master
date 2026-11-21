@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.58.0] - 2026-11-21
+### Añadido
+- **Control de versiones de la campaña** (escritorio): si un elemento cambia aquí y en la cuenta a la vez, ya no se decide solo «lo más reciente»: no se pisa nada y el conflicto queda abierto en Campañas, con la hora de cada versión, para elegir «Quedarme con lo mío» o «Quedarme con lo de la cuenta» (la otra versión queda como copia recuperable).
+- **Control de cambios**: cuántos cambios hay sin subir y botones **Subir todo lo de este dispositivo** y **Descargar todo lo de la cuenta**, que antes de actuar enseñan cuántos elementos son nuevos, distintos o se perderían, y guardan copias recuperables de lo que se sustituye.
+
 ## [1.57.8] - 2026-11-21
 ### Cambiado
 - Inicio (web): el cuadro de descarga de la app de escritorio pasa al final de la página.

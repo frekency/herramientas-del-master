@@ -48,6 +48,16 @@ const TAIL=`<script>
     ok('recuperar devuelve la versión perdida',scConfRecuperar(0)&&PJC.find(f=>f.id==='c1').nombre==='Lyra vieja'&&SC.l.conflictos.length===1&&SC.l.items['fch:c1'].dirty===true);
     SC.l.conflictos.splice(0,1);ok('descartar quita la copia',scConfHTML()==='');
     ok('los personajes libres viajan con la biblioteca de la cuenta',SYNC_KEYS.fichas==='fichas-v1');
+    // control de versiones: un conflicto abierto no pisa nada; elegir «la cuenta» trae su versión y guarda la tuya, elegir «lo mío» la conserva
+    SC.l=Sincro.vacio();let lq=Sincro.editar(SC.l,'grp:gq',{id:'gq',n:'Mío',tipo:'aliados',miembros:[]},5).l;lq.items['grp:gq'].bv=1;
+    lq.abiertos=[{clave:'grp:gq',remoto:{valor:{id:'gq',n:'Nube',tipo:'aliados',miembros:[]},version:2,actualizado:4,borrado:false}}];SC.l=Sincro.norm(lq);
+    ok('el conflicto queda abierto sin tocar lo local',SC.l.abiertos.length===1&&SC.l.items['grp:gq'].valor.n==='Mío');
+    scResolver('grp:gq','nube');
+    ok('elegir la cuenta trae su versión y guarda la mía como copia',GRP.some(g=>g.id==='gq'&&g.n==='Nube')&&SC.l.abiertos.length===0&&SC.l.conflictos.some(c=>c.clave==='grp:gq'&&c.motivo==='descartada_local'&&c.valor.n==='Mío'));
+    lq=Sincro.editar(Sincro.vacio(),'grp:gq',{id:'gq',n:'Otra mía',tipo:'aliados',miembros:[]},9).l;lq.items['grp:gq'].bv=2;
+    lq.abiertos=[{clave:'grp:gq',remoto:{valor:{id:'gq',n:'Otra nube',tipo:'aliados',miembros:[]},version:3,actualizado:8,borrado:false}}];SC.l=Sincro.norm(lq);
+    scResolver('grp:gq','mio');
+    ok('elegir lo mío lo deja listo para subir sobre la versión actual',SC.l.abiertos.length===0&&SC.l.items['grp:gq'].dirty===true&&SC.l.items['grp:gq'].bv===3&&GRP.some(g=>g.id==='gq'&&g.n==='Nube'));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);

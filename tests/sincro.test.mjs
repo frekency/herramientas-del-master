@@ -219,3 +219,63 @@ test('convergencia con lecturas incrementales y varios dispositivos', () => {
     for (const d of ds) assert.equal(S.pendientes(d.l), 0);
   }
 });
+
+/* ---------- modo manual: control de versiones (los conflictos no se resuelven solos) ---------- */
+function conConflicto(){
+  // el servidor tiene la versión 2 de «nota:a» (otro dispositivo); aquí se editó sobre la 1 y aún no se ha subido
+  let l=S.vacio();l={...l,items:{'nota:a':{valor:{t:'mía'},bv:1,mod:5000,dirty:true,del:false}}};
+  const remoto={'nota:a':{valor:{t:'nube'},version:2,actualizado:4000,borrado:false}};
+  return {l,remoto};
+}
+test('manual: si cambian los dos lados no se pisa nada, el conflicto queda abierto',()=>{
+  const {l,remoto}=conConflicto(),r=S.fusionar(l,remoto,9000,{manual:true});
+  assert.deepEqual(r.subir,[]);assert.deepEqual(r.bajados,[]);assert.deepEqual(r.conflictos,[]);assert.deepEqual(r.abiertos,['nota:a']);
+  assert.deepEqual(r.l.items['nota:a'].valor,{t:'mía'});          // lo local intacto, aunque sea más reciente o más antiguo
+  assert.equal(r.l.abiertos.length,1);assert.equal(r.l.abiertos[0].remoto.version,2);
+  assert.equal(r.l.conflictos.length,0);                            // aún no hay copia perdida: nadie ha elegido
+});
+test('manual: lo más antiguo tampoco se pisa (antes ganaba el más reciente)',()=>{
+  const {l,remoto}=conConflicto();remoto['nota:a'].actualizado=99999;
+  const r=S.fusionar(l,remoto,9000,{manual:true});
+  assert.deepEqual(r.l.items['nota:a'].valor,{t:'mía'});assert.equal(r.l.abiertos.length,1);
+});
+test('manual: en una lectura incremental el conflicto abierto se mantiene y no se intenta subir',()=>{
+  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true}),b=S.fusionar(a.l,{},9500,{manual:true,incremental:true});
+  assert.deepEqual(b.subir,[]);assert.equal(b.l.abiertos.length,1);
+});
+test('manual: elegir «lo mío» sube sobre la versión actual del servidor y converge',()=>{
+  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
+  const rs=S.resolver(a.l,'nota:a','mio',9100);assert.ok(rs.ok);assert.equal(rs.l.abiertos.length,0);
+  const r=S.fusionar(rs.l,remoto,9200,{manual:true});
+  assert.deepEqual(r.subir.map(u=>[u.clave,u.base,u.borrado]),[['nota:a',2,false]]);   // base = versión del servidor, así que el servidor lo acepta
+  assert.deepEqual(r.subir[0].valor,{t:'mía'});
+});
+test('manual: elegir «la nube» trae lo del servidor y guarda lo local como copia recuperable',()=>{
+  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
+  const rs=S.resolver(a.l,'nota:a','nube',9100);assert.ok(rs.ok);
+  assert.deepEqual(rs.l.items['nota:a'].valor,{t:'nube'});assert.equal(rs.l.items['nota:a'].dirty,false);assert.equal(rs.l.items['nota:a'].bv,2);
+  assert.deepEqual(rs.aplicar,{bajados:['nota:a'],borrados:[]});
+  assert.equal(rs.l.conflictos.length,1);assert.equal(rs.l.conflictos[0].motivo,'descartada_local');assert.deepEqual(rs.l.conflictos[0].valor,{t:'mía'});
+});
+test('manual: borrado en la nube frente a edición local es conflicto; «la nube» borra aquí, «lo mío» lo resucita',()=>{
+  const {l}=conConflicto(),remoto={'nota:a':{valor:null,version:2,actualizado:4000,borrado:true}};
+  const a=S.fusionar(l,remoto,9000,{manual:true});assert.equal(a.l.abiertos.length,1);assert.deepEqual(a.subir,[]);
+  const n=S.resolver(a.l,'nota:a','nube',9100);assert.ok(!n.l.items['nota:a']);assert.deepEqual(n.aplicar.borrados,['nota:a']);
+  const m=S.resolver(a.l,'nota:a','mio',9100),r=S.fusionar(m.l,remoto,9200,{manual:true});
+  assert.deepEqual(r.subir.map(u=>[u.clave,u.base]),[['nota:a',2]]);
+});
+test('manual: si ya no hay conflicto (el servidor volvió a coincidir) se cierra solo',()=>{
+  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
+  const iguales={'nota:a':{valor:{t:'mía'},version:3,actualizado:6000,borrado:false}};
+  const r=S.fusionar({...a.l,items:{'nota:a':{...a.l.items['nota:a'],dirty:false,bv:3}}},iguales,9100,{manual:true});
+  assert.equal(r.l.abiertos.length,0);
+});
+test('resolver: sin conflicto o con elección inválida no hace nada',()=>{
+  assert.equal(S.resolver(S.vacio(),'nota:a','mio',1).ok,false);
+  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
+  assert.equal(S.resolver(a.l,'nota:a','otra',1).ok,false);
+});
+test('el modo por defecto (sin «manual») sigue resolviendo solo: gana el más reciente y guarda la otra',()=>{
+  const {l,remoto}=conConflicto(),r=S.fusionar(l,remoto,9000);
+  assert.deepEqual(r.conflictos,['nota:a']);assert.equal(r.l.abiertos.length,0);
+});
