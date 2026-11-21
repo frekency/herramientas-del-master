@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.61.1] - 2026-11-21
+### Cambiado
+- **Fichas de la campaña más claras** (PNJ, lugares, tiendas, misiones, puzzles…): los datos cortos van en una fila de rejilla con etiquetas breves (las aclaraciones pasan a ser el texto de ayuda dentro del campo) y los textos largos, debajo y a ancho completo. Lo que es solo del máster (secreto, solución) se distingue con un recuadro suave y un candado.
+
 ## [1.61.0] - 2026-11-21
 ### Añadido
 - **Puzzles y juegos**: nueva sección en la campaña para diseñar eventos: un juego de taberna, un puzzle, una combinación para pasar una prueba. Lleva estado, reglas, solución (solo máster), qué pasa si fallan, recompensa y pistas. Los jugadores ven la descripción y solo las pistas que marques como dadas.

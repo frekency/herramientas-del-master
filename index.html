@@ -2622,6 +2622,12 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpit .pub{color:var(--accent);display:inline-flex}.cpit .pub .ic{width:14px;height:14px}
 .cphead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cptitle{flex:1 1 220px;font-size:20px;font-weight:700;min-width:0}
 .cpfields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.cpareas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px;margin-top:14px}
+.cparea textarea{width:100%;box-sizing:border-box;min-height:84px;resize:vertical}
+.cpsecreto{background:color-mix(in srgb,var(--accent) 7%,var(--bg));border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));border-radius:10px;padding:10px}
+.cpsolo{display:inline-flex;align-items:center;gap:4px;font-style:normal;font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+.cpsolo .ic{width:12px;height:12px}
+.cpfields label.f{align-content:start}
 .cplink{display:flex;gap:8px;align-items:center}.cplink input{flex:1;min-width:0}
 .cpck{display:flex;flex-direction:column;gap:6px}.cpck h4,.cpcr h4,.cptoolbar h4,.cpback h4{margin:0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .cprow{display:flex;gap:8px;align-items:center}.cprow input[type=text]{flex:1;min-width:0}.cprow.inv input:nth-child(2),.cprow.inv input:nth-child(3){flex:0 0 90px}
@@ -6991,17 +6997,18 @@ function cpRenderList(){
   const rows=cpSorted(base);
   $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}${i.tipo==='handout'?' ho':''}" href="${esc(Notas.href(i))}">${i.tipo==='handout'&&i.img?`<img class="cpthumb" src="${i.img}" alt="" loading="lazy">`:''}<span class="nm">${esc(cpName(i))}</span>${i.visibilidad!=='dm'?`<span class="pub" title="${esc(i.visibilidad==='enlace'?T('Lo verá cualquiera con el enlace'):T('Lo verán los jugadores'))}">${ic(i.visibilidad==='enlace'?'chain':'eye')}</span>`:scPub(i)?`<span class="pub parcial" title="${esc(T('Los jugadores ven solo una parte'))}">${ic('eye')}</span>`:''}<small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small></a></li>`).join(''):(cpQ?`<li class="empty">${T('Nada coincide con la búsqueda.')}</li>`:'');
 }
-function cpField(i,[k,lbl,kind]){
+function cpField(i,[k,lbl0,kind]){
+  const mh=/^(.*?)s*((.*))s*$/.exec(lbl0),lbl=mh?mh[1]:lbl0,ph=mh?mh[2]:'',pha=ph?` placeholder="${esc(T(ph))}"`:'';
   const v=i.campos[k]||'',id='cpf-'+k;
   if(kind==='sel')return `<label class="f">${T(lbl)}<select data-cpf="campos.${k}">${Notas.ESTADOS[i.tipo].map(o=>`<option value="${o}"${o===v?' selected':''}>${esc(T(cpCap(o)))}</option>`).join('')}</select></label>`;
   if(kind==='act')return `<label class="f">${T(lbl)}<select data-cpf="campos.${k}"><option value="">—</option>${CP_ACT.map(o=>`<option value="${o}"${o===v?' selected':''}>${esc(T(o))}</option>`).join('')}</select></label>`;
-  if(kind==='area')return `<label class="f">${T(lbl)}<textarea rows="3" data-cpf="campos.${k}">${esc(v)}</textarea></label>`;
+  if(kind==='area'){const sec=/solo máster|secreto/i.test(lbl);return `<label class="f cparea${sec?' cpsecreto':''}"><span>${T(lbl)}${sec?` <em class="cpsolo">${ic('lock')} ${esc(T('solo tú'))}</em>`:''}</span><textarea rows="3" data-cpf="campos.${k}"${pha}>${esc(v)}</textarea></label>`;}
   if(kind==='date')return `<label class="f">${T(lbl)}<input type="date" data-cpf="campos.${k}" value="${esc(v)}"></label>`;
   if(kind.startsWith('link:')){
     const t=kind.slice(5),hit=Notas.porNombre(CP,v);
     return `<label class="f">${T(lbl)}<span class="cplink"><input type="text" list="cp-dl-${t}" data-cpf="campos.${k}" value="${esc(v)}" placeholder="${esc(T(Notas.SING[t]))}">${hit?`<a class="wl" href="${esc(Notas.href(hit))}" title="${esc(T('Abrir'))}">↗</a>`:''}</span></label>`;
   }
-  return `<label class="f">${T(lbl)}<input type="text" data-cpf="campos.${k}" value="${esc(v)}"></label>`;
+  return `<label class="f">${T(lbl)}<input type="text" data-cpf="campos.${k}" value="${esc(v)}"${pha}></label>`;
 }
 /* ¿está activo el descuento de la tienda? Sin misión vinculada, sí; con misión, solo si está completada */
 function cpDescActivo(c){if(!c.descuento)return false;if(!c.mision)return true;const m=Notas.porNombre(CP,c.mision);return !!m&&m.campos.estado==='completada';}
@@ -7053,7 +7060,7 @@ function cpRenderDet(){
   const tabs=it.tipo==='sesion'?cpTabsBar():'';
   if(it.tipo==='sesion'&&cpTab!=='plan'){el.innerHTML=`${dl}${head}${tabs}${cpTabCuerpo(it)}<div class="cpfoot"><button type="button" class="btn danger sm" data-act="cpdel" data-confirm>${T('Borrar')}</button></div>`;return;}
   el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}${head}${tabs}
-    <div class="cpfields">${CPF[it.tipo].map(f=>cpField(it,f)).join('')}</div>${it.tipo==='tienda'?cpDescEstado(it):''}
+    <div class="cpfields">${CPF[it.tipo].filter(f=>f[2]!=='area').map(f=>cpField(it,f)).join('')}</div>${CPF[it.tipo].some(f=>f[2]==='area')?`<div class="cpareas">${CPF[it.tipo].filter(f=>f[2]==='area').map(f=>cpField(it,f)).join('')}</div>`:''}${it.tipo==='tienda'?cpDescEstado(it):''}
     ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}
     ${it.tipo==='npc'?cpCreature(it):''}
     ${it.tipo==='lugar'?cpMapa(it):''}
