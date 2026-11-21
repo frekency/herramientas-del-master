@@ -1004,7 +1004,7 @@ window.Notas=(()=>{
   const inv=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({n:str(e&&e.n,120),p:str(e&&e.p,40),c:str(e&&e.c,20)})).filter(e=>e.n);
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
-    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'p'},
+    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p'},
     lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b'},
@@ -1018,11 +1018,11 @@ window.Notas=(()=>{
     const t=x.tipo,c={},src=x.campos&&typeof x.campos==='object'?x.campos:{};
     for(const [k,k2] of Object.entries(CAMPOS[t])){
       const v=src[k];
-      c[k]=k2==='b'?!!v:k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
+      c[k]=k2==='b'?!!v:k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='r'?str(v,MAX.texto):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
     }
     const img=typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=(t==='handout'?MAX.mapa:MAX.img)?x.img:null;
     const mapa=t==='lugar'&&typeof x.mapa==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.mapa)&&x.mapa.length<=MAX.mapa?x.mapa:null;
-    const o={id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
+    const o={id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:t==='sesion'&&!String(x.id||'').startsWith('pub_')?'dm':VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
       creado:Number.isFinite(+x.creado)?+x.creado:Date.now(),editado:Number.isFinite(+x.editado)?+x.editado:Date.now()};
     if(mapa)o.mapa=mapa;
     return o;
@@ -2630,6 +2630,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cprow.hd{font-size:12px;color:var(--muted)}.cprow.hd span:nth-child(1){flex:1}.cprow.hd span:nth-child(2),.cprow.hd span:nth-child(3){flex:0 0 90px}.cprow.hd span:nth-child(4){width:36px}
 .cpimgbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cpimg{max-width:200px;max-height:200px;padding:7px 7px 26px;background:#fffdf6;border:1px solid var(--line);border-radius:2px;box-shadow:0 2px 6px #0003;transform:rotate(-1.6deg);object-fit:cover}
 .cpcr{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.cptabs{display:flex;gap:4px;border-bottom:1px solid var(--line,#ccc);margin:10px 0 12px;flex-wrap:wrap}
+.cptab{background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;font:inherit;color:inherit;cursor:pointer;opacity:.7}
+.cptab.on{border-bottom-color:var(--accent,#c0392b);opacity:1;font-weight:700}
 .cptoolbar{display:flex;justify-content:space-between;align-items:center}
 .cptext{width:100%;min-height:260px;font:inherit;line-height:1.5;resize:vertical}
 .cpmd{line-height:1.55}.cpmd h3,.cpmd h4,.cpmd h5{margin:14px 0 6px}.cpmd ul,.cpmd ol{padding-left:22px}.cpmd blockquote{margin:8px 0;padding:4px 12px;border-left:3px solid var(--accent);color:var(--muted)}
@@ -2802,7 +2805,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.59</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.60</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2982,6 +2985,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.60 <span>21 nov 2026</span></h3><ul>
+      <li><b>Sesiones con tres pestañas</b>: planificación, resumen del máster y resumen para los jugadores (lo único que ven ellos).</li>
+    </ul></li>
     <li><h3>v1.59 <span>21 nov 2026</span></h3><ul>
       <li><b>Datos personales con control de versiones</b>: bestiario propio, tablas, módulos, preferencias, grupo, encuentros y fichas libres pasan por el mismo control que la campaña. Si cambian aquí y en la cuenta a la vez, no se pisa nada: eliges cuál es la correcta.</li>
     </ul></li>
@@ -5880,6 +5886,7 @@ function extraAct(act,b,c,e){
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'sesstart':case 'seshoy':case 'sesgo':case 'sesend':case 'sesfin':sesActuar(act);break;
     case 'sesclose':sesCierra();break;
+    case 'cptab':{cpFlush();cpTab=b.dataset.t;cpRenderDet();break;}
     case 'sesprint':{const it=cpSel&&cpGet(cpSel);if(it&&it.tipo==='sesion'){cpFlush();
       prtVista('Imprimir la sesión',prtOpciones(it),()=>{const sel={};document.querySelectorAll('[data-prts]').forEach(c=>{sel[c.dataset.prts]=c.checked&&!c.disabled;});return prtSesion(it,sel,+($('#prts-n')||{}).value);});}break;}
     case 'sesprintgo':{const it=cpGet(b.dataset.id);if(!it)break;const sel={};document.querySelectorAll('[data-prts]').forEach(c=>{sel[c.dataset.prts]=c.checked&&!c.disabled;});
@@ -6241,6 +6248,7 @@ function renderFicha(tab,slug){
 
 /* ---------- campaña: sesiones, diario, PNJ, lugares, tiendas, misiones y notas ---------- */
 let campDelPend=null;
+let cpTab='plan';
 let CP=[],cpTipo='sesion',cpSel=null,cpEdit=false,cpQ='',cpLastSel=null,cpTimer=0,cpDirty=false,cpFocus=false;
 const CPKEY='camp-notes-v1';
 const CPF={
@@ -6279,8 +6287,7 @@ function cpEscenas(it){
         ${cpEscEncs(it,e,n)}
         <div class="escact"><label class="chk"><input type="checkbox" ${k('pub')}${e.pub?' checked':''}> ${T('Mostrar el resumen a los jugadores')}</label>
           <button type="button" class="btn sm ghost" data-act="cpescmv" data-i="${n}" data-d="-1" aria-label="${esc(T('Subir'))}"${n?'':' disabled'}>↑</button><button type="button" class="btn sm ghost" data-act="cpescmv" data-i="${n}" data-d="1" aria-label="${esc(T('Bajar'))}"${n<rows.length-1?'':' disabled'}>↓</button>
-          <button type="button" class="btn sm ghost" data-act="cprm" data-f="escenas" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div></div></details>`;}).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="escenas">+ ${T('Añadir escena')}</button></div>
-  <label class="f cppub">${T('Resumen general para los jugadores')}<textarea rows="3" data-cpf="campos.publico">${esc(it.campos.publico||'')}</textarea><small>${T('Los jugadores solo ven este resumen y el de las escenas marcadas como visibles; el resto del plan es solo tuyo.')}</small></label>`;
+          <button type="button" class="btn sm ghost" data-act="cprm" data-f="escenas" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div></div></details>`;}).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="escenas">+ ${T('Añadir escena')}</button></div>`;
 }
 function cpHandout(it){
   const S=!!window.__AppShell,hay=it.img||it.texto;
@@ -7013,6 +7020,16 @@ function cpCreature(i){
   if(!m)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Vincula una criatura del bestiario (SRD o la tuya) y usa sus estadísticas, acciones y equipo.')}</p><div class="cplink bfilters"><input type="text" id="cp-cr" list="cp-dl-cr" placeholder="${esc(T('Buscar criatura…'))}"><button type="button" class="btn" data-act="cpcrlink">${T('Vincular')}</button></div>${k?`<p class="hint">${T('La criatura vinculada ya no está disponible.')}</p>`:''}</div>`;
   return `<div class="cpcr"><h4>${T('Ficha de criatura')}: ${esc(m.n)}</h4>${crActions(m)}${sbHTML(m,null)}<button type="button" class="btn sm ghost" data-act="cpcrunlink">${T('Quitar vínculo')}</button></div>`;
 }
+
+/* Una sesión tiene tres pestañas: planificación, resumen del máster y resumen para los jugadores (lo único que ven ellos). */
+const CP_TABS=[['plan','Planificación'],['dm','Resumen del máster'],['jug','Para los jugadores']];
+function cpTabsInit(){if(!CP_TABS.some(t=>t[0]===cpTab))cpTab='plan';}
+function cpTabsBar(){return '<div class="cptabs" role="tablist">'+CP_TABS.map(([k,l])=>'<button type="button" role="tab" class="cptab'+(k===cpTab?' on':'')+'" aria-selected="'+(k===cpTab)+'" data-act="cptab" data-t="'+k+'">'+esc(T(l))+'</button>').join('')+'</div>';}
+function cpTabCuerpo(it){
+  if(cpTab==='dm')return '<p class="hint" style="display:block">'+esc(T('Lo que ocurrió de verdad en la sesión, para ti. Solo lo ves tú.'))+'</p><label class="f">'+esc(T('Resumen del máster'))+'<textarea class="cptext" rows="18" data-cpf="campos.resumen" placeholder="'+esc(T('Qué pasó, decisiones de los jugadores, consecuencias, ganchos para la próxima…'))+'">'+esc(it.campos.resumen||'')+'</textarea></label>';
+  const n=(it.campos.escenas||[]).filter(e=>e.pub&&e.t).length;
+  return '<p class="hint" style="display:block">'+esc(T('Esto es lo único de la sesión que ven los jugadores, junto con el resumen de las escenas que marques como visibles en la planificación.'))+' ('+n+' '+esc(T(n===1?'escena visible':'escenas visibles'))+')</p><label class="f">'+esc(T('Resumen para los jugadores'))+'<textarea class="cptext" rows="18" data-cpf="campos.publico" placeholder="'+esc(T('Lo que saben o han vivido los jugadores'))+'">'+esc(it.campos.publico||'')+'</textarea></label>';
+}
 function cpRenderDet(){
   const el=$('#cp-det'),it=cpSel&&cpGet(cpSel);
   if(!it){const vacio=!cpQ&&!CP.some(i=>i.tipo===cpTipo);el.innerHTML=`<div class="empty">${T(vacio?'Aún no hay nada aquí. Pulsa «+ Nuevo».':'Elige algo de la lista o crea uno nuevo.')}</div>`;return;}
@@ -7020,8 +7037,12 @@ function cpRenderDet(){
   const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('')+(it.tipo==='sesion'?cpEscenas(it):'');
   const dl=['sesion','npc','lugar','mision'].map(t=>`<datalist id="cp-dl-${t}">${CP.filter(x=>x.tipo===t).map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`).join('');
   const back=Notas.retroenlaces(CP,it);
-  el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}<div class="cphead bfilters"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
-    <select data-cpf="tipo" aria-label="${esc(T('Tipo'))}">${Notas.TIPOS.map(([k])=>`<option value="${k}"${k===it.tipo?' selected':''}>${esc(T(Notas.SING[k]))}</option>`).join('')}</select></div>
+  const head=`<div class="cphead bfilters"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
+    <select data-cpf="tipo" aria-label="${esc(T('Tipo'))}">${Notas.TIPOS.map(([k])=>`<option value="${k}"${k===it.tipo?' selected':''}>${esc(T(Notas.SING[k]))}</option>`).join('')}</select></div>`;
+  if(it.tipo==='sesion')cpTabsInit();
+  const tabs=it.tipo==='sesion'?cpTabsBar():'';
+  if(it.tipo==='sesion'&&cpTab!=='plan'){el.innerHTML=`${dl}${head}${tabs}${cpTabCuerpo(it)}<div class="cpfoot"><button type="button" class="btn danger sm" data-act="cpdel" data-confirm>${T('Borrar')}</button></div>`;return;}
+  el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}${head}${tabs}
     <div class="cpfields">${CPF[it.tipo].map(f=>cpField(it,f)).join('')}</div>${it.tipo==='tienda'?cpDescEstado(it):''}
     ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}
     ${it.tipo==='npc'?cpCreature(it):''}
@@ -7035,7 +7056,7 @@ function cpRenderDet(){
     <div class="cptoolbar"><h4>${it.tipo==='sesion'?T('Plan de la sesión'):it.tipo==='diario'?T('Resumen'):it.tipo==='handout'?T('Texto del documento'):T('Notas')}</h4>${it.tipo==='sesion'?`<button type="button" class="btn sm" data-act="sesprint">${T('Imprimir la sesión')}</button>`:''}<button type="button" class="btn sm" data-act="cpmode">${cpEdit?T('Vista'):T('Editar')}</button></div>
     ${cpEdit?`<div class="cpwrap"><textarea class="cptext" rows="14" data-cpf="texto" placeholder="${esc(T('Escribe en Markdown. Enlaza con [[Nombre]].'))}">${esc(it.texto)}</textarea><ul class="cpac" id="cp-ac" role="listbox" hidden></ul></div>`:`<div class="cpmd">${it.texto?Notas.md(it.texto,CP,{auto:true,self:it.id}):`<p class="hint">${T('Sin texto todavía.')}</p>`}</div>`}
     ${back.length?`<div class="cpback"><h4>${T('Mencionado en')}</h4>${back.map(b=>`<a class="wl" href="${esc(Notas.href(b))}">${esc(cpName(b))}</a> <small>${esc(T(Notas.SING[b.tipo]))}</small>`).join(' · ')}</div>`:''}
-    <div class="cpfoot"><label class="f cpvis">${T('Quién puede verlo')}<select data-cpf="visibilidad">${[['dm','Solo yo (máster)'],['jugadores','Jugadores de la campaña'],['enlace','Cualquiera con el enlace']].map(([k,l])=>`<option value="${k}"${k===it.visibilidad?' selected':''}>${esc(T(l))}</option>`).join('')}</select><small class="hint">${T('Todavía no se comparte nada: se aplicará al publicar la campaña.')}</small></label>
+    <div class="cpfoot">${it.tipo==='sesion'?'<span></span>':`<label class="f cpvis">${T('Quién puede verlo')}<select data-cpf="visibilidad">${[['dm','Solo yo (máster)'],['jugadores','Jugadores de la campaña'],['enlace','Cualquiera con el enlace']].map(([k,l])=>`<option value="${k}"${k===it.visibilidad?' selected':''}>${esc(T(l))}</option>`).join('')}</select><small class="hint">${T('Todavía no se comparte nada: se aplicará al publicar la campaña.')}</small></label>`}
       <button type="button" class="btn danger sm" data-act="cpdel" data-confirm>${T('Borrar')}</button></div>
     <datalist id="cp-dl-cr">${cpCrOptions()}</datalist>`;
   if(cpFocus){cpFocus=false;const t=el.querySelector('.cptitle');if(t)t.focus();}

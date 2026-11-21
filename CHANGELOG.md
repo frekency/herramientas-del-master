@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.60.0] - 2026-11-21
+### Añadido
+- **Sesiones con tres pestañas**: Planificación (lo de siempre), Resumen del máster (qué ocurrió de verdad, solo para ti) y Para los jugadores (lo único de la sesión que ven ellos, además de las escenas marcadas como visibles). Los dos resúmenes admiten textos largos.
+### Cambiado
+- Una sesión es siempre del máster: ya no se elige «Quién puede verlo». Los jugadores solo reciben su pestaña.
+
 ## [1.59.0] - 2026-11-21
 ### Añadido
 - **Control de versiones de los datos personales** (bestiario propio, tablas, módulos, preferencias, grupo, encuentros, fichas libres y combate): mismo modelo que la campaña. Cada bloque lleva una versión del servidor; si cambia aquí y en la cuenta a la vez no se pisa nada y se abre un conflicto en «Tu cuenta» (o en Campañas) para elegir cuál es la correcta, con copia recuperable de la otra. Se anota desde qué dispositivo (escritorio o web) se escribió cada versión.

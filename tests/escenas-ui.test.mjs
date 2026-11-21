@@ -44,6 +44,13 @@ const TAIL=`<script>
     ok('una sesión ya compartida no duplica',scPub({tipo:'sesion',visibilidad:'jugadores',nombre:'x',campos:{publico:'a',escenas:[]}})===null);
     const n=scPubNota('abc',{nombre:'La cripta',fecha:'2026-11-21',estado:'planeada',publico:'Resumen',escenas:[{t:'Uno',tipo:'social',d:'d',lugar:'l',ok:false}]});
     ok('el jugador recibe una copia de solo lectura con las escenas',n&&n.id==='pub_abc'&&n.campos.escenas.length===1&&n.visibilidad==='jugadores');
+    cpSel=s.id;cpTab='plan';cpRenderDet();
+    ok('la sesión tiene tres pestañas y no deja elegir visibilidad',document.querySelectorAll('.cptabs .cptab').length===3&&!document.querySelector('[data-cpf="visibilidad"]'));
+    document.querySelector('[data-act="cptab"][data-t="dm"]').click();
+    ok('la pestaña del máster edita el resumen del máster',!!document.querySelector('[data-cpf="campos.resumen"]')&&!document.querySelector('[data-cpf="campos.publico"]'));
+    document.querySelector('[data-act="cptab"][data-t="jug"]').click();
+    ok('la pestaña de jugadores edita lo que ven ellos',!!document.querySelector('[data-cpf="campos.publico"]')&&!document.querySelector('[data-cpf="campos.resumen"]'));
+    cpTab='plan';cpRenderDet();
     CP.push(n);cpSel=n.id;cpRenderDet();
     ok('la vista del jugador no tiene campos editables',!document.querySelector('#cp-det input,#cp-det textarea')&&/Uno/.test(document.getElementById('cp-det').textContent));
     ok('la copia del jugador no se vuelve a subir como nota',!('nota:pub_abc' in scSnapshot()));

@@ -136,3 +136,9 @@ test('sesiones: encuentros enlazados por id, sin repetidos ni ids raros',()=>{
   assert.deepEqual(N.norm({tipo:'sesion',nombre:'s'}).campos.encuentros,[]);
   assert.ok(!('encuentros' in N.norm({tipo:'npc',nombre:'n',campos:{encuentros:['abc']}}).campos));
 });
+
+test('sesión: resumen del máster y resumen para jugadores; siempre es del máster',()=>{
+  const s=N.norm({tipo:'sesion',nombre:'s',visibilidad:'jugadores',campos:{resumen:'R'.repeat(20000),publico:'P'.repeat(20000)}});
+  assert.equal(s.visibilidad,'dm');assert.equal(s.campos.resumen.length,20000);assert.equal(s.campos.publico.length,20000);
+  assert.equal(N.norm({tipo:'sesion',nombre:'s'}).campos.resumen,'');
+});
