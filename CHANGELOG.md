@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.45.4] - 2026-11-21
+### Corregido
+- El instalador de Mac es ahora universal (Intel y Apple Silicon): el anterior solo abría en Macs con chip Apple.
+
 ## [1.45.3] - 2026-11-21
 ### Cambiado
 - Versión de prueba de la actualización automática: sin cambios para el usuario.
