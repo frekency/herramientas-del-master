@@ -1557,5 +1557,21 @@
   "Vista previa de la mesa": "Vorschau des Tisches",
   "Capas y propiedades": "Ebenen und Eigenschaften",
   "Subir una imagen": "Bild hochladen",
-  "Imagen guardada también en la Galería": "Bild auch in der Galerie gespeichert"
+  "Imagen guardada también en la Galería": "Bild auch in der Galerie gespeichert",
+  "Descuento": "Rabatt",
+  "Descuento (vacío = sin descuento; p. ej. 10 %)": "Rabatt (leer = keiner; z. B. 10 %)",
+  "Actitud hacia los jugadores": "Haltung gegenüber den Spielern",
+  "Eventos con los jugadores (marca los ya resueltos)": "Ereignisse mit den Spielern (Erledigte abhaken)",
+  "Añadir evento": "Ereignis hinzufügen",
+  "Aliado": "Verbündet",
+  "Amistoso": "Freundlich",
+  "Neutral": "Neutral",
+  "Receloso": "Misstrauisch",
+  "Hostil": "Feindlich",
+  "Oro de la tienda para comprar objetos (p. ej. 500 po)": "Gold des Ladens zum Ankauf von Gegenständen (z. B. 500 GM)",
+  "Descuento solo si se completa esta misión (opcional)": "Rabatt nur, wenn diese Quest abgeschlossen ist (optional)",
+  "Descuento activo: misión completada.": "Rabatt aktiv: Quest abgeschlossen.",
+  "Descuento aún no activo: la misión no está completada.": "Rabatt noch nicht aktiv: Quest nicht abgeschlossen.",
+  "No se encuentra esa misión.": "Diese Quest wurde nicht gefunden.",
+  "Oro de la tienda": "Gold des Ladens"
 }

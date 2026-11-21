@@ -1557,5 +1557,21 @@
   "Vista previa de la mesa": "Table preview",
   "Capas y propiedades": "Layers and properties",
   "Subir una imagen": "Upload an image",
-  "Imagen guardada también en la Galería": "Image also saved in the Gallery"
+  "Imagen guardada también en la Galería": "Image also saved in the Gallery",
+  "Descuento": "Discount",
+  "Descuento (vacío = sin descuento; p. ej. 10 %)": "Discount (empty = none; e.g. 10 %)",
+  "Actitud hacia los jugadores": "Attitude towards the players",
+  "Eventos con los jugadores (marca los ya resueltos)": "Events with the players (tick the resolved ones)",
+  "Añadir evento": "Add event",
+  "Aliado": "Ally",
+  "Amistoso": "Friendly",
+  "Neutral": "Neutral",
+  "Receloso": "Wary",
+  "Hostil": "Hostile",
+  "Oro de la tienda para comprar objetos (p. ej. 500 po)": "Shop gold available to buy items (e.g. 500 gp)",
+  "Descuento solo si se completa esta misión (opcional)": "Discount only if this quest is completed (optional)",
+  "Descuento activo: misión completada.": "Discount active: quest completed.",
+  "Descuento aún no activo: la misión no está completada.": "Discount not active yet: the quest is not completed.",
+  "No se encuentra esa misión.": "That quest was not found.",
+  "Oro de la tienda": "Shop gold"
 }

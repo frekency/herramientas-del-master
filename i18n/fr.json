@@ -1557,5 +1557,21 @@
   "Vista previa de la mesa": "Aperçu de la table",
   "Capas y propiedades": "Calques et propriétés",
   "Subir una imagen": "Importer une image",
-  "Imagen guardada también en la Galería": "Image aussi enregistrée dans la Galerie"
+  "Imagen guardada también en la Galería": "Image aussi enregistrée dans la Galerie",
+  "Descuento": "Remise",
+  "Descuento (vacío = sin descuento; p. ej. 10 %)": "Remise (vide = aucune ; p. ex. 10 %)",
+  "Actitud hacia los jugadores": "Attitude envers les joueurs",
+  "Eventos con los jugadores (marca los ya resueltos)": "Événements avec les joueurs (cochez les résolus)",
+  "Añadir evento": "Ajouter un événement",
+  "Aliado": "Allié",
+  "Amistoso": "Amical",
+  "Neutral": "Neutre",
+  "Receloso": "Méfiant",
+  "Hostil": "Hostile",
+  "Oro de la tienda para comprar objetos (p. ej. 500 po)": "Or de la boutique pour acheter des objets (p. ex. 500 po)",
+  "Descuento solo si se completa esta misión (opcional)": "Remise seulement si cette quête est terminée (facultatif)",
+  "Descuento activo: misión completada.": "Remise active : quête terminée.",
+  "Descuento aún no activo: la misión no está completada.": "Remise pas encore active : la quête n'est pas terminée.",
+  "No se encuentra esa misión.": "Cette quête est introuvable.",
+  "Oro de la tienda": "Or de la boutique"
 }

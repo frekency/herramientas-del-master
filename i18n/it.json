@@ -1557,5 +1557,21 @@
   "Vista previa de la mesa": "Anteprima del tavolo",
   "Capas y propiedades": "Livelli e proprietà",
   "Subir una imagen": "Carica un’immagine",
-  "Imagen guardada también en la Galería": "Immagine salvata anche nella Galleria"
+  "Imagen guardada también en la Galería": "Immagine salvata anche nella Galleria",
+  "Descuento": "Sconto",
+  "Descuento (vacío = sin descuento; p. ej. 10 %)": "Sconto (vuoto = nessuno; es. 10 %)",
+  "Actitud hacia los jugadores": "Atteggiamento verso i giocatori",
+  "Eventos con los jugadores (marca los ya resueltos)": "Eventi con i giocatori (spunta quelli risolti)",
+  "Añadir evento": "Aggiungi evento",
+  "Aliado": "Alleato",
+  "Amistoso": "Amichevole",
+  "Neutral": "Neutrale",
+  "Receloso": "Diffidente",
+  "Hostil": "Ostile",
+  "Oro de la tienda para comprar objetos (p. ej. 500 po)": "Oro del negozio per comprare oggetti (es. 500 mo)",
+  "Descuento solo si se completa esta misión (opcional)": "Sconto solo se questa missione è completata (facoltativo)",
+  "Descuento activo: misión completada.": "Sconto attivo: missione completata.",
+  "Descuento aún no activo: la misión no está completada.": "Sconto non ancora attivo: la missione non è completata.",
+  "No se encuentra esa misión.": "Missione non trovata.",
+  "Oro de la tienda": "Oro del negozio"
 }

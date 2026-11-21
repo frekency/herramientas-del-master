@@ -1557,5 +1557,21 @@
   "Vista previa de la mesa": "Pré-visualização da mesa",
   "Capas y propiedades": "Camadas e propriedades",
   "Subir una imagen": "Carregar uma imagem",
-  "Imagen guardada también en la Galería": "Imagem guardada também na Galeria"
+  "Imagen guardada también en la Galería": "Imagem guardada também na Galeria",
+  "Descuento": "Desconto",
+  "Descuento (vacío = sin descuento; p. ej. 10 %)": "Desconto (vazio = nenhum; p. ex. 10 %)",
+  "Actitud hacia los jugadores": "Atitude para com os jogadores",
+  "Eventos con los jugadores (marca los ya resueltos)": "Eventos com os jogadores (marque os resolvidos)",
+  "Añadir evento": "Adicionar evento",
+  "Aliado": "Aliado",
+  "Amistoso": "Amigável",
+  "Neutral": "Neutro",
+  "Receloso": "Desconfiado",
+  "Hostil": "Hostil",
+  "Oro de la tienda para comprar objetos (p. ej. 500 po)": "Ouro da loja para comprar objetos (p. ex. 500 po)",
+  "Descuento solo si se completa esta misión (opcional)": "Desconto só se esta missão for concluída (opcional)",
+  "Descuento activo: misión completada.": "Desconto ativo: missão concluída.",
+  "Descuento aún no activo: la misión no está completada.": "Desconto ainda não ativo: a missão não foi concluída.",
+  "No se encuentra esa misión.": "Missão não encontrada.",
+  "Oro de la tienda": "Ouro da loja"
 }

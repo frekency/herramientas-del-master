@@ -58,7 +58,7 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .capa .ih{display:flex;align-items:baseline;gap:2cqw;font-size:calc(100cqh/(var(--n) + 2)*.46);font-weight:700;color:var(--ac)}
 .capa .ih small{color:var(--muted);font-weight:600;font-size:.6em}
 .capa .ih .cu2{margin-left:auto;font-variant-numeric:tabular-nums}
-.capa .fl{display:flex;align-items:center;gap:2cqw;padding:0 3cqw;flex:1;min-height:0;background:var(--row);border-left:1.2cqw solid var(--c,#888);border-radius:1.4cqw;font-size:calc(100cqh/(var(--n) + 2)*.5);font-weight:600}
+.capa .fl{display:flex;align-items:center;gap:2cqw;padding:0 3cqw;flex:none;height:calc(100cqh/(var(--n) + 2) - 1cqh);min-height:0;background:var(--row);border-left:1.2cqw solid var(--c,#888);border-radius:1.4cqw;font-size:calc(100cqh/(var(--n) + 2)*.5);font-weight:600}
 .capa .fl .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .capa .fl.actual{background:color-mix(in srgb,var(--ac) 22%,var(--row));outline:.4cqh solid var(--ac)}
 .capa .fl.caido{opacity:.45;text-decoration:line-through}
@@ -96,7 +96,7 @@ function pintaIni(c){
   if(!d||!d.lista.length){c.style.setProperty('--n',3);c.append(el('div','vacio','Sin combate'));return;}
   let L=d.lista;const MAX=10;
   if(L.length>MAX){const i=Math.max(0,L.findIndex(e=>e.actual));const a=Math.min(Math.max(0,i-3),L.length-MAX);L=L.slice(a,a+MAX);}
-  c.style.setProperty('--n',L.length);
+  c.style.setProperty('--n',Math.max(L.length,6));/* mínimo 6 para que con pocos combatientes no se agrande */
   const h=el('div','ih');h.append(el('span','',d.activo?'Ronda '+d.ronda:'Iniciativa'));
   if(d.cuenta){const q=el('span','cu2',(d.cuenta.pausa?'⏸ ':'')+mmss(d.cuenta.seg));q.prepend(el('small','',d.cuenta.n+' '));h.append(q);}
   c.append(h);

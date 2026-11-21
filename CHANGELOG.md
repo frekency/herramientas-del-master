@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.56.0] - 2026-11-21
+### Añadido
+- **Tiendas**: oro disponible para comprar objetos, descuento y, opcionalmente, una misión que lo activa (los jugadores solo ven el descuento cuando la misión está completada).
+- **PNJ**: actitud hacia los jugadores y lista de eventos con ellos (con casilla de resuelto); Rol, Aspecto, Qué quiere y Secreto pasan a cajas de varias líneas.
+### Corregido
+- Ventana de mesa: con pocos combatientes, el orden de iniciativa ya no se ve enorme.
+
 ## [1.55.0] - 2026-11-21
 ### Añadido
 - **Subir imágenes desde el estudio de la mesa**: con el botón «Subir una imagen» o arrastrando un archivo sobre el lienzo. La imagen se reduce como en la Galería y queda guardada allí como documento, además de ponerse en la zona elegida.
