@@ -1405,5 +1405,18 @@
   "También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:": "Also as a desktop app, with automatic backup, screen lock and updates:",
   "Otros sistemas y versiones": "Other systems and versions",
   "Descargar para Mac": "Download for Mac",
-  "Descargar para Windows": "Download for Windows"
+  "Descargar para Windows": "Download for Windows",
+  "Código copiado": "Code copied",
+  "Invitar jugadores": "Invite players",
+  "Crear código": "Create code",
+  "Pásale el código al jugador: lo escribe en «Unirme con un código». Caduca a los 7 días y sirve para 10 personas.": "Give the code to the player: they type it in “Join with a code”. It expires after 7 days and works for 10 people.",
+  "caduca": "expires",
+  "No se ha podido crear el código": "Could not create the code",
+  "Inicia sesión para unirte": "Sign in to join",
+  "No se ha podido unir": "Could not join",
+  "Invitación no válida o caducada": "Invalid or expired invitation",
+  "Ya tienes esta campaña": "You already have this campaign",
+  "Te has unido: ábrela para bajar su contenido": "You have joined: open it to download its content",
+  "Código de invitación": "Invitation code",
+  "Unirme con un código": "Join with a code"
 }

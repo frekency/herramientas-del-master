@@ -1405,5 +1405,18 @@
   "También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:": "Auch als Desktop-App, mit automatischer Sicherung, Bildschirmsperre und Updates:",
   "Otros sistemas y versiones": "Andere Systeme und Versionen",
   "Descargar para Mac": "Für Mac herunterladen",
-  "Descargar para Windows": "Für Windows herunterladen"
+  "Descargar para Windows": "Für Windows herunterladen",
+  "Código copiado": "Code kopiert",
+  "Invitar jugadores": "Spieler einladen",
+  "Crear código": "Code erstellen",
+  "Pásale el código al jugador: lo escribe en «Unirme con un código». Caduca a los 7 días y sirve para 10 personas.": "Gib den Code an den Spieler weiter: Er gibt ihn unter „Mit Code beitreten“ ein. Er läuft nach 7 Tagen ab und gilt für 10 Personen.",
+  "caduca": "läuft ab",
+  "No se ha podido crear el código": "Der Code konnte nicht erstellt werden",
+  "Inicia sesión para unirte": "Melde dich an, um beizutreten",
+  "No se ha podido unir": "Beitritt nicht möglich",
+  "Invitación no válida o caducada": "Einladung ungültig oder abgelaufen",
+  "Ya tienes esta campaña": "Du hast diese Kampagne bereits",
+  "Te has unido: ábrela para bajar su contenido": "Du bist beigetreten: Öffne sie, um den Inhalt zu laden",
+  "Código de invitación": "Einladungscode",
+  "Unirme con un código": "Mit Code beitreten"
 }

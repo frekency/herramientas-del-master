@@ -1405,5 +1405,18 @@
   "También como aplicación de escritorio, con copia automática, bloqueo de pantalla y actualizaciones:": "Aussi en application de bureau, avec sauvegarde automatique, verrouillage d’écran et mises à jour :",
   "Otros sistemas y versiones": "Autres systèmes et versions",
   "Descargar para Mac": "Télécharger pour Mac",
-  "Descargar para Windows": "Télécharger pour Windows"
+  "Descargar para Windows": "Télécharger pour Windows",
+  "Código copiado": "Code copié",
+  "Invitar jugadores": "Inviter des joueurs",
+  "Crear código": "Créer un code",
+  "Pásale el código al jugador: lo escribe en «Unirme con un código». Caduca a los 7 días y sirve para 10 personas.": "Donnez le code au joueur : il le saisit dans « Rejoindre avec un code ». Il expire au bout de 7 jours et sert pour 10 personnes.",
+  "caduca": "expire",
+  "No se ha podido crear el código": "Impossible de créer le code",
+  "Inicia sesión para unirte": "Connectez-vous pour rejoindre",
+  "No se ha podido unir": "Impossible de rejoindre",
+  "Invitación no válida o caducada": "Invitation invalide ou expirée",
+  "Ya tienes esta campaña": "Vous avez déjà cette campagne",
+  "Te has unido: ábrela para bajar su contenido": "Vous avez rejoint : ouvrez-la pour télécharger son contenu",
+  "Código de invitación": "Code d’invitation",
+  "Unirme con un código": "Rejoindre avec un code"
 }
