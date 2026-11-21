@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.45.5] - 2026-11-21
+### Añadido
+- En la web, botón de descarga de la app de escritorio en Inicio: detecta Mac o Windows y enlaza el instalador de la última versión.
+### Corregido
+- Mac: la app se llama `HerramientasDelMaster` (sin tilde) para evitar un cierre al arrancar.
+
 ## [1.45.4] - 2026-11-21
 ### Corregido
 - El instalador de Mac es ahora universal (Intel y Apple Silicon): el anterior solo abría en Macs con chip Apple.
