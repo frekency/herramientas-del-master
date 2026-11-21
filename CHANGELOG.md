@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.63.0] - 2026-11-21
+### Añadido
+- **Intro en la pantalla de acceso**: antes del formulario, el d20 se dibuja con trazo, se rellena, aparece el nombre «Herramientas del Máster» y todo se desvanece dejando paso al login (unos 3,6 s). Sale una vez por sesión; cualquier clic, toque o tecla la salta; con «reducir movimiento» activado no se muestra.
+
+### Corregido
+- Un diálogo que se cerraba y se volvía a abrir enseguida podía cerrarse solo por un evento de cierre tardío del navegador. Ya no.
+
 ## [1.62.0] - 2026-11-21
 ### Cambiado
 - **Ventanas nativas**: los 14 cuadros de diálogo (cuenta, bestiario, copias, sesiones, preferencias…), el bloqueo de pantalla, el visor de documentos y la vista previa de impresión usan el elemento `<dialog>` del navegador: la página de detrás queda inerte, el foco no se escapa, Esc cierra, y el aviso («toast») y la confirmación flotante quedan siempre por encima. Se eliminan los parches de foco hechos a mano.

@@ -50,6 +50,13 @@ const TAIL=`<script>
     const lk=document.getElementById('lockscr');lk.hidden=false;await wait(50);
     ok('el bloqueo es modal y no se cierra con Esc',lk.open&&(()=>{const e=new Event('cancel',{cancelable:true});lk.dispatchEvent(e);return e.defaultPrevented;})());
     lk.hidden=true;await wait(50);ok('y se quita al desbloquear',!lk.open);
+    // intro de la pantalla de acceso
+    try{sessionStorage.removeItem('intro-visto');}catch{}
+    const ac2=document.getElementById('acctmodal');ac2.hidden=false;await wait(50);
+    introPlay();const it=document.getElementById('intro');await wait(300);
+    ok('la intro se ve dentro del acceso y dibuja los contornos',!it.hidden&&it.getBoundingClientRect().width>0&&it.querySelectorAll('.ist').length===5&&getComputedStyle(it.querySelector('.ist')).strokeDasharray!=='none');
+    it.click();await wait(50);
+    ok('un clic la salta y no vuelve a salir en esa sesión',it.hidden&&sessionStorage.getItem('intro-visto')==='1'&&(introPlay(),it.hidden));
     // preguntas propias (sustituyen a confirm y prompt)
     let r1;Dlg.si('¿Seguro?').then(v=>r1=v);await wait(100);
     const q1=document.querySelector('dialog.ask');
@@ -89,6 +96,6 @@ testNav('capas flotantes nativas: diálogos, aviso y bloqueo',{skip:!BROWSER&&'n
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=16,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=18,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

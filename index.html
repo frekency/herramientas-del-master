@@ -1001,7 +1001,8 @@ window.Capa=(()=>{
         if(el.id==='lockscr'||(el.id==='acctmodal'&&typeof acBloqueado==='function'&&acBloqueado())){e.preventDefault();return;}   // ni el bloqueo ni el acceso obligatorio se saltan con Esc
         queueMicrotask(()=>{if(!e.defaultPrevented&&!el.hidden){el.hidden=true;if(typeof syncModalOpen==='function')syncModalOpen();}});   // el estado queda coherente sin esperar al evento «close»
       });
-      el.addEventListener('close',()=>{if(el.id==='lockscr'&&!el.hidden){abre(el);return;}if(!el.hidden){el.hidden=true;if(typeof syncModalOpen==='function')syncModalOpen();}});
+      el.addEventListener('close',()=>{if(el.open)return;   // se reabrió antes de que llegara este «close» tardío: no hay nada que cerrar
+      if(el.id==='lockscr'&&!el.hidden){abre(el);return;}if(!el.hidden){el.hidden=true;if(typeof syncModalOpen==='function')syncModalOpen();}});
     }
   }
   function init(){document.querySelectorAll('dialog.modal,dialog#lockscr,#cpop').forEach(e=>{une(e);sync(e);});}
@@ -1441,6 +1442,18 @@ html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #ac
 .modal{position:fixed;inset:0;z-index:30;background:rgb(10 12 16/.55);display:flex;align-items:flex-start;justify-content:center;padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));overflow:auto}
 dialog.modal,dialog.cpzoom,dialog.prtprev,dialog#lockscr{margin:0;max-width:none;max-height:none;width:auto;height:auto;border:0;color:inherit}
 dialog:not([open]){display:none}
+.intro{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:18px;background:var(--bg,#0b0a09);color:var(--fg);cursor:pointer;animation:introOut 390ms 3250ms cubic-bezier(.4,0,.2,1) forwards}
+.intro[hidden]{display:none}
+.intro-d20{width:clamp(84px,22vmin,150px);height:auto;overflow:visible}
+.intro-d20 .ist{fill:none;stroke:var(--fg);stroke-width:.55;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:introDraw 1720ms var(--d,0ms) cubic-bezier(.45,0,.55,1) forwards}
+.intro-d20 .ifill{fill:var(--accent);stroke:none;opacity:0;animation:introFill 455ms 2015ms cubic-bezier(.45,0,.55,1) forwards}
+.intro-n{margin:0;font-family:var(--f-display);font-weight:700;font-size:clamp(22px,5.6vmin,40px);letter-spacing:.06em;text-align:center;color:transparent;-webkit-text-stroke:.7px var(--fg);clip-path:inset(0 100% 0 0);animation:introWrite 1720ms 200ms cubic-bezier(.45,0,.55,1) forwards,introInk 455ms 2015ms cubic-bezier(.45,0,.55,1) forwards}
+@keyframes introDraw{to{stroke-dashoffset:0}}
+@keyframes introFill{to{opacity:.28}}
+@keyframes introWrite{to{clip-path:inset(0 0 0 0)}}
+@keyframes introInk{to{color:var(--fg);-webkit-text-stroke-width:0}}
+@keyframes introOut{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){.intro{display:none}}
 dialog.ask{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);padding:18px;width:min(440px,calc(100% - 24px));margin:auto}
 dialog.ask::backdrop{background:rgb(10 12 16/.55)}
 .askt{margin:0 0 14px;white-space:pre-wrap;line-height:1.4}
@@ -2870,7 +2883,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.62</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.63</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3050,6 +3063,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.63 <span>21 nov 2026</span></h3><ul>
+      <li><b>Intro en el acceso</b>: el d20 se dibuja y se rellena antes de mostrar el formulario de inicio de sesión. Una vez por sesión y se puede saltar con un clic.</li>
+    </ul></li>
     <li><h3>v1.62 <span>21 nov 2026</span></h3><ul>
       <li><b>Ventanas nativas</b>: diálogos, bloqueo y avisos con el elemento estándar del navegador (foco, Esc y capa superior), y confirmaciones con el aspecto de la app en vez de los cuadros del navegador.</li>
     </ul></li>
@@ -3578,6 +3594,17 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 
 <!-- Copias -->
 <dialog class="modal" id="acctmodal" hidden aria-labelledby="ac-h">
+  <div class="intro" id="intro" hidden role="img" aria-label="Herramientas del Máster">
+    <svg class="intro-d20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path class="ifill" d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/>
+      <path class="ist" style="--d:0ms" pathLength="1" d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/>
+      <path class="ist" style="--d:60ms" pathLength="1" d="M12 7.5l-5 8.5h10z"/>
+      <path class="ist" style="--d:120ms" pathLength="1" d="M12 2.5v5"/>
+      <path class="ist" style="--d:180ms" pathLength="1" d="M3.5 7.3L7 16M20.5 7.3L17 16"/>
+      <path class="ist" style="--d:235ms" pathLength="1" d="M7 16l5 5.5 5-5.5"/>
+    </svg>
+    <p class="intro-n" aria-hidden="true">Herramientas del Máster</p>
+  </div>
   <div class="mbox" style="width:min(440px,100%)">
     <div class="mhead"><h2 id="ac-h">Tu cuenta</h2><button class="btn ghost" data-act="acclose" aria-label="Cerrar">✕</button></div>
     <div class="mbody acbody">
@@ -7866,6 +7893,16 @@ function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_US
 let AC_LOCAL=false,AC_RED=false;
 const acPrevio=()=>{try{return Store.get('acceso-previo')==='1'||SB_STORED();}catch{return false;}};
 const acBloqueado=()=>document.documentElement.classList.contains('gate-web')&&!SB_USER&&!AC_LOCAL;
+/* Intro de la pantalla de acceso: el d20 se dibuja, se rellena y deja paso al formulario. Una vez por sesión; cualquier tecla, clic o toque la salta; sin movimiento, no se enseña. */
+function introPlay(){
+  const el=document.getElementById('intro');if(!el||!el.hidden)return;
+  try{if(sessionStorage.getItem('intro-visto')||matchMedia('(prefers-reduced-motion:reduce)').matches)return;}catch{}
+  el.hidden=false;
+  const fin=()=>{el.hidden=true;document.removeEventListener('keydown',fin,true);el.removeEventListener('animationend',fin2);try{sessionStorage.setItem('intro-visto','1');}catch{}};
+  const fin2=e=>{if(e.animationName==='introOut')fin();};
+  el.addEventListener('animationend',fin2);el.addEventListener('click',fin);document.addEventListener('keydown',fin,true);
+  el.style.animation='none';void el.offsetWidth;el.style.animation='';   // empieza en cero aunque el diálogo ya estuviera montado
+}
 function acLocalVis(){const b=$('#ac-red-box');if(!b)return;const off=AC_RED||navigator.onLine===false;b.hidden=!off;if(!off)return;
   const p=acPrevio();$('#ac-red-txt').textContent=T(p?'Parece que no hay conexión. Puedes seguir con la copia local de este equipo y entrar cuando vuelva internet.':'Parece que no hay conexión. La primera vez hace falta internet para entrar con tu cuenta.');$('#ac-local-btn').hidden=!p;}
 addEventListener('online',()=>{if(AC_RED&&!SB){location.reload();return;}AC_RED=false;acLocalVis();});addEventListener('offline',acLocalVis);   // web privada sin sesión: el acceso no se puede cerrar
@@ -7890,7 +7927,7 @@ async function sbInit(){
   SB.auth.onAuthStateChange((ev,session)=>{
     const u=session?.user||null,was=SB_USER?.id;SB_USER=u;document.documentElement.classList.toggle('con-sesion',!!u);if(u){try{Store.set('acceso-previo','1');}catch{}}
     if(ev==='PASSWORD_RECOVERY'||(INVITADO&&u&&ev==='SIGNED_IN')){setTimeout(()=>acOpen('newpass'),0);return;}
-    if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(acBloqueado())setTimeout(()=>acOpen('in'),0);if(location.hash==='#modulos')renderMods();return;}
+    if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(acBloqueado()){setTimeout(()=>{acOpen('in');introPlay();},0);}if(location.hash==='#modulos')renderMods();return;}
     if(u.id!==was)setTimeout(acSignedIn,0);   // fuera del callback, como pide supabase-js
   });
   acEscritorio();
