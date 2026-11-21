@@ -1467,5 +1467,12 @@
   "Secreto (solo máster)": "Segreto (solo master)",
   "Mostrar el mapa y sus chinchetas": "Mostra la mappa e i suoi segnaposto",
   "Mostrar el inventario y los precios": "Mostra l’inventario e i prezzi",
-  "Mostrar el estado y los objetivos": "Mostra lo stato e gli obiettivi"
+  "Mostrar el estado y los objetivos": "Mostra lo stato e gli obiettivi",
+  "Documento": "Documento",
+  "Galería": "Galleria",
+  "Ver a pantalla completa": "Visualizza a schermo intero",
+  "Sube una imagen del documento (una carta, un mapa del tesoro, un cartel de «se busca», una ilustración) o escribe su texto abajo y muéstralo como carta.": "Carica un’immagine del documento (una lettera, una mappa del tesoro, un manifesto «ricercato», un’illustrazione) o scrivi il testo qui sotto e mostralo come lettera.",
+  "En la app de escritorio, «Mostrar en la mesa» lo envía a la ventana de los jugadores.": "Nell’app desktop, «Mostra al tavolo» lo invia alla finestra dei giocatori.",
+  "Texto del documento": "Testo del documento",
+  "Tipo de documento (carta, cartel, pista…)": "Tipo di documento (lettera, manifesto, indizio…)"
 }

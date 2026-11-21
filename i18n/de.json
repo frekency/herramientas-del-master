@@ -1467,5 +1467,12 @@
   "Secreto (solo máster)": "Geheimnis (nur Spielleiter)",
   "Mostrar el mapa y sus chinchetas": "Karte und Markierungen zeigen",
   "Mostrar el inventario y los precios": "Inventar und Preise zeigen",
-  "Mostrar el estado y los objetivos": "Status und Ziele zeigen"
+  "Mostrar el estado y los objetivos": "Status und Ziele zeigen",
+  "Documento": "Dokument",
+  "Galería": "Galerie",
+  "Ver a pantalla completa": "Vollbild anzeigen",
+  "Sube una imagen del documento (una carta, un mapa del tesoro, un cartel de «se busca», una ilustración) o escribe su texto abajo y muéstralo como carta.": "Lade ein Bild des Dokuments hoch (Brief, Schatzkarte, Steckbrief, Illustration) oder schreibe den Text unten und zeige ihn als Brief.",
+  "En la app de escritorio, «Mostrar en la mesa» lo envía a la ventana de los jugadores.": "In der Desktop-App sendet „Auf dem Tisch zeigen“ es an das Spielerfenster.",
+  "Texto del documento": "Text des Dokuments",
+  "Tipo de documento (carta, cartel, pista…)": "Art des Dokuments (Brief, Aushang, Hinweis …)"
 }

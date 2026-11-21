@@ -1467,5 +1467,12 @@
   "Secreto (solo máster)": "Secret (maître seulement)",
   "Mostrar el mapa y sus chinchetas": "Montrer la carte et ses épingles",
   "Mostrar el inventario y los precios": "Montrer l’inventaire et les prix",
-  "Mostrar el estado y los objetivos": "Montrer l’état et les objectifs"
+  "Mostrar el estado y los objetivos": "Montrer l’état et les objectifs",
+  "Documento": "Document",
+  "Galería": "Galerie",
+  "Ver a pantalla completa": "Voir en plein écran",
+  "Sube una imagen del documento (una carta, un mapa del tesoro, un cartel de «se busca», una ilustración) o escribe su texto abajo y muéstralo como carta.": "Importez une image du document (une lettre, une carte au trésor, un avis de recherche, une illustration) ou écrivez son texte ci-dessous et montrez-le comme une lettre.",
+  "En la app de escritorio, «Mostrar en la mesa» lo envía a la ventana de los jugadores.": "Dans l’app de bureau, « Montrer sur la table » l’envoie à la fenêtre des joueurs.",
+  "Texto del documento": "Texte du document",
+  "Tipo de documento (carta, cartel, pista…)": "Type de document (lettre, affiche, indice…)"
 }

@@ -1467,5 +1467,12 @@
   "Secreto (solo máster)": "Secret (GM only)",
   "Mostrar el mapa y sus chinchetas": "Show the map and its pins",
   "Mostrar el inventario y los precios": "Show the inventory and prices",
-  "Mostrar el estado y los objetivos": "Show the status and objectives"
+  "Mostrar el estado y los objetivos": "Show the status and objectives",
+  "Documento": "Document",
+  "Galería": "Gallery",
+  "Ver a pantalla completa": "View full screen",
+  "Sube una imagen del documento (una carta, un mapa del tesoro, un cartel de «se busca», una ilustración) o escribe su texto abajo y muéstralo como carta.": "Upload an image of the document (a letter, a treasure map, a “wanted” poster, an illustration) or write its text below and show it as a letter.",
+  "En la app de escritorio, «Mostrar en la mesa» lo envía a la ventana de los jugadores.": "In the desktop app, “Show on the table” sends it to the players’ window.",
+  "Texto del documento": "Text of the document",
+  "Tipo de documento (carta, cartel, pista…)": "Type of document (letter, poster, clue…)"
 }

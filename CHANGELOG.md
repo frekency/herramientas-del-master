@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.53.0] - 2026-11-21
+### Añadido
+- **Galería de documentos** en Campaña: handouts, cartas, carteles e ilustraciones (imagen de hasta 1600 px). Visor a pantalla completa, «Mostrar en la mesa» en la app de escritorio y compartir con los jugadores cuando quieras (nacen ocultos). Un documento solo de texto se muestra como carta sobre pergamino.
+
 ## [1.52.0] - 2026-11-21
 ### Cambiado
 - **Encuentros de la campaña con aire de cuaderno**: el constructor es un folio con secciones separadas por filetes y la lista, un índice. Las nueve pestañas de Campaña caben en una fila.

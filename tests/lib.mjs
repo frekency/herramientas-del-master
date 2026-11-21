@@ -22,10 +22,13 @@ export const BEST=Object.fromEntries(DATA_LANGS.map(l=>[l,`datos/${l}/bestiario.
    tras reintentar se avisa en la salida para que se vea cuánto se está tapando. */
 export function testNav(name,opts,fn){
   return test(name,opts,async t=>{
-    let ultimo;
+    let ultimo,primero;
     for(let n=1;n<=3;n++){
-      try{await fn(t);if(n>1)console.warn(`⚠ INTERMITENTE: «${name}» pasó en el intento ${n}`);return;}
-      catch(e){ultimo=e;}
+      try{
+        await fn(t);
+        if(n>1){const m=String(primero&&primero.message).split(String.fromCharCode(10)).slice(0,6).join(' | ').slice(0,300);console.warn('⚠ INTERMITENTE: «'+name+'» pasó en el intento '+n+'. Fallo anterior: '+m);}
+        return;
+      }catch(e){ultimo=e;primero=primero||e;}
     }
     throw ultimo;
   });

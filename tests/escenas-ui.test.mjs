@@ -74,6 +74,18 @@ const TAIL=`<script>
     reg.campos.vermapa=false;ok('un mapa sin marcar no se publica',scPub(reg)===null);
     reg.campos.vermapa=true;ok('con la casilla marcada el mapa y sus chinchetas salen',(q=>q&&q.mapa&&q.pines.length===1)(scPub(reg)));
     pn.visibilidad='jugadores';ok('una ficha ya compartida no duplica lo público',scPub(pn)===null);
+    // galería de documentos
+    const big='data:image/jpeg;base64,'+'A'.repeat(700000);
+    ok('un documento admite una imagen grande y un PNJ no',Notas.norm({tipo:'handout',nombre:'Carta',img:big}).img===big&&Notas.norm({tipo:'npc',nombre:'x',img:big}).img===null);
+    ok('la galería es una pestaña de la campaña',Notas.TIPOS.some(x=>x[0]==='handout')&&!!document.querySelector('[data-cptabs] a[href="#campana/handout"]'));
+    const ho=Notas.nuevo('handout','Carta del barón');ho.texto='Querido capitán,'+String.fromCharCode(10)+'La cripta debe permanecer cerrada.';CP.push(ho);cpDirty=true;cpFlush();
+    ok('un documento nace oculto para los jugadores',ho.visibilidad==='dm');
+    ok('un documento solo de texto se puede convertir en carta para la mesa',/^data:image[/]jpeg;base64,/.test(cpCartaImg(ho)));
+    cpSel=ho.id;cpRenderDet();ok('el documento tiene su bloque con la imagen y los botones',!!document.querySelector('#cp-det .cpho')&&!!document.querySelector('#cp-det #cp-img'));
+    ho.img='data:image/png;base64,iVBORw0KGgo=';cpRenderDet();document.querySelector('#cp-det [data-act="cpzoom"]').click();await wait(100);
+    ok('ver a pantalla completa abre el visor y Escape lo cierra',(z=>z&&!z.hidden&&!!z.querySelector('img'))(document.getElementById('cpzoom')));
+    document.getElementById('cpzoom').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await wait(60);
+    ok('el visor se cierra',document.getElementById('cpzoom').hidden);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -101,6 +113,6 @@ testNav('escenas de sesión y lo que ven los jugadores',{skip:!BROWSER&&'no hay 
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=24,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=31,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

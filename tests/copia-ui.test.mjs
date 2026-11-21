@@ -56,7 +56,7 @@ const TAIL=`<script>
     ok('se puede quitar un enlace',audCarga().length===0);
     document.querySelector('[data-act="audclose"]').click();
     // un archivo que no es una copia se rechaza
-    const dt2=new DataTransfer();dt2.items.add(new File(['hola'],'x.json'));inp.files=dt2.files;inp.dispatchEvent(new Event('change',{bubbles:true}));await new Response(dt2.files[0]).text();await wait(600);
+    const dt2=new DataTransfer();dt2.items.add(new File(['hola'],'x.json'));inp.files=dt2.files;inp.dispatchEvent(new Event('change',{bubbles:true}));await new Response(dt2.files[0]).text();await until(()=>!document.querySelector('#bk-res [data-act="bkrestore"]'));
     ok('un archivo que no es una copia no ofrece restaurar',!document.querySelector('#bk-res [data-act="bkrestore"]'));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
