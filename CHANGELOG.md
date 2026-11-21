@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.59.0] - 2026-11-21
+### Añadido
+- **Control de versiones de los datos personales** (bestiario propio, tablas, módulos, preferencias, grupo, encuentros, fichas libres y combate): mismo modelo que la campaña. Cada bloque lleva una versión del servidor; si cambia aquí y en la cuenta a la vez no se pisa nada y se abre un conflicto en «Tu cuenta» (o en Campañas) para elegir cuál es la correcta, con copia recuperable de la otra. Se anota desde qué dispositivo (escritorio o web) se escribió cada versión.
+- Si dos dispositivos llegan al mismo contenido no se considera conflicto.
+- Necesita ejecutar `supabase/versiones.sql` en Supabase; sin él, sigue el sistema anterior.
+
 ## [1.58.2] - 2026-11-21
 ### Cambiado
 - Conflictos: los botones y el aviso dejan claro que la versión elegida pasa a ser la correcta para todos los dispositivos («La de este dispositivo es la correcta» / «La de la cuenta es la correcta»).

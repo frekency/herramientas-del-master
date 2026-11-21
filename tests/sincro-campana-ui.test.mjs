@@ -58,6 +58,14 @@ const TAIL=`<script>
     lq.abiertos=[{clave:'grp:gq',remoto:{valor:{id:'gq',n:'Otra nube',tipo:'aliados',miembros:[]},version:3,actualizado:8,borrado:false}}];SC.l=Sincro.norm(lq);
     scResolver('grp:gq','mio');
     ok('elegir lo mío lo deja listo para subir sobre la versión actual',SC.l.abiertos.length===0&&SC.l.items['grp:gq'].dirty===true&&SC.l.items['grp:gq'].bv===3&&GRP.some(g=>g.id==='gq'&&g.n==='Nube'));
+    // datos personales con versiones: el conflicto se ve con nombre y se resuelve igual
+    SB_USER={id:'u1'};SP.v2=true;SP.disp={bestiario:'escritorio'};
+    SP.l=Sincro.norm({items:{bestiario:{valor:[{n:'Mío'}],bv:1,mod:5,dirty:true,del:false}},abiertos:[{clave:'bestiario',remoto:{valor:[{n:'Nube'}],version:2,actualizado:4,borrado:false}}]});
+    ok('el panel de datos personales nombra el conflicto y el dispositivo',spVcHTML().includes('Bestiario propio')&&spVcHTML().includes('escritorio')&&spVcHTML().includes('data-act="spres"'));
+    spResolver('bestiario','mio');
+    ok('elegir la de este dispositivo la deja lista para subir sobre la versión de la cuenta',SP.l.abiertos.length===0&&SP.l.items.bestiario.dirty===true&&SP.l.items.bestiario.bv===2);
+    ok('sin conflictos ni copias el panel no enseña nada',spVcHTML()==='');
+    ok('el estado de sincronización no viaja en la copia de seguridad',!Copia.claveOk('combat-sync-v2')&&!Copia.claveOk('combat-sync-v1'));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);

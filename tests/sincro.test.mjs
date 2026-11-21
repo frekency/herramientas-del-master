@@ -279,3 +279,14 @@ test('el modo por defecto (sin «manual») sigue resolviendo solo: gana el más 
   const {l,remoto}=conConflicto(),r=S.fusionar(l,remoto,9000);
   assert.deepEqual(r.conflictos,['nota:a']);assert.equal(r.l.abiertos.length,0);
 });
+
+test('si los dos lados llegan al mismo contenido no hay conflicto (aunque cambie el orden de las claves)',()=>{
+  const l={...S.vacio(),items:{'nota:a':{valor:{a:1,b:[{x:1,y:2}]},bv:1,mod:5000,dirty:true,del:false}}};
+  const remoto={'nota:a':{valor:{b:[{y:2,x:1}],a:1},version:2,actualizado:4000,borrado:false}};
+  for(const manual of [true,false]){
+    const r=S.fusionar(l,remoto,9000,{manual});
+    assert.deepEqual(r.subir,[]);assert.equal(r.l.abiertos.length,0);assert.equal(r.conflictos.length,0);
+    assert.equal(r.l.items['nota:a'].dirty,false);assert.equal(r.l.items['nota:a'].bv,2);
+  }
+  assert.equal(S.igual({a:[1,{b:2,c:3}]},{a:[1,{c:3,b:2}]}),true);assert.equal(S.igual({a:1},{a:2}),false);
+});
