@@ -959,7 +959,7 @@ window.Notas=(()=>{
   const SING={sesion:'Sesión',diario:'Entrada',npc:'PNJ',lugar:'Lugar',tienda:'Tienda',mision:'Misión',nota:'Nota'};
   const ESTADOS={sesion:['planeada','en curso','jugada','cancelada'],mision:['pendiente','activa','completada','fallida']};
   const VIS=['dm','jugadores','enlace'];
-  const MAX={items:2000,nombre:120,texto:100000,campo:2000,filas:200,img:400000};
+  const MAX={mapa:900000,items:2000,nombre:120,texto:100000,campo:2000,filas:200,img:400000};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const str=(v,n)=>typeof v==='string'?v.slice(0,n):'';
   const tipoOk=t=>TIPOS.some(x=>x[0]===t);
@@ -967,7 +967,8 @@ window.Notas=(()=>{
   const idOk=s=>typeof s==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(s);
   const checks=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok)})).filter(e=>e.t||e.ok);
   const ESC_T=['exploracion','social','combate','misterio','descanso','otra'];
-  const escs=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok),tipo:ESC_T.includes(e&&e.tipo)?e.tipo:'',d:str(e&&e.d,2000),lugar:str(e&&e.lugar,120),pnj:str(e&&e.pnj,120),pub:!!(e&&e.pub)})).filter(e=>e.t||e.ok||e.d);
+  const escs=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok),tipo:ESC_T.includes(e&&e.tipo)?e.tipo:'',d:str(e&&e.d,4000),r:str(e&&e.r,2000),enc:ids(e&&e.enc),lugar:str(e&&e.lugar,120),pnj:str(e&&e.pnj,120),pub:!!(e&&e.pub)})).filter(e=>e.t||e.ok||e.d||e.r);
+  const pines=v=>(Array.isArray(v)?v:[]).slice(0,80).map(e=>({x:Math.min(100,Math.max(0,+(e&&e.x)||0)),y:Math.min(100,Math.max(0,+(e&&e.y)||0)),l:str(e&&e.l,120)})).filter(e=>e.l);
   const ids=v=>(Array.isArray(v)?v:[]).filter(idOk).filter((x,i,a)=>a.indexOf(x)===i).slice(0,50);
   const inv=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({n:str(e&&e.n,120),p:str(e&&e.p,40),c:str(e&&e.c,20)})).filter(e=>e.n);
   /* campos permitidos por tipo y cómo se limpian */
@@ -975,7 +976,7 @@ window.Notas=(()=>{
     sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'p'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',criatura:'s',equipo:'s'},
-    lugar:{clase:'s',padre:'s'},
+    lugar:{clase:'s',padre:'s',pines:'m'},
     tienda:{dueno:'s',lugar:'s',inventario:'i'},
     mision:{estado:'e',encargo:'s',recompensa:'s',objetivos:'c'},
     nota:{}
@@ -985,11 +986,14 @@ window.Notas=(()=>{
     const t=x.tipo,c={},src=x.campos&&typeof x.campos==='object'?x.campos:{};
     for(const [k,k2] of Object.entries(CAMPOS[t])){
       const v=src[k];
-      c[k]=k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
+      c[k]=k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
     }
     const img=typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=MAX.img?x.img:null;
-    return {id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
+    const mapa=t==='lugar'&&typeof x.mapa==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.mapa)&&x.mapa.length<=MAX.mapa?x.mapa:null;
+    const o={id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
       creado:Number.isFinite(+x.creado)?+x.creado:Date.now(),editado:Number.isFinite(+x.editado)?+x.editado:Date.now()};
+    if(mapa)o.mapa=mapa;
+    return o;
   }
   function nuevo(tipo,nombre){return norm({tipo,nombre:nombre||'',campos:{}});}
   function cargar(raw){
@@ -1098,7 +1102,7 @@ window.Notas=(()=>{
   const minutosDe=(it,ahora)=>it&&+it.campos.inicio?Math.max(0,Math.floor((ahora-(+it.campos.inicio))/60000)):0;
   /* Lo que una sesión menciona (con [[enlaces]] o por nombre en su plan, escenas y campos), más lo que eso enlaza un nivel: dueño de tienda, lugar de un PNJ… */
   function referenciados(items,it){
-    const txt=[textos(it),...(it.campos.escenas||[]).map(e=>[e.t,e.d,e.lugar,e.pnj].filter(Boolean).join(' · '))].join('\n'),por=enlaces(txt).map(clave);
+    const txt=[textos(it),...(it.campos.escenas||[]).map(e=>[e.t,e.d,e.r,e.lugar,e.pnj].filter(Boolean).join(' · '))].join('\n'),por=enlaces(txt).map(clave);
     const util=o=>!['sesion','diario','nota'].includes(o.tipo)&&o.nombre;
     const lv1=items.filter(o=>o.id!==it.id&&util(o)&&(por.includes(clave(o.nombre))||menciona(txt,o.nombre)));
     const ids=new Set(lv1.map(o=>o.id)),extra=[];
@@ -1122,7 +1126,10 @@ window.Notas=(()=>{
     const total=d.reduce((a,b)=>a+b,0);
     return {jugadas:j.length,planeadas:todas.filter(i=>i.campos.estado==='planeada').length,conTiempo:d.length,minutos:total,media:d.length?Math.round(total/d.length):0,maxima:d.length?Math.max(...d):0};
   }
-  return {referenciados,calendario,sesionDeHoy,estadisticas,fechaDe,activa,iniciarSesion,nuevaSesion,finalizarSesion,minutosDe,VIS,TIPOS,SING,ESTADOS,CAMPOS,norm,nuevo,cargar,guardar,porNombre,enlaces,retroenlaces,md,buscar,href,uid,menciona};
+  const lugaresDentro=(items,it)=>items.filter(o=>o.tipo==='lugar'&&o.id!==it.id&&clave(o.campos.padre)&&clave(o.campos.padre)===clave(it.nombre));
+  const ruta=(items,it)=>{const r=[],vis=new Set([it.id]);let p=it;for(let i=0;i<8;i++){const u=porNombre(items.filter(o=>o.tipo==='lugar'),p.campos.padre);if(!u||vis.has(u.id))break;vis.add(u.id);r.unshift(u);p=u;}return r;};
+  const encsDe=it=>{const l=[...(it.campos.encuentros||[])];for(const e of it.campos.escenas||[])for(const id of e.enc||[])if(!l.includes(id))l.push(id);return l;};
+  return {lugaresDentro,ruta,encsDe,referenciados,calendario,sesionDeHoy,estadisticas,fechaDe,activa,iniciarSesion,nuevaSesion,finalizarSesion,minutosDe,VIS,TIPOS,SING,ESTADOS,CAMPOS,norm,nuevo,cargar,guardar,porNombre,enlaces,retroenlaces,md,buscar,href,uid,menciona};
 })();
 </script>
 <script>/* modo app: solo existe en la app de escritorio (la expone preload.js) */
@@ -1366,6 +1373,7 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 /* ===== grupo, encuentros, conjuros y páginas ===== */
 .txt{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-width:0}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pcard.sinpj{gap:8px}.pcard.sinpj .pn{font-family:var(--f-display);font-size:21px}
 .pcard{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--surface);min-width:0}
 .pc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .pn{font-size:17px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2304,6 +2312,13 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpcd i{display:inline-block;width:6px;height:6px;border-radius:50%;margin:0 1px;background:#8886}
 .cpcd i.planeada{background:#d90}.cpcd i.en-curso{background:var(--ok,#3a8)}.cpcd i.jugada{background:#58c}.cpcd i.cancelada{background:#c55}
 #printdoc{display:none}
+.prtprev{position:fixed;inset:0;z-index:1000;display:flex;background:var(--bg)}
+.prtprev[hidden]{display:none}
+.prtpanel{width:310px;flex:none;overflow:auto;padding:20px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.prtpanel h2{margin:0;font-family:var(--f-display);font-size:24px;color:var(--accent)}
+.prtpage{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;padding:12px 16px}
+.prtpage p{margin:0}.prtpage iframe{flex:1;width:100%;border:1px solid var(--line);background:#6b6b6b}
+@media (max-width:820px){.prtprev{flex-direction:column}.prtpanel{width:auto;max-height:42%;border-right:0;border-bottom:1px solid var(--line)}}
 @media print{
   @page{size:A4;margin:12mm}
   html.printing body>*:not(#printdoc){display:none!important}
@@ -2320,6 +2335,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   #printdoc .prtvac td{height:8mm}
   #printdoc .prtck{list-style:none;padding:0;margin:1mm 0}#printdoc .prtck li{padding:.6mm 0}#printdoc .box{font-size:12pt;margin-right:1.5mm}
   #printdoc .prtlines{background:repeating-linear-gradient(to bottom,transparent 0,transparent 7mm,#000 7mm,#000 7.2mm)!important;margin:2mm 0}
+  #printdoc .prtmapa{margin:2mm 0;break-inside:avoid}#printdoc .prtmapa img{width:100%;max-height:170mm;object-fit:contain;border:.3mm solid #000}#printdoc .prtmapa figcaption{font-size:9pt}
   #printdoc .prtimg{max-width:60mm;max-height:60mm;float:right;margin:0 0 2mm 4mm}
   #printdoc .sb{border:1px solid #000;padding:2mm;font-size:9pt}#printdoc .sb h3{font-size:12pt}
   #printdoc .advsel,#printdoc .sbnote,#printdoc .bactions{display:none!important}
@@ -2462,6 +2478,16 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpdet:has(.cphead){background:var(--surface,var(--bg));border:1px solid var(--line);border-radius:4px 4px 8px 8px;padding:22px 26px 24px;box-shadow:0 1px 0 var(--line),0 5px 0 -2px var(--surface,var(--bg)),0 6px 0 -2px var(--line),0 10px 0 -4px var(--surface,var(--bg)),0 11px 0 -4px var(--line)}
 .cpdet .cpck h4,.cpdet .cptoolbar h4,.cpdet .cpback h4,.cpdet .cpcr h4{font-family:var(--f-display);font-size:19px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--accent)}
 .cpck>.btn{align-self:flex-start}
+.cpmigas{font-family:var(--f-display);font-size:15px;color:var(--muted);margin:-6px 0 -6px}.cpmigas a{color:inherit}
+.cpmap{position:relative;line-height:0;border:1px solid var(--fg);padding:6px;background:#fffdf6;box-shadow:0 2px 8px #0003;max-width:100%}
+.cpmap img{width:100%;height:auto;display:block}
+.cpmap.arm img{cursor:crosshair;outline:3px dashed var(--accent)}
+.cpmap .pin{position:absolute;transform:translate(-50%,-100%);padding:0;border:0;background:transparent;cursor:pointer;line-height:1;display:flex;flex-direction:column;align-items:center}
+.cpmap .pin::before{content:"";width:16px;height:16px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px #0006;order:2;margin-top:2px}
+.cpmap .pin span{font-family:var(--f-display);font-size:14px;line-height:1.1;padding:2px 7px;background:#fffdf6;color:#222;border:1px solid #2226;border-radius:3px;white-space:nowrap}
+.cpmap .pin:hover span,.cpmap .pin:focus-visible span{background:var(--accent);color:var(--accent-ink,#fff)}
+.cppins{display:flex;flex-wrap:wrap;gap:6px}.cppins .chip{display:inline-flex;align-items:center;gap:2px;padding:1px 4px 1px 10px;border:1px solid var(--line);border-radius:99px;font-size:13px}
+.cpdentro h5{margin:4px 0;font-family:var(--f-display);font-size:16px;color:var(--accent)}.cpdentro ul{margin:0;padding-left:20px}
 .cpdet .escbody textarea,.cpdet .cppub textarea{font-family:inherit;font-size:15px;line-height:1.5}
 .cppub{margin-top:2px}
 .cpbar{display:flex;gap:8px}.cpbar input{flex:1;min-width:0}
@@ -2515,6 +2541,8 @@ a.wl{color:var(--accent);text-decoration:underline;text-underline-offset:2px}a.w
 .esctipo[hidden],.escpub[hidden]{display:none}
 .esc.hecha .esct{text-decoration:line-through;color:var(--muted)}
 .escbody{padding:2px 14px 14px 54px;display:grid;gap:10px}
+.escenc h5{margin:0 0 6px;font-family:var(--f-display);font-size:16px;color:var(--accent)}.escenc select{margin-top:4px}
+.escbody .f small{color:var(--muted);font-weight:400}
 .escgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .escbody textarea{width:100%}
 .escact{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -2653,7 +2681,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.49</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.50</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2820,6 +2848,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.50 <span>21 nov 2026</span></h3><ul>
+      <li><b>Las escenas son capítulos</b>: cada una con su plan (solo máster), su resumen para los jugadores y sus encuentros.</li>
+      <li><b>Mapas en los lugares</b>: sube un mapa, marca en él los lugares que contiene y navega de la región al pueblo y a la taberna.</li>
+      <li><b>Vista previa de impresión</b> de la sesión y de las hojas de personaje. Los jugadores sin personaje ya no parecen un personaje.</li>
+    </ul></li>
     <li><h3>v1.49 <span>21 nov 2026</span></h3><ul>
       <li><b>Campaña con aire de cuaderno</b>: pestañas como separadores, lista de notas en forma de índice y retratos como fotos pegadas.</li>
     </ul></li>
@@ -4877,6 +4910,10 @@ function pcCardHTML(p,m){
   const pjl=m?`<div class="pcpj">${f?`<a class="noi18n" href="#personajes/${esc(f.id)}">${esc(f.nombre)}</a> <small>${esc(pjCls(f))}</small>`:`<span class="pcsub">${esc(T('Sin personaje'))}</span>`}
     <select data-grppj="${esc(m.id)}" aria-label="${esc(T('Personaje que lleva'))}"><option value="">${esc(T('— elegir personaje —'))}</option>${libres.map(x=>`<option value="${esc(x.id)}"${f&&x.id===f.id?' selected':''}>${esc(x.nombre)}</option>`).join('')}</select>
     ${f?`<button class="btn sm danger" data-act="grpmuere" data-id="${esc(m.id)}" data-confirm title="${esc(T('Queda en la campaña como caído y el jugador puede elegir otro'))}">${esc(T('Ha caído'))}</button>`:''}</div>`:'';
+  if(m&&!y)return `<div class="pcard sinpj"><div class="pc-top"><div style="min-width:0"><b class="pn">${esc(p.n)}</b><div class="pcsub">${esc(T('Jugador'))}</div></div></div>
+      ${pjl}
+      <div class="pcsub">${esc(T('Tarjeta de combate'))}: ${p.cur??p.hp}/${p.hp} PG · ${T('CA')} ${p.ac??'–'} · ${T('Inic.')} ${sgn(p.in||0)}</div>
+      <div class="inline"><button class="btn sm primary" data-act="pcadd" data-id="${p.id}" ${inC?'disabled':''}>${T(inC?'En combate':'Añadir al combate')}</button><a class="btn sm" href="#personajes">${esc(T('Crear personaje'))}</a><button class="btn sm" data-act="pcedit" data-id="${p.id}">${T('Editar')}</button><button class="btn sm danger" data-act="pcdel" data-id="${p.id}" data-confirm>${T('Borrar')}</button></div></div>`;
   return `<div class="pcard"><div class="pc-top"><div style="min-width:0"><b class="pn">${esc(p.n)}</b><div class="pcsub">${esc(p.tyl)}</div></div><div class="shield">${p.ac??'–'}</div></div>
       <div class="hptext"><span><b>${p.cur??p.hp}</b> / ${p.hp} PG</span>${p.temp?`<span class="tmp">+${p.temp} temp</span>`:''}</div>
       <div class="hpbar"><i style="width:${Math.max(0,pct*100)}%;background:${col}"></i></div>
@@ -5355,10 +5392,14 @@ function extraAct(act,b,c,e){
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'sesstart':case 'seshoy':case 'sesgo':case 'sesend':case 'sesfin':sesActuar(act);break;
     case 'sesclose':sesCierra();break;
-    case 'sesprint':{const it=cpSel&&cpGet(cpSel);if(it&&it.tipo==='sesion'){cpFlush();sesAbre('Imprimir la sesión',prtOpciones(it));}break;}
+    case 'sesprint':{const it=cpSel&&cpGet(cpSel);if(it&&it.tipo==='sesion'){cpFlush();
+      prtVista('Imprimir la sesión',prtOpciones(it),()=>{const sel={};document.querySelectorAll('[data-prts]').forEach(c=>{sel[c.dataset.prts]=c.checked&&!c.disabled;});return prtSesion(it,sel,+($('#prts-n')||{}).value);});}break;}
     case 'sesprintgo':{const it=cpGet(b.dataset.id);if(!it)break;const sel={};document.querySelectorAll('[data-prts]').forEach(c=>{sel[c.dataset.prts]=c.checked&&!c.disabled;});
-      const h=prtSesion(it,sel,+($('#prts-n')||{}).value);sesCierra();if(!h){toast(T('No hay nada que imprimir'));break;}prtImprimir(h);break;}
-    case 'pjprint':{const s=pjGet(pjSel);if(s)prtImprimir('<section class="prts">'+prtHoja(s.f)+'</section>');break;}
+      const h=prtSesion(it,sel,+($('#prts-n')||{}).value);prtVistaCierra();sesCierra();if(!h){toast(T('No hay nada que imprimir'));break;}prtImprimir(h);break;}
+    case 'pjprint':{const s=pjGet(pjSel);if(s){const h='<section class="prts">'+prtHoja(s.f)+'</section>';
+      prtVista('Vista previa','<div class="inline"><button type="button" class="btn primary" data-act="prtvgo">'+esc(T('Imprimir'))+'</button><button type="button" class="btn ghost" data-act="prtvclose">'+esc(T('Cancelar'))+'</button></div>',()=>h);}break;}
+    case 'prtvgo':{const h=prtGen&&prtGen();prtVistaCierra();if(h)prtImprimir(h);break;}
+    case 'prtvclose':prtVistaCierra();break;
     case 'pjprintblank':prtImprimir('<section class="prts">'+prtHoja(null)+'</section>');break;
     case 'cpcalmes':{const d=+b.dataset.d,[y,m]=(cpCalMes||Notas.fechaDe(Date.now()).slice(0,7)).split('-').map(Number),n=d?new Date(y,m-1+d,1):new Date();cpCalMes=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');cpRenderCal();break;}
     case 'cpcaldia':{
@@ -5450,12 +5491,20 @@ function extraAct(act,b,c,e){
     case 'lanzgo':{const ids=[...document.querySelectorAll('#lanz-list input:checked')].map(i=>i.dataset.pid);$('#lanzmodal').hidden=true;syncModalOpen();epLanzarYa(lanzGuardar,ids);break;}
     case 'epdel':{const i=PRESETS.findIndex(x=>x.id===epSel);if(i>=0){const n=PRESETS[i].n;PRESETS.splice(i,1);savePresets();epSel=null;epDraft=null;location.hash='campana/encuentros';epRender();toast(T('Encuentro borrado')+': '+n);}break;}
     case 'cpmode':cpEdit=!cpEdit;cpRenderDet();break;
-    case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:f==='escenas'?{t:'',ok:false,tipo:'',d:'',lugar:'',pnj:'',pub:false}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] '+(f==='escenas'?'.esct':'input[type="text"]'));if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
+    case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:f==='escenas'?{t:'',ok:false,tipo:'',d:'',r:'',enc:[],lugar:'',pnj:'',pub:false}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] '+(f==='escenas'?'.esct':'input[type="text"]'));if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
+    case 'cpescencrm':{const it=cpGet(cpSel),e=it&&it.campos.escenas[+b.dataset.i];if(!e)break;e.enc.splice(+b.dataset.j,1);cpEscAb.add(cpSel+':'+b.dataset.i);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpescmv':{const it=cpGet(cpSel);if(!it)break;const l=it.campos.escenas,i=+b.dataset.i,j=i+ +b.dataset.d;if(!l||j<0||j>=l.length)break;[l[i],l[j]]=[l[j],l[i]];cpEscAb.clear();it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);cpEscAb.clear();it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpdel':{const it=cpGet(cpSel);if(!it)break;CP=CP.filter(x=>x!==it);cpDirty=true;cpFlush();toast('Borrado');location.hash='#campana/'+it.tipo;break;}
     case 'cpcrlink':{const it=cpGet(cpSel),v=($('#cp-cr').value||'').trim().toLowerCase();const m=v&&allBest().find(x=>x.n.toLowerCase()===v||(x.en&&x.en.toLowerCase()===v));if(!it)break;if(!m){toast('No encuentro esa criatura');break;}it.campos.criatura=tkey(m);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpcrunlink':{const it=cpGet(cpSel);if(!it)break;it.campos.criatura='';it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
+    case 'cpmaprm':{const it=cpGet(cpSel);if(!it)break;delete it.mapa;it.campos.pines=[];it.editado=Date.now();cpDirty=true;cpFlush();cpPinArm='';cpRenderDet();break;}
+    case 'cppinrm':{const it=cpGet(cpSel);if(!it)break;it.campos.pines.splice(+b.dataset.i,1);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
+    case 'cppinarm':{const it=cpGet(cpSel),inp=$('#cp-pinl');if(!it||!inp)break;const n=inp.value.trim();
+      if(cpPinArm){cpPinArm='';cpRenderDet();break;}
+      if(!n){toast(T('Escribe o elige el lugar que vas a marcar'));inp.focus();break;}
+      if(!Notas.porNombre(CP.filter(x=>x.tipo==='lugar'),n)){const l=cpNew('lugar',n);l.campos.padre=it.nombre;l.editado=Date.now();cpDirty=true;cpFlush();}
+      cpPinArm=n;cpRenderDet();toast(T('Pulsa en el mapa donde está'));break;}
     case 'cpimgrm':{const it=cpGet(cpSel);if(!it)break;it.img=null;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();window.__campLabel&&window.__campLabel();break;
     case 'scvinc':scVincular(b.dataset.id);break;
@@ -5698,26 +5747,64 @@ const CPLISTS={mision:[['objetivos','Objetivos','Añadir objetivo']]};
 const ESC_TIPOS=[['','Sin tipo'],['exploracion','Exploración'],['social','Social'],['combate','Combate'],['misterio','Misterio'],['descanso','Descanso'],['otra','Otra']];
 const cpEscAb=new Set();
 const escTipoL=t=>T((ESC_TIPOS.find(x=>x[0]===t)||ESC_TIPOS[0])[1]);
+function cpEscEncs(it,e,n){
+  const ids=e.enc||[],libres=PRESETS.filter(p=>!ids.includes(p.id));
+  return `<div class="escenc"><h5>${T('Encuentros')}</h5>${ids.map((id,j)=>{const p=PRESETS.find(x=>x.id===id);
+    return `<div class="cprow cpenc"><span class="cpencn">${p?`<b>${esc(p.n)}</b><small>${esc(encSum(p))}</small>`:`<i>${T('Encuentro borrado')}</i>`}</span>${p?`<button type="button" class="btn sm primary" data-act="cpencload" data-id="${esc(id)}">${T('Cargar en el combate')}</button>`:''}<button type="button" class="btn sm ghost" data-act="cpescencrm" data-i="${n}" data-j="${j}" aria-label="${esc(T('Quitar'))}">✕</button></div>`;}).join('')}
+    ${libres.length?`<select data-cpescenc="${n}" aria-label="${esc(T('Añadir encuentro…'))}"><option value="">${T('Añadir encuentro…')}</option>${libres.map(p=>`<option value="${esc(p.id)}">${esc(p.n)}</option>`).join('')}</select>`:(ids.length?'':`<p class="hint">${T('Aún no hay encuentros guardados. Guárdalos desde Combate.')}</p>`)}</div>`;
+}
 function cpEscenas(it){
+  if(PRESETS.some(p=>!p.id)){PRESETS.forEach(p=>{p.id=p.id||uid();});savePresets();}
   const rows=it.campos.escenas||[];
-  return `<div class="cpck cpesc" data-f="escenas"><h4>${T('Escenas y puntos a tocar')}</h4>${rows.map((e,n)=>{
-    const k=f=>`data-cpesc="${n}:${f}"`,ab=cpEscAb.has(it.id+':'+n)||(!e.t&&!e.d);
+  return `<div class="cpck cpesc" data-f="escenas"><h4>${T('Escenas')}</h4><p class="hint">${T('Cada escena es un capítulo de la sesión: su plan es solo tuyo y su resumen puede verlo el jugador.')}</p>${rows.map((e,n)=>{
+    const k=f=>`data-cpesc="${n}:${f}"`,ab=cpEscAb.has(it.id+':'+n)||(!e.t&&!e.d&&!e.r);
     return `<details class="esc${e.ok?' hecha':''}" data-n="${n}" data-t="${esc(e.tipo||'')}"${ab?' open':''}><summary><span class="escn" aria-hidden="true">${n+1}</span><input type="checkbox" ${k('ok')}${e.ok?' checked':''} aria-label="${esc(T('Hecho'))}"><input type="text" class="esct" ${k('t')} value="${esc(e.t)}" placeholder="${esc(T('Título de la escena'))}" aria-label="${esc(T('Título de la escena'))}"><span class="esctipo"${e.tipo?'':' hidden'}>${esc(escTipoL(e.tipo))}</span><span class="escpub"${e.pub?'':' hidden'}>${T('Visible')}</span></summary>
       <div class="escbody"><div class="escgrid">
         <label class="f">${T('Tipo')}<select ${k('tipo')}>${ESC_TIPOS.map(([v,l])=>`<option value="${v}"${v===(e.tipo||'')?' selected':''}>${esc(T(l))}</option>`).join('')}</select></label>
         <label class="f">${T('Lugar')}<input type="text" list="cp-dl-lugar" ${k('lugar')} value="${esc(e.lugar||'')}"></label>
         <label class="f">${T('PNJ')}<input type="text" list="cp-dl-npc" ${k('pnj')} value="${esc(e.pnj||'')}"></label></div>
-        <textarea rows="3" ${k('d')} placeholder="${esc(T('Qué ocurre, qué se descubre, cómo se resuelve…'))}" aria-label="${esc(T('Descripción'))}">${esc(e.d||'')}</textarea>
-        <div class="escact"><label class="chk"><input type="checkbox" ${k('pub')}${e.pub?' checked':''}> ${T('Mostrar a los jugadores')}</label>
+        <label class="f">${T('Plan de la escena')} <small>${T('(solo máster)')}</small><textarea rows="4" ${k('d')} placeholder="${esc(T('Qué ocurre, qué se descubre, cómo se resuelve…'))}">${esc(e.d||'')}</textarea></label>
+        <label class="f">${T('Resumen para los jugadores')}<textarea rows="2" ${k('r')} placeholder="${esc(T('Lo que saben o han vivido los jugadores en esta escena'))}">${esc(e.r||'')}</textarea></label>
+        ${cpEscEncs(it,e,n)}
+        <div class="escact"><label class="chk"><input type="checkbox" ${k('pub')}${e.pub?' checked':''}> ${T('Mostrar el resumen a los jugadores')}</label>
           <button type="button" class="btn sm ghost" data-act="cpescmv" data-i="${n}" data-d="-1" aria-label="${esc(T('Subir'))}"${n?'':' disabled'}>↑</button><button type="button" class="btn sm ghost" data-act="cpescmv" data-i="${n}" data-d="1" aria-label="${esc(T('Bajar'))}"${n<rows.length-1?'':' disabled'}>↓</button>
           <button type="button" class="btn sm ghost" data-act="cprm" data-f="escenas" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div></div></details>`;}).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="escenas">+ ${T('Añadir escena')}</button></div>
-  <label class="f cppub">${T('Resumen para los jugadores')}<textarea rows="3" data-cpf="campos.publico">${esc(it.campos.publico||'')}</textarea><small>${T('Los jugadores solo ven este resumen y las escenas marcadas como visibles; el resto del plan es solo tuyo.')}</small></label>`;
+  <label class="f cppub">${T('Resumen general para los jugadores')}<textarea rows="3" data-cpf="campos.publico">${esc(it.campos.publico||'')}</textarea><small>${T('Los jugadores solo ven este resumen y el de las escenas marcadas como visibles; el resto del plan es solo tuyo.')}</small></label>`;
+}
+function cpMapa(it){
+  const dentro=Notas.lugaresDentro(CP,it),pins=it.campos.pines||[];
+  const mapa=it.mapa?`<div class="cpmap${cpPinArm?' arm':''}" id="cp-map"><img src="${it.mapa}" alt="${esc(T('Mapa'))}: ${esc(cpName(it))}">${pins.map((q,n)=>`<button type="button" class="pin" data-pin="${n}" style="left:${q.x}%;top:${q.y}%"><span>${esc(q.l)}</span></button>`).join('')}</div>`:'';
+  return `<div class="cpck cpmapbox" data-f="mapa"><h4>${T('Mapa y lugares')}</h4>
+    ${it.mapa?`<div class="cplink bfilters"><input type="text" id="cp-pinl" list="cp-dl-lugar" placeholder="${esc(T('Lugar de este mapa (existente o nuevo)'))}" aria-label="${esc(T('Lugar de este mapa (existente o nuevo)'))}"><button type="button" class="btn" data-act="cppinarm">${cpPinArm?T('Pulsa en el mapa…'):T('Colocar en el mapa')}</button></div>`:`<p class="hint">${T('Añade el mapa de este lugar (una región, una ciudad, una mazmorra) y marca en él los lugares que contiene.')}</p>`}
+    ${mapa}
+    <div class="cpimgbox"><label class="btn sm">${it.mapa?T('Cambiar mapa'):T('Añadir mapa')}<input type="file" accept="image/*" id="cp-mapimg" hidden></label>${it.mapa?`<button type="button" class="btn sm ghost" data-act="cpmaprm">${T('Quitar mapa')}</button>`:''}</div>
+    ${pins.length?`<div class="cppins">${pins.map((q,n)=>`<span class="chip">${esc(q.l)} <button type="button" class="btn sm ghost" data-act="cppinrm" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></span>`).join('')}</div>`:''}
+    ${dentro.length?`<div class="cpdentro"><h5>${T('Lugares dentro')}</h5><ul>${dentro.map(d=>`<li><a class="wl" href="${esc(Notas.href(d))}">${esc(cpName(d))}</a>${d.campos.clase?` <small>${esc(d.campos.clase)}</small>`:''}</li>`).join('')}</ul></div>`:''}</div>`;
+}
+let cpPinArm='';
+function cpMapImage(file,it){
+  if(!file||!/^image\/(png|jpeg|webp|gif|bmp)$/.test(file.type))return toast('Elige una imagen PNG, JPG o WebP');
+  const u=URL.createObjectURL(file),im=new Image();
+  im.onload=()=>{
+    URL.revokeObjectURL(u);
+    let w=im.naturalWidth,h=im.naturalHeight;const k=Math.min(1,1400/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+    const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(im,0,0,w,h);
+    let q=.82,d=cv.toDataURL('image/jpeg',q);while(d.length>880000&&q>.35){q-=.08;d=cv.toDataURL('image/jpeg',q);}
+    if(d.length>880000)return toast('La imagen es demasiado grande');
+    it.mapa=d;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();
+  };
+  im.onerror=()=>{URL.revokeObjectURL(u);toast('No se pudo leer la imagen');};
+  im.src=u;
+}
+function cpMigas(it){
+  const r=Notas.ruta(CP,it);
+  return r.length?`<nav class="cpmigas" aria-label="${esc(T('Dentro de'))}">${r.map(x=>`<a class="wl" href="${esc(Notas.href(x))}">${esc(cpName(x))}</a>`).join(' <span aria-hidden="true">›</span> ')} <span aria-hidden="true">›</span></nav>`:'';
 }
 function cpPubVista(it){
   const e=it.campos.escenas||[];
   return `<div class="cphead"><h3 class="cptitle ro">${esc(cpName(it))}</h3></div><p class="pcsub noi18n">${esc(cpMeta(it))}</p>
     ${it.texto?`<div class="cpmd">${Notas.md(it.texto,[],{})}</div>`:''}
-    ${e.length?`<ol class="pubesc">${e.map(x=>`<li data-t="${esc(x.tipo||'')}"><b>${esc(x.t)}</b>${x.tipo?` <span class="esctipo">${esc(escTipoL(x.tipo))}</span>`:''}${x.lugar?` <span class="pcsub">${esc(x.lugar)}</span>`:''}${x.d?`<p>${esc(x.d)}</p>`:''}</li>`).join('')}</ol>`:''}`;
+    ${e.length?`<ol class="pubesc">${e.map(x=>`<li data-t="${esc(x.tipo||'')}"><b>${esc(x.t)}</b>${x.tipo?` <span class="esctipo">${esc(escTipoL(x.tipo))}</span>`:''}${x.lugar?` <span class="pcsub">${esc(x.lugar)}</span>`:''}${x.r?`<p>${esc(x.r)}</p>`:''}</li>`).join('')}</ol>`:''}`;
 }
 const CPIMG=['npc','lugar','tienda','mision'];
 function cpLoad(){try{CP=Notas.cargar(Store.get(CPKEY));}catch{CP=[];}cpDirty=false;}
@@ -6358,7 +6445,7 @@ function cpEncs(it){
   const rows=ids.map((id,n)=>{const p=PRESETS.find(x=>x.id===id);
     return '<div class="cprow cpenc"><span class="cpencn">'+(p?'<b>'+esc(p.n)+'</b><small>'+esc(encSum(p))+'</small>':'<i>'+T('Encuentro borrado')+'</i>')+'</span>'+(p?'<button type="button" class="btn sm primary" data-act="cpencload" data-id="'+esc(id)+'">'+T('Cargar en el combate')+'</button>':'')+'<button type="button" class="btn sm ghost" data-act="cprm" data-f="encuentros" data-i="'+n+'" aria-label="'+esc(T('Quitar'))+'">✕</button></div>';}).join('');
   const libres=PRESETS.filter(p=>!ids.includes(p.id));
-  return '<div class="cpck" data-f="encuentros"><h4>'+T('Encuentros')+'</h4>'+rows+(libres.length?'<div class="cplink bfilters"><select id="cp-encsel"><option value="">'+T('Añadir encuentro…')+'</option>'+libres.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></div>':'<p class="hint">'+T('Aún no hay encuentros guardados. Guárdalos desde Combate.')+'</p>')+'</div>';
+  return '<div class="cpck" data-f="encuentros"><h4>'+T('Encuentros sin escena')+'</h4>'+rows+(libres.length?'<div class="cplink bfilters"><select id="cp-encsel"><option value="">'+T('Añadir encuentro…')+'</option>'+libres.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></div>':'<p class="hint">'+T('Aún no hay encuentros guardados. Guárdalos desde Combate.')+'</p>')+'</div>';
 }
 function cpCreature(i){
   const k=i.campos.criatura,m=k&&tpl(k);
@@ -6373,11 +6460,12 @@ function cpRenderDet(){
   const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('')+(it.tipo==='sesion'?cpEscenas(it):'');
   const dl=['sesion','npc','lugar'].map(t=>`<datalist id="cp-dl-${t}">${CP.filter(x=>x.tipo===t).map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`).join('');
   const back=Notas.retroenlaces(CP,it);
-  el.innerHTML=`${dl}<div class="cphead bfilters"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
+  el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}<div class="cphead bfilters"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
     <select data-cpf="tipo" aria-label="${esc(T('Tipo'))}">${Notas.TIPOS.map(([k])=>`<option value="${k}"${k===it.tipo?' selected':''}>${esc(T(Notas.SING[k]))}</option>`).join('')}</select></div>
     <div class="cpfields">${CPF[it.tipo].map(f=>cpField(it,f)).join('')}</div>
     ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}
     ${it.tipo==='npc'?cpCreature(it):''}
+    ${it.tipo==='lugar'?cpMapa(it):''}
     ${it.tipo==='tienda'?cpInv(it):''}
     ${lists}
     ${it.tipo==='sesion'?cpEncs(it):''}
@@ -6433,9 +6521,17 @@ function cpImage(file,it){
       const n=Notas.norm({...it,tipo:t.value,campos:it.campos});if(!n)return;
       Object.assign(it,n,{id:it.id});it.editado=Date.now();cpDirty=true;cpFlush();location.hash=Notas.href(it);
     }else if(t.dataset.cpf==='visibilidad'){cpRenderList();}else if(t.id==='cp-encsel'&&t.value){(it.campos.encuentros=it.campos.encuentros||[]).push(t.value);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();}
+    else if(t.dataset.cpescenc&&t.value){const e=it.campos.escenas[+t.dataset.cpescenc];if(e){(e.enc=e.enc||[]).push(t.value);cpEscAb.add(cpSel+':'+t.dataset.cpescenc);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();}}
+    else if(t.id==='cp-mapimg')cpMapImage(t.files[0],it);
     else if(t.id==='cp-img')cpImage(t.files[0],it);
   });
   det.addEventListener('click',e=>{
+    const pn=e.target.closest('.pin');
+    if(pn&&!cpPinArm){const it=cpGet(cpSel),q=it&&(it.campos.pines||[])[+pn.dataset.pin],d=q&&Notas.porNombre(CP.filter(x=>x.tipo==='lugar'),q.l);if(d)location.hash=Notas.href(d);return;}
+    const mp=e.target.closest('#cp-map img');
+    if(mp&&cpPinArm){const it=cpGet(cpSel);if(!it)return;const r=mp.getBoundingClientRect();
+      (it.campos.pines=it.campos.pines||[]).push({x:Math.round((e.clientX-r.left)/r.width*1000)/10,y:Math.round((e.clientY-r.top)/r.height*1000)/10,l:cpPinArm});
+      cpPinArm='';it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();return;}
     const a=e.target.closest('a.wl.nuevo');
     if(a){e.preventDefault();const it=cpNew('nota',a.dataset.nuevo);cpFocus=true;location.hash=Notas.href(it);return;}
   });
@@ -6621,6 +6717,7 @@ function prtItem(it){
   let h='<article class="prti"><h2 class="noi18n">'+esc(cpName(it))+'</h2>'+(campos?'<p class="prtmeta">'+campos+'</p>':'')+(it.img?'<img class="prtimg" src="'+it.img+'" alt="">':'')+prtMd(it.texto,it);
   if(it.tipo==='tienda'&&(c.inventario||[]).length)h+='<table class="prttab"><thead><tr><th>'+esc(T('Objeto'))+'</th><th>'+esc(T('Precio'))+'</th><th>'+esc(T('Cant.'))+'</th></tr></thead><tbody>'+c.inventario.map(i=>'<tr><td class="noi18n">'+esc(i.n)+'</td><td class="noi18n">'+esc(i.p)+'</td><td class="noi18n">'+esc(i.c)+'</td></tr>').join('')+'</tbody></table>';
   if(it.tipo==='mision'&&(c.objetivos||[]).length)h+='<ul class="prtck">'+c.objetivos.map(o=>'<li><span class="box">'+(o.ok?'☑':'☐')+'</span> <span class="noi18n">'+esc(o.t)+'</span></li>').join('')+'</ul>';
+  if(it.tipo==='lugar'&&it.mapa)h+='<figure class="prtmapa"><img src="'+it.mapa+'" alt="">'+((c.pines||[]).length?'<figcaption class="noi18n">'+esc((c.pines||[]).map(q=>q.l).join(' · '))+'</figcaption>':'')+'</figure>';
   if(it.tipo==='npc'){if(c.equipo)h+='<p><b>'+esc(T('Equipo'))+':</b> <span class="noi18n">'+esc(c.equipo)+'</span></p>';h+=prtFicha(c.criatura&&tpl(c.criatura));}
   return h+'</article>';
 }
@@ -6630,9 +6727,9 @@ function prtSesion(it,sel,copias){
   const sec=(titulo,cuerpo)=>'<section class="prts">'+prtCab(cpName(it),T(titulo))+cuerpo+'</section>';
   let h='';
   if(sel.plan)h+=sec('Plan y escenas','<p class="prtmeta noi18n">'+esc([it.campos.fecha||hoy].filter(Boolean).join(' · '))+'</p><h2>'+esc(T('Escenas y puntos a tocar'))+'</h2><ul class="prtck">'
-    +(it.campos.escenas||[]).map(e=>'<li><span class="box">'+(e.ok?'☑':'☐')+'</span> <span class="noi18n"><b>'+esc(e.t)+'</b>'+esc([e.tipo&&escTipoL(e.tipo),e.lugar,e.pnj].filter(Boolean).map((x,i)=>(i?' · ':' — ')+x).join(''))+(e.d?'<br>'+esc(e.d):'')+'</span></li>').join('')+'<li><span class="box">☐</span></li><li><span class="box">☐</span></li></ul>'
+    +(it.campos.escenas||[]).map(e=>'<li><span class="box">'+(e.ok?'☑':'☐')+'</span> <span class="noi18n"><b>'+esc(e.t)+'</b>'+esc([e.tipo&&escTipoL(e.tipo),e.lugar,e.pnj].filter(Boolean).map((x,i)=>(i?' · ':' — ')+x).join(''))+(e.d?'<br>'+esc(e.d):'')+(e.r?'<br><i>'+esc(e.r)+'</i>':'')+'</span></li>').join('')+'<li><span class="box">☐</span></li><li><span class="box">☐</span></li></ul>'
     +prtMd(it.texto,it)+'<h2>'+esc(T('Notas durante la sesión'))+'</h2>'+prtLineas(10));
-  if(sel.enc){const ps=(it.campos.encuentros||[]).map(id=>PRESETS.find(p=>p.id===id)).filter(Boolean);if(ps.length)h+=sec('Encuentros y fichas de criatura',ps.map(prtEncuentro).join(''));}
+  if(sel.enc){const ps=Notas.encsDe(it).map(id=>PRESETS.find(p=>p.id===id)).filter(Boolean);if(ps.length)h+=sec('Encuentros y fichas de criatura',ps.map(prtEncuentro).join(''));}
   if(sel.ini)h+=sec('Hoja de iniciativa y PG','<p>'+esc(T('Ronda'))+': ______</p>'+prtTabla([],18));
   for(const [t,l] of [['npc','PNJ'],['lugar','Lugares'],['tienda','Tiendas'],['mision','Misiones']])if(sel[t]&&de(t).length)h+=sec(l,de(t).map(prtItem).join(''));
   if(sel.hoja)for(let i=0;i<Math.max(1,Math.min(10,copias||1));i++)h+='<section class="prts">'+prtHoja(null)+'</section>';
@@ -6705,6 +6802,42 @@ function prtHoja(f){
     +pie(2)+'</div></div>';
   return h;
 }
+/* Vista previa: la misma hoja que saldrá por la impresora, en un iframe con las reglas de impresión aplicadas en pantalla. */
+let prtGen=null,prtCssC='';
+function prtCssTxt(){
+  if(prtCssC)return prtCssC;
+  const pr=m=>/\bprint\b/.test(m);let out='';
+  for(const sh of document.styleSheets){let rs;try{rs=sh.cssRules;}catch{continue;}
+    for(const r of rs){
+      if(r.type===CSSRule.MEDIA_RULE){
+        if(pr(r.media.mediaText)){for(const q of r.cssRules){if(q.type===CSSRule.PAGE_RULE||/^html\.printing/.test(q.selectorText||''))continue;out+=q.cssText+'\n';}}
+        else out+=r.cssText+'\n';
+      }else if(r.type!==CSSRule.PAGE_RULE)out+=r.cssText+'\n';}}
+  return prtCssC=out;
+}
+function prtVistaDoc(html){
+  return '<!doctype html><html lang="'+esc(LANG)+'" class="printing"><head><meta charset="utf-8"><style>'+prtCssTxt().replace(/<\/style/gi,'<\\/style')+'</style><style>'
+   +'html,body{background:#6b6b6b!important;margin:0!important;padding:14px!important;display:block!important;width:auto!important;min-width:0!important;max-width:none!important}'
+   +'body>*:not(#printdoc){display:none!important}'
+   +'#printdoc{display:block!important;font:10.5pt/1.35 Georgia,"Times New Roman",serif;color:#000;width:auto!important;max-width:none!important}'
+   +'#printdoc .prts{background:#fff!important;width:186mm;min-height:273mm;margin:0 auto 14px!important;padding:12mm;box-sizing:content-box;box-shadow:0 2px 14px #0006!important;overflow:hidden}'
+   +'</style></head><body><div id="printdoc">'+html+'</div></body></html>';
+}
+function prtVistaPinta(){
+  const v=$('#prtprev'),f=v&&v.querySelector('iframe');if(!f||!prtGen)return;
+  const h=prtGen();f.srcdoc=prtVistaDoc(h||'<section class="prts"><p>'+esc(T('No hay nada que imprimir'))+'</p></section>');
+}
+function prtVista(titulo,panel,gen){
+  let v=$('#prtprev');
+  if(!v){v=document.createElement('div');v.id='prtprev';v.className='prtprev';v.setAttribute('role','dialog');v.setAttribute('aria-modal','true');document.body.append(v);
+    v.addEventListener('change',prtVistaPinta);
+    v.addEventListener('input',e=>{if(e.target.id==='prts-n')prtVistaPinta();});
+    v.addEventListener('keydown',e=>{if(e.key==='Escape')prtVistaCierra();});}
+  prtGen=gen;
+  v.innerHTML='<aside class="prtpanel"><h2>'+esc(T(titulo))+'</h2>'+panel+'</aside><div class="prtpage"><p class="pcsub">'+esc(T('Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.'))+'</p><iframe title="'+esc(T('Vista previa'))+'" sandbox=""></iframe></div>';
+  v.hidden=false;prtVistaPinta();const b=v.querySelector('button.primary');if(b)b.focus();
+}
+function prtVistaCierra(){const v=$('#prtprev');if(v&&!v.hidden){v.hidden=true;v.innerHTML='';prtGen=null;}}
 function prtImprimir(html){
   let d=$('#printdoc');if(!d){d=document.createElement('div');d.id='printdoc';document.body.append(d);}
   d.innerHTML=html;document.documentElement.classList.add('printing');
@@ -6713,7 +6846,7 @@ function prtImprimir(html){
   if(!window.__sinImprimir)setTimeout(()=>window.print(),60);
 }
 function prtOpciones(it){
-  const ref=Notas.referenciados(CP,it),n={enc:(it.campos.encuentros||[]).length,npc:0,lugar:0,tienda:0,mision:0};for(const x of ref)if(x.tipo in n)n[x.tipo]++;
+  const ref=Notas.referenciados(CP,it),n={enc:Notas.encsDe(it).length,npc:0,lugar:0,tienda:0,mision:0};for(const x of ref)if(x.tipo in n)n[x.tipo]++;
   return '<p class="pcsub">'+esc(T('Elige qué entra en el cuaderno. Cada apartado empieza en una página nueva, así puedes separar lo que necesites.'))+'</p>'
    +PRT_SECC.map(([k,l,on])=>{const c=n[k];const vacio=c===0;return '<label class="chk"><input type="checkbox" data-prts="'+k+'"'+(on&&!vacio?' checked':'')+(vacio?' disabled':'')+'> '+esc(T(l))+(c!==undefined?' <span class="pcsub">('+c+')</span>':'')+'</label>';}).join('')
    +'<label class="f">'+esc(T('Copias de la hoja en blanco'))+'<input type="number" id="prts-n" min="1" max="10" value="1" style="width:80px"></label>'
@@ -6816,7 +6949,7 @@ function sesRender(){
   }
 }
 function sesAbre(titulo,html){$('#ses-h').textContent=T(titulo);$('#ses-body').innerHTML=html;$('#sesmodal').hidden=false;syncModalOpen();}
-function sesCierra(){$('#sesmodal').hidden=true;syncModalOpen();}
+function sesCierra(){prtVistaCierra();$('#sesmodal').hidden=true;syncModalOpen();}
 function sesInicioHTML(){
   const pl=CP.filter(i=>i.tipo==='sesion'&&i.campos.estado==='planeada').sort((a,b)=>(a.campos.fecha||'9').localeCompare(b.campos.fecha||'9')||a.creado-b.creado);
   const hoyId=(sesHoy()||{}).id;
@@ -7096,12 +7229,12 @@ const scClone=v=>JSON.parse(JSON.stringify(v));
 /* Lo que el jugador puede ver de una sesión que es solo del máster: el resumen y las escenas marcadas como visibles. Nada más sale de su dispositivo. */
 function scPub(i){
   if(i.tipo!=='sesion'||i.visibilidad!=='dm')return null;
-  const es=(i.campos.escenas||[]).filter(e=>e.pub&&e.t).map(e=>({t:e.t,tipo:e.tipo||'',d:e.d||'',lugar:e.lugar||'',ok:!!e.ok})),pu=String(i.campos.publico||'').trim();
+  const es=(i.campos.escenas||[]).filter(e=>e.pub&&e.t).map(e=>({t:e.t,tipo:e.tipo||'',r:e.r||'',lugar:e.lugar||'',ok:!!e.ok})),pu=String(i.campos.publico||'').trim();
   if(!es.length&&!pu)return null;
   return {nombre:i.nombre,fecha:i.campos.fecha||'',estado:i.campos.estado||'planeada',publico:pu,escenas:es};
 }
 function scPubNota(id,v){
-  return Notas.norm({id:'pub_'+id,tipo:'sesion',nombre:v.nombre,texto:v.publico,visibilidad:'jugadores',campos:{fecha:v.fecha,estado:v.estado,escenas:(Array.isArray(v.escenas)?v.escenas:[]).map(e=>({...e,pub:true}))}});
+  return Notas.norm({id:'pub_'+id,tipo:'sesion',nombre:v.nombre,texto:v.publico,visibilidad:'jugadores',campos:{fecha:v.fecha,estado:v.estado,escenas:(Array.isArray(v.escenas)?v.escenas:[]).map(e=>({t:e.t,tipo:e.tipo,lugar:e.lugar,ok:e.ok,r:e.r||e.d||'',pub:true}))}});
 }
 function scSnapshot(){
   if(!cpLoaded){cpLoad();cpLoaded=true;}cpFlush();

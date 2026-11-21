@@ -28,8 +28,8 @@ const TAIL=`<script>
     window.__sinImprimir=true;
     location.hash='#campana/sesion/s1';await wait(500);
     await click('[data-act="sesprint"]');
-    const m=document.getElementById('sesmodal');
-    ok('la ventana de impresión ofrece los apartados con su número',!m.hidden&&!!m.querySelector('[data-prts="plan"]')&&m.textContent.includes('PNJ (1)'));
+    const m=document.getElementById('prtprev');
+    ok('la ventana de impresión ofrece los apartados con su número y una vista previa',!m.hidden&&!!m.querySelector('iframe')&&/class="prts"/.test(m.querySelector('iframe').srcdoc)&&!!m.querySelector('[data-prts="plan"]')&&m.textContent.includes('PNJ (1)'));
     ok('lo que la sesión no menciona queda desactivado',m.querySelector('[data-prts="tienda"]').disabled&&m.querySelector('[data-prts="lugar"]').disabled);
     await click('[data-act="sesprintgo"]');
     const d=document.getElementById('printdoc');
@@ -41,6 +41,8 @@ const TAIL=`<script>
     document.documentElement.classList.remove('printing');
     location.hash='#personajes/c1';await wait(500);
     await click('[data-act="pjprint"]');
+    ok('la hoja se ve primero en la vista previa',!!document.querySelector('#prtprev iframe')&&/class="hoja|hs-pg|class="hs/.test(document.querySelector('#prtprev iframe').srcdoc));
+    await click('[data-act="prtvgo"]');
     ok('la hoja de un personaje se imprime rellena',d.querySelector('.hoja')&&d.textContent.includes('Lyra')&&d.textContent.includes('Arcanos')&&d.textContent.includes('+6'));
     location.hash='#personajes';await wait(400);
     await click('[data-act="pjprintblank"]');

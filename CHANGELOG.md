@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.50.0] - 2026-11-21
+### Añadido
+- **Las escenas son capítulos**: cada una tiene plan (solo máster), resumen para los jugadores y encuentros propios. A los jugadores solo llega el resumen de las escenas marcadas.
+- **Mapas en los lugares**: un lugar puede llevar un mapa con chinchetas que enlazan a los lugares que contiene (región, pueblo, taberna…), con ruta de migas y lista de lugares dentro. El mapa sale en la hoja impresa.
+- **Vista previa de impresión** de la sesión (se actualiza al marcar apartados) y de las hojas de personaje.
+### Cambiado
+- En Jugadores, quien no tiene personaje se muestra como jugador, con su tarjeta de combate aparte, y no como un personaje.
+
 ## [1.49.0] - 2026-11-21
 ### Cambiado
 - **Campaña con aire de cuaderno**: pestañas como separadores, lista de notas en forma de índice y retratos como fotos pegadas.

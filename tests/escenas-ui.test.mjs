@@ -30,6 +30,7 @@ const TAIL=`<script>
     ok('la escena nueva se abre con sus campos',!!document.querySelector('#cp-det details.esc[open] textarea'));
     await typeIn('[data-cpesc="0:t"]','El puente roto');
     await typeIn('[data-cpesc="0:d"]','El jefe espera abajo. SECRETO: es el padre de Lyra.');
+    await typeIn('[data-cpesc="0:r"]','Un puente colgante cruza la garganta.');
     await typeIn('[data-cpesc="0:lugar"]','Garganta Negra');
     const t=document.querySelector('[data-cpesc="0:tipo"]');t.value='combate';t.dispatchEvent(new Event('input',{bubbles:true}));
     ok('la escena guarda título, descripción, lugar y tipo',(r=>r.t==='El puente roto'&&r.lugar==='Garganta Negra'&&r.tipo==='combate'&&/SECRETO/.test(r.d))(cpGet(s.id).campos.escenas[0]));
@@ -37,8 +38,7 @@ const TAIL=`<script>
     const p=document.querySelector('[data-cpesc="0:pub"]');p.checked=true;p.dispatchEvent(new Event('input',{bubbles:true}));
     const pb=scPub(cpGet(s.id));
     ok('al marcarla sale en lo público',pb&&pb.escenas.length===1&&pb.escenas[0].t==='El puente roto');
-    cpGet(s.id).campos.escenas[0].d='x';
-    ok('lo público lleva la descripción de la escena visible, no el texto del plan',!/padre/.test(JSON.stringify(scPub((()=>{const c=cpGet(s.id);c.texto='SECRETO del plan';return c;})()))));
+        {const j=JSON.stringify(scPub((()=>{const c=cpGet(s.id);c.texto='SECRETO del plan';return c;})()));ok('lo público lleva el resumen de la escena, nunca su plan ni el texto de la sesión',/puente colgante/.test(j)&&!/padre|SECRETO|jefe/.test(j));}
     ok('un resumen solo también se publica',scPub({tipo:'sesion',visibilidad:'dm',nombre:'x',campos:{publico:'Llegáis al pueblo',escenas:[]}}).publico==='Llegáis al pueblo');
     ok('una sesión ya compartida no duplica',scPub({tipo:'sesion',visibilidad:'jugadores',nombre:'x',campos:{publico:'a',escenas:[]}})===null);
     const n=scPubNota('abc',{nombre:'La cripta',fecha:'2026-11-21',estado:'planeada',publico:'Resumen',escenas:[{t:'Uno',tipo:'social',d:'d',lugar:'l',ok:false}]});
@@ -46,6 +46,19 @@ const TAIL=`<script>
     CP.push(n);cpSel=n.id;cpRenderDet();
     ok('la vista del jugador no tiene campos editables',!document.querySelector('#cp-det input,#cp-det textarea')&&/Uno/.test(document.getElementById('cp-det').textContent));
     ok('la copia del jugador no se vuelve a subir como nota',!('nota:pub_abc' in scSnapshot()));
+    // lugares anidados con mapa
+    const reg=Notas.nuevo('lugar','Costa de la Espada');CP.push(reg);cpDirty=true;cpFlush();
+    cpSel=reg.id;reg.mapa='data:image/png;base64,iVBORw0KGgo=';cpRenderDet();
+    document.getElementById('cp-pinl').value='Phandalin';await click('[data-act="cppinarm"]');
+    const ph=CP.find(x=>x.nombre==='Phandalin');
+    ok('al marcar un lugar nuevo se crea dentro del actual',ph&&ph.tipo==='lugar'&&ph.campos.padre==='Costa de la Espada');
+    const im=document.querySelector('#cp-map img');im.getBoundingClientRect=()=>({left:0,top:0,width:200,height:100});
+    im.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:50,clientY:25}));await wait(100);
+    ok('la chincheta queda en su sitio en porcentaje',reg.campos.pines.length===1&&reg.campos.pines[0].x===25&&reg.campos.pines[0].y===25&&reg.campos.pines[0].l==='Phandalin');
+    ok('el mapa y las chinchetas sobreviven a guardar y cargar',(c=>c&&c.mapa&&c.campos.pines.length===1)(Notas.cargar(Notas.guardar(CP)).find(x=>x.id===reg.id)));
+    const sub=Notas.nuevo('lugar','Taberna Rueda del Carro');sub.campos.padre='Phandalin';CP.push(sub);
+    ok('la ruta de un lugar va de la región al lugar',Notas.ruta(CP,sub).map(x=>x.nombre).join('>')==='Costa de la Espada>Phandalin');
+    ok('los lugares dentro de otro se listan',Notas.lugaresDentro(CP,reg).map(x=>x.nombre).join()==='Phandalin');
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -73,6 +86,6 @@ test('escenas de sesión y lo que ven los jugadores',{skip:!BROWSER&&'no hay Edg
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=10,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=16,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });
