@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.5] - 2026-11-21
+### Cambiado
+- Preferencias: el bloque «Bloqueo de pantalla», solo de la app de escritorio, pasa al final.
+
 ## [1.57.4] - 2026-11-21
 ### Cambiado
 - Web: el gestor de campañas ya no muestra las etiquetas «activa» y «Sincronizada» ni el botón «Sincronizar».
