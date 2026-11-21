@@ -1425,5 +1425,12 @@
   "Combate en curso": "Combattimento in corso",
   "turno de": "turno di",
   "Seguir el combate": "Continua il combattimento",
-  "Abrir la sesión": "Apri la sessione"
+  "Abrir la sesión": "Apri la sessione",
+  "Título de la escena": "Titolo della scena",
+  "Visible": "Visibile",
+  "Qué ocurre, qué se descubre, cómo se resuelve…": "Cosa accade, cosa si scopre, come si risolve…",
+  "Mostrar a los jugadores": "Mostra ai giocatori",
+  "Bajar": "Sposta giù",
+  "Resumen para los jugadores": "Riassunto per i giocatori",
+  "Los jugadores solo ven este resumen y las escenas marcadas como visibles; el resto del plan es solo tuyo.": "I giocatori vedono solo questo riassunto e le scene segnate come visibili; il resto del piano è solo tuo."
 }

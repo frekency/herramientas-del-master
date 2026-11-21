@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.48.0] - 2026-11-21
+### Añadido
+- **Escenas con ficha** en el plan de la sesión: tipo, lugar, PNJ y descripción; se pueden reordenar.
+- **Lo que ven los jugadores**: un resumen y las escenas marcadas como visibles. El resto del plan sigue siendo solo del máster.
+### Seguridad
+- Un jugador solo puede leer lo compartido de la campaña (notas visibles, fichas, grupo de jugadores). Requiere ejecutar `supabase/jugadores.sql`.
+### Cambiado
+- El detalle de las sesiones y notas se presenta como un folio, con títulos de sección manuscritos.
+
 ## [1.47.0] - 2026-11-21
 ### Cambiado
 - **Aspecto de papel y tinta por defecto**, también en la app de escritorio (antes era oscuro con ámbar). El oscuro sigue en Preferencias → Estilo.

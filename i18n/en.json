@@ -1425,5 +1425,12 @@
   "Combate en curso": "Combat in progress",
   "turno de": "turn of",
   "Seguir el combate": "Continue the combat",
-  "Abrir la sesión": "Open the session"
+  "Abrir la sesión": "Open the session",
+  "Título de la escena": "Scene title",
+  "Visible": "Visible",
+  "Qué ocurre, qué se descubre, cómo se resuelve…": "What happens, what is discovered, how it resolves…",
+  "Mostrar a los jugadores": "Show to the players",
+  "Bajar": "Move down",
+  "Resumen para los jugadores": "Summary for the players",
+  "Los jugadores solo ven este resumen y las escenas marcadas como visibles; el resto del plan es solo tuyo.": "Players only see this summary and the scenes marked as visible; the rest of the plan is yours alone."
 }

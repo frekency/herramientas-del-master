@@ -966,11 +966,13 @@ window.Notas=(()=>{
   const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
   const idOk=s=>typeof s==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(s);
   const checks=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok)})).filter(e=>e.t||e.ok);
+  const ESC_T=['exploracion','social','combate','misterio','descanso','otra'];
+  const escs=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok),tipo:ESC_T.includes(e&&e.tipo)?e.tipo:'',d:str(e&&e.d,2000),lugar:str(e&&e.lugar,120),pnj:str(e&&e.pnj,120),pub:!!(e&&e.pub)})).filter(e=>e.t||e.ok||e.d);
   const ids=v=>(Array.isArray(v)?v:[]).filter(idOk).filter((x,i,a)=>a.indexOf(x)===i).slice(0,50);
   const inv=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({n:str(e&&e.n,120),p:str(e&&e.p,40),c:str(e&&e.c,20)})).filter(e=>e.n);
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
-    sesion:{fecha:'s',estado:'e',escenas:'c',encuentros:'d',inicio:'s',fin:'s'},
+    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'p'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',criatura:'s',equipo:'s'},
     lugar:{clase:'s',padre:'s'},
@@ -983,7 +985,7 @@ window.Notas=(()=>{
     const t=x.tipo,c={},src=x.campos&&typeof x.campos==='object'?x.campos:{};
     for(const [k,k2] of Object.entries(CAMPOS[t])){
       const v=src[k];
-      c[k]=k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
+      c[k]=k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
     }
     const img=typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=MAX.img?x.img:null;
     return {id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
@@ -1096,7 +1098,7 @@ window.Notas=(()=>{
   const minutosDe=(it,ahora)=>it&&+it.campos.inicio?Math.max(0,Math.floor((ahora-(+it.campos.inicio))/60000)):0;
   /* Lo que una sesión menciona (con [[enlaces]] o por nombre en su plan, escenas y campos), más lo que eso enlaza un nivel: dueño de tienda, lugar de un PNJ… */
   function referenciados(items,it){
-    const txt=[textos(it),...(it.campos.escenas||[]).map(e=>e.t)].join('\n'),por=enlaces(txt).map(clave);
+    const txt=[textos(it),...(it.campos.escenas||[]).map(e=>[e.t,e.d,e.lugar,e.pnj].filter(Boolean).join(' · '))].join('\n'),por=enlaces(txt).map(clave);
     const util=o=>!['sesion','diario','nota'].includes(o.tipo)&&o.nombre;
     const lv1=items.filter(o=>o.id!==it.id&&util(o)&&(por.includes(clave(o.nombre))||menciona(txt,o.nombre)));
     const ids=new Set(lv1.map(o=>o.id)),extra=[];
@@ -2454,7 +2456,13 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cptabs a[aria-selected="true"]{border-color:var(--accent);color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
 .cpgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
 .cplist{flex:1 1 250px;max-width:340px;min-width:0;display:flex;flex-direction:column;gap:10px}
-.cpdet{flex:3 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.cpdet{flex:3 1 420px;min-width:0;display:flex;flex-direction:column;gap:16px}
+/* el detalle es un folio: papel con el borde de las hojas de debajo */
+.cpdet:has(.cphead){background:var(--surface,var(--bg));border:1px solid var(--line);border-radius:4px 4px 8px 8px;padding:22px 26px 24px;box-shadow:0 1px 0 var(--line),0 5px 0 -2px var(--surface,var(--bg)),0 6px 0 -2px var(--line),0 10px 0 -4px var(--surface,var(--bg)),0 11px 0 -4px var(--line)}
+.cpdet .cpck h4,.cpdet .cptoolbar h4,.cpdet .cpback h4,.cpdet .cpcr h4{font-family:var(--f-display);font-size:19px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--accent)}
+.cpck>.btn{align-self:flex-start}
+.cpdet .escbody textarea,.cpdet .cppub textarea{font-family:inherit;font-size:15px;line-height:1.5}
+.cppub{margin-top:2px}
 .cpbar{display:flex;gap:8px}.cpbar input{flex:1;min-width:0}
 .cpbar.bfilters,.cphead.bfilters,.cprow.bfilters,.cplink.bfilters{margin:0}
 .cphead.bfilters select{flex:0 0 auto}
@@ -2493,6 +2501,29 @@ a.wl.auto{text-decoration-style:dotted}
 .cpac li.on{background:color-mix(in srgb,var(--accent) 18%,var(--surface))}.cpac small{color:var(--muted)}
 a.wl{color:var(--accent);text-decoration:underline;text-underline-offset:2px}a.wl.nuevo{border-bottom:1px dashed var(--accent);text-decoration:none;opacity:.8}
 .cpback{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}.cpback small{color:var(--muted)}
+.cpesc{gap:10px}
+.esc{--tc:var(--muted);border:1px solid var(--line);border-radius:10px;background:var(--surface,var(--bg))}
+.esc[data-t=exploracion]{--tc:#2e8b57}.esc[data-t=social]{--tc:#c27a1a}.esc[data-t=combate]{--tc:#c23b3b}.esc[data-t=misterio]{--tc:#7a4cc2}.esc[data-t=descanso]{--tc:#2f6fd0}
+.esc>summary{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;list-style:none}
+.esc>summary::-webkit-details-marker{display:none}
+.escn{font-family:var(--f-display);font-size:28px;line-height:1;min-width:1.2em;text-align:center;color:var(--tc)}
+.esct{flex:1;min-width:0;font-weight:600;font-size:16px;background:transparent;border-color:transparent}
+.esct:hover,.esct:focus{border-color:var(--line);background:var(--bg)}
+.esctipo,.escpub{font-size:12px;padding:2px 10px;border-radius:99px;white-space:nowrap;background:color-mix(in srgb,var(--tc) 16%,transparent);color:var(--fg)}
+.escpub{background:var(--accent);color:var(--accent-ink,#fff)}
+.esctipo[hidden],.escpub[hidden]{display:none}
+.esc.hecha .esct{text-decoration:line-through;color:var(--muted)}
+.escbody{padding:2px 14px 14px 54px;display:grid;gap:10px}
+.escgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.escbody textarea{width:100%}
+.escact{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.escact .chk{flex:1 1 200px;display:flex;gap:8px;align-items:center}
+.cppub small{color:var(--muted);font-weight:400}
+.pubesc{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px;counter-reset:pe}
+.pubesc li{counter-increment:pe;padding:10px 0 12px 46px;border-top:1px solid var(--line);position:relative}
+.pubesc li::before{content:counter(pe);position:absolute;left:4px;top:6px;font-family:var(--f-display);font-size:30px;line-height:1;color:var(--accent)}
+.pubesc p{margin:4px 0 0;color:var(--muted)}
+.cptitle.ro{margin:0;font-size:24px}
 .cpfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:12px}.cpvis{flex:1;max-width:320px}.cpenc{flex-wrap:wrap}.cpencn{flex:1;min-width:160px;display:flex;flex-direction:column}.cpencn small{color:var(--muted)}
 /* ===== Estilo «Escritorio»: solo existe en la app de escritorio (se añade a los selectores desde JS) ===== */
 :root[data-skin="escritorio"]{
@@ -2621,7 +2652,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.47</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.48</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2788,6 +2819,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.48 <span>21 nov 2026</span></h3><ul>
+      <li><b>Escenas con ficha</b> en el plan de la sesión: tipo, lugar, PNJ y descripción, reordenables.</li>
+      <li><b>Los jugadores ven lo que tú decidas</b>: un resumen y las escenas marcadas como visibles, sin enseñar el resto del plan.</li>
+      <li>Un jugador ya solo lee lo compartido de la campaña (ejecuta supabase/jugadores.sql). Detalle de la sesión como un folio.</li>
+    </ul></li>
     <li><h3>v1.47 <span>21 nov 2026</span></h3><ul>
       <li><b>Aspecto de papel y tinta por defecto</b>, también en la app de escritorio; el oscuro sigue en Preferencias.</li>
       <li><b>Portada en forma de índice</b>, con el combate o la sesión en curso arriba. En escritorio, la cabecera solo sale en el combate y «Buscar» (Ctrl K) está en la barra lateral.</li>
@@ -5410,8 +5446,9 @@ function extraAct(act,b,c,e){
     case 'lanzgo':{const ids=[...document.querySelectorAll('#lanz-list input:checked')].map(i=>i.dataset.pid);$('#lanzmodal').hidden=true;syncModalOpen();epLanzarYa(lanzGuardar,ids);break;}
     case 'epdel':{const i=PRESETS.findIndex(x=>x.id===epSel);if(i>=0){const n=PRESETS[i].n;PRESETS.splice(i,1);savePresets();epSel=null;epDraft=null;location.hash='campana/encuentros';epRender();toast(T('Encuentro borrado')+': '+n);}break;}
     case 'cpmode':cpEdit=!cpEdit;cpRenderDet();break;
-    case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] input[type="text"]');if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
-    case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
+    case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:f==='escenas'?{t:'',ok:false,tipo:'',d:'',lugar:'',pnj:'',pub:false}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] '+(f==='escenas'?'.esct':'input[type="text"]'));if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
+    case 'cpescmv':{const it=cpGet(cpSel);if(!it)break;const l=it.campos.escenas,i=+b.dataset.i,j=i+ +b.dataset.d;if(!l||j<0||j>=l.length)break;[l[i],l[j]]=[l[j],l[i]];cpEscAb.clear();it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
+    case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);cpEscAb.clear();it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpdel':{const it=cpGet(cpSel);if(!it)break;CP=CP.filter(x=>x!==it);cpDirty=true;cpFlush();toast('Borrado');location.hash='#campana/'+it.tipo;break;}
     case 'cpcrlink':{const it=cpGet(cpSel),v=($('#cp-cr').value||'').trim().toLowerCase();const m=v&&allBest().find(x=>x.n.toLowerCase()===v||(x.en&&x.en.toLowerCase()===v));if(!it)break;if(!m){toast('No encuentro esa criatura');break;}it.campos.criatura=tkey(m);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpcrunlink':{const it=cpGet(cpSel);if(!it)break;it.campos.criatura='';it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
@@ -5653,7 +5690,31 @@ const CPF={
   mision:[['estado','Estado','sel'],['encargo','Encargada por','link:npc'],['recompensa','Recompensa','text']],
   nota:[]
 };
-const CPLISTS={sesion:[['escenas','Escenas y puntos a tocar','Añadir escena']],mision:[['objetivos','Objetivos','Añadir objetivo']]};
+const CPLISTS={mision:[['objetivos','Objetivos','Añadir objetivo']]};
+const ESC_TIPOS=[['','Sin tipo'],['exploracion','Exploración'],['social','Social'],['combate','Combate'],['misterio','Misterio'],['descanso','Descanso'],['otra','Otra']];
+const cpEscAb=new Set();
+const escTipoL=t=>T((ESC_TIPOS.find(x=>x[0]===t)||ESC_TIPOS[0])[1]);
+function cpEscenas(it){
+  const rows=it.campos.escenas||[];
+  return `<div class="cpck cpesc" data-f="escenas"><h4>${T('Escenas y puntos a tocar')}</h4>${rows.map((e,n)=>{
+    const k=f=>`data-cpesc="${n}:${f}"`,ab=cpEscAb.has(it.id+':'+n)||(!e.t&&!e.d);
+    return `<details class="esc${e.ok?' hecha':''}" data-n="${n}" data-t="${esc(e.tipo||'')}"${ab?' open':''}><summary><span class="escn" aria-hidden="true">${n+1}</span><input type="checkbox" ${k('ok')}${e.ok?' checked':''} aria-label="${esc(T('Hecho'))}"><input type="text" class="esct" ${k('t')} value="${esc(e.t)}" placeholder="${esc(T('Título de la escena'))}" aria-label="${esc(T('Título de la escena'))}"><span class="esctipo"${e.tipo?'':' hidden'}>${esc(escTipoL(e.tipo))}</span><span class="escpub"${e.pub?'':' hidden'}>${T('Visible')}</span></summary>
+      <div class="escbody"><div class="escgrid">
+        <label class="f">${T('Tipo')}<select ${k('tipo')}>${ESC_TIPOS.map(([v,l])=>`<option value="${v}"${v===(e.tipo||'')?' selected':''}>${esc(T(l))}</option>`).join('')}</select></label>
+        <label class="f">${T('Lugar')}<input type="text" list="cp-dl-lugar" ${k('lugar')} value="${esc(e.lugar||'')}"></label>
+        <label class="f">${T('PNJ')}<input type="text" list="cp-dl-npc" ${k('pnj')} value="${esc(e.pnj||'')}"></label></div>
+        <textarea rows="3" ${k('d')} placeholder="${esc(T('Qué ocurre, qué se descubre, cómo se resuelve…'))}" aria-label="${esc(T('Descripción'))}">${esc(e.d||'')}</textarea>
+        <div class="escact"><label class="chk"><input type="checkbox" ${k('pub')}${e.pub?' checked':''}> ${T('Mostrar a los jugadores')}</label>
+          <button type="button" class="btn sm ghost" data-act="cpescmv" data-i="${n}" data-d="-1" aria-label="${esc(T('Subir'))}"${n?'':' disabled'}>↑</button><button type="button" class="btn sm ghost" data-act="cpescmv" data-i="${n}" data-d="1" aria-label="${esc(T('Bajar'))}"${n<rows.length-1?'':' disabled'}>↓</button>
+          <button type="button" class="btn sm ghost" data-act="cprm" data-f="escenas" data-i="${n}" aria-label="${esc(T('Quitar'))}">✕</button></div></div></details>`;}).join('')}<button type="button" class="btn sm" data-act="cpadd" data-f="escenas">+ ${T('Añadir escena')}</button></div>
+  <label class="f cppub">${T('Resumen para los jugadores')}<textarea rows="3" data-cpf="campos.publico">${esc(it.campos.publico||'')}</textarea><small>${T('Los jugadores solo ven este resumen y las escenas marcadas como visibles; el resto del plan es solo tuyo.')}</small></label>`;
+}
+function cpPubVista(it){
+  const e=it.campos.escenas||[];
+  return `<div class="cphead"><h3 class="cptitle ro">${esc(cpName(it))}</h3></div><p class="pcsub noi18n">${esc(cpMeta(it))}</p>
+    ${it.texto?`<div class="cpmd">${Notas.md(it.texto,[],{})}</div>`:''}
+    ${e.length?`<ol class="pubesc">${e.map(x=>`<li data-t="${esc(x.tipo||'')}"><b>${esc(x.t)}</b>${x.tipo?` <span class="esctipo">${esc(escTipoL(x.tipo))}</span>`:''}${x.lugar?` <span class="pcsub">${esc(x.lugar)}</span>`:''}${x.d?`<p>${esc(x.d)}</p>`:''}</li>`).join('')}</ol>`:''}`;
+}
 const CPIMG=['npc','lugar','tienda','mision'];
 function cpLoad(){try{CP=Notas.cargar(Store.get(CPKEY));}catch{CP=[];}cpDirty=false;}
 function cpFlush(){clearTimeout(cpTimer);if(!cpDirty)return;cpDirty=false;try{Store.set(CPKEY,Notas.guardar(CP));}catch(e){toast('No se pudo guardar la campaña');}try{sesRender();}catch{}}   // las sesiones pueden aparecer o desaparecer al editar
@@ -6304,7 +6365,8 @@ function cpCreature(i){
 function cpRenderDet(){
   const el=$('#cp-det'),it=cpSel&&cpGet(cpSel);
   if(!it){const vacio=!cpQ&&!CP.some(i=>i.tipo===cpTipo);el.innerHTML=`<div class="empty">${T(vacio?'Aún no hay nada aquí. Pulsa «+ Nuevo».':'Elige algo de la lista o crea uno nuevo.')}</div>`;return;}
-  const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('');
+  if(it.id.startsWith('pub_')){el.innerHTML=cpPubVista(it);return;}
+  const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('')+(it.tipo==='sesion'?cpEscenas(it):'');
   const dl=['sesion','npc','lugar'].map(t=>`<datalist id="cp-dl-${t}">${CP.filter(x=>x.tipo===t).map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`).join('');
   const back=Notas.retroenlaces(CP,it);
   el.innerHTML=`${dl}<div class="cphead bfilters"><input class="cptitle" data-cpf="nombre" value="${esc(it.nombre)}" placeholder="${esc(T('Nombre'))}" aria-label="${esc(T('Nombre'))}">
@@ -6355,8 +6417,12 @@ function cpImage(file,it){
     const it=cpGet(cpSel);if(!it)return;const t=e.target;
     if(t.dataset.cpf){cpSet(it,t.dataset.cpf,t.type==='checkbox'?t.checked:t.value);if(t.dataset.cpf==='nombre'||t.dataset.cpf.startsWith('campos.'))cpRenderList();}
     else if(t.dataset.cpck){const [f,n,w]=t.dataset.cpck.split(':'),r=it.campos[f]?.[+n];if(r){if(w==='ok')r.ok=t.checked;else r.t=t.value;it.editado=Date.now();cpSoon();}}
+    else if(t.dataset.cpesc){const [n,f]=t.dataset.cpesc.split(':'),r=it.campos.escenas?.[+n];if(r){
+      r[f]=(f==='ok'||f==='pub')?t.checked:t.value;it.editado=Date.now();cpSoon();
+      const d=t.closest('details');if(d){d.classList.toggle('hecha',!!r.ok);d.dataset.t=r.tipo||'';const tp=d.querySelector('.esctipo'),pb=d.querySelector('.escpub');tp.textContent=escTipoL(r.tipo);tp.hidden=!r.tipo;pb.hidden=!r.pub;}}}
     else if(t.dataset.cpinv){const [n,w]=t.dataset.cpinv.split(':'),r=it.campos.inventario?.[+n];if(r){r[w]=t.value;it.editado=Date.now();cpSoon();}}
   });
+  det.addEventListener('toggle',e=>{const d=e.target;if(d.classList&&d.classList.contains('esc')){const k=cpSel+':'+d.dataset.n;if(d.open)cpEscAb.add(k);else cpEscAb.delete(k);}},true);
   det.addEventListener('change',e=>{
     const it=cpGet(cpSel);if(!it)return;const t=e.target;
     if(t.dataset.cpf==='tipo'){
@@ -6560,7 +6626,7 @@ function prtSesion(it,sel,copias){
   const sec=(titulo,cuerpo)=>'<section class="prts">'+prtCab(cpName(it),T(titulo))+cuerpo+'</section>';
   let h='';
   if(sel.plan)h+=sec('Plan y escenas','<p class="prtmeta noi18n">'+esc([it.campos.fecha||hoy].filter(Boolean).join(' · '))+'</p><h2>'+esc(T('Escenas y puntos a tocar'))+'</h2><ul class="prtck">'
-    +(it.campos.escenas||[]).map(e=>'<li><span class="box">'+(e.ok?'☑':'☐')+'</span> <span class="noi18n">'+esc(e.t)+'</span></li>').join('')+'<li><span class="box">☐</span></li><li><span class="box">☐</span></li></ul>'
+    +(it.campos.escenas||[]).map(e=>'<li><span class="box">'+(e.ok?'☑':'☐')+'</span> <span class="noi18n"><b>'+esc(e.t)+'</b>'+esc([e.tipo&&escTipoL(e.tipo),e.lugar,e.pnj].filter(Boolean).map((x,i)=>(i?' · ':' — ')+x).join(''))+(e.d?'<br>'+esc(e.d):'')+'</span></li>').join('')+'<li><span class="box">☐</span></li><li><span class="box">☐</span></li></ul>'
     +prtMd(it.texto,it)+'<h2>'+esc(T('Notas durante la sesión'))+'</h2>'+prtLineas(10));
   if(sel.enc){const ps=(it.campos.encuentros||[]).map(id=>PRESETS.find(p=>p.id===id)).filter(Boolean);if(ps.length)h+=sec('Encuentros y fichas de criatura',ps.map(prtEncuentro).join(''));}
   if(sel.ini)h+=sec('Hoja de iniciativa y PG','<p>'+esc(T('Ronda'))+': ______</p>'+prtTabla([],18));
@@ -7023,10 +7089,22 @@ var SC={l:Sincro.vacio(),since:null,busy:false,msg:'',cargada:false};
 function scLoad(){SC.cargada=true;try{const o=JSON.parse(Store.get(SCKEY)||'null');if(o){SC.l=Sincro.norm(o.l);SC.since=typeof o.since==='string'?o.since:null;}}catch{}}
 function scSave(){try{Store.set(SCKEY,JSON.stringify({l:SC.l,since:SC.since}));}catch{}}
 const scClone=v=>JSON.parse(JSON.stringify(v));
+/* Lo que el jugador puede ver de una sesión que es solo del máster: el resumen y las escenas marcadas como visibles. Nada más sale de su dispositivo. */
+function scPub(i){
+  if(i.tipo!=='sesion'||i.visibilidad!=='dm')return null;
+  const es=(i.campos.escenas||[]).filter(e=>e.pub&&e.t).map(e=>({t:e.t,tipo:e.tipo||'',d:e.d||'',lugar:e.lugar||'',ok:!!e.ok})),pu=String(i.campos.publico||'').trim();
+  if(!es.length&&!pu)return null;
+  return {nombre:i.nombre,fecha:i.campos.fecha||'',estado:i.campos.estado||'planeada',publico:pu,escenas:es};
+}
+function scPubNota(id,v){
+  return Notas.norm({id:'pub_'+id,tipo:'sesion',nombre:v.nombre,texto:v.publico,visibilidad:'jugadores',campos:{fecha:v.fecha,estado:v.estado,escenas:(Array.isArray(v.escenas)?v.escenas:[]).map(e=>({...e,pub:true}))}});
+}
 function scSnapshot(){
   if(!cpLoaded){cpLoad();cpLoaded=true;}cpFlush();
   const m={};
-  for(const i of CP)m['nota:'+i.id]=i;
+  for(const i of CP){
+    if(i.id.startsWith('pub_')){const o=SC.l&&SC.l.items['pub:'+i.id.slice(4)];if(o&&!o.del&&o.valor)m['pub:'+i.id.slice(4)]=o.valor;continue;}   // copia de solo lectura de lo que el máster enseña
+    m['nota:'+i.id]=i;const pb=scPub(i);if(pb)m['pub:'+i.id]=pb;}
   for(const p of PRESETS)if(p&&p.id&&!p.ex)m['enc:'+p.id]=p;
   for(const p of PARTY)if(p&&p.id&&!p.ex)m['pj:'+p.id]=p;
   if(!pjCargado)pjLoad();grpSync();
@@ -7050,13 +7128,14 @@ function scApply(r){
   const parte=k=>[k.slice(0,k.indexOf(':')),k.slice(k.indexOf(':')+1)];
   for(const k of r.bajados){const it=SC.l.items[k];if(!it)continue;const [tp,id]=parte(k);
     if(tp==='nota'){const n=Notas.norm(it.valor);if(n){put(CP,n);nCP=true;}}
+    else if(tp==='pub'&&it.valor&&typeof it.valor==='object'){if(Store.campaigns.rol()==='jugador'){const n=scPubNota(id,it.valor);if(n){put(CP,n);nCP=true;}}}
     else if(tp==='enc'&&it.valor&&Array.isArray(it.valor.items)){put(PRESETS,{...scClone(it.valor),id});nE=true;}
     else if(tp==='pj'&&it.valor&&typeof it.valor==='object'){put(PARTY,{...scClone(it.valor),id});nP=true;}
     else if(tp==='fch'&&it.valor&&typeof it.valor==='object'){if(!pjCargado)pjLoad();const f=Ficha.norm({...scClone(it.valor),id});if(f){put(PJC,f);nF=true;}}
     else if(tp==='grp'&&it.valor&&typeof it.valor==='object'){const g=Grupos.normLista([{...scClone(it.valor),id}])[0];if(g){const l=GRP.slice();put(l,g);GRP=l;nG=true;}}
     else if(tp==='cfg'&&id==='permisos'&&it.valor&&typeof it.valor==='object'){try{Store.set(PJCFG,JSON.stringify(it.valor));nC=true;}catch{}}}
   for(const k of r.borrados){const [tp,id]=parte(k);
-    if(tp==='nota')nCP=quita(CP,id)||nCP;else if(tp==='enc')nE=quita(PRESETS,id)||nE;else if(tp==='pj')nP=quita(PARTY,id)||nP;
+    if(tp==='nota')nCP=quita(CP,id)||nCP;else if(tp==='pub')nCP=quita(CP,'pub_'+id)||nCP;else if(tp==='enc')nE=quita(PRESETS,id)||nE;else if(tp==='pj')nP=quita(PARTY,id)||nP;
     else if(tp==='fch'){if(!pjCargado)pjLoad();nF=quita(PJC,id)||nF;}else if(tp==='grp'){const l=GRP.slice();if(quita(l,id)){GRP=l;nG=true;}}}
   if(nCP){cpDirty=false;try{Store.set(CPKEY,Notas.guardar(CP));}catch{}}
   if(nE)savePresets();if(nP)saveParty();if(nF)pjGuardar();if(nG)grpSave();
