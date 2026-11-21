@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.58.1] - 2026-11-21
+### Cambiado
+- **Web con el mismo control de versiones**: ya no resuelve los conflictos sola. Una nota sin tocar en la web se actualiza a la versión más nueva del escritorio; si la web tiene un cambio sin subir y el escritorio avanzó por otro lado, hay conflicto y se elige qué conservar. En la web solo aparece el aviso cuando hay un conflicto.
+
 ## [1.58.0] - 2026-11-21
 ### Añadido
 - **Control de versiones de la campaña** (escritorio): si un elemento cambia aquí y en la cuenta a la vez, ya no se decide solo «lo más reciente»: no se pisa nada y el conflicto queda abierto en Campañas, con la hora de cada versión, para elegir «Quedarme con lo mío» o «Quedarme con lo de la cuenta» (la otra versión queda como copia recuperable).

@@ -7886,7 +7886,7 @@ async function scRun(manual){
       if(error)throw error;
       const remoto={};let max=SC.since,maxMs=SC.since?Date.parse(SC.since):0;
       for(const r of data){const ms=Date.parse(r.actualizado)||0;remoto[r.clave]={valor:r.valor,version:r.version,actualizado:ms,borrado:!!r.borrado};if(ms>=maxMs){maxMs=ms;max=r.actualizado;}}
-      const f=Sincro.fusionar(SC.l,remoto,Date.now(),{incremental:!!SC.since&&!completa,manual:!WEB_NUBE});
+      const f=Sincro.fusionar(SC.l,remoto,Date.now(),{incremental:!!SC.since&&!completa,manual:true});
       completa=false;
       SC.l=f.l;SC.since=max;res.bajados+=f.bajados.length+f.borrados.length;res.conflictos+=f.conflictos.length;res.rechazadas+=f.rechazadas.length;
       scApply(f);
@@ -7940,10 +7940,11 @@ const SC_TIPO={nota:'Nota',enc:'Encuentro',pj:'Jugador',fch:'Personaje',grp:'Gru
 function scConfNombre(c){const v=c.valor,k=String(c.clave),tp=k.slice(0,k.indexOf(':'));
   const n=v&&typeof v==='object'?(v.nombre||v.n||v.titulo||''):'';return T(SC_TIPO[tp]||'Elemento')+(n?' · '+n:'');}
 /* ---------- control de versiones (escritorio): qué difiere de la cuenta, conflictos abiertos y subir/descargar a la fuerza ---------- */
-const scVcOn=()=>!!(SB&&SB_USER&&!WEB_NUBE&&Store.campaigns.remote(Store.campaigns.active()));
+const scVcOn=()=>!!(SB&&SB_USER&&Store.campaigns.remote(Store.campaigns.active()));
 function scVcHTML(){
   if(!scVcOn())return '';
   const l=SC.l||Sincro.vacio(),ab=l.abiertos||[],pen=Sincro.pendientes(l);
+  if(WEB_NUBE&&!ab.length)return '';   // en la web no se enseña nada de sincronizar mientras no haya un conflicto
   let h='<div class="scrow"><b>'+esc(T('Control de cambios'))+'</b><span class="pcsub">'+esc(pen?pen+' '+T(pen===1?'cambio sin subir':'cambios sin subir'):T('Todo subido'))+(ab.length?' · '+ab.length+' '+T(ab.length===1?'conflicto por resolver':'conflictos por resolver'):'')+'</span></div>';
   if(ab.length){
     h+='<p class="hint" style="display:block;margin:0">'+esc(T('Estos elementos cambiaron aquí y en la cuenta. No se ha pisado nada: elige cuál conservar (la otra versión se guarda como copia recuperable).'))+'</p>';
@@ -7951,6 +7952,7 @@ function scVcHTML(){
       return '<div class="scrow"><span class="noi18n">'+esc(scConfNombre({clave:a.clave,valor:it.valor}))+'</span> <span class="pcsub">'+esc(T('Aquí'))+': '+esc(it.mod?new Date(it.mod).toLocaleString():'—')+(it.del?' ('+esc(T('borrado'))+')':'')+' · '+esc(T('Cuenta'))+': '+esc(a.remoto.actualizado?new Date(a.remoto.actualizado).toLocaleString():'—')+(a.remoto.borrado?' ('+esc(T('borrado'))+')':'')+'</span> '
        +'<button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="mio">'+esc(T('Quedarme con lo mío'))+'</button><button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="nube">'+esc(T('Quedarme con lo de la cuenta'))+'</button></div>';}).join('');
   }
+  if(WEB_NUBE)return h;   // en la web manda la cuenta: solo se ven los conflictos, sin subir/descargar a la fuerza
   h+='<div class="scrow"><button type="button" class="btn sm" data-act="scforzar" data-d="subir">'+esc(T('Subir todo lo de este dispositivo'))+'</button><button type="button" class="btn sm" data-act="scforzar" data-d="bajar">'+esc(T('Descargar todo lo de la cuenta'))+'</button></div>';
   return h;
 }
