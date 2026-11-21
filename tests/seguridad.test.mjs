@@ -74,3 +74,14 @@ test('El hosting sirve la página con cabeceras de seguridad',()=>{
   const h=read('_headers');
   for(const x of ['X-Content-Type-Options: nosniff','X-Frame-Options: SAMEORIGIN','Referrer-Policy:'])assert.ok(h.includes(x),`_headers sin ${x}`);
 });
+
+test('un jugador no lee lo privado del máster: solo fichas, lo compartido y lo que se le enseña',()=>{
+  const sql=read('supabase/jugadores.sql');
+  assert.match(sql,/drop policy if exists "leer los de mi campaña"/);
+  assert.match(sql,/rol_en\(campana_id\) = 'master'/,'el máster lee todo');
+  assert.match(sql,/clave like 'nota:%' and coalesce\(valor->>'visibilidad', 'dm'\) in \('jugadores', 'enlace'\)/,'las notas solo si son compartidas');
+  assert.doesNotMatch(sql,/clave like 'enc:%'/,'los encuentros preparados no se enseñan');
+  assert.doesNotMatch(sql,/es_miembro\(campana_id\)\s*\)?\s*;/,'nada de «cualquier miembro lee todo»');
+  // el cliente solo sube a «pub:» lo que el máster decide enseñar (las claves siguen el mismo patrón)
+  assert.ok(PAGE.includes("'nota:'+i.id"),'la sincronización sigue subiendo las notas con su clave');
+});
