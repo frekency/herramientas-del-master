@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.55.0] - 2026-11-21
+### Añadido
+- **Subir imágenes desde el estudio de la mesa**: con el botón «Subir una imagen» o arrastrando un archivo sobre el lienzo. La imagen se reduce como en la Galería y queda guardada allí como documento, además de ponerse en la zona elegida.
+- Ctrl+Intro envía la escena a la mesa.
+
 ## [1.54.0] - 2026-11-21
 ### Añadido
 - **Estudio de la ventana de mesa** (app de escritorio): una página nueva, «Ventana de mesa», para preparar la escena antes de enseñarla, como en una mesa de mezclas. Vista previa 16:9 fiel a lo que verán los jugadores; capas de imagen, texto, orden de iniciativa y cuentas atrás que se arrastran, se redimensionan (con imán a los bordes y al centro; Alt lo desactiva) y se mueven con las flechas; zonas de imágenes que se rellenan con un clic desde la galería; orden, visibilidad, opacidad, marco de fotografía y tipografías para el texto. «Enviar a la mesa» manda la escena con una transición (corte, fundido); con «En vivo» los cambios llegan solos. Plantillas de escena por campaña (y cuatro ejemplos). En el navegador la página explica que es de escritorio.

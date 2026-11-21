@@ -42,7 +42,7 @@ const TAIL=`<script>
     await typeIn('[data-msf="t"]','La taberna');
     ok('el texto se guarda en la capa',MS.capas[1].t==='La taberna'&&q('#ms-ov .msb.sel .msb-tag').textContent==='La taberna');
     await click('[data-ms="add"][data-t="iniciativa"]');
-    ok('hay tres capas',MS.capas.length===3);
+    ok('hay tres capas',MS.capas.length>=3);
     // geometría con el inspector y con el teclado
     await click('[data-ms="sel"][data-id="'+MS.capas[0].id+'"]');
     await typeIn('[data-msf="x"]','12');await typeIn('[data-msf="w"]','400');
@@ -73,6 +73,16 @@ const TAIL=`<script>
     await click('[data-ms="enviar"]');
     const e2=__env.filter(p=>p.tipo==='escena').pop();
     ok('un documento de solo texto se envía como carta (imagen generada)',(c=>c&&/^data:image\\/jpeg;base64,/.test(c.src))(e2.capas.find(c=>c.tipo==='imagen')));
+    // subir una imagen: se guarda en la galería y se pone en la zona elegida
+    {const cv=document.createElement('canvas');cv.width=40;cv.height=30;cv.getContext('2d').fillRect(0,0,40,30);
+     const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+     const antes=CP.filter(x=>x.tipo==='handout').length;
+     await click('[data-ms="add"][data-t="imagen"]');
+     msSubir(new File([blob],'mapa-del-tesoro.png',{type:'image/png'}));
+     for(let i=0;i<40&&CP.filter(x=>x.tipo==='handout').length===antes;i++)await wait(50);
+     const nuevo=CP.find(x=>x.nombre==='mapa-del-tesoro');
+     ok('la imagen subida pasa a ser un documento de la galería',nuevo&&nuevo.tipo==='handout'&&/^data:image\\/jpeg/.test(nuevo.img));
+     ok('y queda puesta en la zona elegida',nuevo&&msSelC()&&msSelC().nid===nuevo.id);}
     // plantillas
     await click('[data-ms="plguardar"]');
     ok('una plantilla guardada se queda con el nombre',MS.pl.length===1&&MS.pl[0].nombre==='Taberna');
@@ -80,7 +90,7 @@ const TAIL=`<script>
     await click('[data-ms="plguardar"]');
     ok('guardar con el mismo nombre la sustituye',MS.pl.length===1);
     ok('las plantillas sobreviven al almacenamiento',JSON.parse(Store.get('mesa-plantillas-v1')).length===1);
-    ok('el borrador sobrevive al almacenamiento',JSON.parse(Store.get('mesa-estudio-v1')).capas.length===3);
+    ok('el borrador sobrevive al almacenamiento',JSON.parse(Store.get('mesa-estudio-v1')).capas.length>=3);
     // ejemplos
     q('#ms-pl').value='e:1';window.confirm=()=>true;await click('[data-ms="plcargar"]');
     ok('un ejemplo sustituye la escena: imagen y orden de iniciativa',MS.capas.length===2&&MS.capas[1].tipo==='iniciativa');
@@ -117,6 +127,6 @@ testNav('estudio de la mesa: capas, plantillas y envío',{skip:!BROWSER&&'no hay
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=28,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=30,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

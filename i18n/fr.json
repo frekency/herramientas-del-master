@@ -1555,5 +1555,7 @@
   "La ventana de mesa es una pantalla aparte para los jugadores (un monitor o una tele) y solo existe en la app de escritorio. Aquí podrás preparar escenas con imágenes, textos, el orden de iniciativa y cuentas atrás, y enviarlas con un botón.": "La fenêtre de table est un écran à part pour les joueurs (un moniteur ou une télé) et n’existe que dans l’application de bureau. Vous pourrez y préparer des scènes avec images, textes, ordre d’initiative et comptes à rebours, et les envoyer d’un clic.",
   "Biblioteca": "Bibliothèque",
   "Vista previa de la mesa": "Aperçu de la table",
-  "Capas y propiedades": "Calques et propriétés"
+  "Capas y propiedades": "Calques et propriétés",
+  "Subir una imagen": "Importer une image",
+  "Imagen guardada también en la Galería": "Image aussi enregistrée dans la Galerie"
 }
