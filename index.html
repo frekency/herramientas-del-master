@@ -7947,10 +7947,10 @@ function scVcHTML(){
   if(WEB_NUBE&&!ab.length)return '';   // en la web no se enseña nada de sincronizar mientras no haya un conflicto
   let h='<div class="scrow"><b>'+esc(T('Control de cambios'))+'</b><span class="pcsub">'+esc(pen?pen+' '+T(pen===1?'cambio sin subir':'cambios sin subir'):T('Todo subido'))+(ab.length?' · '+ab.length+' '+T(ab.length===1?'conflicto por resolver':'conflictos por resolver'):'')+'</span></div>';
   if(ab.length){
-    h+='<p class="hint" style="display:block;margin:0">'+esc(T('Estos elementos cambiaron aquí y en la cuenta. No se ha pisado nada: elige cuál conservar (la otra versión se guarda como copia recuperable).'))+'</p>';
+    h+='<p class="hint" style="display:block;margin:0">'+esc(T('Estos elementos cambiaron aquí y en la cuenta. No se ha pisado nada: elige cuál es la correcta. La que elijas pasa a ser la versión de la cuenta y los demás dispositivos la recibirán al sincronizar; la otra se guarda como copia recuperable.'))+'</p>';
     h+=ab.map(a=>{const it=l.items[a.clave]||{};
       return '<div class="scrow"><span class="noi18n">'+esc(scConfNombre({clave:a.clave,valor:it.valor}))+'</span> <span class="pcsub">'+esc(T('Aquí'))+': '+esc(it.mod?new Date(it.mod).toLocaleString():'—')+(it.del?' ('+esc(T('borrado'))+')':'')+' · '+esc(T('Cuenta'))+': '+esc(a.remoto.actualizado?new Date(a.remoto.actualizado).toLocaleString():'—')+(a.remoto.borrado?' ('+esc(T('borrado'))+')':'')+'</span> '
-       +'<button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="mio">'+esc(T('Quedarme con lo mío'))+'</button><button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="nube">'+esc(T('Quedarme con lo de la cuenta'))+'</button></div>';}).join('');
+       +'<button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="mio">'+esc(T('La de este dispositivo es la correcta'))+'</button><button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="nube">'+esc(T('La de la cuenta es la correcta'))+'</button></div>';}).join('');
   }
   if(WEB_NUBE)return h;   // en la web manda la cuenta: solo se ven los conflictos, sin subir/descargar a la fuerza
   h+='<div class="scrow"><button type="button" class="btn sm" data-act="scforzar" data-d="subir">'+esc(T('Subir todo lo de este dispositivo'))+'</button><button type="button" class="btn sm" data-act="scforzar" data-d="bajar">'+esc(T('Descargar todo lo de la cuenta'))+'</button></div>';
@@ -7960,7 +7960,7 @@ function scVcPinta(){const b=$('#camp-vc');if(b)b.innerHTML=scVcHTML();}
 function scResolver(k,e){
   const r=Sincro.resolver(SC.l,k,e,Date.now());if(!r.ok){toast(T('Ese conflicto ya no existe'));scVcPinta();return;}
   SC.l=r.l;if(r.aplicar.bajados.length||r.aplicar.borrados.length)scApply(r.aplicar);
-  scSave();scConfPinta();toast(T(e==='mio'?'Se conserva lo tuyo y se subirá a la cuenta':'Se conserva lo de la cuenta; tu versión queda como copia recuperable'),5000);
+  scSave();scConfPinta();toast(T(e==='mio'?'La de este dispositivo pasa a ser la correcta: se sube a la cuenta y los demás dispositivos la recibirán':'La de la cuenta pasa a ser la correcta; tu versión queda como copia recuperable'),5000);
   scRun(false);
 }
 /* Compara este dispositivo con la cuenta (lectura completa) y, tras confirmar con las cifras delante, deja uno igual al otro. */

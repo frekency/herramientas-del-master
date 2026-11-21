@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.58.2] - 2026-11-21
+### Cambiado
+- Conflictos: los botones y el aviso dejan claro que la versión elegida pasa a ser la correcta para todos los dispositivos («La de este dispositivo es la correcta» / «La de la cuenta es la correcta»).
+
 ## [1.58.1] - 2026-11-21
 ### Cambiado
 - **Web con el mismo control de versiones**: ya no resuelve los conflictos sola. Una nota sin tocar en la web se actualiza a la versión más nueva del escritorio; si la web tiene un cambio sin subir y el escritorio avanzó por otro lado, hay conflicto y se elige qué conservar. En la web solo aparece el aviso cuando hay un conflicto.
