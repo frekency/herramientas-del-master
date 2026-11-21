@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.8] - 2026-11-21
+### Cambiado
+- Inicio (web): el cuadro de descarga de la app de escritorio pasa al final de la página.
+
 ## [1.57.7] - 2026-11-21
 ### Cambiado
 - **Pantalla de acceso**: una caja sencilla y centrada con solo correo y contraseña (más «Olvidé mi contraseña»), sobre un fondo suave en movimiento que respeta «reducir movimiento».
