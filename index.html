@@ -48,6 +48,8 @@ window.Store=(()=>{
     setRol(id,rol){const c=load().list.find(x=>x.id===id);if(!c||!['master','jugador'].includes(rol))return false;if(rol==='jugador')c.rol='jugador';else delete c.rol;save();return true;},
     remote:id=>{const c=load().list.find(x=>x.id===id);return c&&/^[0-9a-f-]{36}$/.test(c.remoto||'')?c.remoto:'';},
     setRemote(id,uuid){const c=load().list.find(x=>x.id===id);if(!c)return false;if(uuid&&!/^[0-9a-f-]{36}$/.test(uuid))return false;if(uuid)c.remoto=uuid;else delete c.remoto;save();return true;},
+    // Borra todo el contenido de una campaña y su vínculo con la cuenta; la local se queda vacía en la lista.
+    vaciar(id){const c=load().list.find(x=>x.id===id);if(!c)return false;for(const k of SCOPED)B.remove(id===BASE?k:'camp:'+id+':'+k);delete c.remoto;save();return true;},
     rename(id,n){n=clean(n);const c=load().list.find(x=>x.id===id);if(!c||!n)return false;c.nombre=n;save();return true;},
     select(id){if(!load().list.some(c=>c.id===id))return false;idx.active=id;save();return true;},
     // La campaña «local» no se borra (es donde viven los datos de siempre y los de la cuenta); las demás sí, con sus datos.
@@ -3588,7 +3590,20 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <div class="scconf" id="camp-conf"></div>
       <div class="scremote" id="camp-inv"></div>
       <form class="inline" id="camp-join" hidden><input class="txt noi18n" id="camp-code" maxlength="20" autocomplete="off" aria-label="Código de invitación" placeholder="Código de invitación" style="flex:1 1 200px"><button class="btn" type="submit">Unirme con un código</button></form>
+      <p class="hint" id="camp-first" style="display:block;margin:0" hidden><b>Aún no tienes ninguna campaña.</b> Empieza creando la primera: dale un nombre y pulsa «Crear campaña».</p>
       <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="delmodal" hidden>
+  <div class="mbox" role="alertdialog" aria-modal="true" aria-labelledby="del-h" style="width:min(460px,100%)">
+    <div class="mhead"><h2 id="del-h">Borrar campaña</h2><button class="btn ghost" data-act="delcancel" aria-label="Cerrar">✕</button></div>
+    <div class="mbody" style="display:grid;gap:12px">
+      <p style="margin:0">Vas a borrar la campaña <b id="del-nom" class="noi18n"></b>.</p>
+      <p class="hint" id="del-txt" style="display:block;margin:0"></p>
+      <label class="f">Para confirmar, escribe el nombre de la campaña<input id="del-in" class="noi18n" autocomplete="off" maxlength="60"></label>
+      <div class="inline"><button type="button" class="btn" data-act="delcancel">Cancelar</button><button type="button" class="btn danger" id="del-ok" data-act="delok" disabled>Borrar para siempre</button></div>
     </div>
   </div>
 </div>
@@ -4792,8 +4807,8 @@ function fillCompDL(){
     $(id).innerHTML=compList(tab).map(x=>`<option value="${esc(x.n)}">${esc(tab==='objetos'?x.t||OBJ_KIND[x.k]||'':x._src)}</option>`).join('');
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
-function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal',...(acBloqueado()?[]:['#acctmodal']),'#prefmodal','#qrmodal','#itmodal','#campmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
-function syncModalOpen(){document.body.classList.toggle('modal-open',['#lanzmodal','#audmodal','#sesmodal','#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'].some(id=>!$(id).hidden));}
+function closeModals(){for(const id of ['#delmodal','#bestmodal','#editmodal','#iomodal','#pcmodal',...(acBloqueado()?[]:['#acctmodal']),'#prefmodal','#qrmodal','#itmodal','#campmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
+function syncModalOpen(){document.body.classList.toggle('modal-open',['#delmodal','#lanzmodal','#audmodal','#sesmodal','#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
   commit(()=>{
@@ -5942,7 +5957,20 @@ function extraAct(act,b,c,e){
     case 'screc':{const i=+b.dataset.i;if(scConfRecuperar(i)){toast(T('Versión recuperada; se subirá en la próxima sincronización'));scConfPinta();scRun(false);}break;}
     case 'scdesc':{const i=+b.dataset.i;if(SC.l.conflictos[i]){SC.l.conflictos.splice(i,1);scSave();scConfPinta();}break;}
     case 'campgo':if(Store.campaigns.select(b.dataset.id))location.reload();break;
-    case 'campdel':{const id=b.dataset.id,was=Store.campaigns.active()===id;scSoltar(Store.campaigns.remote(id));if(Store.campaigns.remove(id)){toast('Campaña borrada');if(was)location.reload();else renderCamps();}break;}
+    case 'campdel':{const C=Store.campaigns,id=b.dataset.id,c=C.list().find(x=>x.id===id);if(!c)break;
+      const rid=C.remote(id),propia=!!rid&&C.rol(id)!=='jugador'&&!!SB_USER;
+      campDelPend={id,rid,propia,nombre:c.nombre};
+      $('#del-txt').textContent=T(propia?'Se borrará también de tu cuenta, con todas sus notas, encuentros y fichas, y desaparecerá de todos tus dispositivos. No se puede deshacer.':rid?'Se quitará de este dispositivo. Seguirá existiendo en la cuenta de su máster.':'Se borrará la campaña y todo su contenido de este dispositivo. No se puede deshacer.');
+      $('#del-nom').textContent=c.nombre;$('#del-in').value='';$('#del-ok').disabled=true;$('#delmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#del-in').focus(),30);break;}
+    case 'delcancel':$('#delmodal').hidden=true;campDelPend=null;syncModalOpen();break;
+    case 'delok':{const p=campDelPend;if(!p||$('#del-in').value.trim()!==p.nombre.trim())break;
+      const C=Store.campaigns;$('#del-ok').disabled=true;
+      const fin=()=>{const was=C.active()===p.id;$('#delmodal').hidden=true;campDelPend=null;syncModalOpen();
+        if(p.id===C.BASE){C.vaciar(p.id);toast(T('Campaña borrada'));location.reload();return;}   // la local no sale de la lista: se queda vacía
+        if(C.remove(p.id)){toast(T('Campaña borrada'));if(was)location.reload();else renderCamps();}};
+      if(p.propia){SB.from('campanas').delete().eq('id',p.rid).then(({error})=>{if(error){toast(T('No se ha podido borrar de tu cuenta')+': '+error.message,6000);$('#del-ok').disabled=false;return;}fin();});break;}
+      if(p.rid)scSoltar(p.rid);
+      fin();break;}
     case 'bkexample':{const x=$('#bk-example').textContent;navigator.clipboard?.writeText(x).then(()=>toast('Ejemplo copiado')).catch(()=>toast('Selecciona el ejemplo y cópialo a mano'));break;}
     case 'pcnew':openPC(null);break;
     case 'pcedit':openPC(b.dataset.id);break;
@@ -6010,6 +6038,7 @@ function showView(){
   if(v2==='tablas')renderTables();
   if(v2==='referencia')renderRef();
   if(v2==='modulos'){renderMods();loadCatalog();}
+  if(v2==='campana')campPrimera();
   if(v2==='mesa')msRender();
   if(v2==='cambios')$('#cl-count').textContent=`${$('#changelog-full').children.length} versiones`;
   window.scrollTo(0,0);
@@ -6157,6 +6186,7 @@ function renderFicha(tab,slug){
 }
 
 /* ---------- campaña: sesiones, diario, PNJ, lugares, tiendas, misiones y notas ---------- */
+let campDelPend=null;
 let CP=[],cpTipo='sesion',cpSel=null,cpEdit=false,cpQ='',cpLastSel=null,cpTimer=0,cpDirty=false,cpFocus=false;
 const CPKEY='camp-notes-v1';
 const CPF={
@@ -7577,12 +7607,19 @@ unitsIn(document.body);
 /* ---------- campañas ---------- */
 function renderCamps(){
   const C=Store.campaigns,act=C.active();
+  {const f=$('#camp-first');if(f)f.hidden=!campVacia();}
   const lista=C.list().filter(c=>!(WEB_NUBE&&c.id===C.BASE&&C.list().some(x=>x.remoto)));   // en la web, con campañas de la cuenta, no se enseña la local vacía
   $('#camp').innerHTML=lista.map(c=>`<option value="${esc(c.id)}"${c.id===act?' selected':''}>${esc(c.nombre)}</option>`).join('')+`<option value="__mgr">${esc(T('Gestionar campañas…'))}</option>`;
-  $('#camp-list').innerHTML=lista.map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${SB_USER?(C.remote(c.id)?`<span class="chip" title="${esc(T('Sincronizada con tu cuenta'))}">${esc(T('Sincronizada'))}</span>`:`<button class="btn sm" data-act="scvinc" data-id="${esc(c.id)}">${esc(T('Sincronizar'))}</button>`):''}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
+  $('#camp-list').innerHTML=lista.map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${SB_USER?(C.remote(c.id)?`<span class="chip" title="${esc(T('Sincronizada con tu cuenta'))}">${esc(T('Sincronizada'))}</span>`:`<button class="btn sm" data-act="scvinc" data-id="${esc(c.id)}">${esc(T('Sincronizar'))}</button>`):''}<button class="btn sm danger" data-act="campdel" data-id="${esc(c.id)}">${esc(T('Borrar'))}</button></span></li>`).join('');
   $('#camp-new').placeholder=T('Nombre de la nueva campaña');
   scRemotas();
 }
+/* Sin ninguna campaña real (solo la local, vacía y sin cuenta), lo primero al entrar en Campaña es crear una */
+function campVacia(){const C=Store.campaigns,l=C.list();if(l.length!==1||l[0].id!==C.BASE||C.remote(C.BASE))return false;
+  try{if(Notas.cargar(Store.get('camp-notes-v1')).length)return false;}catch{}
+  return !(typeof PARTY!=='undefined'&&PARTY.length)&&!(typeof PRESETS!=='undefined'&&PRESETS.length);}
+let campPrimeraVista=false;
+function campPrimera(){if(campPrimeraVista||!campVacia())return;campPrimeraVista=true;campOpen();}
 function campOpen(){renderCamps();$('#campmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#camp-new').focus(),30);}
 if(window.__AppShell){/* estilo propio de la app: se ofrece solo aquí */
   for(const id of ['#skin','#pf-skin']){const s=$(id);if(s&&!s.querySelector('option[value="escritorio"]')){const o=new Option(T('Escritorio'),'escritorio');s.insertBefore(o,s.firstChild);}}
@@ -7637,7 +7674,10 @@ $('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-ca
   }).catch(()=>{});
 })();
 $('#camp-form').addEventListener('submit',e=>{e.preventDefault();const n=$('#camp-new').value;
-  try{const id=Store.campaigns.create(n);Store.campaigns.select(id);toast('Campaña creada');location.reload();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}});
+  (async()=>{try{const id=Store.campaigns.create(n);Store.campaigns.select(id);if(WEB_NUBE&&SB_USER)await scVincular(id);   // en la web la campaña nace ya en la cuenta
+    toast('Campaña creada');location.reload();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}})();});
+$('#del-in').addEventListener('input',e=>{const p=campDelPend;$('#del-ok').disabled=!(p&&e.target.value.trim()===p.nombre.trim());});
+$('#del-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(!$('#del-ok').disabled)$('#del-ok').click();}});
 $('#camp-join').addEventListener('submit',e=>{e.preventDefault();scUnirse($('#camp-code').value);});
 renderCamps();
 

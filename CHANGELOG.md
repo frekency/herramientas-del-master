@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.6] - 2026-11-21
+### Cambiado
+- **Borrar campañas**: se puede borrar cualquiera, también la principal del escritorio (queda vacía). Para confirmar hay que escribir el nombre de la campaña y se explica qué se pierde; si la campaña es suya y está en la cuenta, se borra también de Supabase y de todos los dispositivos.
+- **Sin campañas**: al entrar en Campaña por primera vez, si no hay ninguna, se abre directamente la creación de la primera. En la web, la campaña nueva nace ya en la cuenta.
+
 ## [1.57.5] - 2026-11-21
 ### Cambiado
 - Preferencias: el bloque «Bloqueo de pantalla», solo de la app de escritorio, pasa al final.

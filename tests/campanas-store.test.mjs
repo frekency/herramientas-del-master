@@ -123,3 +123,15 @@ test('el rol es de cada campaña: quien la crea es máster y puede ser jugador e
   assert.equal(Store.campaigns.setRol(ajena,'master'),true);assert.equal(Store.campaigns.rol(ajena),'master');
   assert.equal(Store.campaigns.rol('no-existe'),'master');
 });
+
+test('vaciar deja la campaña «local» sin datos ni vínculo con la cuenta, y no toca a las demás',()=>{
+  const {Store,datos}=nuevo({[T]:'{"a":1}',[P]:'[1]','camp-notes-v1':'{"items":[1]}'});
+  const id=Store.campaigns.create('Otra');Store.campaigns.select(id);Store.set(P,'[2]');Store.campaigns.select('local');
+  Store.campaigns.setRemote('local','11111111-1111-1111-1111-111111111111');
+  assert.ok(Store.campaigns.vaciar('local'));
+  assert.equal(datos.has(T),false);assert.equal(datos.has(P),false);assert.equal(datos.has('camp-notes-v1'),false);
+  assert.equal(Store.campaigns.remote('local'),'');
+  assert.equal(datos.get('camp:'+id+':'+P),'[2]');            // la otra campaña sigue intacta
+  assert.deepEqual(Store.campaigns.list().map(c=>c.id).sort(),['local',id].sort());   // «local» no sale de la lista
+  assert.equal(Store.campaigns.vaciar('no-existe'),false);
+});
