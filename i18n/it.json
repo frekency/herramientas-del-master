@@ -1456,5 +1456,16 @@
   "Añadir mapa": "Aggiungi mappa",
   "Quitar mapa": "Rimuovi mappa",
   "Lugares dentro": "Luoghi all’interno",
-  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Anteprima. Ogni sezione inizia su una nuova pagina; l’interruzione di pagina effettiva può variare in stampa."
+  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Anteprima. Ogni sezione inizia su una nuova pagina; l’interruzione di pagina effettiva può variare in stampa.",
+  "Lo que ven los jugadores": "Ciò che vedono i giocatori",
+  "Esta ficha ya es visible entera para los jugadores; este bloque solo hace falta si la pasas a «Solo yo».": "Questa scheda è già interamente visibile ai giocatori; questo blocco serve solo se la passi a «Solo io».",
+  "Descripción para los jugadores": "Descrizione per i giocatori",
+  "Con «Solo yo», los jugadores ven únicamente esto; el resto de la ficha es solo tuyo.": "Con «Solo io», i giocatori vedono solo questo; il resto della scheda è solo tuo.",
+  "Los jugadores ven solo una parte": "I giocatori ne vedono solo una parte",
+  "Aspecto y voz": "Aspetto e voce",
+  "Qué quiere": "Cosa vuole",
+  "Secreto (solo máster)": "Segreto (solo master)",
+  "Mostrar el mapa y sus chinchetas": "Mostra la mappa e i suoi segnaposto",
+  "Mostrar el inventario y los precios": "Mostra l’inventario e i prezzi",
+  "Mostrar el estado y los objetivos": "Mostra lo stato e gli obiettivi"
 }

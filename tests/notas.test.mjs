@@ -12,7 +12,7 @@ test('norm: rechaza tipos desconocidos y limpia campos que no son del tipo',()=>
   assert.equal(N.norm({tipo:'hack',nombre:'x'}),null);
   assert.equal(N.norm(null),null);
   const n=N.norm({tipo:'npc',nombre:'Elda',campos:{rol:'Posadera',estado:'activa',__proto__:{x:1},criatura:'srd:Commoner'}});
-  assert.deepEqual(Object.keys(n.campos).sort(),['criatura','equipo','lugar','rol']);
+  assert.deepEqual(Object.keys(n.campos).sort(),['aspecto','criatura','equipo','lugar','publico','quiere','rol','secreto']);
   assert.equal(n.campos.rol,'Posadera');
 });
 

@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.51.0] - 2026-11-21
+### Añadido
+- **PNJ, lugares, tiendas y misiones: el máster decide qué ven los jugadores.** Una descripción pública y, según el caso, el mapa con sus chinchetas, el inventario con precios o el estado y los objetivos. El resto de la ficha sigue siendo solo del máster.
+- PNJ con aspecto y voz, qué quiere y secreto (el secreto no sale nunca).
+### Cambiado
+- La lista de la campaña marca lo que el jugador ve (completo o en parte) y el progreso de las misiones.
+
 ## [1.50.0] - 2026-11-21
 ### Añadido
 - **Las escenas son capítulos**: cada una tiene plan (solo máster), resumen para los jugadores y encuentros propios. A los jugadores solo llega el resumen de las escenas marcadas.

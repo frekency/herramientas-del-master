@@ -59,6 +59,20 @@ const TAIL=`<script>
     const sub=Notas.nuevo('lugar','Taberna Rueda del Carro');sub.campos.padre='Phandalin';CP.push(sub);
     ok('la ruta de un lugar va de la región al lugar',Notas.ruta(CP,sub).map(x=>x.nombre).join('>')==='Costa de la Espada>Phandalin');
     ok('los lugares dentro de otro se listan',Notas.lugaresDentro(CP,reg).map(x=>x.nombre).join()==='Phandalin');
+    // PNJ, lugar, tienda y misión: solo sale lo que el máster decide
+    const pn=Notas.nuevo('npc','Mirela');pn.campos.secreto='es la madre del jefe';pn.texto='Nota privada';CP.push(pn);
+    ok('un PNJ sin descripción pública no se publica',scPub(pn)===null);
+    pn.campos.publico='Posadera amable de Phandalin';const pp=scPub(pn);
+    ok('del PNJ solo sale la descripción pública, nunca su secreto ni sus notas',pp&&pp.publico==='Posadera amable de Phandalin'&&!/madre|privada/.test(JSON.stringify(pp)));
+    const ti=Notas.nuevo('tienda','Rueda');ti.campos.inventario=[{n:'Daga',p:'2 po',c:'3'}];CP.push(ti);
+    ok('el inventario no sale mientras no se marque',scPub(ti)===null);
+    ti.campos.verinv=true;ok('con la casilla marcada sale el inventario',scPub(ti).inventario.length===1);
+    const mi=Notas.nuevo('mision','Hijo');mi.campos.objetivos=[{t:'Buscar',ok:false}];mi.campos.verobj=true;mi.campos.estado='activa';
+    const mp=scPubNota('m1',scPub(mi));
+    ok('la copia del jugador de una misión lleva sus objetivos',mp.tipo==='mision'&&mp.campos.objetivos.length===1&&mp.campos.verobj===true);
+    reg.campos.vermapa=false;ok('un mapa sin marcar no se publica',scPub(reg)===null);
+    reg.campos.vermapa=true;ok('con la casilla marcada el mapa y sus chinchetas salen',(q=>q&&q.mapa&&q.pines.length===1)(scPub(reg)));
+    pn.visibilidad='jugadores';ok('una ficha ya compartida no duplica lo público',scPub(pn)===null);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -86,6 +100,6 @@ test('escenas de sesión y lo que ven los jugadores',{skip:!BROWSER&&'no hay Edg
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=16,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=24,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

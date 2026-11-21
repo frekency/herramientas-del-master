@@ -1456,5 +1456,16 @@
   "Añadir mapa": "Add map",
   "Quitar mapa": "Remove map",
   "Lugares dentro": "Places inside",
-  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Preview. Each section starts on a new page; the actual page break may vary when printing."
+  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Preview. Each section starts on a new page; the actual page break may vary when printing.",
+  "Lo que ven los jugadores": "What the players see",
+  "Esta ficha ya es visible entera para los jugadores; este bloque solo hace falta si la pasas a «Solo yo».": "This sheet is already fully visible to the players; this block is only needed if you switch it to “Only me”.",
+  "Descripción para los jugadores": "Description for the players",
+  "Con «Solo yo», los jugadores ven únicamente esto; el resto de la ficha es solo tuyo.": "With “Only me”, players see only this; the rest of the sheet is yours alone.",
+  "Los jugadores ven solo una parte": "Players see only part of it",
+  "Aspecto y voz": "Looks and voice",
+  "Qué quiere": "What they want",
+  "Secreto (solo máster)": "Secret (GM only)",
+  "Mostrar el mapa y sus chinchetas": "Show the map and its pins",
+  "Mostrar el inventario y los precios": "Show the inventory and prices",
+  "Mostrar el estado y los objetivos": "Show the status and objectives"
 }

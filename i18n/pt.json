@@ -1456,5 +1456,16 @@
   "Añadir mapa": "Adicionar mapa",
   "Quitar mapa": "Remover mapa",
   "Lugares dentro": "Lugares dentro",
-  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Pré-visualização. Cada secção começa numa nova página; a quebra de página real pode variar ao imprimir."
+  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Pré-visualização. Cada secção começa numa nova página; a quebra de página real pode variar ao imprimir.",
+  "Lo que ven los jugadores": "O que os jogadores veem",
+  "Esta ficha ya es visible entera para los jugadores; este bloque solo hace falta si la pasas a «Solo yo».": "Esta ficha já é totalmente visível para os jogadores; este bloco só é necessário se a passares para «Só eu».",
+  "Descripción para los jugadores": "Descrição para os jogadores",
+  "Con «Solo yo», los jugadores ven únicamente esto; el resto de la ficha es solo tuyo.": "Com «Só eu», os jogadores veem apenas isto; o resto da ficha é só teu.",
+  "Los jugadores ven solo una parte": "Os jogadores veem apenas uma parte",
+  "Aspecto y voz": "Aspeto e voz",
+  "Qué quiere": "O que quer",
+  "Secreto (solo máster)": "Segredo (só mestre)",
+  "Mostrar el mapa y sus chinchetas": "Mostrar o mapa e os seus marcadores",
+  "Mostrar el inventario y los precios": "Mostrar o inventário e os preços",
+  "Mostrar el estado y los objetivos": "Mostrar o estado e os objetivos"
 }

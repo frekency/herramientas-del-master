@@ -1456,5 +1456,16 @@
   "Añadir mapa": "Karte hinzufügen",
   "Quitar mapa": "Karte entfernen",
   "Lugares dentro": "Orte darin",
-  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Vorschau. Jeder Abschnitt beginnt auf einer neuen Seite; der tatsächliche Seitenumbruch kann beim Drucken abweichen."
+  "Vista previa. Cada apartado empieza en una página nueva; el salto real de página puede variar al imprimir.": "Vorschau. Jeder Abschnitt beginnt auf einer neuen Seite; der tatsächliche Seitenumbruch kann beim Drucken abweichen.",
+  "Lo que ven los jugadores": "Was die Spieler sehen",
+  "Esta ficha ya es visible entera para los jugadores; este bloque solo hace falta si la pasas a «Solo yo».": "Dieses Blatt ist für die Spieler schon vollständig sichtbar; dieser Block ist nur nötig, wenn du es auf „Nur ich“ stellst.",
+  "Descripción para los jugadores": "Beschreibung für die Spieler",
+  "Con «Solo yo», los jugadores ven únicamente esto; el resto de la ficha es solo tuyo.": "Mit „Nur ich“ sehen die Spieler nur dies; der Rest des Blattes gehört nur dir.",
+  "Los jugadores ven solo una parte": "Die Spieler sehen nur einen Teil",
+  "Aspecto y voz": "Aussehen und Stimme",
+  "Qué quiere": "Was er/sie will",
+  "Secreto (solo máster)": "Geheimnis (nur Spielleiter)",
+  "Mostrar el mapa y sus chinchetas": "Karte und Markierungen zeigen",
+  "Mostrar el inventario y los precios": "Inventar und Preise zeigen",
+  "Mostrar el estado y los objetivos": "Status und Ziele zeigen"
 }
