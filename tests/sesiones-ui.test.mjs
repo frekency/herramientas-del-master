@@ -28,10 +28,10 @@ const TAIL=`<script>
     const bar=()=>document.getElementById('sesbar'),mod=()=>document.getElementById('sesmodal'),notas=()=>JSON.parse(Store.get('camp-notes-v1')||'{"items":[]}').items;
     ok('sin sesión: la barra lo dice y ofrece iniciar',!bar().hidden&&!!bar().querySelector('[data-act="sesstart"]'));
     location.hash='#combate';await wait(300);
-    const gate=document.getElementById('sesgate'),main=document.querySelector('main.wrap');
-    ok('el combate está cerrado hasta activar una sesión',!gate.hidden&&main.inert&&!!gate.querySelector('[data-act="sesstart"]'));
+    const main=document.querySelector('main.wrap');
+    ok('el combate se puede usar sin sesión activa',!main.inert&&!document.getElementById('sesgate'));
     location.hash='#inicio';await wait(200);
-    ok('lo demás sigue libre',gate.hidden&&!main.inert);
+    ok('lo demás sigue libre',!main.inert);
     location.hash='#combate';await wait(200);
     await click('[data-act="sesstart"]');
     ok('la ventana ofrece la sesión planeada',!mod().hidden&&[...document.querySelectorAll('#ses-sel option')].some(o=>o.textContent.includes('La mina')));
@@ -40,7 +40,7 @@ const TAIL=`<script>
     ok('queda guardada en curso',notas().find(n=>n.nombre==='La mina').campos.estado==='en curso');
     // la barra se ve en cualquier página
     location.hash='#combate';await wait(300);
-    ok('con la sesión en curso el combate se abre',!bar().hidden&&bar().classList.contains('on')&&gate.hidden&&!main.inert);
+    ok('con la sesión en curso el combate se abre',!bar().hidden&&bar().classList.contains('on')&&!main.inert);
     // finalizar con resumen
     await click('[data-act="sesend"]');
     ok('la ventana de finalizar pide un resumen opcional',!mod().hidden&&!!document.getElementById('ses-res')&&!!document.getElementById('ses-pub'));

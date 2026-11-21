@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.46.0] - 2026-11-21
+### Añadido
+- **Invitaciones a la campaña**: el máster crea un código en «Campañas» (caduca a los 7 días, sirve para 10 personas) y el jugador lo escribe en «Unirme con un código». La campaña aparece en su dispositivo con el rol de jugador. Las campañas de tu cuenta donde eres jugador también se traen solas al iniciar sesión.
+- Botón de descarga de la app de escritorio en Inicio (solo en la web).
+- **Al lanzar un encuentro al combate se elige qué jugadores entran** (no siempre van todos); los demás se pueden añadir después desde Jugadores o desde el combate.
+### Cambiado
+- **El combate se puede usar siempre**, también en una campaña con sesiones y sin ninguna activa. Ya no pide iniciar una sesión.
+
 ## [1.45.5] - 2026-11-21
 ### Añadido
 - En la web, botón de descarga de la app de escritorio en Inicio: detecta Mac o Windows y enlaza el instalador de la última versión.

@@ -1418,5 +1418,8 @@
   "Ya tienes esta campaña": "You already have this campaign",
   "Te has unido: ábrela para bajar su contenido": "You have joined: open it to download its content",
   "Código de invitación": "Invitation code",
-  "Unirme con un código": "Join with a code"
+  "Unirme con un código": "Join with a code",
+  "¿Quién entra al combate?": "Who joins the combat?",
+  "Los que no marques podrás añadirlos más adelante, desde Jugadores o desde el propio combate.": "You can add the ones you leave unchecked later, from Players or from the combat itself.",
+  "Lanzar el encuentro": "Launch the encounter"
 }

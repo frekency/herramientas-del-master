@@ -27,10 +27,10 @@ const TAIL=`<script>
     await wait(1200);
     location.hash='#combate';await wait(300);
     ok('mesa suelta: sin barra de sesión',document.getElementById('sesbar').hidden);
-    ok('mesa suelta: el combate está libre',document.getElementById('sesgate').hidden&&!document.querySelector('main.wrap').inert);
+    ok('mesa suelta: el combate está libre',!document.querySelector('main.wrap').inert);
     // en cuanto la campaña tiene una sesión, empieza a usarlas
     CP.push(Notas.nuevo('sesion','Primera'));cpDirty=true;cpFlush();await wait(200);
-    ok('con una sesión creada se piden sesiones',!document.getElementById('sesbar').hidden&&!document.getElementById('sesgate').hidden);
+    ok('con una sesión creada aparece la barra, pero el combate sigue libre',!document.getElementById('sesbar').hidden&&!document.querySelector('main.wrap').inert);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);

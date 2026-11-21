@@ -2354,8 +2354,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
   #printdoc .prtsk{list-style:none;padding:0;margin:0;font-size:9.5pt}#printdoc .prtsk li{padding:.3mm 0}
 }
 .sesbar[hidden]{display:none}
-.sesgate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line,#8886);background:color-mix(in srgb,#d90 16%,transparent)}
-.sesgate[hidden]{display:none}.sesgate b{flex:1 1 260px}main.sesblock{opacity:.35;pointer-events:none}.sesbar .sesdot{width:10px;height:10px;border-radius:50%;background:var(--ok,#3a8)}
+.sesbar .sesdot{width:10px;height:10px;border-radius:50%;background:var(--ok,#3a8)}
 .sesbar.on{background:color-mix(in srgb,var(--ok,#3a8) 14%,transparent)}.sesbar .sesinfo{flex:1 1 220px;min-width:0}
 .pjdet>summary{cursor:pointer;font-weight:700}
 .pjhab{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 14px}
@@ -2597,9 +2596,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.45</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio">♪</button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.46</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio">♪</button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
-<div id="sesgate" class="sesgate" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -2765,6 +2763,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.46 <span>21 nov 2026</span></h3><ul>
+      <li><b>Invitaciones a la campaña</b>: el máster crea un código y el jugador lo canjea en «Unirme con un código»; la campaña aparece con el rol de jugador.</li>
+      <li>Botón de descarga de la app de escritorio en Inicio (solo en la web).</li>
+      <li><b>Al lanzar un encuentro se elige qué jugadores entran</b>; el resto se añade después. <b>El combate se puede usar siempre</b>, sin necesidad de una sesión activa.</li>
+    </ul></li>
     <li><h3>v1.45 <span>21 nov 2026</span></h3><ul>
       <li><b>Actualizaciones automáticas</b> de la app de escritorio: en Windows se descargan solas y se instalan al cerrar; en Mac y portable avisan. «Buscar actualizaciones» está en Preferencias.</li>
       <li><b>Copias de conflicto</b> en la campaña: la versión perdida cuando dos dispositivos editan lo mismo se puede recuperar o descartar.</li>
@@ -3161,6 +3164,17 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 <datalist id="types"></datalist>
 
 <!-- Personaje -->
+<div class="modal" id="lanzmodal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="lanz-h" style="width:min(460px,100%)">
+    <div class="mhead"><h2 id="lanz-h">¿Quién entra al combate?</h2><button type="button" class="btn ghost" data-act="lanzclose" aria-label="Cerrar">✕</button></div>
+    <div class="mbody" style="display:grid;gap:12px">
+      <div id="lanz-list" class="noi18n" style="display:grid;gap:6px"></div>
+      <p class="hint" style="display:block;margin:0">Los que no marques podrás añadirlos más adelante, desde Jugadores o desde el propio combate.</p>
+      <div class="inline"><button type="button" class="btn primary" data-act="lanzgo">Lanzar el encuentro</button><button type="button" class="btn" data-act="lanzclose">Cancelar</button></div>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="pcmodal" hidden>
   <form class="mbox" id="pcform" role="dialog" aria-modal="true" aria-labelledby="pc-h" autocomplete="off">
     <div class="mhead"><h2 id="pc-h">Personaje</h2><button type="button" class="btn ghost" data-act="closepc" aria-label="Cerrar">✕</button></div>
@@ -4252,7 +4266,7 @@ function fillCompDL(){
 }
 function openBest(){ $('#bestmodal').hidden=false;document.body.classList.add('modal-open');renderBest();setTimeout(()=>$('#b-q').focus(),0);}
 function closeModals(){for(const id of ['#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'])$(id).hidden=true;document.body.classList.remove('modal-open');}
-function syncModalOpen(){document.body.classList.toggle('modal-open',['#audmodal','#sesmodal','#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'].some(id=>!$(id).hidden));}
+function syncModalOpen(){document.body.classList.toggle('modal-open',['#lanzmodal','#audmodal','#sesmodal','#bestmodal','#editmodal','#iomodal','#pcmodal','#acctmodal','#prefmodal','#qrmodal','#itmodal','#campmodal'].some(id=>!$(id).hidden));}
 
 function addFromTpl(m,fid,qty){
   commit(()=>{
@@ -5362,6 +5376,8 @@ function extraAct(act,b,c,e){
     case 'epsave':epGuardar(false);break;
     case 'eplaunch':epLanzar(false);break;
     case 'eplaunchsave':epLanzar(true);break;
+    case 'lanzclose':$('#lanzmodal').hidden=true;syncModalOpen();break;
+    case 'lanzgo':{const ids=[...document.querySelectorAll('#lanz-list input:checked')].map(i=>i.dataset.pid);$('#lanzmodal').hidden=true;syncModalOpen();epLanzarYa(lanzGuardar,ids);break;}
     case 'epdel':{const i=PRESETS.findIndex(x=>x.id===epSel);if(i>=0){const n=PRESETS[i].n;PRESETS.splice(i,1);savePresets();epSel=null;epDraft=null;location.hash='campana/encuentros';epRender();toast(T('Encuentro borrado')+': '+n);}break;}
     case 'cpmode':cpEdit=!cpEdit;cpRenderDet();break;
     case 'cpadd':{const it=cpGet(cpSel);if(!it)break;const f=b.dataset.f;(it.campos[f]=it.campos[f]||[]).push(f==='inventario'?{n:'',p:'',c:''}:{t:'',ok:false});it.editado=Date.now();cpRenderDet();const ins=document.querySelectorAll('#cp-det [data-f="'+f+'"] input[type="text"]');if(ins.length)ins[f==='inventario'?ins.length-3:ins.length-1].focus();cpSoon();break;}
@@ -6172,9 +6188,20 @@ function epGuardar(silencioso){
   if(!silencioso){toast(T('Encuentro guardado')+': '+name);location.hash='campana/encuentros/'+p.id;epRender();}
   return p;
 }
+/* Al lanzar un encuentro se elige qué jugadores entran (no siempre van todos); los demás se pueden añadir después. */
+let lanzGuardar=false;
 function epLanzar(guardar){
   const d=epDraft;if(!d.rows.length){toast(T('Sin criaturas'));return;}
-  if(guardar)epGuardar(true);
+  if(!pjCargado)pjLoad();
+  const libres=PARTY.filter(p=>!state.creatures.some(c=>c.pcId===p.id));
+  if(!libres.length){epLanzarYa(guardar,[]);return;}
+  lanzGuardar=guardar;
+  $('#lanz-list').innerHTML=libres.map(p=>'<label class="chk"><input type="checkbox" data-pid="'+esc(p.id)+'" checked> '+esc(p.n)+'</label>').join('');
+  $('#lanzmodal').hidden=false;syncModalOpen();
+}
+function epLanzarYa(guardar,ids){
+  const d=epDraft;if(guardar)epGuardar(true);
+  if(ids.length)commit(()=>{for(const id of ids){const p=PARTY.find(x=>x.id===id);if(p)addPC(p);}});
   loadEncounter({items:epToItems(d.rows),eventos:Eventos.normLista(d.eventos)});location.hash='combate';
 }
 
@@ -6649,13 +6676,6 @@ function sesGuarda(items){CP=items;cpDirty=true;cpFlush();sesRender();if(/^#camp
 const sesDur=m=>m<60?m+' min':Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min';
 /* La mesa suelta (la campaña por defecto sin sesiones) no usa sesiones: se juega libremente. Una campaña creada, o la de siempre en cuanto tiene sesiones, sí. */
 const sesUsa=()=>{sesCarga();return Store.campaigns.active()!=='local'||CP.some(i=>i.tipo==='sesion');};
-/* En una campaña que usa sesiones, el combate pide una sesión activa. */
-function sesPuerta(){
-  const g=$('#sesgate'),m=document.querySelector('main.wrap');if(!g||!m)return;
-  const cierra=sesUsa()&&!Notas.activa(CP)&&route().page==='combate';
-  g.hidden=!cierra;m.inert=cierra;m.classList.toggle('sesblock',cierra);
-  if(cierra)g.innerHTML='<b>'+esc(T('Para usar el combate hay que activar una sesión.'))+'</b> <span class="pcsub">'+esc(T('Así lo que ocurre queda en su sesión.'))+'</span><button type="button" class="btn primary" data-act="sesstart">'+esc(T('Iniciar sesión'))+'</button><a class="btn" href="#campana/sesion">'+esc(T('Ir a las sesiones'))+'</a>';
-}
 function sesHoy(){return Notas.sesionDeHoy(CP,Notas.fechaDe(Date.now()));}
 let cpCalMes='';
 function cpRenderCal(){
@@ -6674,7 +6694,7 @@ function cpRenderCal(){
 }
 function sesRender(){
   const b=$('#sesbar');if(!b)return;sesCarga();
-  if(!sesUsa()){b.hidden=true;b.innerHTML='';sesPuerta();return;}
+  if(!sesUsa()){b.hidden=true;b.innerHTML='';return;}
   const a=Notas.activa(CP);b.classList.toggle('on',!!a);b.hidden=false;
   if(a){
     const ini=+a.campos.inicio?new Date(+a.campos.inicio).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
@@ -6686,9 +6706,7 @@ function sesRender(){
       +(h?'<button type="button" class="btn sm primary" data-act="seshoy">'+esc(T('Iniciar la de hoy'))+'</button><button type="button" class="btn sm" data-act="sesstart">'+esc(T('Otra sesión…'))+'</button>'
         :'<button type="button" class="btn sm primary" data-act="sesstart">'+esc(T('Iniciar sesión'))+'</button>');
   }
-  sesPuerta();
 }
-addEventListener('hashchange',sesPuerta);
 function sesAbre(titulo,html){$('#ses-h').textContent=T(titulo);$('#ses-body').innerHTML=html;$('#sesmodal').hidden=false;syncModalOpen();}
 function sesCierra(){$('#sesmodal').hidden=true;syncModalOpen();}
 function sesInicioHTML(){
