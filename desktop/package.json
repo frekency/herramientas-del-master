@@ -2,6 +2,7 @@
   "name": "herramientas-del-master-desktop",
   "version": "1.45.0",
   "description": "Herramientas del Máster: app de escritorio para dirigir partidas de D&D 2024",
+  "actualizaciones": { "provider": "github", "owner": "frekency", "repo": "herramientas-del-master" },
   "main": "main.js",
   "author": "Herramientas del Máster",
   "private": true,

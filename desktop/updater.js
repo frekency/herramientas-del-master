@@ -5,9 +5,10 @@ const PENDIENTE = 'PENDIENTE';
 
 // Repositorio de las versiones, leído de build.publish del package.json. Sin repositorio real no se busca nada.
 function config(pkg) {
-  const p = pkg && pkg.build && pkg.build.publish;
+  // electron-builder quita «build» del package.json empaquetado: el repositorio también va en «actualizaciones», que sí se conserva
+  const p = pkg && (pkg.actualizaciones || (pkg.build && pkg.build.publish));
   const g = Array.isArray(p) ? p[0] : p;
-  if (!g || g.provider !== 'github') return null;
+  if (!g || (g.provider || 'github') !== 'github') return null;
   const ok = s => typeof s === 'string' && /^[A-Za-z0-9._-]{1,100}$/.test(s) && s !== PENDIENTE;
   return ok(g.owner) && ok(g.repo) ? { owner: g.owner, repo: g.repo } : null;
 }

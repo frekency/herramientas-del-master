@@ -9,6 +9,8 @@ test('sin repositorio real no se busca nada', () => {
   assert.equal(config({ build: { publish: [{ provider: 's3', owner: 'a', repo: 'b' }] } }), null);
   assert.equal(config({ build: { publish: [{ provider: 'github', owner: 'a/../b', repo: 'r' }] } }), null);
   assert.deepEqual(config({ build: { publish: [{ provider: 'github', owner: 'ana', repo: 'hdm' }] } }), { owner: 'ana', repo: 'hdm' });
+  // el package.json empaquetado ya no trae «build»
+  assert.deepEqual(config({ actualizaciones: { owner: 'ana', repo: 'hdm' } }), { owner: 'ana', repo: 'hdm' });
 });
 
 test('modo: instalador de Windows actualiza solo; portable y Mac solo avisan; en desarrollo nada', () => {
