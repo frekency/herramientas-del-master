@@ -5,4 +5,4 @@ cd "$(git rev-parse --show-toplevel)" || exit 1
 NODE=node
 command -v node >/dev/null 2>&1 || NODE="/c/Program Files/nodejs/node.exe"
 echo "Pasando los tests antes de subir…"
-"$NODE" --test tests/ || { echo; echo "Hay tests que fallan: no se ha subido nada."; exit 1; }
+"$NODE" --test --test-concurrency=4 tests/ || { echo; echo "Hay tests que fallan: no se ha subido nada."; exit 1; }

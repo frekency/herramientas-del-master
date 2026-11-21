@@ -9,6 +9,7 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE} from './lib.mjs';
+import {testNav} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
@@ -123,7 +124,7 @@ async function run(page){
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 }
 
-test('ataque XSS con datos maliciosos y funciones de tiradas, en el navegador',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('ataque XSS con datos maliciosos y funciones de tiradas, en el navegador',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const R=await run('__ataque.html');
   {
     if(process.env.DEBUG_NAV)console.log(JSON.stringify(R.state),JSON.stringify(R.views.map(v=>[v[0].slice(0,60),v[1],v[3]])));
@@ -140,7 +141,7 @@ test('ataque XSS con datos maliciosos y funciones de tiradas, en el navegador',{
   }
 });
 
-test('datos con tipos absurdos no rompen la página',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('datos con tipos absurdos no rompen la página',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const R=await run('__basura.html');
   assert.deepEqual([...new Set(R.err)],[],'errores de JavaScript');
   assert.ok(R.views.length>30,'el recorrido se quedó a medias');

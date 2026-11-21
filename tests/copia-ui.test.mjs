@@ -8,6 +8,7 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE} from './lib.mjs';
+import {testNav} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
@@ -18,7 +19,7 @@ const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.mes
 localStorage.clear();for(const[k,v]of Object.entries(${JSON.stringify(STORE)}))localStorage.setItem(k,JSON.stringify(v));</script>`;
 const TAIL=`<script>
 (async()=>{
-  const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
+  const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]),until=async(c,ms=4000)=>{for(let x=0;x<ms;x+=50){if(c())return true;await wait(50);}return false;};
   const body=()=>document.getElementById('pj-body'),F=()=>PJC.find(x=>x.id==='c1');
   const rol=async v=>{const s=document.getElementById('pj-rol');s.value=v;s.dispatchEvent(new Event('change',{bubbles:true}));await wait(150);};
   const click=async sel=>{const b=document.querySelector(sel);if(!b)throw new Error('no hay '+sel);b.click();await wait(150);};
@@ -35,7 +36,7 @@ const TAIL=`<script>
     ok('la copia lleva las fichas y las notas y deja fuera la sesión de cuenta',r.ok&&!t.includes('secreto')&&'camp-fichas-v1' in r.datos&&JSON.parse(r.datos['camp-notes-v1']).items.length===1);
     // elegir un archivo muestra su resumen
     const dt=new DataTransfer();dt.items.add(new File([t],'copia.json',{type:'application/json'}));
-    const inp=document.getElementById('bk-file');inp.files=dt.files;inp.dispatchEvent(new Event('change',{bubbles:true}));await new Response(dt.files[0]).text();await wait(400);
+    const inp=document.getElementById('bk-file');inp.files=dt.files;inp.dispatchEvent(new Event('change',{bubbles:true}));await new Response(dt.files[0]).text();await until(()=>document.querySelector('#bk-res [data-act="bkrestore"]'));
     ok('el archivo elegido se resume antes de restaurar',!!document.querySelector('#bk-res [data-act="bkrestore"]')&&document.getElementById('bk-res').textContent.includes('Mi campaña'));
     // restaurar sobre datos cambiados los devuelve (se llama al almacén sin recargar la página)
     Store.set('camp-notes-v1',JSON.stringify({v:1,items:[]}));
@@ -55,7 +56,7 @@ const TAIL=`<script>
     ok('se puede quitar un enlace',audCarga().length===0);
     document.querySelector('[data-act="audclose"]').click();
     // un archivo que no es una copia se rechaza
-    const dt2=new DataTransfer();dt2.items.add(new File(['hola'],'x.json'));inp.files=dt2.files;inp.dispatchEvent(new Event('change',{bubbles:true}));await new Response(dt2.files[0]).text();await wait(300);
+    const dt2=new DataTransfer();dt2.items.add(new File(['hola'],'x.json'));inp.files=dt2.files;inp.dispatchEvent(new Event('change',{bubbles:true}));await new Response(dt2.files[0]).text();await wait(600);
     ok('un archivo que no es una copia no ofrece restaurar',!document.querySelector('#bk-res [data-act="bkrestore"]'));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
@@ -74,7 +75,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-test('copia completa: descargar, elegir archivo y restaurar',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('copia completa: descargar, elegir archivo y restaurar',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-bk-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',
