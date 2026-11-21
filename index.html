@@ -3473,6 +3473,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
         <label class="f">Contraseña nueva (mínimo 8 caracteres)<input id="ac-np-pass" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
         <label class="f">Repite la contraseña<input id="ac-np-pass2" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
         <button class="btn primary">Guardar contraseña</button>
+        <button type="button" class="btn ghost sm" data-act="acgo" data-to="me">← Volver</button>
       </form>
       <form class="acpane" data-pane="name" hidden>
         <p style="margin:0">Elige tu nombre de usuario. Es el que firma los módulos que publiques.</p>
@@ -3483,7 +3484,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
         <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub" id="ac-via"></span></p>
         <p class="pcsub" id="ac-sync" style="margin:0"></p>
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
-        <div class="inline"><button type="button" class="btn" data-act="pfopen"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
+        <div class="inline"><button type="button" class="btn" data-act="pfopen"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn" data-act="acgo" data-to="newpass">Cambiar contraseña</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
       <div class="acsrd"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg></span><span><b id="ac-srdv">SRD 5.2.1</b> · <span>Activo siempre</span><br><span class="pcsub" id="ac-srdl"></span></span></div>
       <div class="acex">
@@ -7676,7 +7677,7 @@ async function sbInit(){
   if(window.claude)return;
   document.documentElement.classList.add('gate-web');   // acceso obligatorio (web y escritorio): solo entra quien tiene cuenta
   try{await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js';s.integrity='sha384-2zrRDgDHSYB/GN3nFW3fsZXoxEhKIr3N2h63Tc6DEOB9JJdFIu8xMJT2Cph/gBil';s.crossOrigin='anonymous';s.onload=ok;s.onerror=ko;document.head.append(s);});}catch{if(acPrevio())AC_LOCAL=true;else{AC_RED=true;setTimeout(()=>acOpen('in'),0);}return;}   // sin internet: con acceso previo sigue la copia local; si no, hace falta conexión
-  const INVITADO=/type=invite/.test(location.hash);   // el enlace del correo de invitación: hay que elegir contraseña
+  const INVITADO=/type=(invite|recovery)/.test(location.hash)||new URLSearchParams(location.search).get('tipo')==='recovery';   // el enlace del correo de invitación: hay que elegir contraseña
   SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true}});
   if(new URLSearchParams(location.search).has('error_description')){const m=new URLSearchParams(location.search).get('error_description');history.replaceState(null,'',location.pathname+location.hash);toast('No se ha podido entrar: '+m);}
   renderAcct();if(location.hash==='#modulos'){renderMods();loadCatalog();}
@@ -7931,7 +7932,7 @@ $('#acctmodal').addEventListener('submit',async e=>{
       if(data.session){acClose();toast(T('Cuenta creada'));}
       else if(data.user&&Array.isArray(data.user.identities)&&!data.user.identities.length){acMsg(T('Ese correo ya tiene una cuenta'));}
       else{$('#ac-in-mail').value=v('#ac-su-mail');$('#ac-su-pass').value=$('#ac-su-pass2').value='';acPane('in');acMsg(T('Te hemos enviado un correo para confirmar la cuenta. Ábrelo y después entra aquí.'),true);}}
-    else if(p==='reset'){const {error}=await SB.auth.resetPasswordForEmail(v('#ac-rs-mail'),web?{redirectTo:location.origin+location.pathname}:{});if(error)throw error;acPane('in');acMsg(T('Si ese correo tiene cuenta, te hemos enviado un enlace para elegir otra contraseña.'),true);}
+    else if(p==='reset'){const {error}=await SB.auth.resetPasswordForEmail(v('#ac-rs-mail'),web?{redirectTo:location.origin+location.pathname+'?tipo=recovery'}:{});if(error)throw error;acPane('in');acMsg(T('Si ese correo tiene cuenta, te hemos enviado un enlace para elegir otra contraseña.'),true);}
     else if(p==='newpass'){const pw=$('#ac-np-pass').value;
       if(pw.length<8){acMsg(T('La contraseña debe tener al menos 8 caracteres'));return;}
       if(pw!==$('#ac-np-pass2').value){acMsg(T('Las contraseñas no coinciden'));return;}

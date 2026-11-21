@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.1] - 2026-11-21
+### Corregido
+- Contraseña olvidada: el enlace del correo ahora abre siempre la pantalla de «contraseña nueva», y ya se puede cambiar la contraseña desde «Tu cuenta» (botón «Cambiar contraseña»).
+
 ## [1.57.0] - 2026-11-21
 ### Añadido
 - **Acceso solo con cuenta** (web y escritorio): la primera vez en cada equipo se pide correo y contraseña, sin crear cuentas ni Discord; entra quien tenga invitación. Sin conexión, la copia local solo se ofrece en un equipo donde ya se haya entrado.
