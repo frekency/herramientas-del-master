@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.2] - 2026-11-21
+### Cambiado
+- **Web sin datos en el navegador**: los datos viven en la cuenta y solo se guardan, de forma temporal, mientras la pestaña está abierta. Al iniciar sesión se abre sola la primera campaña de la cuenta, ya no aparece la campaña local vacía y al cerrar la pestaña con cambios sin subir el navegador avisa.
+
 ## [1.57.1] - 2026-11-21
 ### Corregido
 - Contraseña olvidada: el enlace del correo ahora abre siempre la pantalla de «contraseña nueva», y ya se puede cambiar la contraseña desde «Tu cuenta» (botón «Cambiar contraseña»).

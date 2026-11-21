@@ -15,6 +15,13 @@
    módulos, preferencias) es de la persona usuaria y vale para todas las campañas.
    Store.root salta el reparto por campañas (la sincronización de la cuenta trabaja siempre sobre la campaña «local»);
    Store.native es el localStorage del navegador, para las claves de librerías ajenas como supabase-js. */
+/* Web alojada (https, sin app de escritorio): los datos viven en la cuenta (Supabase), no en el navegador. Aquí solo se guardan en
+   sessionStorage, que se vacía al cerrar la pestaña, para sobrevivir a una recarga mientras se trabaja. La sesión de la cuenta
+   (supabase-js) sí queda en localStorage para no tener que entrar cada vez. */
+const WEB_NUBE=typeof location!=='undefined'&&location.protocol==='https:'&&!window.__AppShell&&!window.claude&&!window.__StoreBackend;
+if(WEB_NUBE)window.__StoreBackend={get:k=>sessionStorage.getItem(k),set:(k,v)=>sessionStorage.setItem(k,v),remove:k=>sessionStorage.removeItem(k),
+  keys:()=>{const o=[];for(let i=0;i<sessionStorage.length;i++)o.push(sessionStorage.key(i));return o;}};
+if(WEB_NUBE)document.documentElement.classList.add('web-nube');
 window.Store=(()=>{
   const B=window.__StoreBackend||{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v),remove:k=>localStorage.removeItem(k),
     keys:()=>{const o=[];for(let i=0;i<localStorage.length;i++)o.push(localStorage.key(i));return o;}};
@@ -1337,6 +1344,9 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 .opts label{display:flex;gap:8px;align-items:center}
 
 /* ventanas */
+/* web alojada: va directa a la cuenta, así que no se enseña nada de sincronizar */
+html:not(.app-escritorio) #upd-box{display:none}   /* las actualizaciones son cosa de la app de escritorio */
+html.web-nube #camp-sc,html.web-nube #ac-sync,html.web-nube #acctmodal [data-act="acsync"]{display:none}
 /* web privada: sin sesión solo se ve el acceso, sin crear cuenta ni Discord (entra solo quien tiene invitación) */
 html.gate-web:not(.con-sesion) #acctmodal{background:var(--bg,#0b0a09);z-index:99}
 html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #acctmodal [data-to="signup"],html.gate-web #acctmodal [data-pane="in"]>p.pcsub,html.gate-web #acctmodal [data-pane="in"]>p.hint{display:none}
@@ -7567,7 +7577,8 @@ unitsIn(document.body);
 /* ---------- campañas ---------- */
 function renderCamps(){
   const C=Store.campaigns,act=C.active();
-  $('#camp').innerHTML=C.list().map(c=>`<option value="${esc(c.id)}"${c.id===act?' selected':''}>${esc(c.nombre)}</option>`).join('')+`<option value="__mgr">${esc(T('Gestionar campañas…'))}</option>`;
+  const lista=C.list().filter(c=>!(WEB_NUBE&&c.id===C.BASE&&C.list().some(x=>x.remoto)));   // en la web, con campañas de la cuenta, no se enseña la local vacía
+  $('#camp').innerHTML=lista.map(c=>`<option value="${esc(c.id)}"${c.id===act?' selected':''}>${esc(c.nombre)}</option>`).join('')+`<option value="__mgr">${esc(T('Gestionar campañas…'))}</option>`;
   $('#camp-list').innerHTML=C.list().map(c=>`<li class="camprow${c.id===act?' on':''}"><input class="txt noi18n" data-camp="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="60" aria-label="${esc(T('Nombre de la campaña'))}"><span class="inline">${c.id===act?`<span class="chip">${esc(T('activa'))}</span>`:`<button class="btn sm" data-act="campgo" data-id="${esc(c.id)}">${esc(T('Abrir'))}</button>`}${SB_USER?(C.remote(c.id)?`<span class="chip" title="${esc(T('Sincronizada con tu cuenta'))}">${esc(T('Sincronizada'))}</span>`:`<button class="btn sm" data-act="scvinc" data-id="${esc(c.id)}">${esc(T('Sincronizar'))}</button>`):''}${c.id===C.BASE?'':`<button class="btn sm danger" data-act="campdel" data-confirm data-id="${esc(c.id)}">${esc(T('Borrar'))}</button>`}</span></li>`).join('');
   $('#camp-new').placeholder=T('Nombre de la nueva campaña');
   scRemotas();
@@ -7904,6 +7915,8 @@ async function acRetorno(r){
   acClose();
 }
 function acEscritorio(){const a=window.__AppShell&&window.__AppShell.auth;if(!a)return;a.onRetorno(acRetorno);a.pendiente().then(r=>{if(r)acRetorno(r);}).catch(()=>{});}
+/* web sin datos en el navegador: si se cierra la pestaña con cambios sin subir, el navegador avisa */
+if(WEB_NUBE)addEventListener('beforeunload',e=>{if(typeof cpDirty!=='undefined'&&cpDirty||SC.busy){e.preventDefault();e.returnValue='';}});
 async function acSignedIn(){
   const {data}=await SB.from('perfiles').select('usuario').eq('user_id',SB_USER.id).maybeSingle();
   SB_NAME=data?.usuario||'';
@@ -7913,7 +7926,10 @@ async function acSignedIn(){
     if(!SB_NAME){acOpen('name');$('#ac-nm-user').value=sug;acMsg('Bienvenido. Antes de seguir, elige tu nombre de usuario',true);}}
   renderAcct();if(location.hash==='#modulos')renderMods();
   await syncPull();
-  scRemotas(true);
+  await scRemotas(true);
+  if(WEB_NUBE){   // en la web la campaña local está vacía: se abre sola la primera campaña de la cuenta (tras recargar, ya queda activa y no se repite)
+    const C=Store.campaigns;if(C.active()===C.BASE){const r=C.list().find(c=>c.remoto);if(r&&C.select(r.id)){location.reload();return;}}
+  }
   scRun(false);
 }
 $('#acctmodal').addEventListener('submit',async e=>{
@@ -7953,7 +7969,7 @@ async function acAct(act,b){
       if(state.creatures.length&&!confirm(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?')))break;
       insertExamples();acClose();location.hash='#combate';toast(T('Datos de ejemplo añadidos: personajes, combate, encuentro y tablas.'),4200);break;}
     case 'acsync':await syncPush(true);break;
-    case 'acout':await syncPush();await SB.auth.signOut();acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
+    case 'acout':await syncPush();await SB.auth.signOut();if(WEB_NUBE){try{sessionStorage.clear();}catch{}location.reload();break;}acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
   }
 }
 // Sincronización: una fila por clave de localStorage. Se compara por contenido (no por texto: la base de datos reordena las claves).
