@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.45.3] - 2026-11-21
+### Cambiado
+- Versión de prueba de la actualización automática: sin cambios para el usuario.
+
 ## [1.45.2] - 2026-11-21
 ### Corregido
 - El actualizador decía «aún no configuradas» en la app instalada: electron-builder quita la sección `build` del `package.json` empaquetado. Ahora el repositorio va en un campo propio que se conserva.
