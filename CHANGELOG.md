@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.57.7] - 2026-11-21
+### Cambiado
+- **Pantalla de acceso**: una caja sencilla y centrada con solo correo y contraseña (más «Olvidé mi contraseña»), sobre un fondo suave en movimiento que respeta «reducir movimiento».
+
 ## [1.57.6] - 2026-11-21
 ### Cambiado
 - **Borrar campañas**: se puede borrar cualquiera, también la principal del escritorio (queda vacía). Para confirmar hay que escribir el nombre de la campaña y se explica qué se pierde; si la campaña es suya y está en la cuenta, se borra también de Supabase y de todos los dispositivos.

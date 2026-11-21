@@ -1350,8 +1350,26 @@ button.tag.used{background:var(--sb-rule);color:var(--surface);text-decoration:l
 html:not(.app-escritorio) #upd-box{display:none}   /* las actualizaciones son cosa de la app de escritorio */
 html.web-nube #camp-list .chip,html.web-nube #camp-list [data-act="scvinc"],html.web-nube #camp-sc,html.web-nube #ac-sync,html.web-nube #acctmodal [data-act="acsync"]{display:none}
 /* web privada: sin sesión solo se ve el acceso, sin crear cuenta ni Discord (entra solo quien tiene invitación) */
-html.gate-web:not(.con-sesion) #acctmodal{background:var(--bg,#0b0a09);z-index:99}
-html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #acctmodal [data-to="signup"],html.gate-web #acctmodal [data-pane="in"]>p.pcsub,html.gate-web #acctmodal [data-pane="in"]>p.hint{display:none}
+html.gate-web #acctmodal [data-to="signup"]{display:none}
+/* Acceso obligatorio: solo correo y contraseña, en una caja centrada sobre un fondo suave en movimiento */
+html.gate-web:not(.con-sesion) #acctmodal{z-index:99;align-items:center;overflow:hidden;background:var(--bg,#0b0a09)}
+html.gate-web:not(.con-sesion) #acctmodal::before,html.gate-web:not(.con-sesion) #acctmodal::after{content:"";position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none}
+html.gate-web:not(.con-sesion) #acctmodal::before{left:-22vmax;top:-26vmax;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 70%,transparent),transparent 65%);animation:gateA 22s ease-in-out infinite alternate}
+html.gate-web:not(.con-sesion) #acctmodal::after{right:-24vmax;bottom:-28vmax;background:radial-gradient(circle,color-mix(in srgb,var(--sb-rule,var(--accent)) 60%,transparent),transparent 65%);animation:gateB 28s ease-in-out infinite alternate}
+@keyframes gateA{to{transform:translate(14vmax,10vmax) scale(1.15)}}
+@keyframes gateB{to{transform:translate(-12vmax,-8vmax) scale(1.1)}}
+html.gate-web:not(.con-sesion) #acctmodal .mbox{position:relative;width:min(340px,100%)!important;padding:6px 4px;border-radius:18px;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border:1px solid color-mix(in srgb,var(--fg) 14%,transparent);box-shadow:0 24px 70px rgb(0 0 0/.35),inset 0 1px 0 rgb(255 255 255/.08);animation:gateIn .6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes gateIn{from{opacity:0;transform:translateY(14px) scale(.98)}}
+html.gate-web:not(.con-sesion) #acctmodal .mhead,html.gate-web:not(.con-sesion) #acctmodal .acsrd,html.gate-web:not(.con-sesion) #acctmodal .acex,html.gate-web:not(.con-sesion) #acctmodal [data-pane="in"]>p{display:none}
+html.gate-web:not(.con-sesion) #acctmodal .acbody{padding:22px 22px 14px}
+html.gate-web:not(.con-sesion) #acctmodal .acmsg:empty{display:none}
+html.gate-web:not(.con-sesion) #acctmodal .acmsg{text-align:center;margin:10px 0 0}
+html.gate-web:not(.con-sesion) #acctmodal [data-pane="in"]{display:grid;gap:14px}
+html.gate-web:not(.con-sesion) #acctmodal [data-pane="in"][hidden]{display:none}
+html.gate-web:not(.con-sesion) #acctmodal [data-pane="in"] .btn.primary{width:100%;justify-content:center;padding-block:10px}
+html.gate-web:not(.con-sesion) #acctmodal [data-pane="in"] .inline{justify-content:center}
+@media (prefers-reduced-motion:reduce){html.gate-web:not(.con-sesion) #acctmodal::before,html.gate-web:not(.con-sesion) #acctmodal::after,html.gate-web:not(.con-sesion) #acctmodal .mbox{animation:none}}
+html.gate-web:not(.con-sesion) #acctmodal [data-act="acclose"],html.gate-web #acctmodal [data-pane="in"]>p.pcsub,html.gate-web #acctmodal [data-pane="in"]>p.hint{display:none}
 .modal{position:fixed;inset:0;z-index:30;background:rgb(10 12 16/.55);display:flex;align-items:flex-start;justify-content:center;padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));overflow:auto}
 .mbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);width:min(1100px,100%);display:flex;flex-direction:column;max-height:100%;min-height:0}
 .mhead{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
