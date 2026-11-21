@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.49.0] - 2026-11-21
+### Cambiado
+- **Campaña con aire de cuaderno**: pestañas como separadores, lista de notas en forma de índice y retratos como fotos pegadas.
+
 ## [1.48.0] - 2026-11-21
 ### Añadido
 - **Escenas con ficha** en el plan de la sesión: tipo, lugar, PNJ y descripción; se pueden reordenar.

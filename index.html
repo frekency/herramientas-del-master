@@ -2451,9 +2451,10 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .epv-trivial,.epv-vacio,.epv-sin_grupo{color:var(--muted)}.epv-bajo{color:var(--ok)}.epv-moderado{color:var(--warn)}.epv-alto{color:var(--crit)}.epv-mortal{color:#fff;background:var(--crit);border-color:var(--crit)}
 .ephits{display:flex;flex-wrap:wrap;gap:6px}
 .epfoot{display:flex;flex-wrap:wrap;gap:8px}
-.cptabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
-.cptabs a{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);text-decoration:none;font-size:14px}
-.cptabs a[aria-selected="true"]{border-color:var(--accent);color:var(--fg);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+.cptabs{display:flex;gap:2px;margin:6px 0 18px;border-bottom:2px solid var(--fg);overflow-x:auto;scrollbar-width:none}
+.cptabs a{display:inline-flex;align-items:center;gap:7px;padding:7px 11px 6px;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));color:var(--muted);text-decoration:none;font-size:14px;white-space:nowrap;margin-top:5px;position:relative;top:0}
+.cptabs a:hover{color:var(--fg);margin-top:2px;padding-top:10px}
+.cptabs a[aria-selected="true"]{border-color:var(--fg);color:var(--fg);background:var(--surface,var(--bg));font-weight:700;margin-top:0;padding-top:11px;margin-bottom:-2px;padding-bottom:8px;box-shadow:inset 0 3px 0 var(--accent)}
 .cpgrid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
 .cplist{flex:1 1 250px;max-width:340px;min-width:0;display:flex;flex-direction:column;gap:10px}
 .cpdet{flex:3 1 420px;min-width:0;display:flex;flex-direction:column;gap:16px}
@@ -2470,9 +2471,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cptext{padding:10px 12px}
 .cptitle{font-family:var(--f-display)}
 .cpul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:70vh;overflow:auto}
-.cpit{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);text-decoration:none}
-.cpit:hover{border-color:var(--accent)}.cpit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
-.cpit .nm{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cpit small{color:var(--muted);flex-basis:100%;font-size:12px}.cpit small:empty{display:none}
+.cpit{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:9px 6px 10px;border:0;border-bottom:1px dotted color-mix(in srgb,var(--fg) 40%,transparent);border-radius:0;background:transparent;color:var(--fg);text-decoration:none}
+.cpit:hover .nm{color:var(--accent)}.cpit.on{background:var(--surface,var(--bg));border:1px solid var(--line);border-left:1px solid var(--line);border-radius:6px;box-shadow:inset 0 -3px 0 var(--accent);padding:9px 10px 12px}
+.cpit .nm{font-family:var(--f-display);font-size:17px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cpit small{color:var(--muted);flex-basis:100%;font-size:12px}.cpit small:empty{display:none}
 .cpit .pub{color:var(--accent);display:inline-flex}.cpit .pub .ic{width:14px;height:14px}
 .cphead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cptitle{flex:1 1 220px;font-size:20px;font-weight:700;min-width:0}
 .cpfields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
@@ -2480,7 +2481,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpck{display:flex;flex-direction:column;gap:6px}.cpck h4,.cpcr h4,.cptoolbar h4,.cpback h4{margin:0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .cprow{display:flex;gap:8px;align-items:center}.cprow input[type=text]{flex:1;min-width:0}.cprow.inv input:nth-child(2),.cprow.inv input:nth-child(3){flex:0 0 90px}
 .cprow.hd{font-size:12px;color:var(--muted)}.cprow.hd span:nth-child(1){flex:1}.cprow.hd span:nth-child(2),.cprow.hd span:nth-child(3){flex:0 0 90px}.cprow.hd span:nth-child(4){width:36px}
-.cpimgbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cpimg{max-width:200px;max-height:200px;border-radius:10px;border:1px solid var(--line);object-fit:cover}
+.cpimgbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cpimg{max-width:200px;max-height:200px;padding:7px 7px 26px;background:#fffdf6;border:1px solid var(--line);border-radius:2px;box-shadow:0 2px 6px #0003;transform:rotate(-1.6deg);object-fit:cover}
 .cpcr{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .cptoolbar{display:flex;justify-content:space-between;align-items:center}
 .cptext{width:100%;min-height:260px;font:inherit;line-height:1.5;resize:vertical}
@@ -2652,7 +2653,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.48</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.49</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2819,6 +2820,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.49 <span>21 nov 2026</span></h3><ul>
+      <li><b>Campaña con aire de cuaderno</b>: pestañas como separadores, lista de notas en forma de índice y retratos como fotos pegadas.</li>
+    </ul></li>
     <li><h3>v1.48 <span>21 nov 2026</span></h3><ul>
       <li><b>Escenas con ficha</b> en el plan de la sesión: tipo, lugar, PNJ y descripción, reordenables.</li>
       <li><b>Los jugadores ven lo que tú decidas</b>: un resumen y las escenas marcadas como visibles, sin enseñar el resto del plan.</li>
