@@ -12,8 +12,21 @@ test('norm: rechaza tipos desconocidos y limpia campos que no son del tipo',()=>
   assert.equal(N.norm({tipo:'hack',nombre:'x'}),null);
   assert.equal(N.norm(null),null);
   const n=N.norm({tipo:'npc',nombre:'Elda',campos:{rol:'Posadera',estado:'activa',__proto__:{x:1},criatura:'srd:Commoner'}});
-  assert.deepEqual(Object.keys(n.campos).sort(),['actitud','aspecto','criatura','equipo','eventos','lugar','publico','quiere','rol','secreto']);
+  assert.deepEqual(Object.keys(n.campos).sort(),['acompana','actitud','aspecto','criatura','equipo','eventos','inventario','lugar','publico','quiere','rol','secreto','stats']);
   assert.equal(n.campos.rol,'Posadera');
+});
+
+test('norm: estadísticas, inventario y acompañar de un PNJ se limpian',()=>{
+  const n=N.norm({tipo:'npc',nombre:'Brisa',campos:{acompana:1,inventario:[{n:'Daga',p:'2 po',c:'1'},{n:''}],stats:{ca:'15',pg:-4,bi:99,vel:'9 m',ab:[10,'x',40,null],ataques:'Estoque',notas:'n',extra:'no'}}});
+  assert.equal(n.campos.acompana,true);
+  assert.equal(n.campos.inventario.length,1);
+  const s=n.campos.stats;
+  assert.deepEqual([s.ca,s.pg,s.bi],[15,1,30]);
+  assert.deepEqual(s.ab,[10,null,30,null,null,null]);
+  assert.equal(s.extra,undefined);
+  const v=N.norm({tipo:'npc',nombre:'x'});
+  assert.equal(v.campos.acompana,false);assert.equal(v.campos.stats.ca,null);assert.equal(v.campos.stats.ab.length,6);
+  assert.equal(N.norm({tipo:'npc',nombre:'x',campos:{stats:'basura'}}).campos.stats.ataques,'');
 });
 
 test('norm: estados válidos por tipo y listas saneadas',()=>{

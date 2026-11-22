@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.64.0] - 2026-11-22
+### Añadido
+- **PNJ con bloque de estadísticas propio**: CA, PG, bonificador de iniciativa, velocidad, seis características, ataques y notas de combate. Una criatura vinculada sirve de punto de partida («Copiar sus estadísticas al bloque del PNJ»). Los PNJ añadidos desde un grupo ya no necesitan criatura vinculada.
+- **Inventario del PNJ** (objeto, valor, cantidad).
+- **«Acompaña ahora al grupo»** en el PNJ: al empezar un combate se pregunta si los PNJ que acompañan entran también, como aliados y con sus datos. Nada de esto lo ven los jugadores.
+
 ## [1.63.1] - 2026-11-21
 ### Cambiado
 - La intro del acceso se ve **siempre entera**: ya no se salta con un clic o una tecla y sale cada vez que aparece la pantalla de acceso. Con «reducir movimiento» se enseña el logo ya dibujado, sin animar.

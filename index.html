@@ -935,7 +935,7 @@ function aFilas(g,resolver){
   for(const m of g.miembros){
     if(m.k==='jugador')continue;
     const r=resolver(m);if(!r){fallan.push(m);continue;}
-    filas.push({tpl:r.tpl||null,name:r.name||m.n||'Criatura',cant:m.cant,maxHp:r.maxHp,ac:r.ac==null?null:r.ac,initBonus:r.initBonus||0,notes:r.notes||'',fname:g.n,fcolor:g.color,pj:m.k==='pj'});
+    filas.push({tpl:r.tpl||null,name:r.name||m.n||'Criatura',cant:m.cant,maxHp:r.maxHp,ac:r.ac==null?null:r.ac,initBonus:r.initBonus||0,notes:r.notes||'',fname:g.n,fcolor:g.color,pj:m.k==='pj',npc:r.npc||''});
   }
   return {filas,fallan};
 }
@@ -1051,11 +1051,15 @@ window.Notas=(()=>{
   const pines=v=>(Array.isArray(v)?v:[]).slice(0,80).map(e=>({x:Math.min(100,Math.max(0,+(e&&e.x)||0)),y:Math.min(100,Math.max(0,+(e&&e.y)||0)),l:str(e&&e.l,120)})).filter(e=>e.l);
   const ids=v=>(Array.isArray(v)?v:[]).filter(idOk).filter((x,i,a)=>a.indexOf(x)===i).slice(0,50);
   const inv=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({n:str(e&&e.n,120),p:str(e&&e.p,40),c:str(e&&e.c,20)})).filter(e=>e.n);
+  /* bloque de estadísticas básico de un PNJ: CA, PG, bono de iniciativa, velocidad, seis características, ataques y notas */
+  const stat=v=>{v=v&&typeof v==='object'?v:{};const n=(x,a,b)=>{if(x===''||x==null)return null;const y=Math.round(+x);return Number.isFinite(y)?Math.min(b,Math.max(a,y)):null;};
+    const ab=Array.isArray(v.ab)?v.ab:[];
+    return {ca:n(v.ca,0,40),pg:n(v.pg,1,99999),bi:n(v.bi,-10,30),vel:str(v.vel,60),ab:[0,1,2,3,4,5].map(i=>n(ab[i],1,30)),ataques:str(v.ataques,2000),notas:str(v.notas,2000)};};
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
     sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r'},
     diario:{fecha:'s',sesion:'s'},
-    npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p'},
+    npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p',stats:'t',inventario:'i',acompana:'b'},
     lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b'},
     tienda:{dueno:'s',lugar:'s',oro:'s',descuento:'s',mision:'s',inventario:'i',publico:'p',verinv:'b'},
     mision:{estado:'e',encargo:'s',recompensa:'s',objetivos:'c',publico:'p',verobj:'b'},
@@ -1068,7 +1072,7 @@ window.Notas=(()=>{
     const t=x.tipo,c={},src=x.campos&&typeof x.campos==='object'?x.campos:{};
     for(const [k,k2] of Object.entries(CAMPOS[t])){
       const v=src[k];
-      c[k]=k2==='b'?!!v:k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='r'?str(v,MAX.texto):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
+      c[k]=k2==='t'?stat(v):k2==='b'?!!v:k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='r'?str(v,MAX.texto):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
     }
     const img=typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=(t==='handout'?MAX.mapa:MAX.img)?x.img:null;
     const mapa=t==='lugar'&&typeof x.mapa==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.mapa)&&x.mapa.length<=MAX.mapa?x.mapa:null;
@@ -2705,6 +2709,13 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cprow.hd{font-size:12px;color:var(--muted)}.cprow.hd span:nth-child(1){flex:1}.cprow.hd span:nth-child(2),.cprow.hd span:nth-child(3){flex:0 0 90px}.cprow.hd span:nth-child(4){width:36px}
 .cpimgbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cpimg{max-width:200px;max-height:200px;padding:7px 7px 26px;background:#fffdf6;border:1px solid var(--line);border-radius:2px;box-shadow:0 2px 6px #0003;transform:rotate(-1.6deg);object-fit:cover}
 .cpcr{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.cpst{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.cpst h4{margin:0;font-family:var(--f-display);font-size:19px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--accent)}
+.cpst4{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.cpst6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.cpst6 label.f{text-align:center}.cpst6 label.f>span{font-size:12px;letter-spacing:.06em;color:var(--muted)}.cpst6 input{text-align:center}
+@media (max-width:520px){.cpst6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.cpacomp{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.cpacomp small{display:block;color:var(--muted);font-size:12.5px}.cpacomp input{margin-top:3px}
+.cpacb{margin-left:6px;padding:1px 7px;border-radius:999px;border:1px solid var(--accent);color:var(--accent);font-size:11px;white-space:nowrap}
 .sestabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:10px 0 12px;flex-wrap:wrap}
 .sestab{background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;font:inherit;color:inherit;cursor:pointer;opacity:.7}
 .sestab.on{border-bottom-color:var(--accent);opacity:1;font-weight:700}
@@ -2883,7 +2894,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.63</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.64</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3063,6 +3074,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.64 <span>22 nov 2026</span></h3><ul>
+      <li><b>PNJ con estadísticas</b>: cada PNJ tiene su bloque básico (CA, PG, iniciativa, velocidad, seis características, ataques y notas). Una criatura vinculada sirve de punto de partida: se copia y se ajusta.</li>
+      <li><b>Inventario del PNJ</b> y casilla <b>«Acompaña ahora al grupo»</b>: al empezar un combate se pregunta si los PNJ que acompañan entran con los jugadores.</li>
+    </ul></li>
     <li><h3>v1.63 <span>21 nov 2026</span></h3><ul>
       <li><b>Intro en el acceso</b>: el d20 se dibuja y se rellena antes de mostrar el formulario de inicio de sesión. Una vez por sesión y se puede saltar con un clic.</li>
     </ul></li>
@@ -4095,7 +4110,35 @@ function firstAlive(from,dir){
   for(let k=0;k<n;k++){if(!skipped(get(state.order[i]))) return i;i=(i+dir+n)%n;}
   return from;
 }
+/* PNJ marcados como «acompaña al grupo» que aún no están en el combate */
+function acompPend(){
+  if(!cpLoaded){try{cpLoad();cpLoaded=true;}catch{}}
+  return CP.filter(i=>i.tipo==='npc'&&!i.id.startsWith('pub_')&&i.campos.acompana&&!state.creatures.some(c=>c.npc===i.id||c.name===cpName(i)||c.name.replace(/ \d+$/,'')===cpName(i)));
+}
+function acompAdd(lista){
+  commit(()=>{
+    let f=state.factions.find(x=>x.id==='al')||state.factions.find(x=>!x.pc);
+    if(!f){f={id:uid(),name:T('Aliados'),color:'#3fa266',pc:false};state.factions.push(f);}
+    for(const it of lista){
+      const r=cpNpcFila(it)||{tpl:null,name:cpName(it),ac:null,initBonus:0,maxHp:1,notes:'',npc:it.id},t=r.tpl?tpl(r.tpl):null,hp=r.maxHp||(t?hpFrom(t):1);
+      addCreature({id:uid(),name:state.creatures.some(c=>c.name===r.name)?`${r.name} ${nextName(r.name)}`:r.name,factionId:f.id,init:null,initBonus:r.initBonus,hp,maxHp:hp,temp:0,ac:r.ac,conds:[],notes:r.notes||'',ds:0,df:0,tpl:t?r.tpl:null,used:{},uses:{},la:t?laMax(t):0,lr:t?lrMax(t):0,npc:r.npc});
+      log(`Entra ${cpName(it)} (acompaña al grupo)`);
+    }
+  });
+}
+let startAsk=false;
 function start(){
+  if(startAsk)return;
+  const pend=acompPend();
+  if(pend.length){
+    startAsk=true;
+    Dlg.si(T('Estos PNJ acompañan ahora al grupo:')+' '+pend.map(cpName).join(', ')+'.\n\n'+T('¿Entran también en el combate?'),{aceptar:T('Sí, que entren'),cancelar:T('No, solo los demás')})
+      .then(ok=>{startAsk=false;if(ok)acompAdd(pend);arrancar();});
+    return;
+  }
+  arrancar();
+}
+function arrancar(){
   if(!state.order.length){toast('Añade criaturas antes de empezar');return;}
   commit(()=>{state.summary=null;
     for(const c of state.creatures) if(c.init==null){const r=d20();c.init=r+(c.initBonus||0);log(`${c.name} tira iniciativa: ${r}${c.initBonus?sgn(c.initBonus):''} = ${c.init}`);}
@@ -5559,7 +5602,7 @@ function grpAlCombate(g){
     if(g.tipo==='jugadores'){for(const m of g.miembros){const p=PARTY.find(x=>x.id===m.ref);if(p&&addPC(p))n++;}}
     const r=Grupos.aFilas(g,m=>{
       if(m.k==='criatura'){const t=tpl(m.ref);return t?{tpl:m.ref,name:m.n||t.n,ac:t.ac,initBonus:t.in??0}:null;}
-      if(m.k==='pnj'){const it=cpGet(m.ref),k=it&&it.campos&&it.campos.criatura,t=k&&tpl(k);return t?{tpl:k,name:cpName(it),ac:t.ac,initBonus:t.in??0}:null;}
+      if(m.k==='pnj'){const it=cpGet(m.ref);return it?cpNpcFila(it):null;}
       if(m.k==='pj'){const f=PJC.find(x=>x.id===m.ref);return f?{name:f.nombre,maxHp:Ficha.hpMax(f),ac:f.ca,initBonus:Ficha.mod(f.car.des),pj:true}:null;}
       return null;});
     fallan.push(...r.fallan);
@@ -5567,7 +5610,7 @@ function grpAlCombate(g){
       const t=f.tpl?tpl(f.tpl):null,id=fid(),isPCf=state.factions.find(x=>x.id===id).pc,base=f.name,startN=f.cant>1||state.creatures.some(c=>c.name===base)?nextName(base):0;
       for(let i=0;i<f.cant;i++){
         const hp=f.maxHp||(t?hpFrom(t):1);
-        const c={id:uid(),name:startN?`${base} ${startN+i}`:base,factionId:id,init:(state.active||!isPCf)?d20()+f.initBonus:null,initBonus:f.initBonus,hp,maxHp:hp,temp:0,ac:f.ac,conds:[],notes:'',ds:0,df:0,tpl:t?f.tpl:null,used:{},uses:{},la:t?laMax(t):0,lr:t?lrMax(t):0};
+        const c={id:uid(),name:startN?`${base} ${startN+i}`:base,factionId:id,init:(state.active||!isPCf)?d20()+f.initBonus:null,initBonus:f.initBonus,hp,maxHp:hp,temp:0,ac:f.ac,conds:[],notes:f.notes||'',ds:0,df:0,tpl:t?f.tpl:null,used:{},uses:{},la:t?laMax(t):0,lr:t?lrMax(t):0,...(f.npc?{npc:f.npc}:{})};
         addCreature(c);n++;
       }
     }
@@ -6096,6 +6139,10 @@ function extraAct(act,b,c,e){
     case 'cprm':{const it=cpGet(cpSel);if(!it)break;it.campos[b.dataset.f].splice(+b.dataset.i,1);cpEscAb.clear();it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpdel':{const it=cpGet(cpSel);if(!it)break;CP=CP.filter(x=>x!==it);cpDirty=true;cpFlush();toast('Borrado');location.hash='#campana/'+it.tipo;break;}
     case 'cpcrlink':{const it=cpGet(cpSel),v=($('#cp-cr').value||'').trim().toLowerCase();const m=v&&allBest().find(x=>x.n.toLowerCase()===v||(x.en&&x.en.toLowerCase()===v));if(!it)break;if(!m){toast('No encuentro esa criatura');break;}it.campos.criatura=tkey(m);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
+    case 'cpstcopy':{const it=cpGet(cpSel),m=it&&it.campos.criatura&&tpl(it.campos.criatura);if(!m)break;
+      const nu=x=>{const y=parseInt(x,10);return Number.isFinite(y)?y:null;},lim=s=>String(s||'').replace(/\*+/g,'');
+      it.campos.stats={ca:nu(m.ac),pg:nu(m.hp),bi:nu(m.in),vel:String(m.sp||''),ab:(m.ab||[]).slice(0,6).map(nu),ataques:(m.a||[]).map(a=>lim(a[0])+'. '+lim(a[1])).join('\n'),notas:[m.re&&'Resistencias: '+m.re,m.im&&'Inmunidades: '+m.im].filter(Boolean).join('. ')};
+      it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();toast(T('Estadísticas copiadas. Ajústalas a tu PNJ'));break;}
     case 'cpcrunlink':{const it=cpGet(cpSel);if(!it)break;it.campos.criatura='';it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpmaprm':{const it=cpGet(cpSel);if(!it)break;delete it.mapa;it.campos.pines=[];it.editado=Date.now();cpDirty=true;cpFlush();cpPinArm='';cpRenderDet();break;}
     case 'cppinrm':{const it=cpGet(cpSel);if(!it)break;it.campos.pines.splice(+b.dataset.i,1);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
@@ -7085,7 +7132,7 @@ function cpRenderList(){
   cpRenderCal();
   const base=cpQ?Notas.buscar(CP,cpQ):CP.filter(i=>i.tipo===cpTipo);
   const rows=cpSorted(base);
-  $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}${i.tipo==='handout'?' ho':''}" href="${esc(Notas.href(i))}">${i.tipo==='handout'&&i.img?`<img class="cpthumb" src="${i.img}" alt="" loading="lazy">`:''}<span class="nm">${esc(cpName(i))}</span>${i.visibilidad!=='dm'?`<span class="pub" title="${esc(i.visibilidad==='enlace'?T('Lo verá cualquiera con el enlace'):T('Lo verán los jugadores'))}">${ic(i.visibilidad==='enlace'?'chain':'eye')}</span>`:scPub(i)?`<span class="pub parcial" title="${esc(T('Los jugadores ven solo una parte'))}">${ic('eye')}</span>`:''}<small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small></a></li>`).join(''):(cpQ?`<li class="empty">${T('Nada coincide con la búsqueda.')}</li>`:'');
+  $('#cp-items').innerHTML=rows.length?rows.map(i=>`<li><a class="cpit${i.id===cpSel?' on':''}${i.tipo==='handout'?' ho':''}" href="${esc(Notas.href(i))}">${i.tipo==='handout'&&i.img?`<img class="cpthumb" src="${i.img}" alt="" loading="lazy">`:''}<span class="nm">${esc(cpName(i))}</span>${i.tipo==='npc'&&i.campos.acompana?`<span class="cpacb" title="${esc(T('Acompaña ahora al grupo'))}">${esc(T('Acompaña'))}</span>`:''}${i.visibilidad!=='dm'?`<span class="pub" title="${esc(i.visibilidad==='enlace'?T('Lo verá cualquiera con el enlace'):T('Lo verán los jugadores'))}">${ic(i.visibilidad==='enlace'?'chain':'eye')}</span>`:scPub(i)?`<span class="pub parcial" title="${esc(T('Los jugadores ven solo una parte'))}">${ic('eye')}</span>`:''}<small>${cpQ?esc(T(Notas.SING[i.tipo]))+(cpMeta(i)?' · ':''):''}${esc(cpMeta(i))}</small></a></li>`).join(''):(cpQ?`<li class="empty">${T('Nada coincide con la búsqueda.')}</li>`:'');
 }
 function cpField(i,[k,lbl0,kind]){
   const mh=/^(.*?)s*((.*))s*$/.exec(lbl0),lbl=mh?mh[1]:lbl0,ph=mh?mh[2]:'',pha=ph?` placeholder="${esc(T(ph))}"`:'';
@@ -7125,7 +7172,26 @@ function cpCreature(i){
   const k=i.campos.criatura,m=k&&tpl(k);
   if(k&&!m&&k.startsWith('srd:')&&!SRD_ALL.length)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Cargando…')}</p></div>`;
   if(!m)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Vincula una criatura del bestiario (SRD o la tuya) y usa sus estadísticas, acciones y equipo.')}</p><div class="cplink bfilters"><input type="text" id="cp-cr" list="cp-dl-cr" placeholder="${esc(T('Buscar criatura…'))}"><button type="button" class="btn" data-act="cpcrlink">${T('Vincular')}</button></div>${k?`<p class="hint">${T('La criatura vinculada ya no está disponible.')}</p>`:''}</div>`;
-  return `<div class="cpcr"><h4>${T('Ficha de criatura')}: ${esc(m.n)}</h4>${crActions(m)}${sbHTML(m,null)}<button type="button" class="btn sm ghost" data-act="cpcrunlink">${T('Quitar vínculo')}</button></div>`;
+  return `<div class="cpcr"><h4>${T('Ficha de criatura')}: ${esc(m.n)}</h4>${crActions(m)}${sbHTML(m,null)}<div class="inline"><button type="button" class="btn sm" data-act="cpstcopy">${T('Copiar sus estadísticas al bloque del PNJ')}</button><button type="button" class="btn sm ghost" data-act="cpcrunlink">${T('Quitar vínculo')}</button></div></div>`;
+}
+/* Bloque de estadísticas propio del PNJ (lo que entra al combate). Una criatura vinculada sirve de punto de partida: se copia y luego se ajusta. */
+function cpStatsVacio(s){return !s||(s.ca==null&&s.pg==null&&s.bi==null&&!s.vel&&!s.ataques&&!s.notas&&!(s.ab||[]).some(x=>x!=null));}
+function cpStats(it){
+  const s=it.campos.stats||{},ab=s.ab||[],v=x=>x==null?'':esc(x);
+  const num=(k,l)=>`<label class="f">${esc(T(l))}<input type="number" inputmode="numeric" data-cpst="${k}" value="${v(s[k])}"></label>`;
+  return `<div class="cpst"><h4>${esc(T('Estadísticas de combate'))}</h4>
+    <p class="hint" style="display:block">${esc(T(cpStatsVacio(s)?'Opcional. Rellena lo básico para que el PNJ pueda entrar al combate, o vincula abajo una criatura y copia sus datos como punto de partida.':'Esto es lo que entra al combate. Los PG son los máximos.'))}</p>
+    <div class="cpst4">${num('ca','CA')}${num('pg','PG')}${num('bi','Iniciativa (bonificador)')}<label class="f">${esc(T('Velocidad'))}<input type="text" data-cpst="vel" value="${v(s.vel)}" placeholder="9 m"></label></div>
+    <div class="cpst6">${AB.map((a,i)=>`<label class="f"><span>${a}</span><input type="number" inputmode="numeric" data-cpst="ab:${i}" value="${v(ab[i])}" placeholder="10" aria-label="${a}"></label>`).join('')}</div>
+    <label class="f cparea"><span>${esc(T('Ataques y acciones'))}</span><textarea rows="3" data-cpst="ataques" placeholder="${esc(T('Espada corta: +4 al ataque, 1d6+2 perforante'))}">${v(s.ataques)}</textarea></label>
+    <label class="f cparea"><span>${esc(T('Notas de combate'))}</span><textarea rows="2" data-cpst="notas" placeholder="${esc(T('Resistencias, rasgos, tácticas…'))}">${v(s.notas)}</textarea></label></div>`;
+}
+/* ¿Qué entra al combate de este PNJ? Sus estadísticas propias mandan; lo que falte sale de la criatura vinculada. */
+function cpNpcFila(it){
+  const s=it.campos.stats||{},k=it.campos.criatura,t=k?tpl(k):null,propio=!cpStatsVacio(s);
+  if(!t&&!propio)return null;
+  const notas=[s.ataques,s.notas].filter(Boolean).join(' · ').replace(/\s*\n\s*/g,' · ').slice(0,300);
+  return {tpl:t?k:null,name:cpName(it),ac:s.ca!=null?s.ca:(t?t.ac:null),initBonus:s.bi!=null?s.bi:(t?(t.in??0):0),maxHp:s.pg!=null?s.pg:(t?null:1),notes:notas,npc:it.id};
 }
 
 /* Una sesión tiene tres pestañas: planificación, resumen del máster y resumen para los jugadores (lo único que ven ellos). */
@@ -7149,13 +7215,13 @@ function cpRenderDet(){
   if(it.tipo==='sesion')cpTabsInit();
   const tabs=it.tipo==='sesion'?cpTabsBar():'';
   if(it.tipo==='sesion'&&cpTab!=='plan'){el.innerHTML=`${dl}${head}${tabs}${cpTabCuerpo(it)}<div class="cpfoot"><button type="button" class="btn danger sm" data-act="cpdel" data-confirm>${T('Borrar')}</button></div>`;return;}
-  el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}${head}${tabs}
+  el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}${head}${tabs}${it.tipo==='npc'?`<label class="cpacomp"><input type="checkbox" data-cpf="campos.acompana"${it.campos.acompana?' checked':''}> <span><b>${esc(T('Acompaña ahora al grupo'))}</b><small>${esc(T('Al empezar un combate se te preguntará si entra con los jugadores.'))}</small></span></label>`:''}
     <div class="cpfields">${CPF[it.tipo].filter(f=>f[2]!=='area').map(f=>cpField(it,f)).join('')}</div>${CPF[it.tipo].some(f=>f[2]==='area')?`<div class="cpareas">${CPF[it.tipo].filter(f=>f[2]==='area').map(f=>cpField(it,f)).join('')}</div>`:''}${it.tipo==='tienda'?cpDescEstado(it):''}
     ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}
-    ${it.tipo==='npc'?cpCreature(it):''}
+    ${it.tipo==='npc'?cpStats(it)+cpCreature(it):''}
     ${it.tipo==='lugar'?cpMapa(it):''}
     ${it.tipo==='handout'?cpHandout(it):''}
-    ${it.tipo==='tienda'?cpInv(it):''}
+    ${it.tipo==='tienda'||it.tipo==='npc'?cpInv(it):''}
     ${lists}
     ${it.tipo==='sesion'?cpEncs(it):''}
     ${it.tipo==='npc'?`<label class="f">${T('Equipo')}<textarea rows="2" data-cpf="campos.equipo">${esc(it.campos.equipo)}</textarea></label>`:''}
@@ -7203,6 +7269,10 @@ function cpImage(file,it,hecho){
     else if(t.dataset.cpesc){const [n,f]=t.dataset.cpesc.split(':'),r=it.campos.escenas?.[+n];if(r){
       r[f]=(f==='ok'||f==='pub')?t.checked:t.value;it.editado=Date.now();cpSoon();
       const d=t.closest('details');if(d){d.classList.toggle('hecha',!!r.ok);d.dataset.t=r.tipo||'';const tp=d.querySelector('.esctipo'),pb=d.querySelector('.escpub');tp.textContent=escTipoL(r.tipo);tp.hidden=!r.tipo;pb.hidden=!r.pub;}}}
+    else if(t.dataset.cpst){const st=it.campos.stats=it.campos.stats&&typeof it.campos.stats==='object'?it.campos.stats:{};st.ab=Array.isArray(st.ab)?st.ab:[null,null,null,null,null,null];
+      const k=t.dataset.cpst,val=t.type==='number'?(t.value===''?null:+t.value):t.value;
+      if(k.startsWith('ab:'))st.ab[+k.slice(3)]=val;else st[k]=val;
+      it.editado=Date.now();cpSoon();}
     else if(t.dataset.cpinv){const [n,w]=t.dataset.cpinv.split(':'),r=it.campos.inventario?.[+n];if(r){r[w]=t.value;it.editado=Date.now();cpSoon();}}
   });
   det.addEventListener('toggle',e=>{const d=e.target;if(d.classList&&d.classList.contains('esc')){const k=cpSel+':'+d.dataset.n;if(d.open)cpEscAb.add(k);else cpEscAb.delete(k);}},true);

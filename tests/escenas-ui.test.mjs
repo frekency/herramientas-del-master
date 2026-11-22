@@ -62,7 +62,30 @@ const TAIL=`<script>
     document.getElementById('pz-in').value='cuatro';document.querySelector('[data-act="pzprobar"]').click();
     ok('una respuesta mala se rechaza',document.getElementById('pz-res').classList.contains('no'));
     }catch(e){ok('PUZZLE ERROR '+e+' '+String(e.stack).slice(0,300),false);}
-    CP.pop();cpSel=s.id;cpTipo='sesion';
+    // PNJ: bloque de estadísticas propio, inventario y «acompaña al grupo» al empezar un combate
+    try{
+    const np=Notas.nuevo('npc','Brisa la escolta');np.campos.secreto='Es una espía';CP.push(np);cpDirty=true;cpFlush();cpSel=np.id;cpTipo='npc';cpRenderDet();
+    ok('el PNJ tiene bloque de estadísticas, casilla de acompañar e inventario',!!document.querySelector('.cpst [data-cpst="ca"]')&&document.querySelectorAll('.cpst6 input').length===6&&!!document.querySelector('[data-cpf="campos.acompana"]')&&!!document.querySelector('[data-act="cpadd"][data-f="inventario"]'));
+    await typeIn('[data-cpst="ca"]','15');await typeIn('[data-cpst="pg"]','27');await typeIn('[data-cpst="bi"]','3');await typeIn('[data-cpst="ab:1"]','16');await typeIn('[data-cpst="ataques"]','Estoque: +5, 1d8+3');
+    const ne=cpGet(np.id).campos.stats;
+    ok('las estadísticas se guardan',ne.ca===15&&ne.pg===27&&ne.bi===3&&ne.ab[1]===16&&/Estoque/.test(ne.ataques));
+    await click('#cp-det [data-act="cpadd"][data-f="inventario"]');await typeIn('[data-cpinv="0:n"]','Poción de curación');
+    ok('el inventario del PNJ se guarda',cpGet(np.id).campos.inventario[0].n==='Poción de curación');
+    ok('lo que ven los jugadores no incluye sus estadísticas',!/Estoque|espía|27/.test(JSON.stringify(scPub(cpGet(np.id))||{})));
+    const fl=cpNpcFila(cpGet(np.id));
+    ok('la fila de combate sale de sus estadísticas',fl&&fl.maxHp===27&&fl.ac===15&&fl.initBonus===3&&/Estoque/.test(fl.notes)&&fl.npc===np.id);
+    ok('sin acompañar no se pregunta por él',!acompPend().some(x=>x.id===np.id));
+    const ck=document.querySelector('[data-cpf="campos.acompana"]');ck.checked=true;ck.dispatchEvent(new Event('input',{bubbles:true}));
+    ok('al marcarlo acompaña y sale en la lista',cpGet(np.id).campos.acompana===true&&acompPend().some(x=>x.id===np.id));
+    start();await wait(400);
+    const dl=document.querySelector('dialog.ask[open]');
+    ok('al empezar el combate se pregunta por el PNJ que acompaña',!!dl&&/Brisa/.test(dl.textContent)&&!state.active);
+    if(dl){dl.querySelector('button.primary').click();await wait(400);}
+    const cb=state.creatures.find(c=>c.npc===np.id);
+    ok('si se acepta, el PNJ entra con sus datos y el combate empieza',cb&&cb.maxHp===27&&cb.ac===15&&cb.initBonus===3&&state.active);
+    ok('ya no se vuelve a preguntar',!acompPend().length);
+    }catch(e){ok('PNJ ERROR '+e+' '+String(e.stack).slice(0,300),false);}
+    CP=CP.filter(x=>x.tipo!=='npc');cpSel=s.id;cpTipo='sesion';
     CP.push(n);cpSel=n.id;cpRenderDet();
     ok('la vista del jugador no tiene campos editables',!document.querySelector('#cp-det input,#cp-det textarea')&&/Uno/.test(document.getElementById('cp-det').textContent));
     ok('la copia del jugador no se vuelve a subir como nota',!('nota:pub_abc' in scSnapshot()));
@@ -132,6 +155,6 @@ testNav('escenas de sesión y lo que ven los jugadores',{skip:!BROWSER&&'no hay 
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=31,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=42,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });
