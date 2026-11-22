@@ -131,10 +131,11 @@ const SK = { acrobatics: 'Acrobacias', 'animal handling': 'Trato con animales', 
 const SN = { blindsight: 'vista ciega', darkvision: 'visión en la oscuridad', tremorsense: 'sentido de la vibración', truesight: 'visión verdadera' };
 const AL = { L: 'lawful', N: 'neutral', C: 'chaotic', G: 'good', E: 'evil', U: 'unaligned', A: 'any alignment' };
 const dmgList = a => (a || []).map(x => typeof x === 'string' ? x : (x.special || flat(x.immune || x.resist || x.vulnerable))).join(', ');
+const tipoDe = t => { while (t && typeof t === 'object') t = t.type ?? (t.choose && t.choose[0]); return String(t || 'monstrosity'); };
 function desde5e(m) {
   const ab = AB.map(k => m[k]);
   const cv = crOf(m).includes('/') ? 0 : +crOf(m), pbv = 2 + Math.floor((Math.max(cv, 1) - 1) / 4);
-  const o = { n: m.name, en: m.name, sz: SZ[m.size[0]] || 'Medium', ty: cap(typeof m.type === 'object' ? m.type.type : m.type) };
+  const o = { n: m.name, en: m.name, sz: SZ[m.size[0]] || 'Medium', ty: cap(tipoDe(m.type)) };
   if (m.alignment) o.al = (m.alignment.length === 1 && m.alignment[0] === 'N' ? 'neutral' : m.alignment.map(x => AL[x] || x).join(' ')).trim();
   o.cr = crOf(m); o.xp = CR_XP[o.cr]; o.ac = acOf(m); o.hp = hpOf(m);
   if (m.hp && m.hp.formula) o.hd = m.hp.formula.replace(/\s/g, '');
@@ -162,6 +163,17 @@ function desde5e(m) {
   o.pend = true;
   return o;
 }
+// ---- secciones que el OCR dejó incompletas: se usan las de 5e.tools (en inglés)
+const SEC = { t: 'Atributos', a: 'Acciones', b: 'Acciones adicionales', r: 'Reacciones', l: 'Acciones legendarias' };
+let seccionesFix = 0;
+ocr.criaturas.forEach((c, i) => {
+  const a = par.get(i); if (!a) return;
+  const o = criaturas[i], d = desde5e(a.m);
+  for (const k of Object.keys(SEC)) {
+    const n5 = (d[k] || []).length, n = (o[k] || []).length;
+    if (n5 > n) { o[k] = d[k]; if (k === 'l') o.lu = d.lu; o.dudas = [...(o.dudas || []), SEC[k] + ': el OCR leyó ' + n + ' entradas y 5e.tools tiene ' + n5 + '; se usan las de 5e.tools (en inglés)']; seccionesFix++; }
+  }
+});
 const extra = best.filter(m => !usados.has(m) && m.ac && m.hp && m.str != null).map(desde5e);
 const nombres = new Set(criaturas.map(c => (c.n || '').toLowerCase()));
 const extraOk = extra.filter(c => !nombres.has(c.n.toLowerCase()));
@@ -171,5 +183,5 @@ criaturas.sort((x, y) => (x.pg ?? 9999) - (y.pg ?? 9999));
 const out = { ...ocr, criaturas };
 fs.writeFileSync(outF, JSON.stringify(out, null, 1));
 const conDudas = criaturas.filter(c => c.dudas && c.dudas.length).length;
-console.log(`${criaturas.length} criaturas: ${ocr.criaturas.length} leídas del manual (${ocr.criaturas.length - sinPar.length} emparejadas con 5e.tools, ${sinPar.length} sin pareja) + ${extraOk.length} solo de 5e.tools · ${corregidas} valores corregidos · ${conDudas} con dudas -> ${outF}`);
+console.log(`${criaturas.length} criaturas: ${ocr.criaturas.length} leídas del manual (${ocr.criaturas.length - sinPar.length} emparejadas con 5e.tools, ${sinPar.length} sin pareja) + ${extraOk.length} solo de 5e.tools · ${seccionesFix} secciones completadas · ${corregidas} valores corregidos · ${conDudas} con dudas -> ${outF}`);
 if (sinPar.length) console.log('sin pareja:', sinPar.join(', '));
