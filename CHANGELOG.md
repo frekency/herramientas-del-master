@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.75.0] - 2026-11-22
+### Cambiado
+- Una criatura de un manual que ya está en el SRD conserva la ficha del SRD y solo gana la etiqueta del manual (antes la del módulo la pisaba).
+- Abreviatura del Manual de Monstruos: MM2024.
+
 ## [1.74.0] - 2026-11-22
 ### Cambiado
 - Una criatura de un manual que ya está en el SRD se da por revisada (sin «Pendiente de revisar»).
