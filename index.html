@@ -3111,6 +3111,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li><b>Sesión en juego</b>: nueva pestaña «En juego» en cada sesión. Empieza por la introducción y se avanza por las escenas con <b>Siguiente</b> y <b>Atrás</b> (cada escena muestra su plan, su lugar, su PNJ y sus encuentros). Puedes marcar escenas como hechas.</li>
       <li><b>Modo libre</b> para cuando los jugadores se salen del guion, con «Volver al guion».</li>
       <li><b>Añadir sobre la marcha</b>: PNJ, misión, encuentro, lugar o nota en cualquier momento; se guardan como notas y quedan enlazados a la sesión. Al iniciar una sesión se abre directamente en «En juego».</li>
+      <li><b>Los jugadores solo ven el resumen cuando la sesión ha terminado.</b> Hasta entonces no reciben nada de la sesión (ni el texto «Para los jugadores» ni las escenas visibles). La pestaña «En juego» nunca se publica.</li>
     </ul></li>
     <li><h3>v1.78 <span>22 nov 2026</span></h3><ul>
       <li><b>Carpeta de imágenes</b> (app de escritorio, en Preferencias): elige una carpeta con <code>tok/</code> e <code>img/</code> y un <code>index.json</code>, con nombres en inglés (<code>adult-gold-dragon.webp</code>). Las criaturas sin imagen propia usan token y ambientación de esa carpeta, a tamaño completo. No se publica ni entra en las copias.</li>
@@ -7601,7 +7602,7 @@ function cpTabCuerpo(it){
   if(cpTab==='juego')return cpJuego(it);
   if(cpTab==='dm')return '<p class="hint" style="display:block">'+esc(T('Lo que ocurrió de verdad en la sesión, para ti. Solo lo ves tú.'))+'</p><label class="f">'+esc(T('Resumen del máster'))+'<textarea class="cptext" rows="18" data-cpf="campos.resumen" placeholder="'+esc(T('Qué pasó, decisiones de los jugadores, consecuencias, ganchos para la próxima…'))+'">'+esc(it.campos.resumen||'')+'</textarea></label>';
   const n=(it.campos.escenas||[]).filter(e=>e.pub&&e.t).length;
-  return '<p class="hint" style="display:block">'+esc(T('Esto es lo único de la sesión que ven los jugadores, junto con el resumen de las escenas que marques como visibles en la planificación.'))+' ('+n+' '+esc(T(n===1?'escena visible':'escenas visibles'))+')</p><label class="f">'+esc(T('Resumen para los jugadores'))+'<textarea class="cptext" rows="18" data-cpf="campos.publico" placeholder="'+esc(T('Lo que saben o han vivido los jugadores'))+'">'+esc(it.campos.publico||'')+'</textarea></label>';
+  return '<p class="hint" style="display:block">'+esc(T('Esto es lo único de la sesión que ven los jugadores, y solo cuando la sesión ha terminado: este resumen y el de las escenas que marques como visibles en la planificación.'))+' ('+n+' '+esc(T(n===1?'escena visible':'escenas visibles'))+')</p><label class="f">'+esc(T('Resumen para los jugadores'))+'<textarea class="cptext" rows="18" data-cpf="campos.publico" placeholder="'+esc(T('Lo que saben o han vivido los jugadores'))+'">'+esc(it.campos.publico||'')+'</textarea></label>';
 }
 function cpRenderDet(){
   const el=$('#cp-det'),it=cpSel&&cpGet(cpSel);
@@ -8478,6 +8479,7 @@ function scPub(i){
   if(i.visibilidad!=='dm')return null;
   const c=i.campos,pu=String(c.publico||'').trim();
   if(i.tipo==='sesion'){
+    if(c.estado!=='jugada')return null;   // los jugadores solo ven el resumen cuando la sesión ha terminado
     const es=(c.escenas||[]).filter(e=>e.pub&&e.t).map(e=>({t:e.t,tipo:e.tipo||'',r:e.r||'',lugar:e.lugar||'',ok:!!e.ok}));
     if(!es.length&&!pu)return null;
     return {nombre:i.nombre,fecha:c.fecha||'',estado:c.estado||'planeada',publico:pu,escenas:es};

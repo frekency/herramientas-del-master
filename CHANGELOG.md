@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.79.1] - 2026-11-22
+### Cambiado
+- Los jugadores solo reciben el resumen de una sesión cuando está «jugada» (terminada). Antes lo recibían también mientras estaba planeada o en curso.
+
 ## [1.79.0] - 2026-11-22
 ### Añadido
 - **Sesión en juego**: pestaña «En juego» con introducción → escenas (Siguiente/Atrás), modo libre y altas rápidas (PNJ, misión, encuentro, lugar, nota) guardadas como notas enlazadas a la sesión. Campos nuevos de la sesión: paso y extras.

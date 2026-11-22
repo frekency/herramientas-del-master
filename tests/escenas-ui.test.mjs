@@ -37,10 +37,12 @@ const TAIL=`<script>
     ok('la escena guarda título, descripción, lugar y tipo',(r=>r.t==='El puente roto'&&r.lugar==='Garganta Negra'&&r.tipo==='combate'&&/SECRETO/.test(r.d))(cpGet(s.id).campos.escenas[0]));
     ok('sin marcar «mostrar», los jugadores no reciben nada',scPub(cpGet(s.id))===null);
     const p=document.querySelector('[data-cpesc="0:pub"]');p.checked=true;p.dispatchEvent(new Event('input',{bubbles:true}));
+    ok('mientras la sesión no termina, los jugadores no reciben nada aunque la escena sea visible',scPub(cpGet(s.id))===null);
+    cpGet(s.id).campos.estado='jugada';
     const pb=scPub(cpGet(s.id));
-    ok('al marcarla sale en lo público',pb&&pb.escenas.length===1&&pb.escenas[0].t==='El puente roto');
+    ok('al marcarla (y terminar la sesión) sale en lo público',pb&&pb.escenas.length===1&&pb.escenas[0].t==='El puente roto');
         {const j=JSON.stringify(scPub((()=>{const c=cpGet(s.id);c.texto='SECRETO del plan';return c;})()));ok('lo público lleva el resumen de la escena, nunca su plan ni el texto de la sesión',/puente colgante/.test(j)&&!/padre|SECRETO|jefe/.test(j));}
-    ok('un resumen solo también se publica',scPub({tipo:'sesion',visibilidad:'dm',nombre:'x',campos:{publico:'Llegáis al pueblo',escenas:[]}}).publico==='Llegáis al pueblo');
+    ok('un resumen solo también se publica',scPub({tipo:'sesion',visibilidad:'dm',nombre:'x',campos:{estado:'jugada',publico:'Llegáis al pueblo',escenas:[]}}).publico==='Llegáis al pueblo');
     ok('una sesión ya compartida no duplica',scPub({tipo:'sesion',visibilidad:'jugadores',nombre:'x',campos:{publico:'a',escenas:[]}})===null);
     const n=scPubNota('abc',{nombre:'La cripta',fecha:'2026-11-21',estado:'planeada',publico:'Resumen',escenas:[{t:'Uno',tipo:'social',d:'d',lugar:'l',ok:false}]});
     ok('el jugador recibe una copia de solo lectura con las escenas',n&&n.id==='pub_abc'&&n.campos.escenas.length===1&&n.visibilidad==='jugadores');
