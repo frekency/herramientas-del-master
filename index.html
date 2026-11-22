@@ -3145,6 +3145,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.87 <span>22 nov 2026</span></h3><ul>
       <li><b>Ver como jugador</b> (solo el DM): en Jugadores, cada jugador tiene su botón; la app se recarga como la vería esa persona, con su personaje, sin criaturas ni combate, y sin sincronizar mientras tanto. Un aviso arriba permite salir.</li>
+      <li><b>Los módulos ya no se pierden</b> (1.87.2): las imágenes de los manuales van a un almacén aparte (el del navegador se llenaba), volver a importar un manual no pisa lo que ya revisaste ni lo que añadiste, la cuenta no sustituye un módulo por otro con menos contenido, y si no queda espacio ahora avisa con un mensaje que no se pasa por alto.</li>
       <li><b>Página del manual</b> (1.87.1): cada elemento pendiente de revisar enseña su página, aunque no esté verificada, y se puede corregir ahí mismo.</li>
       <li><b>Revisión</b>: eliges la categoría del compendio que quieres revisar (se actualiza al momento), el orden (al azar, por nombre o por página del manual) y hasta 50 elementos. Nuevo botón para <b>descargar el manual corregido</b> en JSON.</li>
     </ul></li>
@@ -5581,7 +5582,46 @@ function manSet(id,on){
 }
 const modSlug=n=>'hb-'+fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const modAbbr=n=>String(n).split(/\s+/).filter(w=>w.length>2).map(w=>w[0].toUpperCase()).join('').slice(0,5)||String(n).slice(0,4);
-function saveMods(){if(!lsSet(MKEY,mods()))toast('El navegador no deja guardar tantos datos; el módulo solo durará esta sesión');}
+function saveMods(){
+  if(lsSet(MKEY,mods()))return true;
+  Dlg.si(T('No se han podido guardar los módulos: el navegador se ha quedado sin espacio. Lo que acabas de importar o revisar SOLO durará hasta que cierres esta ventana.')+'\n\n'+T('Libera espacio quitando módulos que no uses (Módulos → Quitar) y vuelve a intentarlo, o haz una copia de seguridad ahora.'),{aceptar:T('Entendido'),cancelar:T('Cerrar')});
+  return false;
+}
+/* ---- imágenes (tokens) de los módulos: viven en IndexedDB y no en localStorage, que solo da unos 5 MB y con ellas se llenaba ---- */
+const TOKC=new Map();   // 'idmodulo|nombre' → imagen
+const tokKey=(md,c)=>md.id+'|'+fold(c.en||c.n);
+function tokDB(){return new Promise((ok,ko)=>{try{const r=indexedDB.open('hdm-tokens',1);r.onupgradeneeded=()=>r.result.createObjectStore('t');r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);}catch(e){ko(e);}});}
+function tokExtraer(list){
+  const pend=[];
+  for(const md of list)for(const c of md.criaturas||[])if(c&&typeof c.tok==='string'&&c.tok.startsWith('data:')){const k=tokKey(md,c);TOKC.set(k,c.tok);pend.push([k,c.tok]);delete c.tok;}
+  return pend;
+}
+async function tokGuardar(pend){
+  if(!pend.length)return true;
+  try{const db=await tokDB();await new Promise((ok,ko)=>{const tx=db.transaction('t','readwrite'),st=tx.objectStore('t');for(const [k,v] of pend)st.put(v,k);tx.oncomplete=ok;tx.onerror=()=>ko(tx.error);tx.onabort=()=>ko(tx.error);});return true;}catch{return false;}
+}
+async function tokBoot(){
+  try{const db=await tokDB();await new Promise(res=>{const q=db.transaction('t').objectStore('t').openCursor();q.onsuccess=()=>{const c=q.result;if(c){TOKC.set(c.key,c.value);c.continue();}else res();};q.onerror=()=>res();});}catch{}
+  // módulos ya guardados con las imágenes dentro: se pasan a IndexedDB y, solo si ha salido bien, se aligera el módulo
+  const pend=tokExtraer(mods().list);
+  if(pend.length){
+    if(await tokGuardar(pend))saveMods();
+    else for(const md of mods().list)for(const c of md.criaturas||[]){const t=TOKC.get(tokKey(md,c));if(t&&!c.tok)c.tok=t;}   // no se pudo: todo sigue como estaba
+  }
+  try{refreshMods();render();refreshCompView();}catch{}
+}
+/* Al importar de nuevo un manual no se pierde lo ya revisado ni lo que añadiste: gana la ficha revisada; lo nuevo se añade. */
+function modFusionar(viejo,nuevo){
+  const r={...nuevo};
+  for(const [k] of MOD_TYPES){
+    const a=viejo[k]||[],b=nuevo[k]||[];if(!a.length&&!b.length)continue;
+    const por=new Map(a.map(x=>[fold(x.en||x.n),x])),visto=new Set(),out=[];
+    for(const x of b){const key=fold(x.en||x.n),e=por.get(key);visto.add(key);out.push(e&&!e.pend?e:x);}
+    for(const e of a)if(!visto.has(fold(e.en||e.n)))out.push(e);
+    r[k]=out;
+  }
+  return r;
+}
 // Tablas de módulo: {n,formato,modo,columnas:{Col:[...]}} o el formato interno de 🎲 Tablas
 function modTable(x,i,md){
   if(!x||!x.n)return null;let tb;
@@ -5595,7 +5635,7 @@ const tableToMod=tb=>({n:tb.n,formato:tb.fmt,modo:tb.mode==='row'?'fila':'column
 function refreshMods(){
   SRD=modOn('srd521')?SRD_ALL:[];
   for(const md of mods().list)if(md.id==='mdm'&&md.ab==='MdM')md.ab='MM2024';   // abreviatura antigua
-  MODCR=activeMods().flatMap(md=>(md.criaturas||[]).filter(c=>c&&c.n).map(c=>({...c,id:undefined,src:md.n,_mk:'mod:'+md.id+':'+(c.en||c.n)})));
+  MODCR=activeMods().flatMap(md=>(md.criaturas||[]).filter(c=>c&&c.n).map(c=>({...c,id:undefined,tok:c.tok||TOKC.get(tokKey(md,c)),src:md.n,_mk:'mod:'+md.id+':'+(c.en||c.n)})));
   {const mia=new Set(MY.map(x=>fold(x.n)));MODCR=MODCR.filter(c=>!mia.has(fold(c.n)));
    // si la criatura ya está en el SRD manda la ficha del SRD (no se pisa): el manual solo añade su etiqueta
    for(const s of SRD_ALL){delete s._also;if(s._imgm){delete s.tok;delete s.img;delete s._imgm;}}
@@ -5635,9 +5675,11 @@ function parseModule(text,fileName,ref=''){
 }
 function importModule(text,fileName,ref=''){
   const add=parseModule(text,fileName,ref),M=mods();
-  for(const md of add){const i=M.list.findIndex(x=>x.id===md.id);if(i>=0)M.list[i]=md;else M.list.push(md);}
-  saveMods();refreshMods();render();renderMods();
-  setTimeout(()=>toast(add.map(md=>`«${md.n}» añadido y activado (${modCounts(md)||'vacío'})`).join(' · ')),0);
+  for(let j=0;j<add.length;j++){const md=add[j],i=M.list.findIndex(x=>x.id===md.id);if(i>=0){add[j]=modFusionar(M.list[i],md);M.list[i]=add[j];}else M.list.push(md);}
+  const pend=tokExtraer(add),guardado=saveMods();
+  refreshMods();render();renderMods();
+  tokGuardar(pend).then(ok=>{if(!ok)Dlg.si(T('Las imágenes del manual no se han podido guardar y solo durarán esta sesión. Las fichas sí se han guardado.'),{aceptar:T('Entendido'),cancelar:T('Cerrar')});});
+  setTimeout(()=>{if(guardado)toast(add.map(md=>`«${md.n}» añadido y activado (${modCounts(md)||'vacío'})`).join(' · '));},0);
   return add;
 }
 const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
@@ -6869,7 +6911,7 @@ function vistaBar(){
 function navRev(){try{vistaBar();}catch{}const a=$('#nav-rv');if(a)a.hidden=esJug()||!pendAll().length;try{jugNav();}catch{}try{pjAvisos();}catch{}}
 document.addEventListener('click',e=>{const m=$('#navmore');if(!m||!m.open||document.documentElement.classList.contains('app-escritorio'))return;if(!e.target.closest('#navmore')||e.target.closest('.navmore-body .btn'))m.open=false;});
 document.addEventListener('keydown',e=>{const m=$('#navmore');if(e.key==='Escape'&&m&&m.open&&!document.documentElement.classList.contains('app-escritorio')){m.open=false;m.querySelector('summary').focus();}});
-setTimeout(()=>{try{safeApply();}catch(e){}try{imCarga();}catch(e){}try{if(document.documentElement.classList.contains('app-escritorio'))$('#navmore').open=true;}catch(e){}try{navRev();}catch(e){}},0);
+setTimeout(()=>{tokBoot();try{safeApply();}catch(e){}try{imCarga();}catch(e){}try{if(document.documentElement.classList.contains('app-escritorio'))$('#navmore').open=true;}catch(e){}try{navRev();}catch(e){}},0);
 function refreshCompView(){
   const r=route();if(r.page!=='compendio'||!r.tab)return;
   renderCmNav(r.tab);
@@ -9018,6 +9060,15 @@ async function spProbar(){
   if(SP.v2)spLoad();
   return SP.v2;
 }
+/* Los módulos de la cuenta no pisan a los de este dispositivo si estos tienen más o están más revisados: se unen. */
+const modPeso=md=>MOD_TYPES.reduce((n,[k])=>n+(md[k]||[]).length*2+(md[k]||[]).filter(x=>x&&!x.pend).length,0);
+function spValorSeguro(k,valor){
+  if(k!=='modulos'||!valor||!Array.isArray(valor.list))return valor;
+  try{const loc=JSON.parse(lsRaw(MKEY)||'null');if(!loc||!Array.isArray(loc.list))return valor;
+    const out={...valor,list:[...valor.list]};
+    for(const m of loc.list){const i=out.list.findIndex(x=>x&&x.id===m.id);if(i<0)out.list.push(m);else if(modPeso(m)>modPeso(out.list[i]))out.list[i]=m;}
+    return out;}catch{return valor;}
+}
 function spSnapshot(){const m={};for(const [cl,k] of Object.entries(SYNC_KEYS)){const raw=lsRaw(k);if(raw==null)continue;try{m[cl]=JSON.parse(raw);}catch{}}return m;}
 async function spEscribir(u){
   const fila={valor:u.valor,dispositivo:spDisp()};
@@ -9053,7 +9104,7 @@ async function spRun(modo){
       if(modo!=='login')remoto=Object.fromEntries(Object.entries(remoto).filter(([k])=>{const it=SP.l.items[k];return it&&(it.dirty||SP.l.abiertos.some(a=>a.clave===k));}));
       const f=Sincro.fusionar(SP.l,remoto,Date.now(),{manual:true,incremental:modo!=='login'});
       SP.l=f.l;
-      if(modo==='login')for(const k of f.bajados){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(SP.l.items[k].valor));if(!cambiadas.includes(k))cambiadas.push(k);}catch{}}
+      if(modo==='login')for(const k of f.bajados){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(spValorSeguro(k,SP.l.items[k].valor)));if(!cambiadas.includes(k))cambiadas.push(k);}catch{}}
       let rechazo=false;
       for(const u of f.subir){const w=await spEscribir(u);if(w.ok){SP.l=Sincro.confirmar(SP.l,{clave:u.clave,version:w.version});SP.disp[u.clave]=spDisp();}else rechazo=true;}
       spSave();
@@ -9091,7 +9142,7 @@ function spVcPinta(){const b=$('#sp-vc');if(b)b.innerHTML=spVcHTML();scVcPinta()
 function spResolver(k,e){
   const r=Sincro.resolver(SP.l,k,e,Date.now());if(!r.ok){toast(T('Ese conflicto ya no existe'));spVcPinta();return;}
   SP.l=r.l;
-  if(r.aplicar.bajados.length){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(SP.l.items[k].valor));}catch{}spSave();location.reload();return;}   // la página recarga con lo de la cuenta
+  if(r.aplicar.bajados.length){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(spValorSeguro(k,SP.l.items[k].valor)));}catch{}spSave();location.reload();return;}   // la página recarga con lo de la cuenta
   spSave();spVcPinta();toast(T('La de este dispositivo pasa a ser la correcta: se sube a la cuenta y los demás dispositivos la recibirán'),5000);spRun('bg');
 }
 function spRecuperar(i){

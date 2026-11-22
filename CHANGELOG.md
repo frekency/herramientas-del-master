@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.87.2] - 2026-11-22
+### Corregido
+- Módulos que desaparecían tras importarlos: las imágenes pasan a IndexedDB, reimportar fusiona (gana lo revisado), la sincronización no pisa un módulo local más completo y el aviso de falta de espacio es un diálogo.
+
 ## [1.87.1] - 2026-11-22
 ### Añadido
 - Revisión: la página del manual aparece en cada elemento pendiente (aunque no esté verificada) y es editable.
