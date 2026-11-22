@@ -37,7 +37,7 @@ const TAIL=`<script>
     await click('[data-act="sesstart"]');
     ok('la ventana ofrece la sesión planeada',!mod().hidden&&[...document.querySelectorAll('#ses-sel option')].some(o=>o.textContent.includes('La mina')));
     await click('[data-act="sesgo"]');
-    ok('se inicia y la barra la enseña en curso con su plan',mod().hidden&&bar().classList.contains('on')&&bar().textContent.includes('La mina')&&!!bar().querySelector('a[href^="#campana/sesion/"]'));
+    ok('se inicia y la barra la enseña en curso con su plan',mod().hidden&&bar().classList.contains('on')&&bar().textContent.includes('La mina')&&!!bar().querySelector('[data-act="sesjuego"]'));
     ok('queda guardada en curso',notas().find(n=>n.nombre==='La mina').campos.estado==='en curso');
     // la barra se ve en cualquier página
     location.hash='#combate';await wait(300);

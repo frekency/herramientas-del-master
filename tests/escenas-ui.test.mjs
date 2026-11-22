@@ -45,7 +45,7 @@ const TAIL=`<script>
     const n=scPubNota('abc',{nombre:'La cripta',fecha:'2026-11-21',estado:'planeada',publico:'Resumen',escenas:[{t:'Uno',tipo:'social',d:'d',lugar:'l',ok:false}]});
     ok('el jugador recibe una copia de solo lectura con las escenas',n&&n.id==='pub_abc'&&n.campos.escenas.length===1&&n.visibilidad==='jugadores');
     cpSel=s.id;cpTab='plan';cpRenderDet();
-    ok('la sesión tiene tres pestañas y no deja elegir visibilidad',document.querySelectorAll('.sestabs .sestab').length===3&&!document.querySelector('[data-cpf="visibilidad"]'));
+    ok('la sesión tiene cuatro pestañas y no deja elegir visibilidad',document.querySelectorAll('.sestabs .sestab').length===4&&!document.querySelector('[data-cpf="visibilidad"]'));
     document.querySelector('[data-act="cptab"][data-t="dm"]').click();
     ok('la pestaña del máster edita el resumen del máster',!!document.querySelector('[data-cpf="campos.resumen"]')&&!document.querySelector('[data-cpf="campos.publico"]'));
     document.querySelector('[data-act="cptab"][data-t="jug"]').click();

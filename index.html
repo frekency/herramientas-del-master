@@ -1057,7 +1057,7 @@ window.Notas=(()=>{
     return {ca:n(v.ca,0,40),pg:n(v.pg,1,99999),bi:n(v.bi,-10,30),vel:str(v.vel,60),ab:[0,1,2,3,4,5].map(i=>n(ab[i],1,30)),ataques:str(v.ataques,2000),notas:str(v.notas,2000)};};
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
-    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r'},
+    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r',paso:'s',extras:'d'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p',stats:'t',inventario:'i',acompana:'b'},
     lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b'},
@@ -1673,6 +1673,8 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .sptable .num small{display:block;font-size:11px;color:var(--muted)}
 .sptable .src{color:var(--muted);font-size:13px}
 .sbsafe .sbnote{color:var(--muted)}#safe-btn.on{border-color:var(--accent);color:var(--accent)}
+.juegonav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}.juegonav .pcsub{flex:1;text-align:center}.juegochips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.juegochips .chip.on{border-color:var(--accent);color:var(--accent)}.juegochips .chip.hecha{opacity:.55;text-decoration:line-through}
+.juegocuerpo{padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin:8px 0}.juegotxt{line-height:1.55}.juegoadd{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}.juegolist{margin:8px 0 0 18px}
 .edcalc{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;display:grid;gap:6px}
 .tokimg{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:var(--surface-2);flex:none}
 .crart{display:block;max-width:100%;max-height:240px;margin:0 auto 8px;border-radius:4px}
@@ -2909,7 +2911,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.78</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.79</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3105,6 +3107,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.79 <span>22 nov 2026</span></h3><ul>
+      <li><b>Sesión en juego</b>: nueva pestaña «En juego» en cada sesión. Empieza por la introducción y se avanza por las escenas con <b>Siguiente</b> y <b>Atrás</b> (cada escena muestra su plan, su lugar, su PNJ y sus encuentros). Puedes marcar escenas como hechas.</li>
+      <li><b>Modo libre</b> para cuando los jugadores se salen del guion, con «Volver al guion».</li>
+      <li><b>Añadir sobre la marcha</b>: PNJ, misión, encuentro, lugar o nota en cualquier momento; se guardan como notas y quedan enlazados a la sesión. Al iniciar una sesión se abre directamente en «En juego».</li>
+    </ul></li>
     <li><h3>v1.78 <span>22 nov 2026</span></h3><ul>
       <li><b>Carpeta de imágenes</b> (app de escritorio, en Preferencias): elige una carpeta con <code>tok/</code> e <code>img/</code> y un <code>index.json</code>, con nombres en inglés (<code>adult-gold-dragon.webp</code>). Las criaturas sin imagen propia usan token y ambientación de esa carpeta, a tamaño completo. No se publica ni entra en las copias.</li>
     </ul></li>
@@ -6361,6 +6368,8 @@ function extraAct(act,b,c,e){
     case 'pzprobar':{const bx=b.closest('.pzbox'),r=$('#pz-res'),v=pzNorm(($('#pz-in')||{}).value);if(!bx||!r)break;
       if(!v){r.className='pzres';r.textContent=T('Escribe algo para probar');break;}
       const ok=pzHash(v,bx.dataset.sal)===bx.dataset.hash;r.className='pzres '+(ok?'ok':'no');r.textContent=T(ok?'¡Correcto!':'No es eso. Inténtalo de nuevo');break;}
+    case 'sesjuego':{cpTab='juego';location.hash='#campana/sesion/'+b.dataset.id;if(curView()==='campana')cpRenderDet();break;}
+    case 'jprev':case 'jnext':case 'jgo':case 'jadd':juegoAct(act,b);break;
     case 'cptab':{cpFlush();cpTab=b.dataset.t;cpRenderDet();break;}
     case 'sesprint':{const it=cpSel&&cpGet(cpSel);if(it&&it.tipo==='sesion'){cpFlush();
       prtVista('Imprimir la sesión',prtOpciones(it),()=>{const sel={};document.querySelectorAll('[data-prts]').forEach(c=>{sel[c.dataset.prts]=c.checked&&!c.disabled;});return prtSesion(it,sel,+($('#prts-n')||{}).value);});}break;}
@@ -7541,10 +7550,55 @@ function cpNpcFila(it){
 }
 
 /* Una sesión tiene tres pestañas: planificación, resumen del máster y resumen para los jugadores (lo único que ven ellos). */
-const CP_TABS=[['plan','Planificación'],['dm','Resumen del máster'],['jug','Para los jugadores']];
+const CP_TABS=[['plan','Planificación'],['juego','En juego'],['dm','Resumen del máster'],['jug','Para los jugadores']];
 function cpTabsInit(){if(!CP_TABS.some(t=>t[0]===cpTab))cpTab='plan';}
 function cpTabsBar(){return '<div class="sestabs" role="tablist">'+CP_TABS.map(([k,l])=>'<button type="button" role="tab" class="sestab'+(k===cpTab?' on':'')+'" aria-selected="'+(k===cpTab)+'" data-act="cptab" data-t="'+k+'">'+esc(T(l))+'</button>').join('')+'</div>';}
+/* ---------- sesión en juego: introducción → escenas → modo libre, con altas rápidas guardadas como notas ---------- */
+const JUEGO_ADD=[['npc','PNJ'],['mision','Misión'],['encuentro','Encuentro'],['lugar','Lugar'],['nota','Nota']];
+function juegoPasos(it){return [{k:'i',t:'Introducción'},...(it.campos.escenas||[]).map((e,n)=>({k:String(n),t:e.t||T('Escena')+' '+(n+1)})),{k:'l',t:'Modo libre'}];}
+function juegoPaso(it){const p=juegoPasos(it),i=p.findIndex(x=>x.k===it.campos.paso);return i<0?0:i;}
+function juegoVuelta(it){const e=it.campos.escenas||[],n=e.findIndex(x=>!x.ok);return n<0?'i':String(n);}
+function cpJuego(it){
+  const pasos=juegoPasos(it),i=juegoPaso(it),p=pasos[i],c=it.campos,sc=(c.escenas||[])[+p.k];
+  const nav='<div class="juegonav"><button type="button" class="btn" data-act="jprev"'+(i===0?' disabled':'')+'>← '+esc(T('Atrás'))+'</button>'
+    +'<span class="pcsub">'+esc(T(p.t))+' · '+(i+1)+'/'+pasos.length+'</span>'
+    +'<button type="button" class="btn primary" data-act="jnext"'+(i===pasos.length-1?' disabled':'')+'>'+esc(T('Siguiente'))+' →</button>'
+    +'<button type="button" class="btn'+(p.k==='l'?' on':'')+'" data-act="jgo" data-p="'+(p.k==='l'?juegoVuelta(it):'l')+'" aria-pressed="'+(p.k==='l')+'">'+esc(T(p.k==='l'?'Volver al guion':'Modo libre'))+'</button></div>';
+  const chips='<div class="juegochips">'+pasos.slice(0,-1).map((x,n)=>'<button type="button" class="chip'+(n===i?' on':'')+(n>0&&(c.escenas||[])[n-1]&&(c.escenas||[])[n-1].ok?' hecha':'')+'" data-act="jgo" data-p="'+x.k+'">'+esc(x.t)+'</button>').join('')+'</div>';
+  let cuerpo='';
+  if(p.k==='i')cuerpo='<h3>'+esc(T('Introducción'))+'</h3>'+(it.texto&&it.texto.trim()?'<div class="juegotxt">'+rich(it.texto)+'</div>':'<p class="hint" style="display:block">'+esc(T('No hay plan escrito. Escríbelo en la pestaña Planificación (Plan de la sesión).'))+'</p>');
+  else if(p.k==='l')cuerpo='<h3>'+esc(T('Modo libre'))+'</h3><p class="hint" style="display:block">'+esc(T('Fuera de la planificación: los jugadores han tomado otro camino. Añade lo que haga falta con los botones de abajo; todo queda guardado como notas y enlazado a esta sesión.'))+'</p>';
+  else if(sc){
+    const encs=(sc.enc||[]).map(id=>PRESETS.find(x=>x.id===id)).filter(Boolean);
+    cuerpo='<h3>'+esc(sc.t||T('Escena'))+'</h3><p class="pcsub">'+[sc.tipo&&T(cpCap(sc.tipo)),sc.lugar,sc.pnj].filter(Boolean).map(esc).join(' · ')+'</p>'
+      +(sc.d&&sc.d.trim()?'<div class="juegotxt">'+rich(sc.d)+'</div>':'<p class="hint" style="display:block">'+esc(T('Esta escena no tiene plan escrito.'))+'</p>')
+      +(sc.r&&sc.r.trim()?'<details><summary>'+esc(T('Resumen para los jugadores'))+'</summary><div class="juegotxt">'+rich(sc.r)+'</div></details>':'')
+      +encs.map(e=>'<div class="cprow cpenc"><span class="cpencn"><b>'+esc(e.n)+'</b><small>'+esc(encSum(e))+'</small></span><button type="button" class="btn sm primary" data-act="cpencload" data-id="'+esc(e.id)+'">'+esc(T('Cargar en el combate'))+'</button></div>').join('')
+      +'<label class="chk"><input type="checkbox" data-jhecha="'+p.k+'"'+(sc.ok?' checked':'')+'> '+esc(T('Escena hecha'))+'</label>';
+  }
+  const ex=(c.extras||[]).map(id=>CP.find(x=>x.id===id)).filter(Boolean);
+  const add='<div class="juegoadd"><h4>'+esc(T('Añadir sobre la marcha'))+'</h4><div class="inline">'+JUEGO_ADD.map(([t,l])=>'<button type="button" class="btn sm" data-act="jadd" data-t="'+t+'">+ '+esc(T(l))+'</button>').join('')+'</div>'
+    +(ex.length?'<ul class="juegolist">'+ex.map(x=>'<li><a href="#campana/'+esc(x.tipo)+'/'+esc(x.id)+'">'+esc(cpName(x))+'</a> <span class="badge">'+esc(T(Notas.SING[x.tipo]))+'</span></li>').join('')+'</ul>':'')+'</div>';
+  return '<div class="juego">'+nav+chips+'<div class="juegocuerpo">'+cuerpo+'</div>'+add+'</div>';
+}
+async function juegoAct(act,b){
+  const it=cpSel&&cpGet(cpSel);if(!it||it.tipo!=='sesion')return;
+  const pasos=juegoPasos(it);
+  const ir=k=>{it.campos.paso=k;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();};
+  if(act==='jprev')ir(pasos[Math.max(0,juegoPaso(it)-1)].k);
+  else if(act==='jnext')ir(pasos[Math.min(pasos.length-1,juegoPaso(it)+1)].k);
+  else if(act==='jgo')ir(pasos.some(x=>x.k===b.dataset.p)?b.dataset.p:'i');
+  else if(act==='jadd'){
+    const t=b.dataset.t,tit=JUEGO_ADD.find(x=>x[0]===t)[1];
+    const nombre=await Dlg.texto(T('Nombre')+' ('+T(tit)+')',{aceptar:T('Añadir')});if(!nombre||!nombre.trim())return;
+    const n=cpNew(t==='encuentro'?'nota':t,(t==='encuentro'?T('Encuentro')+': ':'')+nombre.trim());
+    n.texto=(n.texto?n.texto+String.fromCharCode(10):'')+T('Añadido durante la sesión')+' «'+cpName(it)+'».';
+    it.campos.extras=[...(it.campos.extras||[]),n.id];it.editado=Date.now();n.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();toast(T('Añadido y guardado como nota'));
+  }
+}
+document.addEventListener('change',e=>{const t=e.target.closest&&e.target.closest('[data-jhecha]');if(!t)return;const it=cpSel&&cpGet(cpSel),sc=it&&(it.campos.escenas||[])[+t.dataset.jhecha];if(sc){sc.ok=t.checked;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();}});
 function cpTabCuerpo(it){
+  if(cpTab==='juego')return cpJuego(it);
   if(cpTab==='dm')return '<p class="hint" style="display:block">'+esc(T('Lo que ocurrió de verdad en la sesión, para ti. Solo lo ves tú.'))+'</p><label class="f">'+esc(T('Resumen del máster'))+'<textarea class="cptext" rows="18" data-cpf="campos.resumen" placeholder="'+esc(T('Qué pasó, decisiones de los jugadores, consecuencias, ganchos para la próxima…'))+'">'+esc(it.campos.resumen||'')+'</textarea></label>';
   const n=(it.campos.escenas||[]).filter(e=>e.pub&&e.t).length;
   return '<p class="hint" style="display:block">'+esc(T('Esto es lo único de la sesión que ven los jugadores, junto con el resumen de las escenas que marques como visibles en la planificación.'))+' ('+n+' '+esc(T(n===1?'escena visible':'escenas visibles'))+')</p><label class="f">'+esc(T('Resumen para los jugadores'))+'<textarea class="cptext" rows="18" data-cpf="campos.publico" placeholder="'+esc(T('Lo que saben o han vivido los jugadores'))+'">'+esc(it.campos.publico||'')+'</textarea></label>';
@@ -8112,7 +8166,7 @@ function sesRender(){
   if(a){
     const ini=+a.campos.inicio?new Date(+a.campos.inicio).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
     b.innerHTML='<span class="sesdot" aria-hidden="true"></span><span class="sesinfo noi18n"><b>'+esc(T('Sesión en curso'))+':</b> '+esc(cpName(a))+(ini?' · '+esc(T('desde las'))+' '+ini+' ('+sesDur(Notas.minutosDe(a,sesAhora()))+')':'')+'</span>'
-      +'<a class="btn sm" href="#campana/sesion/'+esc(a.id)+'">'+esc(T('Plan de la sesión'))+'</a><button type="button" class="btn sm primary" data-act="sesend">'+esc(T('Finalizar sesión'))+'</button>';
+      +'<button type="button" class="btn sm" data-act="sesjuego" data-id="'+esc(a.id)+'">'+esc(T('Sesión en juego'))+'</button><button type="button" class="btn sm primary" data-act="sesend">'+esc(T('Finalizar sesión'))+'</button>';
   }else{
     const h=sesHoy();
     b.innerHTML='<span class="sesdot" aria-hidden="true" style="background:#8886"></span><span class="sesinfo">'+(h?'<b>'+esc(T('Hoy toca'))+':</b> <span class="noi18n">'+esc(cpName(h))+'</span>':esc(T('Sin sesión activa')))+'</span>'
@@ -8140,11 +8194,11 @@ function sesFinHTML(a){
 function sesActuar(act){
   sesCarga();cpFlush();
   if(act==='sesstart'){if(Notas.activa(CP)){sesRender();return;}sesAbre('Iniciar sesión',sesInicioHTML());}
-  else if(act==='seshoy'){const h=sesHoy(),r=h&&Notas.iniciarSesion(CP,h.id,sesAhora());if(!r||!r.ok){toast(T('No se ha podido iniciar la sesión'));return;}sesGuarda(r.items);toast(T('Sesión iniciada'));}
+  else if(act==='seshoy'){const h=sesHoy(),r=h&&Notas.iniciarSesion(CP,h.id,sesAhora());if(!r||!r.ok){toast(T('No se ha podido iniciar la sesión'));return;}sesGuarda(r.items);cpTab='juego';toast(T('Sesión iniciada'));}
   else if(act==='sesgo'){
     const id=$('#ses-sel').value,r=id?Notas.iniciarSesion(CP,id,sesAhora()):Notas.nuevaSesion(CP,$('#ses-nom').value,sesAhora());
     if(!r.ok){toast(T('No se ha podido iniciar la sesión'));return;}
-    sesGuarda(r.items);sesCierra();toast(T('Sesión iniciada'));
+    sesGuarda(r.items);sesCierra();cpTab='juego';toast(T('Sesión iniciada'));
   }
   else if(act==='sesend'){const a=Notas.activa(CP);if(a)sesAbre('Finalizar sesión',sesFinHTML(a));}
   else if(act==='sesfin'){
