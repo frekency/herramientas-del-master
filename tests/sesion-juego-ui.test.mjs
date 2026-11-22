@@ -20,16 +20,19 @@ const TAIL=`<script>
   try{
     await wait(1200);
     const it=cpNew("sesion","Sesión de prueba");
-    it.texto="Los héroes llegan a la posada.";
-    it.campos.escenas=[{t:"La posada",d:"Un posadero nervioso.",r:"",enc:[],lugar:"Posada",pnj:"",ok:false,tipo:"social"},{t:"El bosque",d:"Lobos en la niebla.",r:"",enc:[],lugar:"",pnj:"",ok:false,tipo:"combate"}];
+    it.texto="Los héroes llegan a la posada.";it.campos.lectura="Bajo la lluvia veis una luz.";
+    it.campos.escenas=[{t:"La posada",d:"Un posadero nervioso.",l:"Entráis y el posadero os mira.",r:"",enc:[],lugar:"Posada",pnj:"",ok:false,tipo:"social"},{t:"El bosque",d:"Lobos en la niebla.",r:"",enc:[],lugar:"",pnj:"",ok:false,tipo:"combate"}];
     cpDirty=true;cpFlush();
     cpTipo="sesion";cpSel=it.id;cpTab="juego";cpRenderDet();
     const det=()=>document.querySelector("#cp-det");
     ok("empieza por la introducción",det().textContent.includes("Los héroes llegan a la posada")&&det().textContent.includes("1/4"));
+    ok("la introducción muestra lo que les cuentas",!!det().querySelector(".juegoleer")&&det().textContent.includes("Bajo la lluvia"));
     ok("Atrás desactivado en la introducción",!!det().querySelector("[data-act=jprev][disabled]"));
     det().querySelector("[data-act=jnext]").click();await wait(200);
     ok("Siguiente muestra la primera escena",det().textContent.includes("Un posadero nervioso")&&cpGet(it.id).campos.paso==="0");
+    ok("la escena muestra su texto para los jugadores",det().textContent.includes("Entráis y el posadero"));
     det().querySelector("[data-act=jnext]").click();await wait(200);
+    ok("nunca se publica",!/Bajo la lluvia|Entráis/.test(JSON.stringify(scPub((()=>{const c=cpGet(it.id);c.campos.estado="jugada";c.campos.publico="resumen";return c;})()))));
     ok("segunda escena",det().textContent.includes("Lobos en la niebla"));
     det().querySelector("[data-act=jprev]").click();await wait(200);
     ok("Atrás vuelve a la anterior",det().textContent.includes("Un posadero nervioso"));
@@ -74,6 +77,6 @@ testNav('sesión en juego: introducción, escenas, modo libre y altas rápidas',
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=11,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=14,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

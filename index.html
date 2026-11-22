@@ -1047,7 +1047,7 @@ window.Notas=(()=>{
   const idOk=s=>typeof s==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(s);
   const checks=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,600),ok:!!(e&&e.ok)})).filter(e=>e.t||e.ok);
   const ESC_T=['exploracion','social','combate','misterio','descanso','otra'];
-  const escs=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok),tipo:ESC_T.includes(e&&e.tipo)?e.tipo:'',d:str(e&&e.d,4000),r:str(e&&e.r,2000),enc:ids(e&&e.enc),lugar:str(e&&e.lugar,120),pnj:str(e&&e.pnj,120),pub:!!(e&&e.pub)})).filter(e=>e.t||e.ok||e.d||e.r);
+  const escs=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({t:str(e&&e.t,300),ok:!!(e&&e.ok),tipo:ESC_T.includes(e&&e.tipo)?e.tipo:'',d:str(e&&e.d,4000),r:str(e&&e.r,2000),l:str(e&&e.l,4000),enc:ids(e&&e.enc),lugar:str(e&&e.lugar,120),pnj:str(e&&e.pnj,120),pub:!!(e&&e.pub)})).filter(e=>e.t||e.ok||e.d||e.r||e.l);
   const pines=v=>(Array.isArray(v)?v:[]).slice(0,80).map(e=>({x:Math.min(100,Math.max(0,+(e&&e.x)||0)),y:Math.min(100,Math.max(0,+(e&&e.y)||0)),l:str(e&&e.l,120)})).filter(e=>e.l);
   const ids=v=>(Array.isArray(v)?v:[]).filter(idOk).filter((x,i,a)=>a.indexOf(x)===i).slice(0,50);
   const inv=v=>(Array.isArray(v)?v:[]).slice(0,MAX.filas).map(e=>({n:str(e&&e.n,120),p:str(e&&e.p,40),c:str(e&&e.c,20)})).filter(e=>e.n);
@@ -1057,7 +1057,7 @@ window.Notas=(()=>{
     return {ca:n(v.ca,0,40),pg:n(v.pg,1,99999),bi:n(v.bi,-10,30),vel:str(v.vel,60),ab:[0,1,2,3,4,5].map(i=>n(ab[i],1,30)),ataques:str(v.ataques,2000),notas:str(v.notas,2000)};};
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
-    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r',paso:'s',extras:'d'},
+    sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r',paso:'s',extras:'d',lectura:'r'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p',stats:'t',inventario:'i',acompana:'b'},
     lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b'},
@@ -1674,7 +1674,7 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .sptable .src{color:var(--muted);font-size:13px}
 .sbsafe .sbnote{color:var(--muted)}#safe-btn.on{border-color:var(--accent);color:var(--accent)}
 .juegonav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}.juegonav .pcsub{flex:1;text-align:center}.juegochips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.juegochips .chip.on{border-color:var(--accent);color:var(--accent)}.juegochips .chip.hecha{opacity:.55;text-decoration:line-through}
-.juegocuerpo{padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin:8px 0}.juegotxt{line-height:1.55}.juegoadd{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}.juegolist{margin:8px 0 0 18px}
+.juegocuerpo{padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin:8px 0}.juegotxt{line-height:1.55}.juegoleer{margin:8px 0 12px;padding:10px 12px;border-left:4px solid var(--accent);background:var(--surface-2);border-radius:0 6px 6px 0}.juegoleer>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:4px}.juegoadd{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}.juegolist{margin:8px 0 0 18px}
 .edcalc{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;display:grid;gap:6px}
 .tokimg{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:var(--surface-2);flex:none}
 .crart{display:block;max-width:100%;max-height:240px;margin:0 auto 8px;border-radius:4px}
@@ -2911,7 +2911,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.79</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.80</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3107,6 +3107,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.80 <span>22 nov 2026</span></h3><ul>
+      <li><b>«Texto para los jugadores»</b> en la sesión y en cada escena: lo que tú les lees o les cuentas. Aparece bien visible en «En juego» («Lo que les cuentas») y <b>nunca se publica</b>.</li>
+    </ul></li>
     <li><h3>v1.79 <span>22 nov 2026</span></h3><ul>
       <li><b>Sesión en juego</b>: nueva pestaña «En juego» en cada sesión. Empieza por la introducción y se avanza por las escenas con <b>Siguiente</b> y <b>Atrás</b> (cada escena muestra su plan, su lugar, su PNJ y sus encuentros). Puedes marcar escenas como hechas.</li>
       <li><b>Modo libre</b> para cuando los jugadores se salen del guion, con «Volver al guion».</li>
@@ -6789,6 +6792,7 @@ function cpEscenas(it){
         <label class="f">${T('Tipo')}<select ${k('tipo')}>${ESC_TIPOS.map(([v,l])=>`<option value="${v}"${v===(e.tipo||'')?' selected':''}>${esc(T(l))}</option>`).join('')}</select></label>
         <label class="f">${T('Lugar')}<input type="text" list="cp-dl-lugar" ${k('lugar')} value="${esc(e.lugar||'')}"></label>
         <label class="f">${T('PNJ')}<input type="text" list="cp-dl-npc" ${k('pnj')} value="${esc(e.pnj||'')}"></label></div>
+        <label class="f">${T('Texto para los jugadores')} <small>${T('(lo cuentas tú; no se publica)')}</small><textarea rows="3" ${k('l')} placeholder="${esc(T('Lo que les lees o les cuentas al empezar la escena…'))}">${esc(e.l||'')}</textarea></label>
         <label class="f">${T('Plan de la escena')} <small>${T('(solo máster)')}</small><textarea rows="4" ${k('d')} placeholder="${esc(T('Qué ocurre, qué se descubre, cómo se resuelve…'))}">${esc(e.d||'')}</textarea></label>
         <label class="f">${T('Resumen para los jugadores')}<textarea rows="2" ${k('r')} placeholder="${esc(T('Lo que saben o han vivido los jugadores en esta escena'))}">${esc(e.r||'')}</textarea></label>
         ${cpEscEncs(it,e,n)}
@@ -7559,6 +7563,8 @@ const JUEGO_ADD=[['npc','PNJ'],['mision','Misión'],['encuentro','Encuentro'],['
 function juegoPasos(it){return [{k:'i',t:'Introducción'},...(it.campos.escenas||[]).map((e,n)=>({k:String(n),t:e.t||T('Escena')+' '+(n+1)})),{k:'l',t:'Modo libre'}];}
 function juegoPaso(it){const p=juegoPasos(it),i=p.findIndex(x=>x.k===it.campos.paso);return i<0?0:i;}
 function juegoVuelta(it){const e=it.campos.escenas||[],n=e.findIndex(x=>!x.ok);return n<0?'i':String(n);}
+/* lo que el máster les cuenta o les lee a los jugadores: bien visible y nunca se publica */
+const juegoLeer=t=>t&&t.trim()?'<div class="juegoleer"><b>'+esc(T('Lo que les cuentas'))+'</b><div class="juegotxt">'+rich(t)+'</div></div>':'';
 function cpJuego(it){
   const pasos=juegoPasos(it),i=juegoPaso(it),p=pasos[i],c=it.campos,sc=(c.escenas||[])[+p.k];
   const nav='<div class="juegonav"><button type="button" class="btn" data-act="jprev"'+(i===0?' disabled':'')+'>← '+esc(T('Atrás'))+'</button>'
@@ -7567,11 +7573,11 @@ function cpJuego(it){
     +'<button type="button" class="btn'+(p.k==='l'?' on':'')+'" data-act="jgo" data-p="'+(p.k==='l'?juegoVuelta(it):'l')+'" aria-pressed="'+(p.k==='l')+'">'+esc(T(p.k==='l'?'Volver al guion':'Modo libre'))+'</button></div>';
   const chips='<div class="juegochips">'+pasos.slice(0,-1).map((x,n)=>'<button type="button" class="chip'+(n===i?' on':'')+(n>0&&(c.escenas||[])[n-1]&&(c.escenas||[])[n-1].ok?' hecha':'')+'" data-act="jgo" data-p="'+x.k+'">'+esc(x.t)+'</button>').join('')+'</div>';
   let cuerpo='';
-  if(p.k==='i')cuerpo='<h3>'+esc(T('Introducción'))+'</h3>'+(it.texto&&it.texto.trim()?'<div class="juegotxt">'+rich(it.texto)+'</div>':'<p class="hint" style="display:block">'+esc(T('No hay plan escrito. Escríbelo en la pestaña Planificación (Plan de la sesión).'))+'</p>');
+  if(p.k==='i')cuerpo='<h3>'+esc(T('Introducción'))+'</h3>'+juegoLeer(c.lectura)+(it.texto&&it.texto.trim()?'<div class="juegotxt">'+rich(it.texto)+'</div>':'<p class="hint" style="display:block">'+esc(T('No hay plan escrito. Escríbelo en la pestaña Planificación (Plan de la sesión).'))+'</p>');
   else if(p.k==='l')cuerpo='<h3>'+esc(T('Modo libre'))+'</h3><p class="hint" style="display:block">'+esc(T('Fuera de la planificación: los jugadores han tomado otro camino. Añade lo que haga falta con los botones de abajo; todo queda guardado como notas y enlazado a esta sesión.'))+'</p>';
   else if(sc){
     const encs=(sc.enc||[]).map(id=>PRESETS.find(x=>x.id===id)).filter(Boolean);
-    cuerpo='<h3>'+esc(sc.t||T('Escena'))+'</h3><p class="pcsub">'+[sc.tipo&&T(cpCap(sc.tipo)),sc.lugar,sc.pnj].filter(Boolean).map(esc).join(' · ')+'</p>'
+    cuerpo='<h3>'+esc(sc.t||T('Escena'))+'</h3><p class="pcsub">'+[sc.tipo&&T(cpCap(sc.tipo)),sc.lugar,sc.pnj].filter(Boolean).map(esc).join(' · ')+'</p>'+juegoLeer(sc.l)
       +(sc.d&&sc.d.trim()?'<div class="juegotxt">'+rich(sc.d)+'</div>':'<p class="hint" style="display:block">'+esc(T('Esta escena no tiene plan escrito.'))+'</p>')
       +(sc.r&&sc.r.trim()?'<details><summary>'+esc(T('Resumen para los jugadores'))+'</summary><div class="juegotxt">'+rich(sc.r)+'</div></details>':'')
       +encs.map(e=>'<div class="cprow cpenc"><span class="cpencn"><b>'+esc(e.n)+'</b><small>'+esc(encSum(e))+'</small></span><button type="button" class="btn sm primary" data-act="cpencload" data-id="'+esc(e.id)+'">'+esc(T('Cargar en el combate'))+'</button></div>').join('')
@@ -7624,6 +7630,7 @@ function cpRenderDet(){
     ${it.tipo==='handout'?cpHandout(it):''}
     ${it.tipo==='tienda'||it.tipo==='npc'?cpInv(it):''}
     ${lists}
+    ${it.tipo==='sesion'?`<label class="f">${T('Introducción para los jugadores')} <small>${T('(lo cuentas tú; no se publica)')}</small><textarea class="cptext" rows="4" data-cpf="campos.lectura" placeholder="${esc(T('Lo que les lees o les cuentas al empezar la sesión…'))}">${esc(it.campos.lectura||'')}</textarea></label>`:''}
     ${it.tipo==='sesion'?cpEncs(it):''}
     ${it.tipo==='npc'?`<label class="f">${T('Equipo')}<textarea rows="2" data-cpf="campos.equipo">${esc(it.campos.equipo)}</textarea></label>`:''}
     ${cpPubBloque(it)}
