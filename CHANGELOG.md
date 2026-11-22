@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.65.0] - 2026-11-22
+### Añadido
+- **Pestaña «Rasgos de clase» en el Compendio**: los 270 rasgos de las 12 clases del SRD, de sus subclases y las opciones de clase (invocaciones sobrenaturales, metamagia…), cada uno con su clase y nivel. Filtro por clase y por tipo, y aparecen en el buscador global.
+
 ## [1.64.0] - 2026-11-22
 ### Añadido
 - **PNJ con bloque de estadísticas propio**: CA, PG, bonificador de iniciativa, velocidad, seis características, ataques y notas de combate. Una criatura vinculada sirve de punto de partida («Copiar sus estadísticas al bloque del PNJ»). Los PNJ añadidos desde un grupo ya no necesitan criatura vinculada.
