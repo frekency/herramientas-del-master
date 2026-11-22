@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.73.0] - 2026-11-22
+### Añadido
+- **Modo seguro**: oculta PG, CA, estadísticas y acciones de las criaturas (ficha, bestiario, combate). Botón para el DM; siempre activo para jugadores.
+
 ## [1.72.0] - 2026-11-22
 ### Añadido
 - **Ficha editable por criatura en el encuentro** («Editar ficha» / «Volver al original»): copia propia `sb` por criatura; el compendio sigue de solo lectura (se clona).

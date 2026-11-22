@@ -1672,6 +1672,7 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .sptable .num{text-align:right;font-family:var(--f-num);font-size:13px}
 .sptable .num small{display:block;font-size:11px;color:var(--muted)}
 .sptable .src{color:var(--muted);font-size:13px}
+.sbsafe .sbnote{color:var(--muted)}#safe-btn.on{border-color:var(--accent);color:var(--accent)}
 .edcalc{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;display:grid;gap:6px}
 .tokimg{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:var(--surface-2);flex:none}
 .crart{display:block;max-width:100%;max-height:240px;margin:0 auto 8px;border-radius:4px}
@@ -2908,7 +2909,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.72</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.73</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3104,6 +3105,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.73 <span>22 nov 2026</span></h3><ul>
+      <li><b>Modo seguro</b>: botón en el menú que oculta PG, CA, estadísticas y acciones de las criaturas (ficha, bestiario y combate; los enemigos solo muestran Ileso, Maltrecho o Caído). Para enseñar la pantalla a los jugadores. Siempre activo para quien entra como jugador.</li>
+    </ul></li>
     <li><h3>v1.72 <span>22 nov 2026</span></h3><ul>
       <li><b>Ficha editable por criatura en el encuentro</b>: botón «Editar ficha» en los detalles de cada criatura. Cambia PG, CA, características, acciones… solo de esa criatura, sin tocar el compendio; «Volver al original» la restaura.</li>
       <li><b>Calculadora en el editor</b>: bonificador de competencia según el VD y botones para calcular PG (dados por tamaño + CON), iniciativa, salvaciones y percepción pasiva.</li>
@@ -3988,6 +3992,8 @@ function tpl(key){
   if(key.startsWith('pj:'))return pjProy(key.slice(3));
   return null;
 }
+/* Modo seguro: oculta lo que los jugadores no deben ver (PG, CA, estadísticas, ataques). Siempre activo para jugadores; el DM lo activa con el botón del menú. */
+const safe=()=>{try{return Store.campaigns.rol()==='jugador'||Store.get('modo-seguro')==='1';}catch{return false;}};
 /* Ficha de una criatura del encuentro: su copia propia (c.sb) si la editaron, o la plantilla. */
 const cTpl=c=>c&&(c.sb||tpl(c.tpl));
 const profB=m=>2+Math.floor((Math.max(crNum(m&&m.cr),1)-1)/4);
@@ -4325,6 +4331,7 @@ function rollList(s){return esc(s).replace(/−/g,'-').replace(/([^,;]+?)\s([+-]
 function sbHTML(m,c,{compact=false}={}){
   if(!m)return '';
   const who=c?c.name:m.n, cid=c?c.id:'';
+  if(safe())return `<div class="sb sbsafe" data-who="${esc(who)}">${m.img?`<img class="crart" src="${m.img}" alt="">`:''}<div style="display:flex;gap:10px;align-items:center">${m.tok?`<img class="tokimg" src="${m.tok}" alt="">`:''}<div><h3>${esc(m.n)}</h3><div class="sub">${esc(tr(TYPE,m.ty||''))} ${esc(tr(SIZE,m.sz||'').toLowerCase())}</div></div></div><p class="sbnote">Modo seguro: PG, CA, características y acciones ocultos.</p></div>`;
   const ab=(m.ab||[10,10,10,10,10,10]).map((s,i)=>{const mo=mod(s),sv=m.sv?m.sv[i]:mo;
     return `<div><b>${AB[i]}</b>${s}<br><button type="button" data-roll="chk" data-mod="${mo}" data-lbl="prueba de ${AB[i]}" title="Prueba">${sgn(mo)}</button> <button type="button" data-roll="chk" data-mod="${sv}" data-lbl="salvación de ${AB[i]}" title="Salvación">${sgn(sv)}</button></div>`;}).join('');
   const line=(l,v)=>v||v===0?`<div class="ln" data-l="${l}"><b>${l}</b> ${esc(v)}</div>`:'';
@@ -4420,7 +4427,7 @@ function render(){
   else if(cur){/* sin ficha: lo esencial del turno */
     let nx=null;for(let k=1;k<n&&!nx;k++){const c=get(s.order[(s.turnIdx+k)%n]);if(c&&!skipped(c)&&c!==cur)nx=c;}
     $('#curtitle').textContent=`${T('En turno')} · ${cur.name}`;
-    $('#cursb').innerHTML=`<div class="nostat"><div><span>${T('CA')}</span><b>${cur.ac??'–'}</b></div><div><span>${T('PG')}</span><b>${cur.hp}/${cur.maxHp}${cur.temp?` +${cur.temp}`:''}</b></div><div><span>${T('Condiciones')}</span><b>${cur.conds.length?cur.conds.map(x=>esc(x.key==='agotamiento'?`${T('Agotamiento')} ${x.lvl||1}`:(CLABEL[x.key]||x.label))).join(', '):T('Sin condiciones')}</b></div><div><span>${T('Siguiente')}</span><b>${nx?esc(nx.name):'–'}</b></div></div>`;}
+    $('#cursb').innerHTML=`<div class="nostat">${safe()&&!isPC(cur)?'':`<div><span>${T('CA')}</span><b>${cur.ac??'–'}</b></div><div><span>${T('PG')}</span><b>${cur.hp}/${cur.maxHp}${cur.temp?` +${cur.temp}`:''}</b></div>`}<div><span>${T('Condiciones')}</span><b>${cur.conds.length?cur.conds.map(x=>esc(x.key==='agotamiento'?`${T('Agotamiento')} ${x.lvl||1}`:(CLABEL[x.key]||x.label))).join(', '):T('Sin condiciones')}</b></div><div><span>${T('Siguiente')}</span><b>${nx?esc(nx.name):'–'}</b></div></div>`;}
 
   $('#fsum').innerHTML=s.factions.map(f=>{
     const cs=s.creatures.filter(c=>c.factionId===f.id);if(!cs.length)return'';
@@ -4901,7 +4908,7 @@ function rowHTML(c,idx,isCur){
   const chips=c.conds.map((x,i)=>{
     const lbl=x.key==='agotamiento'?`Agotamiento ${x.lvl||1}`:(CLABEL[x.key]||x.label)+(x.sp?`: ${x.sp}`:'');
     return `<button class="chip ${x.key==='concentracion'?'conc':''}" data-act="rmcond" data-i="${i}" title="Quitar">${esc(lbl)}${x.rounds!=null?` <span class="r">${x.rounds}r</span>`:''} ×</button>`;}).join('');
-  const down=c.hp<=0;
+  const down=c.hp<=0,hid=safe()&&!isPC(c);
   const ph=state.lastRoll?String(state.lastRoll.v):'1';
   return `<li class="row ${isCur?'cur':''} ${down&&!isPC(c)?'down':''}" style="--fc:${f.color}" data-id="${c.id}">
   <div class="rmain">
@@ -4911,10 +4918,10 @@ function rowHTML(c,idx,isCur){
       <div class="meta">${isCur?'<span class="turnflag">En turno</span>':''}<span class="chip fchip" style="border-color:color-mix(in srgb,${f.color} 50%,var(--line))"><span class="dot" style="--fc:${f.color}"></span>${esc(f.name)}</span>${m?`<span class="chip bchip" title="Tiene ficha">${ic('book')}</span>`:''}${chips}${isPC(c)&&down?`<span class="chip">Salv. ✓${c.ds} ✗${c.df}</span>`:''}</div>
     </div>
     <div class="c-hp">
-      <div class="hptext"><span>${(c.hph||[]).map(v=>`<s class="hph">${v}</s>`).join('')}<b>${c.hp}</b> / ${c.maxHp} PG${c.hp>0&&pct<=.5?`<span class="hpst" style="--hc:${col}">${T('Maltrecho')}</span>`:''}</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}</div>
-      <div class="hpbar" title="${c.hp}/${c.maxHp}"><i style="width:${c.hp/tot*100}%;background:${col}"></i><i class="t" style="width:${c.temp/tot*100}%"></i></div>
+      <div class="hptext">${hid?`<span><b>${c.hp<=0?T('Caído'):pct<=.5?T('Maltrecho'):T('Ileso')}</b></span>`:`<span>${(c.hph||[]).map(v=>`<s class="hph">${v}</s>`).join('')}<b>${c.hp}</b> / ${c.maxHp} PG${c.hp>0&&pct<=.5?`<span class="hpst" style="--hc:${col}">${T('Maltrecho')}</span>`:''}</span>${c.temp?`<span class="tmp">+${c.temp} temp</span>`:''}`}</div>
+      <div class="hpbar" ${hid?'hidden':''} title="${c.hp}/${c.maxHp}"><i style="width:${c.hp/tot*100}%;background:${col}"></i><i class="t" style="width:${c.temp/tot*100}%"></i></div>
     </div>
-    <div class="c-ac"><div class="shield">${c.ac??'–'}</div><small>CA</small></div>
+    <div class="c-ac"><div class="shield">${hid?'–':c.ac??'–'}</div><small>CA</small></div>
     <div class="c-quick">
       <input id="amt-${c.id}" placeholder="${ph}" aria-label="Cantidad" data-amt>
       <button class="qb d" data-act="dmg" aria-label="Daño" title="Daño (vacío = ${state.lastRoll?state.lastRoll.v:1})">−</button>
@@ -4943,10 +4950,10 @@ function detHTML(c,m){
     <div class="fields">
       <label class="f">Nombre<input id="e-name-${c.id}" data-field="name" value="${esc(c.name)}"></label>
       <label class="f">Bando<select id="e-fac-${c.id}" data-field="factionId">${state.factions.map(f=>`<option value="${f.id}" ${f.id===c.factionId?'selected':''}>${esc(f.name)}</option>`).join('')}</select></label>
-      <label class="f">PG actuales<input id="e-hp-${c.id}" type="number" data-field="hp" value="${c.hp}"></label>
+      ${safe()&&!isPC(c)?'':`<label class="f">PG actuales<input id="e-hp-${c.id}" type="number" data-field="hp" value="${c.hp}"></label>
       <label class="f">PG máx.<input id="e-max-${c.id}" type="number" data-field="maxHp" value="${c.maxHp}"></label>
       <label class="f">CA<input id="e-ac-${c.id}" type="number" data-field="ac" value="${c.ac??''}"></label>
-      <label class="f">Bonif. inic.<input id="e-ib-${c.id}" type="number" data-field="initBonus" value="${c.initBonus||0}"></label>
+      <label class="f">Bonif. inic.<input id="e-ib-${c.id}" type="number" data-field="initBonus" value="${c.initBonus||0}"></label>`}
     </div>
     <label class="f">Notas<input id="e-notes-${c.id}" data-field="notes" value="${esc(c.notes)}" placeholder="Objetivo marcado, botín, tácticas…"></label>
     <div class="inline">
@@ -4996,7 +5003,7 @@ function renderBest(){
   if(!cr)renderBestOther();else{
   const res=searchBest($('#b-q').value,$('#b-src').value,$('#b-cr').value);
   $('#b-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el SRD…':'Sin criaturas: activa un módulo en Módulos o crea las tuyas';
-  $('#blist').innerHTML=res.slice(0,400).map(m=>{const k=tkey(m);return `<li><button type="button" data-act="bpick" data-k="${esc(k)}" class="${bSel===k?'on':''}"><span class="bn">${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}</span><span class="bc">VD ${esc(m.cr??'–')}</span><span class="bt">${m.en&&m.en!==m.n?`<i>${esc(m.en)}</i> · `:''}${esc(tr(SIZE,m.sz||''))} · ${esc(tr(TYPE,m.ty||''))} · CA ${m.ac??'–'} · PG ${m.hp??'–'}</span></button></li>`;}).join('')||'<li class="hint" style="padding:12px">Nada coincide. Puedes crearla con «+ Nueva criatura».</li>';}
+  $('#blist').innerHTML=res.slice(0,400).map(m=>{const k=tkey(m);return `<li><button type="button" data-act="bpick" data-k="${esc(k)}" class="${bSel===k?'on':''}"><span class="bn">${esc(m.n)}${m.id?'<span class="mine">mía</span>':''}</span><span class="bc">VD ${esc(m.cr??'–')}</span><span class="bt">${m.en&&m.en!==m.n?`<i>${esc(m.en)}</i> · `:''}${esc(tr(SIZE,m.sz||''))} · ${esc(tr(TYPE,m.ty||''))} ${safe()?'':` · CA ${m.ac??'–'} · PG ${m.hp??'–'}`}</span></button></li>`;}).join('')||'<li class="hint" style="padding:12px">Nada coincide. Puedes crearla con «+ Nueva criatura».</li>';}
   if(bSel&&bTyOf(bSel)!=='criaturas'){$('#bview').innerHTML=bOtherView(bSel);return;}
   const m=tpl(bSel);
   $('#bview').innerHTML=m?crActions(m)+goP('criaturas',m.n)+sbHTML(m,null):'<div class="empty">Elige algo de la lista para ver su ficha.<br><span class="hint">Las criaturas se añaden al combate; los conjuros, objetos, dotes, especies y trasfondos se dan a un personaje del grupo, y con una clase puedes crear uno nuevo.</span></div>';
@@ -6332,6 +6339,7 @@ function extraAct(act,b,c,e){
       const f=b.dataset.f,en=CP.filter(i=>i.tipo==='sesion'&&i.campos.fecha===f);
       if(en.length){location.hash=Notas.href(en[0]);break;}
       const it=cpNew('sesion','Sesión '+(CP.filter(i=>i.tipo==='sesion').length+1));it.campos.fecha=f;cpDirty=true;cpFlush();cpFocus=true;cpEdit=true;location.hash=Notas.href(it);break;}
+    case 'safetoggle':{try{Store.set('modo-seguro',Store.get('modo-seguro')==='1'?'':'1');}catch(e){}safeApply();toast(safe()?'Modo seguro activado: se ocultan PG, CA y estadísticas de las criaturas':'Modo seguro desactivado');break;}
     case 'lock':lkBloquear();break;
     case 'audopen':audRender();$('#audmodal').hidden=false;syncModalOpen();break;
     case 'audclose':$('#audmodal').hidden=true;syncModalOpen();break;
@@ -6579,7 +6587,7 @@ function renderCreatureView(){
   VC_RES=res;
   $('#vc-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el bestiario…':'';
   const th=(k,l,c='')=>`<th${c?` class="${c}"`:''}><button type="button" data-csort="${k}"${sort===k?' aria-sort="ascending"':''}>${l}</button></th>`;
-  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${crBadges(m)||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>, o crea las tuyas desde el bestiario.</div>';
+  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${safe()?'':th('ac','CA','num')+th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td>${safe()?'':`<td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td>`}<td class="src">${crBadges(m)||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>, o crea las tuyas desde el bestiario.</div>';
 }
 function toggleCreatureRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
@@ -6657,6 +6665,12 @@ function renderCmNav(tab){
   const html=CTABS.map(([k,l,i])=>`<a href="#compendio/${k}" role="tab" aria-selected="${k===tab}">${ic(i)} ${l}<span class="pcsub">${n[k]||''}</span></a>`).join('');
   document.querySelectorAll('[data-cmnav]').forEach(el=>el.innerHTML=html);
 }
+function safeApply(){
+  const on=safe(),b=$('#safe-btn');document.documentElement.toggleAttribute('data-seguro',on);
+  if(b){b.setAttribute('aria-pressed',String(on));b.classList.toggle('on',on&&Store.campaigns.rol()!=='jugador');b.hidden=Store.campaigns.rol()==='jugador';}
+  try{render();}catch(e){}try{refreshCompView();}catch(e){}try{if(!$('#bestmodal').hidden)renderBest();}catch(e){}
+}
+setTimeout(()=>{try{safeApply();}catch(e){}},0);
 function refreshCompView(){
   const r=route();if(r.page!=='compendio'||!r.tab)return;
   renderCmNav(r.tab);

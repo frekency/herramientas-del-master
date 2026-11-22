@@ -26,7 +26,7 @@ const TAIL=`<script>
     ok("variables: ataque +6 (FUE +4, comp. +2)",h.includes("+6"));
     ok("variables: daño 13 (2d8 + 4)",h.includes("13 (")&&h.includes("2d8 + 4"));
     ok("variables: CD 13 (8+2+3)",h.includes("CD 13"));
-    commit(()=>addCreature({id:uid(),name:"Ogro 1",tpl:"my:ogro",factionId:state.factions[0].id,ac:11,maxHp:59,hp:59,temp:0,conds:[],used:{},uses:{},init:10,initBonus:-1,notes:"",la:0,lr:0}));
+    commit(()=>addCreature({id:uid(),name:"Ogro 1",tpl:"my:ogro",factionId:state.factions.find(f=>!f.pc).id,ac:11,maxHp:59,hp:59,temp:0,conds:[],used:{},uses:{},init:10,initBonus:-1,notes:"",la:0,lr:0}));
     const c=state.creatures.find(x=>x.name==="Ogro 1");
     ok("sin copia propia al principio",!c.sb&&cTpl(c)===m);
     openEditor(structuredClone(cTpl(c)),{inst:c.id});
@@ -41,6 +41,12 @@ const TAIL=`<script>
     document.querySelector("[data-id='"+c.id+"'] [data-act=toggle]").click();await wait(300);
     ok("aparece Volver al original",!!document.querySelector("[data-act=resetinst]"));
     document.querySelector("[data-act=resetinst]").click();await wait(200);document.querySelector("[data-cp=yes]").click();await wait(300);
+    Store.set("modo-seguro","1");safeApply();await wait(200);
+    const hs=sbHTML(cTpl(c),c);
+    ok("modo seguro: la ficha no muestra CA, PG ni acciones",!hs.includes("Garrote")&&!hs.includes("Velocidad")&&!hs.includes("data-roll"));
+    {const t=document.querySelector("[data-id='"+c.id+"'] .c-hp").textContent;ok("modo seguro: la fila del enemigo no enseña PG",!t.includes("PG"));if(t.includes("PG"))window.__err.push("fila:"+t);}
+    Store.set("modo-seguro","");safeApply();await wait(200);
+    ok("sin modo seguro vuelve a verse",sbHTML(cTpl(c),c).includes("Garrote"));
     ok("volver al original restaura CA y quita la copia",!c.sb&&c.ac===11);
   }catch(e){(window.__err=window.__err||[]).push("flujo: "+e+" "+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
@@ -69,6 +75,6 @@ testNav('ficha editable por criatura en el encuentro',{skip:!BROWSER&&'no hay Ed
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=10,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=13,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });
