@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.81.0] - 2026-11-22
+### Cambiado
+- Menú reorganizado: grupos Preparar / Jugar / Biblioteca, Revisión en el menú (solo si hay pendientes) y un menú «Más» con Audio, Modo seguro, Bloquear, Preferencias y versión. Vista y Estilo salen de la barra superior (siguen en Preferencias).
+
 ## [1.80.0] - 2026-11-22
 ### Añadido
 - Campo «Texto para los jugadores» (lo que el DM les cuenta) en la sesión (introducción) y en cada escena, visible en «En juego» y nunca publicado.

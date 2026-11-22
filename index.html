@@ -1689,6 +1689,16 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .vbody select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
 :root[data-view="mini"] .pagenav{padding-block:6px 0}
 .pagenav .navver{margin-left:auto;font-size:12px}
+/* «Más»: audio, modo seguro, bloqueo, preferencias y versión juntos */
+.pagenav .navsep{font-size:0!important;width:1px!important;height:18px!important;background:var(--line)!important;margin:0 8px!important;padding:0!important;align-self:center}   /* en la barra de arriba, los grupos van separados por una raya; los rótulos se ven en la barra lateral y en el móvil */
+.pagenav .navmore{position:relative;margin-left:auto}
+.pagenav .navmore>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.pagenav .navmore>summary::-webkit-details-marker{display:none}
+.navmore-body{position:absolute;right:0;top:calc(100% + 6px);z-index:40;min-width:220px;display:grid;gap:2px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgb(0 0 0/.35)}
+.pagenav .navmore-body .btn,.pagenav .navmore-body a{display:flex;align-items:center;justify-content:flex-start;gap:10px;width:100%;margin:0;order:0;border-radius:8px}
+.pagenav .navmore-body .nl{display:inline;margin:0}
+.pagenav .navmore-body .navver{font-size:12px;padding:6px 10px;color:var(--muted)}
+.bar .nav label.skin:not(.campsel){display:none}   /* Vista y Estilo están en Preferencias */
 .pagenav .navsep{align-self:center;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 2px 0 10px}
 .pagenav .pfbtn{margin-left:6px}
 .pagenav .navtoggle{display:none}
@@ -2327,6 +2337,7 @@ main.wrap .listhead{scroll-margin-top:100px}
   .pagenav .btn{order:1;flex:none}
   .pagenav .pfbtn{margin-left:auto}
   .pagenav .acct{margin-left:0}
+  .pagenav .navsep{font-size:11px!important;width:auto!important;height:auto!important;background:none!important;margin:0 2px 0 10px!important}
   .pagenav:not(.open) a:not(.on),.pagenav:not(.open) .navsep{display:none}
   .pagenav a{white-space:nowrap}
   .pagenav.open{padding-bottom:8px}
@@ -2840,13 +2851,18 @@ html.app-escritorio .pagenav{position:fixed;top:var(--tb);bottom:0;left:0;width:
 html.app-escritorio .pagenav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:0;white-space:nowrap;font-size:14px}
 html.app-escritorio .pagenav a .ic{width:18px;height:18px;flex:none}
 html.app-escritorio .pagenav a.on{background:var(--accent);color:var(--accent-fg);font-weight:600}
-html.app-escritorio .pagenav .navsep{margin:12px 0 2px 10px}
-html.app-escritorio .pagenav .navver{margin:auto 0 0 10px;font-size:12px;padding:4px 0}
+html.app-escritorio .pagenav .navsep{margin:12px 0 2px 10px!important;font-size:11px!important;width:auto!important;height:auto!important;background:none!important}
+html.app-escritorio .pagenav .navver{margin:0 0 0 10px;font-size:12px;padding:4px 0}
+html.app-escritorio .pagenav .navmore{margin:auto 0 0;order:2}
+html.app-escritorio .pagenav .navmore>summary{display:none}
+html.app-escritorio .pagenav .navmore-body .btn{order:0}
+html:not(.app-escritorio) .pagenav>a{padding:5px 9px}
+html.app-escritorio .pagenav .navmore-body{position:static;min-width:0;padding:0;border:0;box-shadow:none;background:none}
 html.app-escritorio .pagenav .btn{order:2;justify-content:flex-start;margin:0}
 html.app-escritorio .pagenav .pfbtn{margin-left:0}
 html.app-escritorio .pagenav .navtoggle{display:inline-flex;order:-1;margin-bottom:8px}
 html.app-escritorio.sb-min .pagenav a{font-size:0;justify-content:center;padding:10px 0;gap:0}
-html.app-escritorio.sb-min .pagenav .navsep{font-size:0;height:1px;background:var(--line);margin:8px 6px}
+html.app-escritorio.sb-min .pagenav .navsep{font-size:0!important;width:auto!important;height:1px!important;background:var(--line)!important;margin:8px 6px!important}
 html.app-escritorio.sb-min .pagenav .navver{display:none}
 html.app-escritorio.sb-min .pagenav .btn{font-size:0;justify-content:center;gap:0}
 html.app-escritorio.sb-min .pagenav .navtoggle span{display:none}
@@ -2911,7 +2927,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.80</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.81</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3107,6 +3123,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.81 <span>22 nov 2026</span></h3><ul>
+      <li><b>Menú más claro</b>: tres grupos — <b>Preparar</b> (Campaña, Personajes), <b>Jugar</b> (Combate, Ventana de mesa, Tablas) y <b>Biblioteca</b> (Compendio, Referencia, Homebrew, Módulos y Revisión, que solo sale si hay algo pendiente). Audio, Modo seguro, Bloquear, Preferencias y la versión van juntos en <b>Más</b>.</li>
+      <li>En la barra de arriba solo quedan la campaña, Grupo y Buscar; Vista y Estilo se cambian en Preferencias.</li>
+    </ul></li>
     <li><h3>v1.80 <span>22 nov 2026</span></h3><ul>
       <li><b>«Texto para los jugadores»</b> en la sesión y en cada escena: lo que tú les lees o les cuentas. Aparece bien visible en «En juego» («Lo que les cuentas») y <b>nunca se publica</b>.</li>
     </ul></li>
@@ -5553,6 +5573,7 @@ function refreshMods(){
     MODCR=MODCR.filter(c=>out.has(c));}
   }
   try{imApply();}catch(e){}
+  try{navRev();}catch(e){}
   MODTB=activeMods().flatMap(md=>(md.tablas||[]).map((x,i)=>modTable(x,i,md)).filter(Boolean));
   if($('#types'))$('#types').innerHTML=[...new Set(allBest().map(m=>m.ty))].map(t=>`<option value="${esc(t)}">`).join('');
   if(typeof mergeSpells==='function')mergeSpells();
@@ -6722,7 +6743,10 @@ function safeApply(){
   if(b){b.setAttribute('aria-pressed',String(on));b.classList.toggle('on',on&&Store.campaigns.rol()!=='jugador');b.hidden=Store.campaigns.rol()==='jugador';}
   try{render();}catch(e){}try{refreshCompView();}catch(e){}try{if(!$('#bestmodal').hidden)renderBest();}catch(e){}
 }
-setTimeout(()=>{try{safeApply();}catch(e){}try{imCarga();}catch(e){}},0);
+function navRev(){const a=$('#nav-rv');if(a)a.hidden=Store.campaigns.rol()==='jugador'||!pendAll().length;}
+document.addEventListener('click',e=>{const m=$('#navmore');if(!m||!m.open||document.documentElement.classList.contains('app-escritorio'))return;if(!e.target.closest('#navmore')||e.target.closest('.navmore-body .btn'))m.open=false;});
+document.addEventListener('keydown',e=>{const m=$('#navmore');if(e.key==='Escape'&&m&&m.open&&!document.documentElement.classList.contains('app-escritorio')){m.open=false;m.querySelector('summary').focus();}});
+setTimeout(()=>{try{safeApply();}catch(e){}try{imCarga();}catch(e){}try{if(document.documentElement.classList.contains('app-escritorio'))$('#navmore').open=true;}catch(e){}try{navRev();}catch(e){}},0);
 function refreshCompView(){
   const r=route();if(r.page!=='compendio'||!r.tab)return;
   renderCmNav(r.tab);
