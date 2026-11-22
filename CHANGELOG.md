@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.84.0] - 2026-11-22
+### Cambiado
+- Jugadores: sin botones de combate; cada jugador enseña su cuenta y el DM puede crearla (usuario + contraseña provisional). «Añadir el grupo» y «Descanso largo» pasan a Combate.
+
 ## [1.83.0] - 2026-11-22
 ### Añadido
 - Función de Supabase «crear-jugador» (supabase/functions): solo un DM crea cuentas de jugador con contraseña provisional.

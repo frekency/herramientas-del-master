@@ -21,3 +21,13 @@ test('la web deja entrar con usuario y obliga a cambiar la contraseña provision
   assert.match(PAGE,/\{password:pw,data:\{cambiar_pass:false\}\}/);
   assert.match(PAGE,/SB\.functions\.invoke\('crear-jugador'/);
 });
+
+test('la sección Jugadores no mete nada en el combate y ofrece crear la cuenta; el combate recoge «Añadir el grupo»',()=>{
+  const i0=PAGE.indexOf('id="view-jugadores"'),vj=PAGE.slice(i0,PAGE.indexOf('<section',i0+10));
+  assert.doesNotMatch(vj,/data-act="(partyadd|longrest)"/);
+  assert.match(vj,/<h2>Jugadores<\/h2>/);
+  assert.doesNotMatch(PAGE,/data-act="pcadd"/);
+  assert.match(PAGE,/data-act="grpcuenta"/);
+  assert.match(PAGE,/data-act="partyadd" title="Mete en el combate/);
+  assert.match(PAGE,/hay&&!jug\?`<button type="button" class="btn sm primary" data-act="grpcombat"/);   // los grupos de jugadores no tienen botón de combate
+});
