@@ -1704,6 +1704,7 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .pagenav .navver{margin-left:auto;font-size:12px}
 /* «Más»: audio, modo seguro, bloqueo, preferencias y versión juntos */
 .pagenav .navsep{font-size:0!important;width:1px!important;height:18px!important;background:var(--line)!important;margin:0 8px!important;padding:0!important;align-self:center}   /* en la barra de arriba, los grupos van separados por una raya; los rótulos se ven en la barra lateral y en el móvil */
+.rvpg{display:inline-flex;align-items:center;gap:6px;font-size:13px}.rvpg input{width:68px}
 .vistabar{position:sticky;top:0;z-index:60;display:flex;gap:12px;align-items:center;justify-content:center;padding:6px 12px;background:var(--accent);color:var(--accent-fg);font-size:14px}
 .vistabar .btn{color:inherit}
 .navbadge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-fg);font-size:11px;font-weight:700;line-height:18px;text-align:center}
@@ -3144,6 +3145,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.87 <span>22 nov 2026</span></h3><ul>
       <li><b>Ver como jugador</b> (solo el DM): en Jugadores, cada jugador tiene su botón; la app se recarga como la vería esa persona, con su personaje, sin criaturas ni combate, y sin sincronizar mientras tanto. Un aviso arriba permite salir.</li>
+      <li><b>Página del manual</b> (1.87.1): cada elemento pendiente de revisar enseña su página, aunque no esté verificada, y se puede corregir ahí mismo.</li>
       <li><b>Revisión</b>: eliges la categoría del compendio que quieres revisar (se actualiza al momento), el orden (al azar, por nombre o por página del manual) y hasta 50 elementos. Nuevo botón para <b>descargar el manual corregido</b> en JSON.</li>
     </ul></li>
     <li><h3>v1.86 <span>22 nov 2026</span></h3><ul>
@@ -6264,9 +6266,16 @@ function pendBar(ty,x){
   if(!x||!x.pend||Store.campaigns.rol()==='jugador')return '';
   const mid=x._mid||(x._mk?String(x._mk).split(':')[1]:'');if(!mid)return '';
   const du=Array.isArray(x.dudas)&&x.dudas.length?'<ul class="pendduda">'+x.dudas.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'';
-  return '<div class="pendbar"><span class="badge pend">Pendiente de revisar</span><span class="pcsub">Compáralo con tu manual</span><button type="button" class="btn sm primary" data-act="rvok" data-ty="'+ty+'" data-mid="'+esc(mid)+'" data-n="'+esc(x.n)+'">✓ Marcar como revisado</button></div>'+du;
+  return '<div class="pendbar"><span class="badge pend">Pendiente de revisar</span><span class="pcsub">Compáralo con tu manual</span><label class="rvpg">Página <input type="number" min="1" max="999" inputmode="numeric" value="'+esc(pgNum(x.pg))+'" placeholder="–" data-rvpg data-ty="'+ty+'" data-mid="'+esc(mid)+'" data-n="'+esc(x.n)+'" aria-label="Página del manual (se puede corregir)"></label><button type="button" class="btn sm primary" data-act="rvok" data-ty="'+ty+'" data-mid="'+esc(mid)+'" data-n="'+esc(x.n)+'">✓ Marcar como revisado</button></div>'+du;
 }
 let RVSEL=[];
+/* La página del manual se puede corregir en cualquier elemento pendiente (venga verificada o no). */
+document.addEventListener('change',e=>{
+  const i=e.target.closest&&e.target.closest('[data-rvpg]');if(!i)return;
+  const md=mods().list.find(m=>m.id===i.dataset.mid),x=md&&(md[i.dataset.ty]||[]).find(y=>fold(y.n)===fold(i.dataset.n));if(!x)return;
+  const v=parseInt(i.value,10);if(Number.isFinite(v)&&v>0&&v<1000)x.pg=v;else delete x.pg;
+  saveMods();refreshMods();toast('Página guardada');
+});
 document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#rv-n,#rv-ty,#rv-o')){RVSEL=[];renderRev();}});   // elegir categoría, cantidad u orden actualiza la lista al momento
 function revRefresh(){
   const todo=pendAll(),ty=$('#rv-ty')?$('#rv-ty').value:'',n=+($('#rv-n')?$('#rv-n').value:5)||5;

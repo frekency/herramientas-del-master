@@ -30,6 +30,9 @@ const TAIL=`<script>
     ok("el menú «Más» guarda audio, modo seguro, bloqueo y preferencias",["aud-btn","safe-btn","lock-btn"].every(id=>document.getElementById(id).closest("#navmore"))&&!!document.querySelector("#navmore [data-act=pfopen]"));
     location.hash="#revision";await wait(500);
     ok("la sección Revisión muestra los pendientes",document.querySelectorAll("#rv-list .hbcard").length===2);
+    {const i=document.querySelector("#rv-list [data-rvpg]");ok("cada pendiente tiene la página editable",!!i);
+     if(i){const antes=i.dataset.n,ty=i.dataset.ty,mid=i.dataset.mid;i.value="123";i.dispatchEvent(new Event("change",{bubbles:true}));await wait(100);
+       const md=mods().list.find(m=>m.id===mid),x=(md[ty]||[]).find(y=>fold(y.n)===fold(antes));ok("corregir la página se guarda en el módulo",x&&x.pg===123);}}
     ok("la ficha de criatura lleva su aviso y las dudas",!!document.querySelector("#rv-list .pendbar")&&document.body.textContent.includes("PG no cuadra"));
     document.querySelector("#rv-list [data-act=rvok][data-ty=objetos]").click();await wait(300);
     ok("marcar revisado lo quita de la lista",pendAll().length===1&&!mods().list[0].objetos[0].pend);
@@ -67,6 +70,6 @@ testNav('revisión de lo importado',{skip:!BROWSER&&'no hay Edge ni Chrome',time
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=11,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=13,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

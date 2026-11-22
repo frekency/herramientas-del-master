@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.87.1] - 2026-11-22
+### Añadido
+- Revisión: la página del manual aparece en cada elemento pendiente (aunque no esté verificada) y es editable.
+
 ## [1.87.0] - 2026-11-22
 ### Añadido
 - «Ver como jugador» para el DM (recarga la app con la vista de un jugador, sin sincronizar).
