@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.70.0] - 2026-11-22
+### Añadido
+- **Revisión de lo importado**: vista `#revision` con una muestra aleatoria (3/5/10/20, filtrable por tipo) de elementos de módulos con `pend:true`, para comprobarlos con el manual y marcarlos como revisados; el aviso con su botón aparece también en la ficha de criatura (encuentros, bestiario) y en el compendio y los conjuros. Solo para el DM.
+- **Badges de fuente** en el bestiario y criaturas del manual que ya están en el SRD sin duplicar (una ficha, dos badges).
+- **Token e imagen de ambientación** en NPC (`tok`) y criaturas propias (`tok`, `img`).
+- `tools/mm_extraer.py`: extractor local (OCR de Windows) del Manual de Monstruos; su salida va a `datos/privado/` (fuera de git).
+
 ## [1.69.0] - 2026-11-22
 ### Añadido
 - **Manuales por campaña**: la configuración de la campaña guarda qué manuales se le aplican (panel «Manuales de esta campaña» en Módulos). Sin ajuste valen todos los activados en la cuenta, como hasta ahora. Quitar un manual lo oculta de esa campaña (criaturas, conjuros, compendio, referencia, buscador y tablas del módulo) sin desactivarlo en la cuenta. Solo el DM cambia la selección; los jugadores la reciben con la campaña. Los manuales y módulos se siguen activando o desactivando en la cuenta como siempre.

@@ -1039,7 +1039,7 @@ window.Notas=(()=>{
   const SING={sesion:'Sesión',diario:'Entrada',npc:'PNJ',lugar:'Lugar',tienda:'Tienda',mision:'Misión',puzzle:'Puzzle o juego',handout:'Documento',nota:'Nota'};
   const ESTADOS={sesion:['planeada','en curso','jugada','cancelada'],mision:['pendiente','activa','completada','fallida'],puzzle:['pendiente','en juego','resuelto','fallido']};
   const VIS=['dm','jugadores','enlace'];
-  const MAX={mapa:900000,items:2000,nombre:120,texto:100000,campo:2000,filas:200,img:400000};
+  const MAX={mapa:900000,items:2000,nombre:120,texto:100000,campo:2000,filas:200,img:400000,tok:60000};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const str=(v,n)=>typeof v==='string'?v.slice(0,n):'';
   const tipoOk=t=>TIPOS.some(x=>x[0]===t);
@@ -1079,6 +1079,8 @@ window.Notas=(()=>{
     const o={id:idOk(x.id)?x.id:uid(),tipo:t,nombre:str(x.nombre,MAX.nombre),texto:str(x.texto,MAX.texto),visibilidad:(t==='sesion'||t==='puzzle')&&!String(x.id||'').startsWith('pub_')?'dm':VIS.includes(x.visibilidad)?x.visibilidad:(x.publico?'jugadores':'dm'),img,campos:c,
       creado:Number.isFinite(+x.creado)?+x.creado:Date.now(),editado:Number.isFinite(+x.editado)?+x.editado:Date.now()};
     if(mapa)o.mapa=mapa;
+    const tok=t==='npc'&&typeof x.tok==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.tok)&&x.tok.length<=MAX.tok?x.tok:null;
+    if(tok)o.tok=tok;
     return o;
   }
   function nuevo(tipo,nombre){return norm({tipo,nombre:nombre||'',campos:{}});}
@@ -1670,6 +1672,13 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .sptable .num{text-align:right;font-family:var(--f-num);font-size:13px}
 .sptable .num small{display:block;font-size:11px;color:var(--muted)}
 .sptable .src{color:var(--muted);font-size:13px}
+.tokimg{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:var(--surface-2);flex:none}
+.crart{display:block;max-width:100%;max-height:240px;margin:0 auto 8px;border-radius:4px}
+.edimgs{display:flex;gap:18px;flex-wrap:wrap}.edslot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.edslot .crart{max-height:64px;margin:0}
+.pendbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 8px;padding:6px 8px;border:1px dashed #d9a24a;border-radius:6px}.pendduda{margin:0 0 8px 18px;color:var(--muted);font-size:13px}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:1px 7px;margin:1px 3px 1px 0;border-radius:99px;border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);white-space:nowrap}
+.badge.srd{color:var(--muted);border-color:var(--line);background:none}.badge.pend{color:#a35b00;border-color:#d9a24a;background:#fff3d6}
+@media (prefers-color-scheme:dark){.badge.pend{color:#f0c27a;border-color:#8a6a2f;background:#3a2f18}}
 .sptable .vadd-cell{text-align:right}
 .crtable .vbody{display:grid;gap:8px}
 .vbody.sb{border-radius:0 0 10px 10px;border-top:none}
@@ -2898,7 +2907,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.69</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.70</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2914,6 +2923,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <li><a class="ixr" href="#jugadores"><span class="ixn">Gestión de jugadores</span><span class="ixs" id="hs-party"></span><span class="ixd">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span></a></li>
     <li><a class="ixr" href="#tablas"><span class="ixn">Tablas aleatorias</span><span class="ixs" id="hs-tables"></span><span class="ixd">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span></a></li>
     <li><a class="ixr" href="#referencia"><span class="ixn">Referencia rápida</span><span class="ixs" id="hs-ref"></span><span class="ixd">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span></a></li>
+    <li id="hs-rvli"><a class="ixr" href="#revision"><span class="ixn">Revisión</span><span class="ixs" id="hs-rv"></span><span class="ixd">Elementos importados de los manuales pendientes de comprobar: sale una muestra al azar para que los revises con tu libro.</span></a></li>
     <li><a class="ixr" href="#homebrew"><span class="ixn">Reglas homebrew</span><span class="ixs" id="hs-hb"></span><span class="ixd">Tus propias reglas, con su categoría y la etiqueta Homebrew. Añade las que quieras a la referencia rápida.</span></a></li>
   </ol>
   <div class="vhead tools-h"><h2>Compendio</h2><span class="pcsub">Todo el contenido de tus módulos, cada cosa con su página</span></div>
@@ -2960,6 +2970,12 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div id="qr-body"></div>
 </section>
 
+<section class="vpage" id="view-revision" hidden>
+  <div class="vhead"><h2>Revisión</h2><span class="pcsub" id="rv-count"></span><button type="button" class="btn primary" data-act="rvmore" style="margin-left:auto">Otra muestra</button></div>
+  <p class="hint" style="display:block">Lo que se importa de un manual (por ejemplo, leído de un PDF) llega con la etiqueta «Pendiente de revisar». Aquí salen al azar unos cuantos, de cualquier tipo, para que los compares con tu manual y los marques como revisados. También puedes revisarlos donde los uses: en un encuentro, en el bestiario o en el compendio.</p>
+  <div class="bfilters"><label class="f">Cuántos<select id="rv-n" aria-label="Cuántos elementos"><option>3</option><option selected>5</option><option>10</option><option>20</option></select></label><label class="f">Tipo<select id="rv-ty" aria-label="Tipo"></select></label></div>
+  <div id="rv-list"></div>
+</section>
 <section class="vpage" id="view-homebrew" hidden>
   <div class="vhead"><h2>Reglas homebrew</h2><span class="pcsub" id="hb-count"></span><button type="button" class="btn primary" data-act="itnew" data-ty="reglas" style="margin-left:auto">+ Nueva regla</button></div>
   <p class="modline">Tus reglas de la casa. Cada una lleva la etiqueta <span class="hbtag">Homebrew</span> y puede tener la categoría que quieras. Elige en qué campañas está activa cada una (el ajuste es de la campaña actual: <b id="hb-camp"></b>) y cuáles quieres ver en la <a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia rápida</a>. Si le pones el mismo nombre que una regla del SRD, la tuya la sustituye.</p>
@@ -3087,6 +3103,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.70 <span>22 nov 2026</span></h3><ul>
+      <li><b>Revisión de lo importado</b>: sección nueva que muestra al azar unos cuantos elementos «Pendientes de revisar» de los manuales (criaturas, objetos, dotes, conjuros…) para compararlos con tu libro y marcarlos como revisados. También se revisan donde se usan: en un encuentro, en el bestiario o en el compendio.</li>
+      <li><b>Etiquetas de fuente</b>: el bestiario muestra un badge con el manual de cada criatura (SRD, MM2024…) y, si un manual recoge una criatura del SRD, queda una sola ficha con los dos badges.</li>
+      <li><b>Token e imagen de ambientación</b> en NPC y criaturas propias.</li>
+    </ul></li>
     <li><h3>v1.69 <span>22 nov 2026</span></h3><ul>
       <li><b>Manuales por campaña</b>: en Módulos, «Manuales de esta campaña» permite elegir qué manuales (el SRD 5.2.1 y tus módulos activados) se aplican a la campaña. Lo que no marques no sale en sus criaturas, conjuros, compendio, referencia ni buscador. La selección es del DM, viaja con la campaña y los jugadores usan la misma.</li>
     </ul></li>
@@ -3549,6 +3570,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
         <label class="f w2">Velocidad<input id="ed-sp" placeholder="9 m, volar 18 m"></label>
         <label class="f w2">Manual<input id="ed-src" list="srcs" placeholder="Manual de Monstruos 2024"><datalist id="srcs"><option>Manual de Monstruos 2024</option><option>Guía del Máster 2024</option><option>Manual del Jugador 2024</option><option>Aventura propia</option></datalist></label>
       </div>
+      <div class="sec-label" style="margin-top:12px">Imágenes</div>
+      <div id="ed-imgs" class="edimgs"></div>
       <div class="sec-label" style="margin-top:12px">Características y salvaciones</div>
       <div class="egrid" id="ed-ab"></div>
       <div class="egrid" style="margin-top:8px">
@@ -3934,6 +3957,7 @@ function normItem(k,x){
     else if(x.info)for(const i in x.info)x.info[i]=txt(x.info[i])??'';}
   if(k==='conjuros'){x.cls=(Array.isArray(x.cls)?x.cls:x.cls?[x.cls]:[]).map(String);x.lv=Math.max(0,Math.min(9,parseInt(x.lv)||0));}
   if(k==='criaturas'){
+    for(const f of ['img','tok'])if(f in x&&!(typeof x[f]==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x[f])&&x[f].length<=(f==='tok'?60000:400000)))delete x[f];
     for(const f of ['ab','sv'])if(f in x)x[f]=Array.isArray(x[f])?Array.from({length:6},(_,i)=>Number.isFinite(+x[f][i])&&x[f][i]!==null?+x[f][i]:f==='ab'?10:0):undefined;
     for(const f of 'tabrl')if(f in x)x[f]=(Array.isArray(x[f])?x[f]:[]).filter(Array.isArray).map(e=>e.map(v=>txt(v)??''));
     for(const f of ['ac','hp'])if(f in x&&!Number.isFinite(+x[f]))x[f]=f==='ac'?10:1;}
@@ -4268,8 +4292,9 @@ function sbHTML(m,c,{compact=false}={}){
     if(k==='t'&&c&&lrMax(m)){const mx=lrMax(m);head+=` <span style="font-family:var(--f-body);font-size:12px;color:var(--muted)">Resist. legendaria <span class="pips">${Array.from({length:mx},(_,i)=>`<button type="button" class="pip u ${i<c.lr?'on':''}" data-act="lr" data-v="${i+1}" aria-label="Resistencia legendaria ${i+1}"></button>`).join('')}</span></span>`;}
     return `<h4><span>${head}</span></h4>`+arr.map(a=>`<p class="act" data-n="${esc(a[0])}"><b>${esc(a[0])}.</b>${tagHTML(a)} ${rich(a[1])}</p>`).join('');};
   return `<div class="sb" data-who="${esc(who)}" data-cid="${cid}">
-    <div class="inline" style="justify-content:space-between;align-items:flex-start"><div style="min-width:0"><h3>${esc(m.n)}</h3>
-    <div class="sub">${m.tyl?esc(m.tyl):`${LANG!=='es'?`${esc(tr(SIZE,m.sz||''))} ${esc(tr(TYPE,m.ty||''))}`:`${esc(tr(TYPE,m.ty||''))} ${esc(tr(SIZE,m.sz||'').toLowerCase())}`}${m.al?', '+esc(m.al):''}`}</div></div>
+    ${pendBar('criaturas',m)}${m.img?`<img class="crart" src="${m.img}" alt="">`:''}
+    <div class="inline" style="justify-content:space-between;align-items:flex-start"><div style="min-width:0;display:flex;gap:10px;align-items:center">${m.tok?`<img class="tokimg" src="${m.tok}" alt="">`:''}<div><h3>${esc(m.n)}</h3>
+    <div class="sub">${m.tyl?esc(m.tyl):`${LANG!=='es'?`${esc(tr(SIZE,m.sz||''))} ${esc(tr(TYPE,m.ty||''))}`:`${esc(tr(TYPE,m.ty||''))} ${esc(tr(SIZE,m.sz||'').toLowerCase())}`}${m.al?', '+esc(m.al):''}`}</div></div></div>
     <span class="advsel" role="group" aria-label="Ventaja">${['Desv.','Normal','Vent.'].map((l,i)=>`<button type="button" data-act="adv" data-v="${i-1}" class="${state.adv===i-1?'on':''}">${l}</button>`).join('')}</span></div>
     <hr>
     ${line('CA',m.ac)}${m.hp!=null?`<div class="ln"><b>PG</b> ${m.hp}${m.hd?` (<button type="button" class="rl" data-roll="hp" data-ex="${esc(m.hd)}" title="${c?'Tirar los PG de esta criatura':'Tirar PG'}">${esc(m.hd)}</button>)`:''}${c&&c.maxHp!==m.hp?` · <span class="dc">esta criatura: ${c.maxHp}</span>`:''}</div>`:''}${line('Velocidad',m.sp)}
@@ -5077,17 +5102,26 @@ function openEditor(m,{asNew=false,relink=null}={}){
   const set=(id,v)=>$(id).value=v??'';
   set('#ed-n',asNew&&m.n&&!edRelink?`${m.n} (variante)`:m.n);set('#ed-ty',m.ty);set('#ed-al',m.al);set('#ed-cr',m.cr);set('#ed-xp',m.xp);set('#ed-ac',m.ac);set('#ed-hp',m.hp);set('#ed-hd',m.hd);set('#ed-in',m.in);set('#ed-sp',m.sp);set('#ed-src',crSrc(m));
   set('#ed-sk',m.sk);set('#ed-se',m.se);set('#ed-pp',m.pp);set('#ed-la',m.la);set('#ed-vu',m.vu);set('#ed-re',m.re);set('#ed-im',m.im);set('#ed-lu',m.l?m.lu??3:'');
+  edImg=m.img||null;edTok=m.tok||null;edImgsRender();
   const ab=m.ab||[10,10,10,10,10,10];
   $('#ed-ab').innerHTML=AB.map((l,i)=>`<label class="f">${l}<input id="ed-ab${i}" type="number" value="${ab[i]}"></label><label class="f">Salv. ${l}<input id="ed-sv${i}" type="number" value="${m.sv?m.sv[i]:mod(ab[i])}"></label>`).join('');
   for(const[k] of SECS)set('#ed-'+k,secToText(m[k]));
   $('#editmodal').hidden=false;document.body.classList.add('modal-open');setTimeout(()=>$('#ed-n').focus(),0);
 }
+let edImg=null,edTok=null;
+function edImgsRender(){
+  const slot=(k,tit,src,cls)=>`<div class="edslot"><b>${tit}</b>${src?`<img class="${cls}" src="${src}" alt="">`:'<span class="pcsub">Sin imagen</span>'}<label class="btn sm">${src?'Cambiar':'Añadir'}<input type="file" accept="image/*" data-edimg="${k}" hidden></label>${src?`<button type="button" class="btn sm ghost" data-edrm="${k}">Quitar</button>`:''}</div>`;
+  $('#ed-imgs').innerHTML=slot('tok','Token',edTok,'tokimg')+slot('img','Ambientación',edImg,'crart');
+}
+$('#ed-imgs').addEventListener('change',async e=>{const k=e.target.dataset.edimg;if(!k)return;const d=await imgReduce(e.target.files[0],k==='tok');if(d){if(k==='tok')edTok=d;else edImg=d;}edImgsRender();});
+$('#ed-imgs').addEventListener('click',e=>{const k=e.target.dataset.edrm;if(!k)return;if(k==='tok')edTok=null;else edImg=null;edImgsRender();});
 $('#editform').addEventListener('submit',e=>{
   e.preventDefault();
   const v=id=>$(id).value.trim(), n=id=>{const x=parseInt($(id).value,10);return isNaN(x)?undefined:x;};
   const m={id:edKey||uid(),n:v('#ed-n'),sz:v('#ed-sz'),ty:v('#ed-ty'),al:v('#ed-al'),cr:v('#ed-cr'),xp:n('#ed-xp'),ac:n('#ed-ac'),hp:n('#ed-hp'),hd:v('#ed-hd').replace(/\s/g,''),in:n('#ed-in'),sp:v('#ed-sp'),src:v('#ed-src'),
     ab:AB.map((_,i)=>n('#ed-ab'+i)??10),sv:AB.map((_,i)=>n('#ed-sv'+i)??mod(n('#ed-ab'+i)??10)),sk:v('#ed-sk'),se:v('#ed-se'),pp:n('#ed-pp'),la:v('#ed-la'),vu:v('#ed-vu'),re:v('#ed-re'),im:v('#ed-im')};
   for(const[k] of SECS){const s=textToSec($('#ed-'+k).value);if(s.length)m[k]=s;}
+  m.img=edImg||undefined;m.tok=edTok||undefined;
   if(m.l){const lu=n('#ed-lu');if(lu!=null)m.lu=lu;}
   if(m.in==null)m.in=mod(m.ab[1]);
   for(const k in m)if(m[k]===''||m[k]===undefined)delete m[k];
@@ -5375,6 +5409,11 @@ const tableToMod=tb=>({n:tb.n,formato:tb.fmt,modo:tb.mode==='row'?'fila':'column
 function refreshMods(){
   SRD=modOn('srd521')?SRD_ALL:[];
   MODCR=activeMods().flatMap(md=>(md.criaturas||[]).filter(c=>c&&c.n).map(c=>({...c,id:undefined,src:md.n,_mk:'mod:'+md.id+':'+(c.en||c.n)})));
+  {const mia=new Set(MY.map(x=>fold(x.n)));MODCR=MODCR.filter(c=>!mia.has(fold(c.n)));
+   const nk=new Set();for(const c of MODCR){nk.add(fold(c.n));if(c.en)nk.add(fold(c.en));}
+   const dup=s=>nk.has(fold(s.n))||(s.en&&nk.has(fold(s.en)));
+   for(const c of MODCR)if(SRD.some(s=>fold(s.n)===fold(c.n)||(s.en&&c.en&&fold(s.en)===fold(c.en))))c._also=['SRD'];
+   SRD=SRD.filter(s=>!dup(s));}
   MODTB=activeMods().flatMap(md=>(md.tablas||[]).map((x,i)=>modTable(x,i,md)).filter(Boolean));
   if($('#types'))$('#types').innerHTML=[...new Set(allBest().map(m=>m.ty))].map(t=>`<option value="${esc(t)}">`).join('');
   if(typeof mergeSpells==='function')mergeSpells();
@@ -5475,7 +5514,7 @@ const enKeys=e=>{const f=fold(e);return f?[f,EN_ALIAS[f],f.replace(/^[a-z-]+'s\s
 function mergeSpells(){
   const by=new Map(),alias=new Map();
   for(const s of modOn('srd521')?SRD_SPELLS:[]){const k=fold(s.n);by.set(k,s);if(s.en)alias.set(fold(s.en),k);}
-  const lib=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md.conjuros||[]).map(s=>({...s,book:md.n,ab:md.ab,_mine:!!md.mine})));
+  const lib=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md.conjuros||[]).map(s=>({...s,book:md.n,ab:md.ab,_mid:md.id,_mine:!!md.mine})));
   for(const s of lib){
     const b={...s,src:s.src==='srd'?'srd':'lib'},k=fold(b.n);
     for(const e of enKeys(b.en)){const old=alias.get(e);if(old&&old!==k&&by.get(old)?.src==='srd')by.delete(old);}
@@ -5527,7 +5566,7 @@ const spLevel=lv=>lv?T(`Nivel ${lv}`):T('Truco');
 function spellBody(s,dc){
   if(!s)return '<p class="hint" style="display:block">Este conjuro no está en ningún módulo activo. Actívalo o añade tu copia del libro en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a> para ver la descripción.</p>';
   const use=s.use||'',tds=use.match(/TdS\s*(\w+)/i);
-  return `${s.fl?`<p class="spfl">${esc(s.fl)}</p>`:''}
+  return `${pendBar('conjuros',s)}${s.fl?`<p class="spfl">${esc(s.fl)}</p>`:''}
     <div class="spmeta">${[['Lanzamiento',s.ct],['Alcance',s.rg],['Duración',s.dur],['Componentes',s.comp],['Escuela',SCHOOLS[s.sch]],['Clases',s.cls.join(', ')],['Fuente',spellSrcFull(s)]].filter(x=>x[1]).map(([l,v])=>`<span><b>${l}</b> ${esc(v)}</span>`).join('')}
     ${tds?`<span><b>Salvación</b> ${esc(tds[1])}${dc?` · <span class="dc">CD ${dc}</span>`:''}</span>`:''}</div>
     <div class="spdesc">${rich(s.d.replace(/\n+/g,'\n\n'))}</div>`;
@@ -5980,6 +6019,69 @@ document.addEventListener('change',e=>{
   manSet(el.dataset.man,el.checked);refreshMods();render();renderMods();renderHome();
   toast(T(el.checked?'Manual aplicado a esta campaña':'Manual quitado de esta campaña'));
 });
+/* ---------- revisión de lo importado ---------- */
+const PEND_TYPES=MOD_TYPES.map(t=>t[0]).filter(k=>k!=='tablas');
+const PEND_TIT={criaturas:'Criaturas',conjuros:'Conjuros',objetos:'Objetos',clases:'Clases',especies:'Especies',dotes:'Dotes',trasfondos:'Trasfondos',reglas:'Reglas'};
+function pendAll(){
+  const own=new Set(),mine=myMod(false);
+  if(mine)for(const k of PEND_TYPES)for(const x of mine[k]||[])own.add(k+':'+fold(x.n));
+  for(const x of MY)own.add('criaturas:'+fold(x.n));
+  const out=[];
+  for(const md of mods().list){if(md.mine)continue;for(const k of PEND_TYPES)for(const x of md[k]||[])if(x&&x.pend&&x.n&&!own.has(k+':'+fold(x.n)))out.push({ty:k,md,x});}
+  return out;
+}
+const pendKey=p=>p.ty+'|'+p.md.id+'|'+fold(p.x.n);
+function revMark(ty,mid,n){
+  const md=mods().list.find(m=>m.id===mid),x=md&&(md[ty]||[]).find(y=>fold(y.n)===fold(n));
+  if(!x)return false;delete x.pend;delete x.dudas;saveMods();refreshMods();return true;
+}
+/* Barra «pendiente de revisar» con su botón, solo para el DM. */
+function pendBar(ty,x){
+  if(!x||!x.pend||Store.campaigns.rol()==='jugador')return '';
+  const mid=x._mid||(x._mk?String(x._mk).split(':')[1]:'');if(!mid)return '';
+  const du=Array.isArray(x.dudas)&&x.dudas.length?'<ul class="pendduda">'+x.dudas.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'';
+  return '<div class="pendbar"><span class="badge pend">Pendiente de revisar</span><span class="pcsub">Compáralo con tu manual</span><button type="button" class="btn sm primary" data-act="rvok" data-ty="'+ty+'" data-mid="'+esc(mid)+'" data-n="'+esc(x.n)+'">✓ Marcar como revisado</button></div>'+du;
+}
+let RVSEL=[];
+function revRefresh(){
+  const todo=pendAll(),ty=$('#rv-ty')?$('#rv-ty').value:'',n=+($('#rv-n')?$('#rv-n').value:5)||5;
+  const pool=todo.filter(p=>!ty||p.ty===ty),byK=new Map(pool.map(p=>[pendKey(p),p]));
+  RVSEL=RVSEL.filter(k=>byK.has(k));
+  const libre=pool.filter(p=>!RVSEL.includes(pendKey(p)));
+  while(RVSEL.length<n&&libre.length){const i=Math.floor(Math.random()*libre.length);RVSEL.push(pendKey(libre.splice(i,1)[0]));}
+  RVSEL=RVSEL.slice(0,n);
+  return {todo,pool,byK};
+}
+function revCard(p){
+  const {ty,md,x}=p;let body;
+  if(ty==='criaturas'){const m=MODCR.find(c=>c._mk==='mod:'+md.id+':'+(x.en||x.n))||{...x,src:md.n,_mk:'mod:'+md.id+':'+(x.en||x.n)};body=sbHTML(m,null);}
+  else if(ty==='conjuros')body='<div class="sb">'+spellBody({...x,book:md.n,ab:md.ab,_mid:md.id})+'</div>';
+  else body='<div class="sb">'+cmBody({...x,n:String(x.n),_mid:md.id,_full:md.n+(pgNum(x.pg)?', p. '+pgNum(x.pg):''),_html:false},ty)+'</div>';
+  const fix=ty==='criaturas'?'<button type="button" class="btn" data-act="rvfix" data-mid="'+esc(md.id)+'" data-n="'+esc(x.n)+'">Corregir</button>':'<button type="button" class="btn" data-act="itclone" data-ty="'+ty+'" data-n="'+esc(x.n)+'">Corregir</button>';
+  return '<details class="hbcard" open><summary><b>'+esc(x.n)+'</b> <span class="badge">'+esc(PEND_TIT[ty]||ty)+'</span> <span class="badge srd">'+esc(md.ab||md.n)+'</span>'+(x.pg?'<span class="pcsub">p. '+esc(String(x.pg))+'</span>':'')+'</summary><div class="hbbody">'+body+'<div class="gvbar">'+fix+'</div></div></details>';
+}
+function renderRev(){
+  if(!$('#rv-list'))return;
+  const sel=$('#rv-ty');
+  const {todo,pool,byK}=revRefresh();
+  const cnt={};for(const p of todo)cnt[p.ty]=(cnt[p.ty]||0)+1;
+  if(sel){const cur=sel.value;sel.innerHTML='<option value="">Todos ('+todo.length+')</option>'+Object.keys(cnt).map(k=>'<option value="'+k+'"'+(k===cur?' selected':'')+'>'+esc(PEND_TIT[k]||k)+' ('+cnt[k]+')</option>').join('');}
+  $('#rv-count').textContent=todo.length?todo.length+' pendientes':'';
+  $('#rv-list').innerHTML=RVSEL.length?RVSEL.map(k=>revCard(byK.get(k))).join(''):'<div class="empty">'+(todo.length?'Nada con ese filtro.':'No hay nada pendiente de revisar. Lo que importes de un manual y venga marcado aparecerá aquí.')+'</div>';
+  const hs=$('#hs-rv');if(hs)hs.textContent=todo.length?todo.length+' pendientes':'Nada pendiente';
+}
+function rvAct(act,b){
+  if(act==='rvmore'){RVSEL=[];renderRev();return;}
+  if(act==='rvok'){
+    if(revMark(b.dataset.ty,b.dataset.mid,b.dataset.n)){toast('«'+b.dataset.n+'» marcado como revisado');
+      if(curView()==='revision')renderRev();else{render();try{refreshCompView();}catch{}try{renderBest();}catch{}}
+      const bar=b.closest('.pendbar');if(bar)bar.remove();}
+    return;}
+  if(act==='rvfix'){
+    const m=MODCR.find(c=>c._mk.startsWith('mod:'+b.dataset.mid+':')&&(c.n===b.dataset.n));
+    if(m){openEditor({...m,id:undefined,pend:undefined,dudas:undefined,_mk:undefined,src:undefined},{asNew:true});$('#ed-n').value=m.n;}
+  }
+}
 function mdAct(act,b){
   const M=mods(),id=b.dataset.id;
   switch(act){
@@ -6047,7 +6149,7 @@ function hbSet(n,on){
 function compList(tab,todas){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
   const camp=tab==='reglas'&&!todas?hbcLoad().map(x=>({n:String(x.n),cat:String(x.cat||'Homebrew'),tag:String(x.tag||''),d:String(x.d).slice(0,20000),ref:x.ref!==false,_src:'Homebrew de la campaña',_full:'Homebrew de la campaña',_camp:true,_html:false})):[];
-  const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
+  const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mid:md.id,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   const by=new Map();for(const x of [...srd,...mod,...camp])by.set(fold(x.n),x);
   return [...by.values()].filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
 }
@@ -6092,7 +6194,7 @@ function cmBody(x,tab=cmTab){
   const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):tab==='reglas'&&(x._mine||x._camp)?'Regla homebrew':'';
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):tab==='rasgos'?[['Clase',x.cls],['Subclase',x.sub],['Nivel',x.nv]]:[];
   const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')));
-  return `<div class="cmbody">${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
+  return `<div class="cmbody">${pendBar(tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }
 function toggleCompRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
@@ -6105,6 +6207,7 @@ $('#cm-list').addEventListener('click',e=>{if(e.target.closest('.spdet,a'))retur
 $('#cm-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleCompRow(r);}});
 
 function extraAct(act,b,c,e){
+  if(act.startsWith('rv')){rvAct(act,b);return;}
   if(act.startsWith('md')){mdAct(act,b);return;}
   if(act.startsWith('cat')){catAct(act,b);return;}
   if(act.startsWith('ac')){acAct(act,b);return;}
@@ -6247,6 +6350,7 @@ function extraAct(act,b,c,e){
       if(!n){toast(T('Escribe o elige el lugar que vas a marcar'));inp.focus();break;}
       if(!Notas.porNombre(CP.filter(x=>x.tipo==='lugar'),n)){const l=cpNew('lugar',n);l.campos.padre=it.nombre;l.editado=Date.now();cpDirty=true;cpFlush();}
       cpPinArm=n;cpRenderDet();toast(T('Pulsa en el mapa donde está'));break;}
+    case 'cptokrm':{const it=cpGet(cpSel);if(!it)break;delete it.tok;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'cpimgrm':{const it=cpGet(cpSel);if(!it)break;it.img=null;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();break;}
     case 'campclose':$('#campmodal').hidden=true;syncModalOpen();renderCamps();window.__campLabel&&window.__campLabel();break;
     case 'scvinc':scVincular(b.dataset.id);break;
@@ -6329,7 +6433,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','homebrew','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','homebrew','revision','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
@@ -6345,6 +6449,7 @@ function showView(){
   if(v2==='tablas')renderTables();
   if(v2==='referencia')renderRef();
   if(v2==='homebrew')renderHB();
+  if(v2==='revision')renderRev();
   if(v2==='modulos'){renderMods();loadCatalog();}
   if(v2==='campana')campPrimera();
   if(v2==='mesa')msRender();
@@ -6368,10 +6473,14 @@ function renderHome(){
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-comp').textContent=n?`${n} entradas`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
   {const n=COMP_SRD||!modOn('srd521')?compList('reglas').length:0;$('#hs-ref').textContent=n?`${n} reglas`:modOn('srd521')?'Reglas de 2024':'Activa el SRD 5.2.1';}
   {const n=compList('reglas',true).filter(x=>x._mine).length;$('#hs-hb').textContent=n?`${n} regla${n>1?'s':''}`:'Aún no hay ninguna';}
+  {const h2=$('#hs-rv');if(h2){const n=pendAll().length;h2.textContent=n?n+' pendientes':'Nada pendiente';$('#hs-rvli').hidden=!n||Store.campaigns.rol()==='jugador';}}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
 function crSrc(m){return m.src??(m.id?'':'SRD 5.2.1');}
+const badge=(t,c='')=>`<span class="badge ${c}">${esc(t)}</span>`;
+/* Etiquetas de fuente: el SRD, el manual del módulo, el SRD también si el manual lo recoge, y «Pendiente de revisar» en lo importado sin revisar. */
+function crBadges(m){const s=crSrc(m);return (s?badge(s==='SRD 5.2.1'?'SRD':s,s==='SRD 5.2.1'?'srd':''):'')+(m._also||[]).map(a=>badge(a,'srd')).join('')+(m.pend?badge('Pendiente de revisar','pend'):'');}
 let VC_RES=[];
 function renderCreatureView(){
   const types=[...new Set(allBest().map(m=>m.ty).filter(Boolean))].sort((a,b)=>tr(TYPE,a).localeCompare(tr(TYPE,b),'es'));
@@ -6384,7 +6493,7 @@ function renderCreatureView(){
   VC_RES=res;
   $('#vc-count').textContent=allBest().length?`${res.length} criaturas`:modOn('srd521')&&!SRD_ALL.length?'Cargando el bestiario…':'';
   const th=(k,l,c='')=>`<th${c?` class="${c}"`:''}><button type="button" data-csort="${k}"${sort===k?' aria-sort="ascending"':''}>${l}</button></th>`;
-  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${esc(crSrc(m))||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>, o crea las tuyas desde el bestiario.</div>';
+  $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${th('ac','CA','num')}${th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td><td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td><td class="src">${crBadges(m)||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>, o crea las tuyas desde el bestiario.</div>';
 }
 function toggleCreatureRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
@@ -7315,7 +7424,7 @@ function cpRenderDet(){
   if(it.tipo==='sesion'&&cpTab!=='plan'){el.innerHTML=`${dl}${head}${tabs}${cpTabCuerpo(it)}<div class="cpfoot"><button type="button" class="btn danger sm" data-act="cpdel" data-confirm>${T('Borrar')}</button></div>`;return;}
   el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}${head}${tabs}${it.tipo==='npc'?`<label class="cpacomp"><input type="checkbox" data-cpf="campos.acompana"${it.campos.acompana?' checked':''}> <span><b>${esc(T('Acompaña ahora al grupo'))}</b><small>${esc(T('Al empezar un combate se te preguntará si entra con los jugadores.'))}</small></span></label>`:''}
     <div class="cpfields">${CPF[it.tipo].filter(f=>f[2]!=='area').map(f=>cpField(it,f)).join('')}</div>${CPF[it.tipo].some(f=>f[2]==='area')?`<div class="cpareas">${CPF[it.tipo].filter(f=>f[2]==='area').map(f=>cpField(it,f)).join('')}</div>`:''}${it.tipo==='tienda'?cpDescEstado(it):''}
-    ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}
+    ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}${it.tipo==='npc'?cpTokBox(it):''}
     ${it.tipo==='npc'?cpStats(it)+cpCreature(it):''}
     ${it.tipo==='lugar'?cpMapa(it):''}
     ${it.tipo==='handout'?cpHandout(it):''}
@@ -7343,6 +7452,22 @@ function cpSet(it,path,v){
   else if(path.startsWith('campos.'))it.campos[path.slice(7)]=v;
   it.editado=Date.now();cpSoon();
 }
+/* Reduce una imagen elegida: «token» (cuadrado 160 px, conserva transparencia) o «ambientación» (hasta 800 px). Devuelve un data URL o null. */
+function imgReduce(file,tok){
+  return new Promise(res=>{
+    if(!file||!/^image\/(png|jpeg|webp|gif|bmp)$/.test(file.type)){toast('Elige una imagen PNG, JPG o WebP');return res(null);}
+    const u=URL.createObjectURL(file),im=new Image();
+    im.onload=()=>{URL.revokeObjectURL(u);
+      const cv=document.createElement('canvas'),cx=cv.getContext('2d');
+      if(tok){const s=Math.min(im.naturalWidth,im.naturalHeight),S=160;cv.width=cv.height=S;cx.drawImage(im,(im.naturalWidth-s)/2,(im.naturalHeight-s)/2,s,s,0,0,S,S);
+        let q=.85,d=cv.toDataURL('image/webp',q);while(d.length>58000&&q>.3){q-=.1;d=cv.toDataURL('image/webp',q);}return res(d.length>58000?null:d);}
+      const k=Math.min(1,800/Math.max(im.naturalWidth,im.naturalHeight));cv.width=Math.round(im.naturalWidth*k);cv.height=Math.round(im.naturalHeight*k);cx.drawImage(im,0,0,cv.width,cv.height);
+      let q=.85,d=cv.toDataURL('image/jpeg',q);while(d.length>390000&&q>.3){q-=.08;d=cv.toDataURL('image/jpeg',q);}
+      res(d.length>390000?(toast('La imagen es demasiado grande'),null):d);};
+    im.onerror=()=>{URL.revokeObjectURL(u);toast('No se pudo leer la imagen');res(null);};im.src=u;
+  });
+}
+const cpTokBox=it=>`<div class="cpimgbox">${it.tok?`<img class="tokimg" src="${it.tok}" alt="">`:''}<label class="btn sm">${it.tok?T('Cambiar token'):T('Añadir token')}<input type="file" accept="image/*" id="cp-tok" hidden></label>${it.tok?`<button type="button" class="btn sm ghost" data-act="cptokrm">${T('Quitar token')}</button>`:''}<span class="pcsub">${T('Token: imagen redonda para el combate y la mesa. La imagen de arriba es la de ambientación.')}</span></div>`;
 function cpImage(file,it,hecho){
   if(!file||!/^image\/(png|jpeg|webp|gif|bmp)$/.test(file.type))return toast('Elige una imagen PNG, JPG o WebP');
   const u=URL.createObjectURL(file),im=new Image();
@@ -7383,6 +7508,7 @@ function cpImage(file,it,hecho){
     else if(t.dataset.cpescenc&&t.value){const e=it.campos.escenas[+t.dataset.cpescenc];if(e){(e.enc=e.enc||[]).push(t.value);cpEscAb.add(cpSel+':'+t.dataset.cpescenc);it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();}}
     else if(t.id==='cp-mapimg')cpMapImage(t.files[0],it);
     else if(t.id==='cp-img')cpImage(t.files[0],it);
+    else if(t.id==='cp-tok')imgReduce(t.files[0],true).then(d=>{if(d){it.tok=d;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();}});
   });
   det.addEventListener('click',e=>{
     const pn=e.target.closest('.pin');
@@ -8140,7 +8266,7 @@ function scPub(i){
     if(!es.length&&!pu)return null;
     return {nombre:i.nombre,fecha:c.fecha||'',estado:c.estado||'planeada',publico:pu,escenas:es};
   }
-  const base={tipo:i.tipo,nombre:i.nombre,publico:pu,img:i.img||null};
+  const base={tipo:i.tipo,nombre:i.nombre,publico:pu,img:i.img||null,tok:i.tok||null};
   if(i.tipo==='npc')return pu?base:null;
   if(i.tipo==='lugar'){const m=c.vermapa&&i.mapa;if(!pu&&!m)return null;return {...base,clase:c.clase||'',mapa:m?i.mapa:null,pines:m?(c.pines||[]):[]};}
   if(i.tipo==='tienda'){const v=c.verinv&&(c.inventario||[]).length;if(!pu&&!v)return null;return {...base,inventario:v?c.inventario:[],oro:v?(c.oro||''):'',descuento:v&&cpDescActivo(c)?c.descuento:''};}
@@ -8154,7 +8280,7 @@ function pzHash(t,sal){let h1=0xdeadbeef^0,h2=0x41c6ce57^0;const x=String(sal)+'
 function scPubNota(id,v){
   const tp=Notas.TIPOS.some(x=>x[0]===v.tipo)?v.tipo:'sesion';
   if(tp==='sesion')return Notas.norm({id:'pub_'+id,tipo:'sesion',nombre:v.nombre,texto:v.publico,visibilidad:'jugadores',campos:{fecha:v.fecha,estado:v.estado,escenas:(Array.isArray(v.escenas)?v.escenas:[]).map(e=>({t:e.t,tipo:e.tipo,lugar:e.lugar,ok:e.ok,r:e.r||e.d||'',pub:true}))}});
-  return Notas.norm({id:'pub_'+id,tipo:tp,nombre:v.nombre,texto:v.publico,visibilidad:'jugadores',img:v.img||null,mapa:v.mapa||undefined,campos:{pistas:(v.pistas||[]).map(t=>({t,ok:true})),jugable:!!v.jugable,hash:v.hash,clase:v.clase,pines:v.pines,inventario:v.inventario,oro:v.oro,descuento:v.descuento,estado:v.estado,objetivos:v.objetivos,verobj:!!v.verobj}});
+  return Notas.norm({id:'pub_'+id,tipo:tp,nombre:v.nombre,texto:v.publico,visibilidad:'jugadores',img:v.img||null,tok:v.tok||undefined,mapa:v.mapa||undefined,campos:{pistas:(v.pistas||[]).map(t=>({t,ok:true})),jugable:!!v.jugable,hash:v.hash,clase:v.clase,pines:v.pines,inventario:v.inventario,oro:v.oro,descuento:v.descuento,estado:v.estado,objetivos:v.objetivos,verobj:!!v.verobj}});
 }
 function scSnapshot(){
   if(!cpLoaded){cpLoad();cpLoaded=true;}cpFlush();

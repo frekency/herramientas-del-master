@@ -161,3 +161,11 @@ test('puzzle: campos saneados y siempre del máster',()=>{
   assert.equal(p.visibilidad,'dm');assert.equal(p.campos.estado,'pendiente');assert.equal(p.campos.pistas.length,2);assert.equal(p.campos.jugable,true);
   assert.ok(N.TIPOS.some(t=>t[0]==='puzzle'));
 });
+
+test('NPC: token propio, solo imagen válida y pequeña; otros tipos no lo guardan',()=>{
+  const ok='data:image/webp;base64,AAAA';
+  assert.equal(N.norm({tipo:'npc',nombre:'Brisa',tok:ok}).tok,ok);
+  assert.equal(N.norm({tipo:'npc',nombre:'Brisa',tok:'javascript:alert(1)'}).tok,undefined);
+  assert.equal(N.norm({tipo:'npc',nombre:'Brisa',tok:'data:image/webp;base64,'+'A'.repeat(70000)}).tok,undefined);
+  assert.equal(N.norm({tipo:'lugar',nombre:'Torre',tok:ok}).tok,undefined);
+});
