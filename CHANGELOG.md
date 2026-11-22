@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.82.0] - 2026-11-22
+### Añadido
+- Marca «DM» en las cuentas (supabase/dm.sql): solo el DM crea campañas; la regla está en la base de datos. Un DM puede dar la marca con dar_dm('usuario').
+- La web esconde «Crear campaña» a quien no es DM.
+
 ## [1.81.2] - 2026-11-22
 ### Corregido
 - La app de escritorio no arrancaba («Cannot find module ./imagenes»): faltaba ese archivo en el paquete.
