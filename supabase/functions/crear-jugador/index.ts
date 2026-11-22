@@ -36,10 +36,14 @@ Deno.serve(async (req) => {
   if (esDm !== true) return json({ error: 'solo un DM puede crear cuentas de jugador' }, 403);
 
   // 2) datos
-  let b: { usuario?: string; campana_id?: string };
+  let b: { usuario?: string; campana_id?: string; email?: string };
   try { b = await req.json(); } catch { return json({ error: 'petición no válida' }, 400); }
   const usuario = String(b.usuario ?? '').trim();
   if (!/^[A-Za-z0-9_.-]{3,24}$/.test(usuario)) return json({ error: 'usuario no válido (3 a 24: letras, números, punto, guion, guion bajo)' }, 400);
+
+  // correo real (opcional): así el jugador puede recuperar su contraseña; si no, uno inventado que nunca se usa
+  const correo = String(b.email ?? '').trim().toLowerCase();
+  if (correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return json({ error: 'correo no válido' }, 400);
 
   const admin = createClient(url, service, { auth: { persistSession: false } });
   const { data: libre } = await admin.rpc('usuario_libre', { u: usuario });
@@ -55,7 +59,7 @@ Deno.serve(async (req) => {
   // 4) la cuenta
   const pass = provisional();
   const { data: nuevo, error } = await admin.auth.admin.createUser({
-    email: `${usuario.toLowerCase()}@${DOMINIO}`,
+    email: correo || `${usuario.toLowerCase()}@${DOMINIO}`,
     password: pass,
     email_confirm: true,
     user_metadata: { usuario, cambiar_pass: true, creado_por: u.user.id },

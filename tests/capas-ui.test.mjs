@@ -26,7 +26,7 @@ const TAIL=`<script>
     await wait(1200);
     const vis=el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return cs.display!=='none'&&r.width>0&&r.height>0;};
     const todos=[...document.querySelectorAll('dialog.modal')];
-    ok('los 14 modales son <dialog> nativos; sin sesión solo está abierto el acceso obligatorio',todos.length===14&&todos.every(d=>d.id==='acctmodal'?(d.open&&vis(d)):(!d.open&&d.hidden&&!vis(d))));
+    ok('los 15 modales son <dialog> nativos; sin sesión solo está abierto el acceso obligatorio',todos.length===15&&todos.every(d=>d.id==='acctmodal'?(d.open&&vis(d)):(!d.open&&d.hidden&&!vis(d))));
     ok('ningún modal conserva role=dialog ni aria-modal a mano',!document.querySelector('.mbox[role="dialog"],.mbox[aria-modal]')&&todos.every(d=>d.getAttribute('aria-labelledby')));
     // abrir con la propiedad hidden, como hace el resto del código
     openBest();await wait(100);

@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.88.0] - 2026-11-22
+### Cambiado
+- «Nuevo jugador» pide nombre, nick y correo (opcional) en lugar de la ficha de combate, y puede crear la cuenta al guardar. La función crear-jugador acepta un correo real.
+
 ## [1.87.2] - 2026-11-22
 ### Corregido
 - Módulos que desaparecían tras importarlos: las imágenes pasan a IndexedDB, reimportar fusiona (gana lo revisado), la sincronización no pisa un módulo local más completo y el aviso de falta de espacio es un diálogo.

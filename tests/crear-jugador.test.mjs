@@ -31,3 +31,12 @@ test('la sección Jugadores no mete nada en el combate y ofrece crear la cuenta;
   assert.match(PAGE,/data-act="partyadd" title="Mete en el combate/);
   assert.match(PAGE,/hay&&!jug\?`<button type="button" class="btn sm primary" data-act="grpcombat"/);   // los grupos de jugadores no tienen botón de combate
 });
+
+test('«Nuevo jugador» pide nombre, nick y correo (no la ficha de combate) y crea la cuenta si se quiere',()=>{
+  const f=PAGE.slice(PAGE.indexOf('id="jugform"'),PAGE.indexOf('</form>',PAGE.indexOf('id="jugform"')));
+  for(const id of ['jg-n','jg-u','jg-e','jg-c'])assert.ok(f.includes(`id="${id}"`),id);
+  assert.doesNotMatch(f,/pc-hp|pc-ac|Clase y nivel/);
+  assert.match(PAGE,/case 'pcnew':openJug\(null\)/);
+  assert.match(PAGE,/jugCrearCuenta\(u,Store\.campaigns\.remote\(Store\.campaigns\.active\(\)\),mail\)/);
+  assert.match(FN,/email: correo \|\|/);
+});
