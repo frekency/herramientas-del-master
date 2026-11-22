@@ -41,8 +41,27 @@ const TAIL=`<script>
     ok('al quitarla de la referencia deja de salir ahí',![...document.querySelectorAll('#qr-body .qrcard')].some(c=>/Crítico con mala pata/.test(c.textContent)));
     await go('#compendio/reglas');
     ok('en el compendio sigue con la etiqueta',[...document.querySelectorAll('#cm-list tr.sprow')].some(r=>/Crítico con mala pata/.test(r.textContent)&&r.querySelector('.hbtag')));
+    // por campaña: desactivada no sale en referencia ni compendio, pero sigue en su sección
     await go('#homebrew');
-    ok('el SRD no lleva etiqueta',compList('reglas').filter(x=>!x._mine).length>100&&compList('reglas').filter(x=>x._mine).length===1);
+    ok('por defecto está activa en la campaña',hbOn('Crítico con mala pata')&&!!document.querySelector('#hb-body [data-act="hbcamp"]'));
+    document.querySelector('#hb-body [data-act="hbref"]').click();await wait(200);
+    document.querySelector('#hb-body [data-act="hbcamp"]').click();await wait(300);
+    ok('al desactivarla sigue en la sección, marcada como desactivada',!hbOn('Crítico con mala pata')&&/Desactivada en esta campaña/.test(document.getElementById('hb-body').textContent));
+    ok('desactivada no sale en el compendio ni en la lista de reglas',!compList('reglas').some(x=>x._mine)&&compList('reglas',true).some(x=>x._mine));
+    await go('#referencia');
+    ok('ni en la referencia rápida',![...document.querySelectorAll('#qr-body .qrcard')].some(c=>/Crítico con mala pata/.test(c.textContent)));
+    await go('#homebrew');
+    document.querySelector('#hb-body [data-act="hbcamp"]').click();await wait(300);
+    ok('al activarla vuelve',hbOn('Crítico con mala pata')&&compList('reglas').some(x=>x._mine));
+    ok('el ajuste es de la campaña y se guarda en su configuración',Array.isArray(JSON.parse(Store.get(PJCFG)).hbOn));
+    document.querySelector('#view-homebrew [data-act="itnew"]').click();await wait(200);
+    document.getElementById('it-n').value='Segunda regla';document.getElementById('it-d').value='Texto.';
+    document.getElementById('itform').requestSubmit();await wait(400);
+    ok('una regla nueva queda activa donde ya había ajuste',hbOn('Segunda regla'));
+    document.querySelectorAll('#hb-body [data-act="hbcamp"]').forEach(b=>{if(/Segunda/.test(b.closest('details').textContent))b.click();});await wait(200);
+    ok('se puede desactivar una y dejar la otra',!hbOn('Segunda regla')&&hbOn('Crítico con mala pata'));
+    await go('#homebrew');
+    ok('el SRD no lleva etiqueta',compList('reglas').filter(x=>!x._mine).length>100&&compList('reglas',true).filter(x=>x._mine).length===2);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -70,6 +89,6 @@ testNav('reglas homebrew y referencia rápida',{skip:!BROWSER&&'no hay Edge ni C
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=8,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=16,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

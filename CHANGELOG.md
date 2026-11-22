@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.67.0] - 2026-11-22
+### Añadido
+- **Reglas homebrew por campaña**: botón «Activar/Desactivar en esta campaña» en cada regla. Sin ajuste, todas están activas (como hasta ahora); con ajuste, solo las marcadas. Una regla desactivada desaparece de la Referencia rápida, el Compendio y el buscador de esa campaña, y sigue en la sección Homebrew. El ajuste se guarda en la configuración de la campaña y se sincroniza con ella; las reglas nuevas quedan activas donde ya había ajuste.
+
 ## [1.66.0] - 2026-11-22
 ### Añadido
 - **Sección «Reglas homebrew»** (menú Herramientas y portada): lista, filtra, crea, edita y borra tus reglas de la casa. Todas llevan la etiqueta **Homebrew**, con la categoría que quieras o la nueva categoría «Homebrew».

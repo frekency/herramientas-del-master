@@ -2711,7 +2711,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpcr{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .hbtag{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid #a0522d;color:#a0522d;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle;white-space:nowrap}
 :root[data-theme="dark"] .hbtag{color:#e0a070;border-color:#e0a070}
-.hbcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 8px}.hbcard summary{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;cursor:pointer}.hbcard .hbref{margin-left:auto;display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted)}.hbbody{padding:0 14px 14px}
+.hbcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 8px}.hbcard summary{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;cursor:pointer}.hbcard .hbref{margin-left:auto;display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted)}.hbbody{padding:0 14px 14px}.hbcard.hboff{opacity:.75}.hbnoc{font-size:12.5px;color:var(--muted);font-style:italic}
 .cpst{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .cpst h4{margin:0;font-family:var(--f-display);font-size:19px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--accent)}
 .cpst4{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
@@ -2897,7 +2897,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.66</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.67</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2961,7 +2961,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 
 <section class="vpage" id="view-homebrew" hidden>
   <div class="vhead"><h2>Reglas homebrew</h2><span class="pcsub" id="hb-count"></span><button type="button" class="btn primary" data-act="itnew" data-ty="reglas" style="margin-left:auto">+ Nueva regla</button></div>
-  <p class="modline">Tus reglas de la casa. Cada una lleva la etiqueta <span class="hbtag">Homebrew</span> y puede tener la categoría que quieras. Marca las que quieras ver en la <a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia rápida</a>. Si le pones el mismo nombre que una regla del SRD, la tuya la sustituye.</p>
+  <p class="modline">Tus reglas de la casa. Cada una lleva la etiqueta <span class="hbtag">Homebrew</span> y puede tener la categoría que quieras. Elige en qué campañas está activa cada una (el ajuste es de la campaña actual: <b id="hb-camp"></b>) y cuáles quieres ver en la <a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia rápida</a>. Si le pones el mismo nombre que una regla del SRD, la tuya la sustituye.</p>
   <div class="bfilters"><input id="hb-q" placeholder="Filtrar por nombre o texto" aria-label="Filtrar reglas homebrew"><select id="hb-cat" aria-label="Categoría"></select></div>
   <div id="hb-body"></div>
 </section>
@@ -3085,6 +3085,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.67 <span>22 nov 2026</span></h3><ul>
+      <li><b>Homebrew por campaña</b>: cada regla homebrew se activa o se desactiva en la campaña actual. Las desactivadas no salen en la referencia rápida, el compendio ni el buscador de esa campaña, pero siguen en su sección. El ajuste viaja con la campaña.</li>
+    </ul></li>
     <li><h3>v1.66 <span>22 nov 2026</span></h3><ul>
       <li><b>Reglas homebrew</b>: sección nueva con tus reglas de la casa. Cada una lleva la etiqueta <b>Homebrew</b> (en la sección, en el Compendio y en la referencia) y la categoría que elijas, o la propia categoría «Homebrew».</li>
       <li>Cada regla se puede <b>añadir o quitar de la Referencia rápida</b> con un botón o desde el editor.</li>
@@ -5992,11 +5995,17 @@ function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
   getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;refreshCompView();renderHome();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
 }
-function compList(tab){
+/* Reglas homebrew por campaña: sin ajuste guardado valen todas; con ajuste, solo las marcadas (en la configuración de la campaña, que viaja con ella). */
+function hbOn(n){const l=pjCfg().hbOn;return !Array.isArray(l)||l.some(k=>fold(k)===fold(n));}
+function hbSet(n,on){
+  const mine=((myMod(false)||{}).reglas||[]).map(x=>x.n);let l=Array.isArray(pjCfg().hbOn)?pjCfg().hbOn.slice():mine;
+  l=l.filter(k=>fold(k)!==fold(n));if(on)l.push(n);pjCfgSet({hbOn:l});
+}
+function compList(tab,todas){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
   const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   const by=new Map();for(const x of [...srd,...mod])by.set(fold(x.n),x);
-  return [...by.values()].sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
+  return [...by.values()].filter(x=>tab!=='reglas'||todas||!x._mine||hbOn(x.n)).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
 }
 const cmTxt=v=>esc(String(v??''));
 const CM_COLS={
@@ -6058,7 +6067,7 @@ function extraAct(act,b,c,e){
   if(act.startsWith('tb')){tbAct(act,b);return;}
   if(act.startsWith('gv')){gvAct(act,b);return;}
   if(act.startsWith('grp')){grpAct(act,b);return;}
-  if(act==='hbref'){hbAct(act,b);return;}
+  if(act==='hbref'||act==='hbcamp'){hbAct(act,b);return;}
   if(act.startsWith('it')){itAct(act,b);return;}
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
@@ -6314,7 +6323,7 @@ function renderHome(){
   {const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;$('#hs-mods').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';$('#hs-nomods').hidden=n>0;}
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-comp').textContent=n?`${n} entradas`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
   {const n=COMP_SRD||!modOn('srd521')?compList('reglas').length:0;$('#hs-ref').textContent=n?`${n} reglas`:modOn('srd521')?'Reglas de 2024':'Activa el SRD 5.2.1';}
-  {const n=compList('reglas').filter(x=>x._mine).length;$('#hs-hb').textContent=n?`${n} regla${n>1?'s':''}`:'Aún no hay ninguna';}
+  {const n=compList('reglas',true).filter(x=>x._mine).length;$('#hs-hb').textContent=n?`${n} regla${n>1?'s':''}`:'Aún no hay ninguna';}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
@@ -7410,19 +7419,22 @@ function renderRef(){
 }
 function renderHB(){
   compLoad();
-  const all=compList('reglas').filter(x=>x._mine),sel=$('#hb-cat');
+  const all=compList('reglas',true).filter(x=>x._mine),sel=$('#hb-cat');
+  $('#hb-camp').textContent=Store.campaigns.activeName()||'Local';
   const cats=[...new Set(all.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG)),v=sel.value;
   sel.innerHTML='<option value="">Todas las categorías</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');sel.value=cats.includes(v)?v:'';
   const q=fold($('#hb-q').value),cat=sel.value;
   const L=all.filter(x=>(!cat||x.cat===cat)&&(!q||fold(x.n).includes(q)||fold(String(x.d||'')).includes(q)));
-  $('#hb-count').textContent=all.length+(all.length===1?' regla':' reglas');
+  $('#hb-count').textContent=all.length+(all.length===1?' regla':' reglas')+' · '+all.filter(x=>hbOn(x.n)).length+' activas en esta campaña';
   $('#hb-body').innerHTML=L.length?L.map(x=>{const en=x.ref!==false;
-    return '<details class="hbcard"><summary><b>'+esc(x.n)+'</b> <span class="hbtag">Homebrew</span><span class="pcsub">'+esc(x.cat||'')+'</span>'+(en?'<span class="hbref" title="Sale en la referencia rápida">'+ic('list')+' '+esc(T('En la referencia'))+'</span>':'')+'</summary>'
-      +'<div class="hbbody">'+cmBody(x,'reglas')+'<div class="gvbar"><button type="button" class="btn" data-act="hbref" data-n="'+esc(x.n)+'">'+esc(T(en?'Quitar de la referencia rápida':'Añadir a la referencia rápida'))+'</button><button type="button" class="btn" data-act="itedit" data-ty="reglas" data-n="'+esc(x.n)+'">Editar</button><button type="button" class="btn danger" data-act="itdel" data-ty="reglas" data-n="'+esc(x.n)+'" data-confirm>Borrar</button></div></div></details>';}).join('')
+    const ca=hbOn(x.n);
+    return '<details class="hbcard'+(ca?'':' hboff')+'"><summary><b>'+esc(x.n)+'</b> <span class="hbtag">Homebrew</span><span class="pcsub">'+esc(x.cat||'')+'</span>'+(ca?'':'<span class="hbnoc">'+esc(T('Desactivada en esta campaña'))+'</span>')+(en&&ca?'<span class="hbref" title="Sale en la referencia rápida">'+ic('list')+' '+esc(T('En la referencia'))+'</span>':'')+'</summary>'
+      +'<div class="hbbody">'+cmBody(x,'reglas')+'<div class="gvbar"><button type="button" class="btn'+(ca?'':' primary')+'" data-act="hbcamp" data-n="'+esc(x.n)+'">'+esc(T(ca?'Desactivar en esta campaña':'Activar en esta campaña'))+'</button><button type="button" class="btn" data-act="hbref" data-n="'+esc(x.n)+'">'+esc(T(en?'Quitar de la referencia rápida':'Añadir a la referencia rápida'))+'</button><button type="button" class="btn" data-act="itedit" data-ty="reglas" data-n="'+esc(x.n)+'">Editar</button><button type="button" class="btn danger" data-act="itdel" data-ty="reglas" data-n="'+esc(x.n)+'" data-confirm>Borrar</button></div></div></details>';}).join('')
     :'<div class="empty">'+(all.length?'Nada coincide.':'Aún no hay reglas homebrew. Pulsa «+ Nueva regla» para crear la primera.')+'</div>';
 }
 for(const id of ['#hb-q','#hb-cat'])$(id).addEventListener('input',renderHB);
 function hbAct(act,b){
+  if(act==='hbcamp'){const n=b.dataset.n,on=!hbOn(n);hbSet(n,on);renderHB();toast(on?'«'+n+'» activada en esta campaña':'«'+n+'» desactivada en esta campaña');return;}
   if(act!=='hbref')return;
   const md=myMod(false),x=md&&(md.reglas||[]).find(y=>fold(y.n)===fold(b.dataset.n));if(!x)return;
   x.ref=x.ref===false;saveMods();refreshMods();renderHB();toast(x.ref?'«'+x.n+'» sale ahora en la referencia rápida':'«'+x.n+'» ya no sale en la referencia rápida');
@@ -7494,6 +7506,7 @@ $('#itform').addEventListener('submit',e=>{
   if(itOld){const i=L.findIndex(y=>fold(y.n)===fold(itOld));if(i>=0)L.splice(i,1);}
   const j=L.findIndex(y=>fold(y.n)===fold(n));if(j>=0)L.splice(j,1,x);else L.push(x);
   md.on=true;saveMods();refreshMods();
+  if(ty==='reglas'&&Array.isArray(pjCfg().hbOn)&&(!itOld||hbOn(itOld)))hbSet(n,true);   // la regla nueva (o renombrada) sigue activa donde ya lo estaba
   $('#itmodal').hidden=true;syncModalOpen();
   toast(`«${n}» guardado en Mi contenido`);
   if(curView()==='homebrew'){renderHB();return;}
@@ -7508,6 +7521,7 @@ function itAct(act,b){
   if(act==='itedit')openItem(ty,x,'edit');
   if(act==='itdel'){
     const md=myMod(false);if(!md)return;md[ty]=(md[ty]||[]).filter(y=>fold(y.n)!==fold(x.n));saveMods();refreshMods();
+    if(ty==='reglas'&&Array.isArray(pjCfg().hbOn))hbSet(x.n,false);
     toast(`«${x.n}» borrado de Mi contenido`);
     if(curView()==='homebrew')renderHB();else if(curView()==='ficha'){const o=itFind(ty,x.n);if(o)refreshCompView();else location.hash='#compendio/'+ty;}else{refreshCompView();if(!$('#bestmodal').hidden)renderBest();}
   }
