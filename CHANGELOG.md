@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.71.0] - 2026-11-22
+### Añadido
+- Opciones del combate: **vida de las criaturas** (media, tirada, tirada con mínimo la media, máxima) e **iniciativa de las criaturas** (d20 por cada una, por tipo o fija). Sustituye a la casilla de tirar dados de golpe; los combates guardados se migran solos.
+
 ## [1.70.0] - 2026-11-22
 ### Añadido
 - **Revisión de lo importado**: vista `#revision` con una muestra aleatoria (3/5/10/20, filtrable por tipo) de elementos de módulos con `pend:true`, para comprobarlos con el manual y marcarlos como revisados; el aviso con su botón aparece también en la ficha de criatura (encuentros, bestiario) y en el compendio y los conjuros. Solo para el DM.
