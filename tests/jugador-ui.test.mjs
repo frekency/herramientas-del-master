@@ -47,6 +47,7 @@ const TAIL=`<script>
     ok('el menú esconde combate, mesa, tablas y módulos',['#combate','#mesa','#tablas','#modulos'].every(h=>document.querySelector('.pagenav a[href="'+h+'"]').hidden));
     ok('el jugador conserva compendio y personajes',!document.querySelector('.pagenav a[href="#compendio"]').hidden&&!document.querySelector('.pagenav a[href="#personajes"]').hidden);
     ok('la pestaña de criaturas desaparece',!ctabs().some(x=>x[0]==='criaturas'));
+    ok('solo módulos del Manual del Jugador',modVeJug({ref:'mdj'})&&modVeJug({n:'Manual del Jugador 2024'})&&!modVeJug({ref:'gdm',n:'Guía del Máster 2024'})&&!modVeJug({n:'Mi módulo',mine:true}));
     ok('sin objetos mágicos',compList('objetos').every(x=>x.k!=='magico'));
     ok('la búsqueda no devuelve criaturas',!searchAll('todo','a').some(x=>x.ty==='criaturas'));
     ok('el jugador no ve avisos de cambios',document.getElementById('nav-pjb').hidden&&document.getElementById('hs-cambios').hidden);
@@ -77,6 +78,6 @@ testNav('el DM ve los cambios de los jugadores y el jugador no ve combate ni cri
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=14,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=15,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

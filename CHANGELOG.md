@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.86.0] - 2026-11-22
+### Cambiado
+- Un jugador solo ve del compendio lo que viene en el Manual del Jugador o el SRD; los módulos de otros manuales (Guía del Máster…) y los propios del DM quedan ocultos.
+
 ## [1.85.0] - 2026-11-22
 ### Añadido
 - Avisos del DM sobre cambios de los jugadores (insignia, Inicio y lista en Personajes).
