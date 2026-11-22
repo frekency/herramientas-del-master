@@ -8,6 +8,7 @@ const auth = require('./auth');
 const actualizador = require('./updater');
 
 const APP_DIR = path.join(__dirname, 'app');
+const imagenes = require('./imagenes');
 let almacen = null;
 
 // Protocolo propio: permite fetch() de los JSON y un origen estable
@@ -146,15 +147,34 @@ function registrarCopias() {
   ipcMain.handle('copias:guardar', (e, texto) => (propio(e) ? copias.escribir(copias.leerConfig(cfg()).carpeta, texto, Date.now()) : { ok: false, error: 'origen' }));
 }
 
+// Carpeta de imágenes de criaturas: solo se elige con el diálogo del sistema; la página recibe únicamente tok/, img/ e index.json
+function registrarImagenes() {
+  const propio = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/');
+  ipcMain.handle('imagenes:carpeta', e => (propio(e) ? imagenes.leerConfig(cfgImagenes()).carpeta || '' : ''));
+  ipcMain.handle('imagenes:elegir', async e => {
+    if (!propio(e)) return '';
+    const r = await dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), { properties: ['openDirectory'] });
+    if (r.canceled || !r.filePaths[0]) return '';
+    imagenes.guardarConfig(cfgImagenes(), { carpeta: r.filePaths[0] });
+    return r.filePaths[0];
+  });
+}
+const cfgImagenes = () => path.join(app.getPath('userData'), 'imagenes.json');
+
 app.whenReady().then(() => {
   almacen = abrir(path.join(app.getPath('userData'), 'campanas.db'));
   try { almacen.copiaDeSeguridad(path.join(app.getPath('userData'), 'copias')); } catch (e) { console.error('copia de seguridad:', e.message); }
   registrarAlmacen();
   registrarMesa();
   registrarCopias();
+  registrarImagenes();
 
   protocol.handle('app', req => {
     const { pathname } = new URL(req.url);
+    if (pathname.startsWith(imagenes.PREFIJO)) {
+      const f = imagenes.rutaImagen(imagenes.leerConfig(cfgImagenes()).carpeta, pathname);
+      return f ? net.fetch(pathToFileURL(f).toString()) : new Response('No encontrado', { status: 404 });
+    }
     const rel = decodeURIComponent(pathname === '/' ? '/index.html' : pathname);
     const file = path.normalize(path.join(APP_DIR, rel));
     if (!file.startsWith(APP_DIR + path.sep)) return new Response('Prohibido', { status: 403 });

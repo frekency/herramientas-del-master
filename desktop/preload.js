@@ -31,6 +31,11 @@ contextBridge.exposeInMainWorld('__AppShell', {
     elegir: () => ipcRenderer.invoke('copias:elegir'),
     guardar: texto => ipcRenderer.invoke('copias:guardar', String(texto)),
   },
+  // Carpeta de imágenes de criaturas (tokens y ambientaciones)
+  imagenes: {
+    carpeta: () => ipcRenderer.invoke('imagenes:carpeta'),
+    elegir: () => ipcRenderer.invoke('imagenes:elegir'),
+  },
   // Actualizaciones de la app (GitHub Releases)
   actualizar: {
     estado: () => ipcRenderer.invoke('update:estado'),

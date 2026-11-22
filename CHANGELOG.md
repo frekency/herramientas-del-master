@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.78.0] - 2026-11-22
+### Añadido
+- Carpeta de imágenes de criaturas en la app de escritorio (Preferencias): tokens y ambientaciones a tamaño completo por nombre en inglés. Solo se sirven tok/, img/ e index.json de la carpeta elegida.
+
 ## [1.77.0] - 2026-11-22
 ### Añadido
 - La criatura del SRD que se conserva toma el token y la imagen del manual si no los tenía. Herramientas privadas para descargar y reducir los tokens de 5e.tools (tools/mm_imagenes.py, tools/mm_tokens.py).
