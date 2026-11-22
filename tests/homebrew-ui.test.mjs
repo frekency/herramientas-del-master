@@ -60,6 +60,22 @@ const TAIL=`<script>
     ok('una regla nueva queda activa donde ya había ajuste',hbOn('Segunda regla'));
     document.querySelectorAll('#hb-body [data-act="hbcamp"]').forEach(b=>{if(/Segunda/.test(b.closest('details').textContent))b.click();});await wait(200);
     ok('se puede desactivar una y dejar la otra',!hbOn('Segunda regla')&&hbOn('Crítico con mala pata'));
+    // el máster publica las activas; el jugador las recibe y las ve en la referencia
+    scLoad();const sn=scSnapshot();
+    ok('el máster publica las reglas activas en la campaña y no las desactivadas',!!sn['hb:critico-con-mala-pata']&&!sn['hb:segunda-regla']&&sn['hb:critico-con-mala-pata'].d.length>10);
+    const val={...sn['hb:critico-con-mala-pata'],ref:true};
+    Store.campaigns.setRol(Store.campaigns.active(),'jugador');
+    SC.l=Sincro.editar(Sincro.vacio(),'hb:critico-con-mala-pata',val,1).l;
+    scApply({bajados:['hb:critico-con-mala-pata'],borrados:[]});
+    ok('el jugador guarda la copia de solo lectura',hbcLoad().length===1&&compList('reglas').some(x=>x._camp&&x.n==='Crítico con mala pata'));
+    ok('el jugador no ve sus propias reglas, solo las de la campaña',!compList('reglas').some(x=>x._mine));
+    ok('el jugador no vuelve a subirlas (las conserva)',!!scSnapshot()['hb:critico-con-mala-pata']);
+    await go('#referencia');
+    const cj=[...document.querySelectorAll('#qr-body .qrcard')].find(c=>/Crítico con mala pata/.test(c.textContent));
+    ok('al entrar en la referencia le salen, con su etiqueta Homebrew, junto a las del SRD',!!cj&&!!cj.querySelector('.hbtag')&&document.querySelectorAll('#qr-body .qrcard').length>100);
+    scApply({bajados:[],borrados:['hb:critico-con-mala-pata']});
+    ok('si el máster la desactiva, desaparece',hbcLoad().length===0&&!compList('reglas').some(x=>x._camp));
+    Store.campaigns.setRol(Store.campaigns.active(),'master');
     await go('#homebrew');
     ok('el SRD no lleva etiqueta',compList('reglas').filter(x=>!x._mine).length>100&&compList('reglas',true).filter(x=>x._mine).length===2);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
@@ -89,6 +105,6 @@ testNav('reglas homebrew y referencia rápida',{skip:!BROWSER&&'no hay Edge ni C
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=16,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=22,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

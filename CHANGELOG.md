@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.68.0] - 2026-11-22
+### Añadido
+- **Las reglas homebrew llegan a los jugadores**: el DM publica con la campaña las reglas que tiene activas (clave `hb:`), y los jugadores las reciben como copia de solo lectura. Les salen en la Referencia rápida (respetando «Añadir a la referencia rápida»), en el Compendio y en el buscador de esa campaña, con la etiqueta Homebrew. Un jugador no ve en esa campaña sus propias reglas, solo las del DM.
+### Cambiado
+- En el SRD en español y en los textos de la app, «GM», «Game Master» y «director de juego» pasan a **DM** / Dungeon Master.
+
 ## [1.67.0] - 2026-11-22
 ### Añadido
 - **Reglas homebrew por campaña**: botón «Activar/Desactivar en esta campaña» en cada regla. Sin ajuste, todas están activas (como hasta ahora); con ajuste, solo las marcadas. Una regla desactivada desaparece de la Referencia rápida, el Compendio y el buscador de esa campaña, y sigue en la sección Homebrew. El ajuste se guarda en la configuración de la campaña y se sincroniza con ella; las reglas nuevas quedan activas donde ya había ajuste.
