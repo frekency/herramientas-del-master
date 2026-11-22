@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.83.0] - 2026-11-22
+### Añadido
+- Función de Supabase «crear-jugador» (supabase/functions): solo un DM crea cuentas de jugador con contraseña provisional.
+- Se puede entrar con usuario o con correo; una cuenta con contraseña provisional debe cambiarla antes de seguir.
+
 ## [1.82.0] - 2026-11-22
 ### Añadido
 - Marca «DM» en las cuentas (supabase/dm.sql): solo el DM crea campañas; la regla está en la base de datos. Un DM puede dar la marca con dar_dm('usuario').
