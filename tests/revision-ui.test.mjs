@@ -30,6 +30,9 @@ const TAIL=`<script>
     ok("la lista se actualiza",document.querySelectorAll("#rv-list .hbcard").length===1);
     location.hash="#criaturas";await wait(500);
     ok("el bestiario muestra el badge del manual",document.body.textContent.includes("MM2024")||document.body.textContent.includes("Manual de Monstruos 2024"));
+    mods().list.push({id:"ot",n:"Otro manual",ab:"OT",on:true,criaturas:[{n:"Orco sano",sz:"Medium",ty:"Humanoid",cr:"1",ac:99,hp:99,ab:[10,10,10,10,10,10],pend:true}]});saveMods();refreshMods();
+    const orcos=MODCR.filter(c=>c.n==="Orco sano");
+    ok("una ficha ya revisada no la pisa otro manual",orcos.length===1&&orcos[0].hp===15&&(orcos[0]._also||[]).includes("OT"));
     ok("revisar desde la ficha de la criatura",revMark("criaturas","mm","Gnomo de prueba")&&pendAll().length===0);
   }catch(e){(window.__err=window.__err||[]).push("flujo: "+e+" "+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
@@ -58,6 +61,6 @@ testNav('revisión de lo importado',{skip:!BROWSER&&'no hay Edge ni Chrome',time
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=7,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=8,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });
