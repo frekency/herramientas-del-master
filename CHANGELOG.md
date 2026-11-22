@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.85.0] - 2026-11-22
+### Añadido
+- Avisos del DM sobre cambios de los jugadores (insignia, Inicio y lista en Personajes).
+### Cambiado
+- Quien es jugador en una campaña no ve Combate, Ventana de mesa, Tablas, Módulos ni Revisión, y en el compendio no ve criaturas ni objetos mágicos.
+
 ## [1.84.0] - 2026-11-22
 ### Cambiado
 - Jugadores: sin botones de combate; cada jugador enseña su cuenta y el DM puede crearla (usuario + contraseña provisional). «Añadir el grupo» y «Descanso largo» pasan a Combate.

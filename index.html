@@ -1701,6 +1701,7 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .pagenav .navver{margin-left:auto;font-size:12px}
 /* «Más»: audio, modo seguro, bloqueo, preferencias y versión juntos */
 .pagenav .navsep{font-size:0!important;width:1px!important;height:18px!important;background:var(--line)!important;margin:0 8px!important;padding:0!important;align-self:center}   /* en la barra de arriba, los grupos van separados por una raya; los rótulos se ven en la barra lateral y en el móvil */
+.navbadge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-fg);font-size:11px;font-weight:700;line-height:18px;text-align:center}
 .pagenav .navmore{position:relative;margin-left:auto}
 .pagenav .navmore>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .pagenav .navmore>summary::-webkit-details-marker{display:none}
@@ -2937,7 +2938,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.84</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.85</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2947,6 +2948,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="hoy" id="hs-hoy" hidden></div>
+  <div class="hoy" id="hs-cambios" hidden></div>
   <div class="vhead tools-h"><h2>Herramientas</h2><span class="pcsub">Para llevar la partida</span></div>
   <ol class="ix">
     <li><a class="ixr" href="#combate"><span class="ixn">Tracker de combate</span><span class="ixs" id="hs-combat"></span><span class="ixd">Iniciativa, PG, estados, bandos, rondas y fichas con tiradas.</span></a></li>
@@ -3133,6 +3135,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.85 <span>22 nov 2026</span></h3><ul>
+      <li><b>Avisos para el DM</b>: insignia en Personajes con los cambios por aprobar, línea en Inicio y una lista «Cambios de los jugadores» con lo que han tocado (con «Marcar como vistos»).</li>
+      <li><b>Lo que ve un jugador</b>: sin Combate, Ventana de mesa, Tablas ni Módulos; en el compendio, sin criaturas ni objetos mágicos (ni en la búsqueda). Conjuros, clases, especies, trasfondos, dotes, equipo y reglas siguen a su alcance.</li>
+    </ul></li>
     <li><h3>v1.84 <span>22 nov 2026</span></h3><ul>
       <li><b>Jugadores son personas, no personajes</b>: la sección ya no mete a nadie en el combate. Cada jugador muestra su cuenta («Sin cuenta» o su usuario) y el DM puede <b>crear la cuenta</b> con una contraseña provisional que el jugador cambia al entrar.</li>
       <li>«Añadir el grupo» y «Descanso largo» pasan a la pantalla de Combate. Los grupos y facciones se siguen definiendo en Jugadores.</li>
@@ -5059,7 +5065,7 @@ function searchAll(ty,q,cat=''){
   const fq=fold(q),hit=n=>!fq||fold(n).includes(fq),out=[];
   if(ty==='conjuros'||ty==='todo')for(const s of SPELL_LIST)if(hit(s.n)||(s.en&&hit(s.en)))out.push({ty:'conjuros',k:'conjuros:'+s.n,n:s.n,en:s.en,sub:[spLevel(s.lv),SCHOOLS[s.sch],s.src!=='srd'&&(s.ab||s.book)].filter(Boolean).join(' · ')});
   for(const[tab] of CM_TABS)if(ty===tab||ty==='todo')for(const x of compList(tab))if((hit(x.n)||(tab==='reglas'&&x.cat&&hit(x.cat)))&&(!cat||(tab==='objetos'?x.k===cat:x.cat===cat)))out.push({ty:tab,k:tab+':'+x.n,n:x.n,sub:cmSub(tab,x)});
-  if(ty==='todo')for(const m of searchBest(q))out.push({ty:'criaturas',k:tkey(m),n:m.n,en:m.en,cr:m.cr,sub:`${tr(SIZE,m.sz||'')} · ${tr(TYPE,m.ty||'')}`});
+  if(ty==='todo'&&!esJug())for(const m of searchBest(q))out.push({ty:'criaturas',k:tkey(m),n:m.n,en:m.en,cr:m.cr,sub:`${tr(SIZE,m.sz||'')} · ${tr(TYPE,m.ty||'')}`});
   return out.sort((a,b)=>(fold(b.n).startsWith(fq)-fold(a.n).startsWith(fq))||a.n.localeCompare(b.n,'es'));
 }
 function renderBest(){
@@ -6346,7 +6352,7 @@ function compList(tab,todas){
   const camp=tab==='reglas'&&!todas?hbcLoad().map(x=>({n:String(x.n),cat:String(x.cat||'Homebrew'),tag:String(x.tag||''),d:String(x.d).slice(0,20000),ref:x.ref!==false,_src:'Homebrew de la campaña',_full:'Homebrew de la campaña',_camp:true,_html:false})):[];
   const mod=activeMods().sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mid:md.id,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   const by=new Map();for(const x of [...srd,...mod,...camp])by.set(fold(x.n),x);
-  return [...by.values()].filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
+  return [...by.values()].filter(x=>!(esJug()&&tab==='objetos'&&x.k==='magico')).filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
 }
 const cmTxt=v=>esc(String(v??''));
 const CM_COLS={
@@ -6509,6 +6515,7 @@ function extraAct(act,b,c,e){
     case 'pjinvadd':{const s=pjGet(pjSel),n=$('#pji-n'),q=$('#pji-q');if(!s||!n)break;pjCommit(Ficha.invAnadir(s.f,{n:n.value,q:q.value}),s);break;}
     case 'pjinvdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.invQuitar(s.f,b.dataset.id),s);break;}
     case 'pjaceptar':case 'pjrechazar':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.resolver(s.f,b.dataset.id,act==='pjaceptar',pjCtx()),s);break;}
+    case 'pjvisto':{try{Store.set(PJ_VISTO,String(Date.now()));}catch{}pjRender();pjAvisos();break;}
     case 'pjaceptartodo':case 'pjrechazartodo':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.resolverTodos(s.f,act==='pjaceptartodo',pjCtx()),s);break;}
     case 'pjretirar':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.retirar(s.real,b.dataset.id,pjCtx()),s);break;}
     case 'pjestado':{const s=pjGet(pjSel);if(!s)break;const r=Ficha.cambiarEstado(s.f,b.dataset.e,pjCtx());
@@ -6625,7 +6632,8 @@ function extraAct(act,b,c,e){
 /* ---------- páginas: #inicio, #jugadores, #criaturas y #conjuros ---------- */
 function showView(){
   const r=route();
-  if(r.page==='compendio'&&!r.tab){let k='criaturas';try{k=Store.get('cm-last')||k;}catch{}location.replace('#compendio/'+(CTABS.some(x=>x[0]===k)?k:'criaturas'));return;}
+  if(esJug()&&(JUG_NO.includes(viewOf(r))||(r.page==='compendio'&&r.tab==='criaturas'))){location.replace(r.page==='compendio'?'#compendio/conjuros':'#inicio');return;}
+  if(r.page==='compendio'&&!r.tab){let k=esJug()?'conjuros':'criaturas';try{k=Store.get('cm-last')||k;}catch{}location.replace('#compendio/'+(CTABS.some(x=>x[0]===k)?k:'criaturas'));return;}
   if(r.page==='compendio'){
     try{Store.set('cm-last',r.tab);}catch{}
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
@@ -6671,6 +6679,7 @@ function renderHome(){
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-comp').textContent=n?`${n} entradas`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
   {const n=COMP_SRD||!modOn('srd521')?compList('reglas').length:0;$('#hs-ref').textContent=n?`${n} reglas`:modOn('srd521')?'Reglas de 2024':'Activa el SRD 5.2.1';}
   {const n=compList('reglas',true).filter(x=>x._mine).length;$('#hs-hb').textContent=n?`${n} regla${n>1?'s':''}`:'Aún no hay ninguna';}
+  try{navRev();}catch{}
   {const h2=$('#hs-rv');if(h2){const n=pendAll().length;h2.textContent=n?n+' pendientes':'Nada pendiente';$('#hs-rvli').hidden=!n||Store.campaigns.rol()==='jugador';}}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
@@ -6768,7 +6777,7 @@ const viewOf=r=>r.page==='campana'&&(r.tab==='jugadores'||r.tab==='encuentros')?
 const curView=()=>viewOf(route());
 function renderCmNav(tab){
   const n={criaturas:allBest().length,conjuros:SPELL_LIST.length};for(const[k] of CM_TABS)n[k]=compList(k).length;
-  const html=CTABS.map(([k,l,i])=>`<a href="#compendio/${k}" role="tab" aria-selected="${k===tab}">${ic(i)} ${l}<span class="pcsub">${n[k]||''}</span></a>`).join('');
+  const html=ctabs().map(([k,l,i])=>`<a href="#compendio/${k}" role="tab" aria-selected="${k===tab}">${ic(i)} ${l}<span class="pcsub">${n[k]||''}</span></a>`).join('');
   document.querySelectorAll('[data-cmnav]').forEach(el=>el.innerHTML=html);
 }
 function safeApply(){
@@ -6776,7 +6785,36 @@ function safeApply(){
   if(b){b.setAttribute('aria-pressed',String(on));b.classList.toggle('on',on&&Store.campaigns.rol()!=='jugador');b.hidden=Store.campaigns.rol()==='jugador';}
   try{render();}catch(e){}try{refreshCompView();}catch(e){}try{if(!$('#bestmodal').hidden)renderBest();}catch(e){}
 }
-function navRev(){const a=$('#nav-rv');if(a)a.hidden=Store.campaigns.rol()==='jugador'||!pendAll().length;}
+/* ---- quien es jugador en la campaña: solo ve lo suyo y lo que no es spoiler (esto esconde y redirige; no es una barrera contra quien sepa abrir las herramientas del navegador) ---- */
+const esJug=()=>Store.campaigns.rol()==='jugador';
+const JUG_NO=['combate','encuentros','jugadores','mesa','tablas','modulos','revision'];   // pantallas que no son para el jugador
+const ctabs=()=>esJug()?CTABS.filter(x=>x[0]!=='criaturas'):CTABS;
+function jugNav(){
+  const j=esJug(),nav=document.querySelector('.pagenav');if(!nav)return;
+  nav.querySelectorAll('a[href]').forEach(a=>{const h=a.getAttribute('href').slice(1);if(JUG_NO.includes(h))a.hidden=j;});
+  let sep=null,vis=0;const cierra=()=>{if(sep)sep.hidden=!vis;};
+  for(const el of nav.children){if(el.classList.contains('navsep')){cierra();sep=el;vis=0;}else if(sep&&el.tagName==='A'&&!el.hidden&&el.getAttribute('href')!=='#revision')vis++;}
+  cierra();
+  document.querySelectorAll('#view-inicio a.ixr').forEach(a=>{const h=a.getAttribute('href').slice(1),li=a.closest('li');if(li&&(JUG_NO.includes(h)||h==='compendio/criaturas'))li.hidden=j;});
+}
+/* ---- avisos para el DM: lo que los jugadores han tocado en sus fichas ---- */
+const PJ_VISTO='pj-visto-v1';
+function pjCambios(){
+  let visto=0;try{visto=+Store.get(PJ_VISTO)||0;}catch{}
+  if(!pjCargado)pjLoad();
+  const ev=[];let pend=0;
+  for(const f of PJC){if(f.origen!=='campana')continue;pend+=f.pendientes.length;for(const r of f.registro)if(r.por==='Jugador')ev.push({f,r});}
+  ev.sort((a,b)=>b.r.t-a.r.t);
+  return {pend,ev,nuevos:ev.filter(x=>x.r.t>visto).length};
+}
+function pjAvisos(){
+  const dm=!esJug(),c=dm?pjCambios():{pend:0,nuevos:0},b=$('#nav-pjb');
+  if(b){b.hidden=!c.pend;b.textContent=c.pend||'';b.title=c.pend?c.pend+' '+T('cambios por aprobar'):'';}
+  const h=$('#hs-cambios');
+  if(h){const t=[];if(c.pend)t.push(c.pend+' '+T(c.pend===1?'cambio por aprobar':'cambios por aprobar'));if(c.nuevos)t.push(c.nuevos+' '+T(c.nuevos===1?'cambio nuevo de un jugador':'cambios nuevos de jugadores'));
+    h.innerHTML=t.length?'<b>'+esc(T('Cambios de jugadores'))+'</b><span class="pcsub">'+esc(t.join(' · '))+'</span><a class="btn primary" href="#personajes">'+esc(T('Revisar'))+'</a>':'';h.hidden=!t.length;}
+}
+function navRev(){const a=$('#nav-rv');if(a)a.hidden=esJug()||!pendAll().length;try{jugNav();}catch{}try{pjAvisos();}catch{}}
 document.addEventListener('click',e=>{const m=$('#navmore');if(!m||!m.open||document.documentElement.classList.contains('app-escritorio'))return;if(!e.target.closest('#navmore')||e.target.closest('.navmore-body .btn'))m.open=false;});
 document.addEventListener('keydown',e=>{const m=$('#navmore');if(e.key==='Escape'&&m&&m.open&&!document.documentElement.classList.contains('app-escritorio')){m.open=false;m.querySelector('summary').focus();}});
 setTimeout(()=>{try{safeApply();}catch(e){}try{imCarga();}catch(e){}try{if(document.documentElement.classList.contains('app-escritorio'))$('#navmore').open=true;}catch(e){}try{navRev();}catch(e){}},0);
@@ -7069,13 +7107,22 @@ function pjChip(c){
   return c.campana===Store.campaigns.active()?'<a class="'+cls+' noi18n" href="#personajes/'+esc(f.id)+'">'+esc(txt)+'</a>'
     :'<button type="button" class="'+cls+' noi18n" data-act="pjircamp" data-camp="'+esc(c.campana)+'" data-id="'+esc(f.id)+'">'+esc(txt)+'</button>';
 }
+function pjCambiosHTML(){
+  if(esJug())return '';
+  const c=pjCambios();if(!c.ev.length&&!c.pend)return '';
+  let visto=0;try{visto=+Store.get(PJ_VISTO)||0;}catch{}
+  return '<div class="pjbox pjcambios"><h3>'+esc(T('Cambios de los jugadores'))+(c.pend?' <span class="pjtag pjtag-pend">'+c.pend+' '+esc(T('por aprobar'))+'</span>':'')+'</h3>'
+   +(c.ev.length?'<ul class="pjlist">'+c.ev.slice(0,12).map(x=>'<li'+(x.r.t>visto?' class="nuevo"':'')+'><span style="flex:1 1 240px;min-width:0"><small class="pcsub noi18n">'+esc(new Date(x.r.t).toLocaleString())+'</small><br><a href="#personajes/'+esc(x.f.id)+'" class="noi18n">'+esc(x.f.nombre)+'</a>: <span class="noi18n">'+esc(x.r.a+(x.r.d?' · '+x.r.d:''))+'</span></span></li>').join('')+'</ul>'
+     +(c.nuevos?'<button type="button" class="btn sm" data-act="pjvisto">'+esc(T('Marcar como vistos'))+'</button>':''):'')
+   +'</div>';
+}
 function pjListHTML(){
   grpSync();
   const crit=pjCriterio(),activos=PJC.filter(f=>f.estado==='activo'),baja=PJC.filter(f=>f.estado!=='activo');
   const t=Ficha.arbol(PJ,pjGruposCamp());
   return '<div class="pjsec"><h3>'+esc(T('En esta campaña'))+' <span class="pcsub noi18n">'+esc(Store.campaigns.activeName()||'')+'</span>'
    +'<label>'+esc(T('Las subidas de nivel se dan por'))+' <select data-pjcfg><option value="hito"'+(crit==='hito'?' selected':'')+'>'+esc(T('Hito'))+'</option><option value="xp"'+(crit==='xp'?' selected':'')+'>'+esc(T('Experiencia'))+'</option></select></label></h3>'
-   +(PJROL==='dm'?pjPermisosHTML():'')
+   +(PJROL==='dm'?pjCambiosHTML()+pjPermisosHTML():'')
    +(activos.length?'<div class="pjgrid">'+activos.map(f=>pjCard(f)).join('')+'</div>':'<p class="pcsub">'+esc(T('Aún no hay personajes en esta campaña.'))+'</p>')
    +(baja.length?'<details class="pjbaja"><summary>'+esc(T('Caídos y retirados'))+' ('+baja.length+')</summary><div class="pjgrid">'+baja.map(f=>pjCard(f)).join('')+'</div></details>':'')+'</div>'
    +'<div class="pjsec"><h3>'+esc(T('Mis personajes'))+' <span class="pcsub">'+esc(T('Tu versión base de cada personaje; al meterlo en una campaña se crea una copia con progreso propio'))+'</span></h3>'
@@ -8633,6 +8680,7 @@ function scApply(r){
   if(nH){if(!$('#view-referencia').hidden)renderRef();if(!$('#view-homebrew').hidden)renderHB();renderHome();}
   if(nCP||nE||nP||nF||nG||nC){
     if(nP||nF)grpSync();
+    try{pjAvisos();}catch{}
     if(!$('#view-campana').hidden)renderCampana();if(!$('#view-encuentros').hidden)epRender();if(!$('#view-jugadores').hidden)renderParty();if(!$('#view-personajes').hidden)pjRender();renderEnc();
   }
 }
