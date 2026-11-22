@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.69.0] - 2026-11-22
+### Añadido
+- **Manuales por campaña**: la configuración de la campaña guarda qué manuales se le aplican (panel «Manuales de esta campaña» en Módulos). Sin ajuste valen todos los activados en la cuenta, como hasta ahora. Quitar un manual lo oculta de esa campaña (criaturas, conjuros, compendio, referencia, buscador y tablas del módulo) sin desactivarlo en la cuenta. Solo el DM cambia la selección; los jugadores la reciben con la campaña. Los manuales y módulos se siguen activando o desactivando en la cuenta como siempre.
+
 ## [1.68.0] - 2026-11-22
 ### Añadido
 - **Las reglas homebrew llegan a los jugadores**: el DM publica con la campaña las reglas que tiene activas (clave `hb:`), y los jugadores las reciben como copia de solo lectura. Les salen en la Referencia rápida (respetando «Añadir a la referencia rápida»), en el Compendio y en el buscador de esa campaña, con la etiqueta Homebrew. Un jugador no ve en esa campaña sus propias reglas, solo las del DM.
