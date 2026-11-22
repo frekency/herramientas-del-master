@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.77.0] - 2026-11-22
+### Añadido
+- La criatura del SRD que se conserva toma el token y la imagen del manual si no los tenía. Herramientas privadas para descargar y reducir los tokens de 5e.tools (tools/mm_imagenes.py, tools/mm_tokens.py).
+
 ## [1.76.0] - 2026-11-22
 ### Cambiado
 - La misma criatura en varios manuales: manda la ya revisada (si no, la primera); las demás solo dan su etiqueta.
