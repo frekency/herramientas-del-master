@@ -2709,6 +2709,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cprow.hd{font-size:12px;color:var(--muted)}.cprow.hd span:nth-child(1){flex:1}.cprow.hd span:nth-child(2),.cprow.hd span:nth-child(3){flex:0 0 90px}.cprow.hd span:nth-child(4){width:36px}
 .cpimgbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cpimg{max-width:200px;max-height:200px;padding:7px 7px 26px;background:#fffdf6;border:1px solid var(--line);border-radius:2px;box-shadow:0 2px 6px #0003;transform:rotate(-1.6deg);object-fit:cover}
 .cpcr{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.hbtag{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid #a0522d;color:#a0522d;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle;white-space:nowrap}
+:root[data-theme="dark"] .hbtag{color:#e0a070;border-color:#e0a070}
+.hbcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 8px}.hbcard summary{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;cursor:pointer}.hbcard .hbref{margin-left:auto;display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted)}.hbbody{padding:0 14px 14px}
 .cpst{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .cpst h4{margin:0;font-family:var(--f-display);font-size:19px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--accent)}
 .cpst4{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
@@ -2894,7 +2897,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.65</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Campaña</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes</a><span class="navsep">Herramientas</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><span class="navsep">Consulta</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#cambios" class="navver" title="Historial de cambios">v1.66</a><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -2910,6 +2913,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <li><a class="ixr" href="#jugadores"><span class="ixn">Gestión de jugadores</span><span class="ixs" id="hs-party"></span><span class="ixd">Fichas del grupo con ataques, conjuros y espacios. Los PG se conservan entre combates.</span></a></li>
     <li><a class="ixr" href="#tablas"><span class="ixn">Tablas aleatorias</span><span class="ixs" id="hs-tables"></span><span class="ixd">Crea tablas de d20, d80 o lo que quieras: nombres, botín, encuentros… Se tira por columna y se combina con tu formato.</span></a></li>
     <li><a class="ixr" href="#referencia"><span class="ixn">Referencia rápida</span><span class="ixs" id="hs-ref"></span><span class="ixd">Acciones, estados, cobertura, movimiento, visión, viajes… Las reglas de 2024 de un vistazo, cada una con su explicación.</span></a></li>
+    <li><a class="ixr" href="#homebrew"><span class="ixn">Reglas homebrew</span><span class="ixs" id="hs-hb"></span><span class="ixd">Tus propias reglas, con su categoría y la etiqueta Homebrew. Añade las que quieras a la referencia rápida.</span></a></li>
   </ol>
   <div class="vhead tools-h"><h2>Compendio</h2><span class="pcsub">Todo el contenido de tus módulos, cada cosa con su página</span></div>
   <ol class="ix">
@@ -2953,6 +2957,13 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <p class="modline">Reglas de 2024 (SRD 5.2.1). Pulsa una tarjeta para ver la regla completa. Todas están también en <a href="#compendio/reglas"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio › Reglas</a>, con su propia página.</p>
   <div class="bfilters"><input id="qr-q" placeholder="Filtrar por nombre o texto" aria-label="Filtrar reglas"><select id="qr-cat" aria-label="Categoría"></select></div>
   <div id="qr-body"></div>
+</section>
+
+<section class="vpage" id="view-homebrew" hidden>
+  <div class="vhead"><h2>Reglas homebrew</h2><span class="pcsub" id="hb-count"></span><button type="button" class="btn primary" data-act="itnew" data-ty="reglas" style="margin-left:auto">+ Nueva regla</button></div>
+  <p class="modline">Tus reglas de la casa. Cada una lleva la etiqueta <span class="hbtag">Homebrew</span> y puede tener la categoría que quieras. Marca las que quieras ver en la <a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia rápida</a>. Si le pones el mismo nombre que una regla del SRD, la tuya la sustituye.</p>
+  <div class="bfilters"><input id="hb-q" placeholder="Filtrar por nombre o texto" aria-label="Filtrar reglas homebrew"><select id="hb-cat" aria-label="Categoría"></select></div>
+  <div id="hb-body"></div>
 </section>
 
 <section class="vpage" id="view-ficha" hidden>
@@ -3074,6 +3085,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.66 <span>22 nov 2026</span></h3><ul>
+      <li><b>Reglas homebrew</b>: sección nueva con tus reglas de la casa. Cada una lleva la etiqueta <b>Homebrew</b> (en la sección, en el Compendio y en la referencia) y la categoría que elijas, o la propia categoría «Homebrew».</li>
+      <li>Cada regla se puede <b>añadir o quitar de la Referencia rápida</b> con un botón o desde el editor.</li>
+    </ul></li>
     <li><h3>v1.65 <span>22 nov 2026</span></h3><ul>
       <li><b>Rasgos de clase en el Compendio</b>: nueva pestaña con cada rasgo de las 12 clases, de sus subclases y las opciones (invocaciones, metamagia…), con su clase y nivel. Se filtran por clase y tipo, y también salen en el buscador (tecla B).</li>
       <li><b>Pergamino de conjuro</b>: el objeto mágico y el de equipo compartían nombre y uno tapaba al otro. El de equipo pasa a «Pergamino de conjuro (truco o nivel 1)».</li>
@@ -4867,7 +4882,7 @@ const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Do
 let bTy=(()=>{try{return Store.get('b-ty')||'todo';}catch{return 'todo';}})();
 const bTyOf=k=>{const p=String(k||'').split(':')[0];return TY_ONE[p]&&p!=='criaturas'?p:'criaturas';};
 function cmSub(tab,x){
-  const s=tab==='objetos'?[x.t||OBJ_KIND[x.k],x.r,x.precio]:tab==='dotes'?[x.cat&&'Dote '+(fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()),x.req]:tab==='clases'?[(x.info?.['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,''),x.info?.['Característica principal']]:tab==='reglas'?[x.cat]:tab==='rasgos'?[x.cls+(x.sub?': '+x.sub:''),x.nv?'nivel '+x.nv:'opción']:tab==='especies'?[String(x.tam||'').replace(/\s*\(.*?\)/g,''),x.vel]:[x.dote];
+  const s=tab==='objetos'?[x.t||OBJ_KIND[x.k],x.r,x.precio]:tab==='dotes'?[x.cat&&'Dote '+(fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()),x.req]:tab==='clases'?[(x.info?.['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,''),x.info?.['Característica principal']]:tab==='reglas'?[x.cat,x._mine&&'Homebrew']:tab==='rasgos'?[x.cls+(x.sub?': '+x.sub:''),x.nv?'nivel '+x.nv:'opción']:tab==='especies'?[String(x.tam||'').replace(/\s*\(.*?\)/g,''),x.vel]:[x.dote];
   return [...s,x._src!=='SRD 5.2.1'&&x._src].filter(Boolean).join(' · ');
 }
 function bItem(k){
@@ -5991,7 +6006,7 @@ const CM_COLS={
   rasgos:[['Nombre',x=>cmTxt(x.base||x.n)+goA(cmTab,x.n)],['Clase',x=>cmTxt(x.cls+(x.sub?': '+x.sub:''))],['Nivel',x=>cmTxt(x.nv??'—')],['Tipo',x=>cmTxt(x.tipo||'')]],
   especies:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tamaño',x=>cmTxt(String(x.tam||'').replace(/\s*\(.*?\)/g,''))],['Velocidad',x=>cmTxt(x.vel||'')]],
   trasfondos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Características',x=>cmTxt(x.car||'')],['Dote',x=>cmTxt(x.dote||'')],['Habilidades',x=>cmTxt(x.hab||'')]],
-  reglas:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Resumen',x=>cmTxt(ruleSum(x))]]
+  reglas:[['Nombre',x=>cmTxt(x.n)+(x._mine?' <span class="hbtag">Homebrew</span>':'')+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Resumen',x=>cmTxt(ruleSum(x))]]
 };
 function cmFilters(list){
   const f1=$('#cm-f1'),f2=$('#cm-f2'),fu=$('#cm-fu'),keep=(sel,html)=>{const v=sel.value;sel.innerHTML=html;sel.value=[...sel.options].some(o=>o.value===v)?v:'';};
@@ -6021,7 +6036,7 @@ function renderCompendio(){
   $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc(x._src)}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 function cmBody(x,tab=cmTab){
-  const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):'';
+  const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):tab==='reglas'&&x._mine?'Regla homebrew':'';
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):tab==='rasgos'?[['Clase',x.cls],['Subclase',x.sub],['Nivel',x.nv]]:[];
   const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')));
   return `<div class="cmbody">${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
@@ -6043,6 +6058,7 @@ function extraAct(act,b,c,e){
   if(act.startsWith('tb')){tbAct(act,b);return;}
   if(act.startsWith('gv')){gvAct(act,b);return;}
   if(act.startsWith('grp')){grpAct(act,b);return;}
+  if(act==='hbref'){hbAct(act,b);return;}
   if(act.startsWith('it')){itAct(act,b);return;}
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
@@ -6260,7 +6276,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','homebrew','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
@@ -6275,6 +6291,7 @@ function showView(){
   if(r.page==='compendio'){if(v2==='conjuros')fillSpellFilters();refreshCompView();}
   if(v2==='tablas')renderTables();
   if(v2==='referencia')renderRef();
+  if(v2==='homebrew')renderHB();
   if(v2==='modulos'){renderMods();loadCatalog();}
   if(v2==='campana')campPrimera();
   if(v2==='mesa')msRender();
@@ -6297,6 +6314,7 @@ function renderHome(){
   {const n=OFFICIAL_FREE.filter(o=>modOn(o.id)).length+activeMods().length;$('#hs-mods').textContent=n?`${n} activado${n>1?'s':''}`:'Ninguno activado';$('#hs-nomods').hidden=n>0;}
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-comp').textContent=n?`${n} entradas`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
   {const n=COMP_SRD||!modOn('srd521')?compList('reglas').length:0;$('#hs-ref').textContent=n?`${n} reglas`:modOn('srd521')?'Reglas de 2024':'Activa el SRD 5.2.1';}
+  {const n=compList('reglas').filter(x=>x._mine).length;$('#hs-hb').textContent=n?`${n} regla${n>1?'s':''}`:'Aún no hay ninguna';}
   $('#hs-tables').textContent=TABLES.length?`${TABLES.length} tabla${TABLES.length>1?'s':''}`:'Sin tablas';
   $('#hs-spells').textContent=SPELL_LIST.length?`${SPELL_LIST.length} conjuros`:'Sin conjuros cargados';
 }
@@ -7372,13 +7390,13 @@ function ruleLinks(h){
   const names=new Set(compList('reglas').map(x=>fold(x.n)));
   return h.replace(/“([^”<]{2,60})”/g,(m,n)=>names.has(fold(n))?`“<a href="${fichaHref('reglas',n)}">${n}</a>”`:m);
 }
-const QR_SECS=[['Acciones','sword','#c0392b'],['Turno y reacciones','hourglass','#d35400'],['Estados','spiral','#8e44ad'],['Combate','target','#b03a2e'],['Daño y curación','heart','#c2185b'],['Movimiento','move','#2e86c1'],['Visión y luz','eye','#b7950b'],['Áreas de efecto','area','#16a085'],['Exploración','compass','#27ae60'],['Peligros','warn','#ca6f1e'],['Pruebas y tiradas','d20','#5d6d7e'],['Magia','sparkle','#6c3483'],['Interacción social','speech','#117a65']];
+const QR_SECS=[['Homebrew','tool','#a0522d'],['Acciones','sword','#c0392b'],['Turno y reacciones','hourglass','#d35400'],['Estados','spiral','#8e44ad'],['Combate','target','#b03a2e'],['Daño y curación','heart','#c2185b'],['Movimiento','move','#2e86c1'],['Visión y luz','eye','#b7950b'],['Áreas de efecto','area','#16a085'],['Exploración','compass','#27ae60'],['Peligros','warn','#ca6f1e'],['Pruebas y tiradas','d20','#5d6d7e'],['Magia','sparkle','#6c3483'],['Interacción social','speech','#117a65']];
 const QR_ICON={Atacar:'sword','Acción':'focus',Iniciativa:'d20',Sorpresa:'burst','Tu turno':'hourglass','Dividir el movimiento':'move',Ayudar:'people',Buscar:'search',Correr:'wind',Destrabarse:'disengage',Esconderse:'fog',Esquivar:'shield',Estudiar:'book',Influir:'speech',Magia:'sparkle','Preparar una acción':'hourglass',Utilizar:'tool',Agarrado:'grab',Apresado:'chain',Asustado:'scared',Aturdido:'daze',Cansancio:'battery',Cegado:'eyeoff',Derribado:'down',Ensordecido:'mute',Envenenado:'flask',Hechizado:'heart',Incapacitado:'ban',Inconsciente:'zzz',Invisible:'ghost',Paralizado:'snow',Petrificado:'rock','Acción adicional':'plusc',Reacción:'undo','Ataques de oportunidad':'bolt',Cobertura:'wall',Crítico:'burst',Concentración:'focus','Descanso corto':'cup','Descanso largo':'moon',Ventaja:'up',Desventaja:'down',Cono:'cone',Esfera:'sphere',Cubo:'box',Cilindro:'cyl',Línea:'line',Emanación:'emanate',Saltar:'jump',Trepar:'ladder',Nadar:'wave',Volar:'feather','Terreno difícil':'rubble','Ritmo de viaje':'map',Fuego:'fire',Asfixia:'bubbles',Caídas:'fall'};
 // Mismos iconos para los nombres de las reglas en inglés, francés, alemán e italiano
 Object.assign(QR_ICON,{Attack:'sword',Attaque:'sword',Action:'focus',Initiative:'d20',Surprise:'burst','Your Turn':'hourglass','Votre tour':'hourglass','Breaking Up Your Move':'move','Scinder son déplacement':'move',Help:'people',Soutien:'people',Search:'search',Observation:'search',Dash:'wind',Pointe:'wind',Disengage:'disengage',Désengagement:'disengage',Hide:'fog',Furtivité:'fog',Dodge:'shield',Esquive:'shield',Study:'book',Étude:'book',Influence:'speech',Magic:'sparkle',Magie:'sparkle',Ready:'hourglass',Intention:'hourglass',Utilize:'tool',Utilisation:'tool',Grappled:'grab',Agrippé:'grab',Restrained:'chain',Entravé:'chain',Frightened:'scared',Effrayé:'scared',Stunned:'daze',Étourdi:'daze',Exhaustion:'battery',Épuisement:'battery',Blinded:'eyeoff',Aveuglé:'eyeoff',Prone:'down','À terre':'down',Deafened:'mute',Assourdi:'mute',Poisoned:'flask',Empoisonné:'flask',Charmed:'heart',Charmé:'heart',Incapacitated:'ban',Neutralisé:'ban',Unconscious:'zzz',Inconscient:'zzz',Paralyzed:'snow',Paralysé:'snow',Petrified:'rock',Pétrifié:'rock','Bonus Action':'plusc','Action Bonus':'plusc',Reaction:'undo',Réaction:'undo','Opportunity Attacks':'bolt','Attaques d’Opportunité':'bolt',Cover:'wall',Abris:'wall','Critical Hit':'burst','Coup critique':'burst',Concentration:'focus','Short Rest':'cup','Repos court':'cup','Long Rest':'moon','Repos long':'moon',Advantage:'up',Avantage:'up',Disadvantage:'down',Désavantage:'down',Cone:'cone',Cône:'cone',Sphere:'sphere',Sphère:'sphere',Cube:'box',Cylinder:'cyl',Cylindre:'cyl',Line:'line',Ligne:'line',Emanation:'emanate',Émanation:'emanate',Jumping:'jump',Saut:'jump',Climbing:'ladder',Escalade:'ladder',Swimming:'wave',Nage:'wave',Flying:'feather',Vol:'feather','Difficult Terrain':'rubble','Terrain difficile':'rubble','Travel Pace':'map','Allure de voyage':'map',Burning:'fire',Embrasement:'fire',Suffocation:'bubbles',Asphyxie:'bubbles',Falling:'fall',Chute:'fall',Angriff:'sword',Aktion:'focus',Überraschung:'burst','Dein Zug':'hourglass','Deine Bewegung aufteilen':'move',Helfen:'people',Suchen:'search',Spurt:'wind',Rückzug:'disengage',Verstecken:'fog',Ausweichen:'shield',Studieren:'book',Beeinflussen:'speech',Vorbereiten:'hourglass',Verwenden:'tool',Gepackt:'grab',Festgesetzt:'chain',Verängstigt:'scared',Betäubt:'daze',Erschöpfung:'battery',Blind:'eyeoff',Liegend:'down',Taub:'mute',Vergiftet:'flask',Bezaubert:'heart',Kampfunfähig:'ban',Bewusstlos:'zzz',Unsichtbar:'ghost',Gelähmt:'snow',Versteinert:'rock',Bonusaktion:'plusc',Reaktion:'undo',Gelegenheitsangriffe:'bolt',Deckung:'wall','Kritischer Treffer':'burst',Konzentration:'focus','Kurze Rast':'cup','Lange Rast':'moon',Vorteil:'up',Nachteil:'down',Kegel:'cone',Kugel:'sphere',Würfel:'box',Zylinder:'cyl',Linie:'line',Ausströmung:'emanate',Springen:'jump',Klettern:'ladder',Schwimmen:'wave',Fliegen:'feather','Schwieriges Gelände':'rubble',Reisegeschwindigkeit:'map',Brand:'fire',Erstickung:'bubbles',Sturz:'fall',Attacco:'sword',Azione:'focus',Iniziativa:'d20','Il turno di un personaggio':'hourglass','Spezzare il proprio movimento':'move',Aiuto:'people',Ricerca:'search',Scatto:'wind',Disimpegno:'disengage',Nascondersi:'fog',Schivata:'shield',Studio:'book',Influenza:'speech',Prepararsi:'hourglass',Utilizzo:'tool',Afferrato:'grab',Trattenuto:'chain',Spaventato:'scared',Stordito:'daze',Indebolimento:'battery',Accecato:'eyeoff',Prono:'down',Assordato:'mute',Avvelenato:'flask',Affascinato:'heart',Incapacitato:'ban','Privo di sensi':'zzz',Invisibile:'ghost',Paralizzato:'snow',Pietrificato:'rock','Azione bonus':'plusc',Reazione:'undo','Attacchi di opportunità':'bolt',Copertura:'wall','Colpo critico':'burst',Concentrazione:'focus','Riposo breve':'cup','Riposo lungo':'moon',Vantaggio:'up',Svantaggio:'down',Sfera:'sphere',Linea:'line',Emanazione:'emanate',Saltare:'jump',Scalare:'ladder',Nuotare:'wave',Volare:'feather','Terreno difficile':'rubble','Passo di viaggio':'map','In fiamme':'fire',Soffocamento:'bubbles',Caduta:'fall'});
 function renderRef(){
   compLoad();
-  const all=compList('reglas'),sel=$('#qr-cat');
+  const all=compList('reglas').filter(x=>!(x._mine&&x.ref===false)),sel=$('#qr-cat');
   if(!all.length){$('#qr-count').textContent='';$('#qr-body').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando las reglas…</div>':'<div class="empty">Activa el SRD 5.2.1 en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a> para ver la referencia rápida.</div>';return;}
   if(sel.options.length<=1)sel.innerHTML='<option value="">Todas las categorías</option>'+QR_SECS.map(([c])=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
   const q=fold($('#qr-q').value),cat=sel.value;
@@ -7386,13 +7404,32 @@ function renderRef(){
   let n=0;
   $('#qr-body').innerHTML=QR_SECS.filter(([c])=>!cat||c===cat).map(([c,si,col])=>{
     const L=all.filter(x=>x.cat===c&&hit(x));n+=L.length;if(!L.length)return '';
-    return `<section class="qrsec"><h3>${ic(si)} ${esc(c)} <span class="pcsub">${L.length}</span></h3><div class="qrgrid">${L.map(x=>`<button type="button" class="qrcard" data-qr="${esc(x.n)}" style="--qc:${col}"><span class="qi">${ic(QR_ICON[x.n]||si)}</span><span class="qt">${esc(x.n)}</span><span class="qs">${esc(ruleSum(x))}</span></button>`).join('')}</div></section>`;
+    return `<section class="qrsec"><h3>${ic(si)} ${esc(c)} <span class="pcsub">${L.length}</span></h3><div class="qrgrid">${L.map(x=>`<button type="button" class="qrcard" data-qr="${esc(x.n)}" style="--qc:${col}"><span class="qi">${ic(QR_ICON[x.n]||si)}</span><span class="qt">${esc(x.n)}${x._mine?' <span class="hbtag">Homebrew</span>':''}</span><span class="qs">${esc(ruleSum(x))}</span></button>`).join('')}</div></section>`;
   }).join('')||'<div class="empty">Nada coincide.</div>';
   $('#qr-count').textContent=`${n} reglas`;
 }
+function renderHB(){
+  compLoad();
+  const all=compList('reglas').filter(x=>x._mine),sel=$('#hb-cat');
+  const cats=[...new Set(all.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG)),v=sel.value;
+  sel.innerHTML='<option value="">Todas las categorías</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');sel.value=cats.includes(v)?v:'';
+  const q=fold($('#hb-q').value),cat=sel.value;
+  const L=all.filter(x=>(!cat||x.cat===cat)&&(!q||fold(x.n).includes(q)||fold(String(x.d||'')).includes(q)));
+  $('#hb-count').textContent=all.length+(all.length===1?' regla':' reglas');
+  $('#hb-body').innerHTML=L.length?L.map(x=>{const en=x.ref!==false;
+    return '<details class="hbcard"><summary><b>'+esc(x.n)+'</b> <span class="hbtag">Homebrew</span><span class="pcsub">'+esc(x.cat||'')+'</span>'+(en?'<span class="hbref" title="Sale en la referencia rápida">'+ic('list')+' '+esc(T('En la referencia'))+'</span>':'')+'</summary>'
+      +'<div class="hbbody">'+cmBody(x,'reglas')+'<div class="gvbar"><button type="button" class="btn" data-act="hbref" data-n="'+esc(x.n)+'">'+esc(T(en?'Quitar de la referencia rápida':'Añadir a la referencia rápida'))+'</button><button type="button" class="btn" data-act="itedit" data-ty="reglas" data-n="'+esc(x.n)+'">Editar</button><button type="button" class="btn danger" data-act="itdel" data-ty="reglas" data-n="'+esc(x.n)+'" data-confirm>Borrar</button></div></div></details>';}).join('')
+    :'<div class="empty">'+(all.length?'Nada coincide.':'Aún no hay reglas homebrew. Pulsa «+ Nueva regla» para crear la primera.')+'</div>';
+}
+for(const id of ['#hb-q','#hb-cat'])$(id).addEventListener('input',renderHB);
+function hbAct(act,b){
+  if(act!=='hbref')return;
+  const md=myMod(false),x=md&&(md.reglas||[]).find(y=>fold(y.n)===fold(b.dataset.n));if(!x)return;
+  x.ref=x.ref===false;saveMods();refreshMods();renderHB();toast(x.ref?'«'+x.n+'» sale ahora en la referencia rápida':'«'+x.n+'» ya no sale en la referencia rápida');
+}
 function openRule(n){
   const x=compFind('reglas',n);if(!x)return;
-  $('#qr-h').innerHTML=`${esc(x.n)}<span class="pcsub">${esc(x.cat||'')}</span>`;
+  $('#qr-h').innerHTML=`${esc(x.n)}${x._mine?' <span class="hbtag">Homebrew</span>':''}<span class="pcsub">${esc(x.cat||'')}</span>`;
   $('#qr-mbody').innerHTML=`<div class="sb" data-who="${esc(x.n)}">${cmBody(x,'reglas')}</div>${goP('reglas',x.n)}`;
   $('#qrmodal').hidden=false;syncModalOpen();
 }
@@ -7410,7 +7447,7 @@ const IT_FIELDS={
   clases:[['sub','Subclases (con comas)'],['info','Atributos básicos (una línea por atributo: «Clave: valor»)','area']],
   especies:[['tipo','Tipo de criatura','Humanoide'],['tam','Tamaño','Mediano'],['vel','Velocidad','9 m']],
   trasfondos:[['car','Puntuaciones de característica'],['dote','Dote'],['hab','Competencias en habilidades'],['herr','Competencia con herramientas'],['equipo','Equipo']],
-  reglas:[['cat','Categoría',[...QR_SECS.map(([c])=>[c,c]),['General','General']]],['tag','Etiqueta','estado, acción…']]
+  reglas:[['cat','Categoría',[...QR_SECS.map(([c])=>[c,c]),['General','General']]],['tag','Etiqueta','estado, acción…'],['ref','Añadir a la referencia rápida','bool']]
 };
 let itTab='',itOld=null;
 function myMod(make=true){
@@ -7430,7 +7467,7 @@ function openItem(ty,x,mode){
   $('#it-n').value=x?x.n:'';
   const val=k=>{if(!x)return '';const v=x[k];if(k==='cls'||k==='sub')return (v||[]).join(', ');if(k==='info')return Object.entries(v||{}).map(([a,b])=>`${a}: ${b}`).join('\n');return v??'';};
   $('#it-fields').innerHTML=IT_FIELDS[ty].map(([k,l,o])=>{
-    if(o==='bool')return `<label class="f"><span>${l}</span><input type="checkbox" id="it-f-${k}" ${x&&x[k]?'checked':''} style="width:auto"></label>`;
+    if(o==='bool')return `<label class="f"><span>${l}</span><input type="checkbox" id="it-f-${k}" ${x&&(x[k]||(k==='ref'&&x._mine&&x.ref===undefined))?'checked':''} style="width:auto"></label>`;
     if(o==='area')return `<label class="f" style="grid-column:1/-1">${l}<textarea id="it-f-${k}" rows="6">${esc(val(k))}</textarea></label>`;
     if(Array.isArray(o))return `<label class="f">${l}<select id="it-f-${k}">${o.map(([v,t])=>`<option value="${esc(v)}" ${String(val(k))===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
     return `<label class="f${k==='t'||k==='equipo'||k==='cls'?' w2':''}">${l}<input id="it-f-${k}" value="${esc(val(k))}" placeholder="${esc(o||'')}"></label>`;
@@ -7448,7 +7485,7 @@ $('#itform').addEventListener('submit',e=>{
     if(k==='lv')v=+v;
     if(k==='cls'||k==='sub')v=v?v.split(',').map(s=>s.trim()).filter(Boolean):[];
     if(k==='info')v=Object.fromEntries(v.split('\n').map(l=>l.split(/:\s*/)).filter(a=>a[0]&&a.length>1).map(([a,...b])=>[a.trim(),b.join(': ').trim()]));
-    if(v!==''&&v!==false&&!(Array.isArray(v)&&!v.length))x[k]=v;
+    if(k==='ref'||(v!==''&&v!==false&&!(Array.isArray(v)&&!v.length)))x[k]=v;
   }
   x.d=$('#it-d').value.trim();
   if(ty==='conjuros'){x.cls=x.cls||[];x.en=x.en||'';x.lv=x.lv||0;}
@@ -7459,6 +7496,7 @@ $('#itform').addEventListener('submit',e=>{
   md.on=true;saveMods();refreshMods();
   $('#itmodal').hidden=true;syncModalOpen();
   toast(`«${n}» guardado en Mi contenido`);
+  if(curView()==='homebrew'){renderHB();return;}
   const h=fichaHref(ty,n);if(!$('#bestmodal').hidden){bSel=ty+':'+n;renderBest();}else if(location.hash!==h)location.hash=h;else refreshCompView();
 });
 function itAct(act,b){
@@ -7471,7 +7509,7 @@ function itAct(act,b){
   if(act==='itdel'){
     const md=myMod(false);if(!md)return;md[ty]=(md[ty]||[]).filter(y=>fold(y.n)!==fold(x.n));saveMods();refreshMods();
     toast(`«${x.n}» borrado de Mi contenido`);
-    if(curView()==='ficha'){const o=itFind(ty,x.n);if(o)refreshCompView();else location.hash='#compendio/'+ty;}else{refreshCompView();if(!$('#bestmodal').hidden)renderBest();}
+    if(curView()==='homebrew')renderHB();else if(curView()==='ficha'){const o=itFind(ty,x.n);if(o)refreshCompView();else location.hash='#compendio/'+ty;}else{refreshCompView();if(!$('#bestmodal').hidden)renderBest();}
   }
 }
 

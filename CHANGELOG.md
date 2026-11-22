@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.66.0] - 2026-11-22
+### Añadido
+- **Sección «Reglas homebrew»** (menú Herramientas y portada): lista, filtra, crea, edita y borra tus reglas de la casa. Todas llevan la etiqueta **Homebrew**, con la categoría que quieras o la nueva categoría «Homebrew».
+- **Añadir a la Referencia rápida**: casilla en el editor y botón en la sección. Las reglas propias que no quieras ver ahí se pueden quitar; las que ya tenías siguen saliendo hasta que lo cambies.
+- La etiqueta Homebrew también sale en el Compendio › Reglas, en las tarjetas de la referencia y en su ventana.
+
 ## [1.65.1] - 2026-11-22
 ### Corregido
 - El **pergamino de conjuro** (objeto mágico) quedaba oculto por el del equipo de aventurero, que tenía el mismo nombre. El de equipo pasa a «Pergamino de conjuro (truco o nivel 1)».
