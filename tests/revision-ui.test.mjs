@@ -22,6 +22,10 @@ const TAIL=`<script>
     mods().list.push({id:"mm",n:"Manual de Monstruos 2024",ab:"MM2024",on:true,criaturas:[{n:"Gnomo de prueba",sz:"Small",ty:"Humanoid",cr:"1",ac:12,hp:10,ab:[8,12,10,10,10,10],sv:[-1,1,0,0,0,0],pend:true,dudas:["PG no cuadra"]},{n:"Orco sano",sz:"Medium",ty:"Humanoid",cr:"1",ac:13,hp:15,ab:[16,12,16,7,11,10],sv:[3,1,3,-2,0,0]}],objetos:[{n:"Cuerda mágica",k:"magico",d:"Una cuerda.",pend:true}]});
     saveMods();refreshMods();
     ok("hay 2 pendientes",pendAll().length===2);
+    {const o=document.getElementById("rv-o");o.value="az";o.dispatchEvent(new Event("change",{bubbles:true}));await wait(200);
+     const nombres=[...document.querySelectorAll("#rv-list .pendbar")].length;
+     ok("elegir orden actualiza la lista sin pulsar nada y deja elegir la categoría",nombres>=1&&!!document.getElementById("rv-ty")&&document.getElementById("rv-mod").options.length>=1);
+     o.value="azar";o.dispatchEvent(new Event("change",{bubbles:true}));await wait(100);}
     ok("el menú muestra Revisión cuando hay pendientes",!document.getElementById("nav-rv").hidden);
     ok("el menú «Más» guarda audio, modo seguro, bloqueo y preferencias",["aud-btn","safe-btn","lock-btn"].every(id=>document.getElementById(id).closest("#navmore"))&&!!document.querySelector("#navmore [data-act=pfopen]"));
     location.hash="#revision";await wait(500);
@@ -63,6 +67,6 @@ testNav('revisión de lo importado',{skip:!BROWSER&&'no hay Edge ni Chrome',time
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=10,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=11,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

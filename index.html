@@ -44,7 +44,10 @@ window.Store=(()=>{
     // Lee una clave de otra campaña (solo lectura): el listado global de personajes enseña las copias de todas.
     readIn:(id,k)=>{if(!load().list.some(c=>c.id===id)||!SCOPED.has(k))return null;return B.get(id===BASE?k:'camp:'+id+':'+k);},
     // El rol es de cada campaña, no de la cuenta: quien la crea es su máster y quien entra por invitación es jugador. Cualquiera puede ser máster en una y jugador en otra.
-    rol:id=>{const c=load().list.find(x=>x.id===(id||load().active));return c&&c.rol==='jugador'?'jugador':'master';},
+    // «Ver como jugador» (solo el máster, solo esta pestaña): la campaña activa se comporta como la vería ese jugador. No toca datos ni sincroniza.
+    vista:()=>{try{const o=JSON.parse(sessionStorage.getItem('ver-como-jugador')||'null');return o&&typeof o==='object'?o:null;}catch{return null;}},
+    verComo(o){try{if(o)sessionStorage.setItem('ver-como-jugador',JSON.stringify(o));else sessionStorage.removeItem('ver-como-jugador');}catch{}},
+    rol:id=>{const c=load().list.find(x=>x.id===(id||load().active));if(c&&c.rol==='jugador')return 'jugador';return campaigns.vista()&&(!id||id===load().active)?'jugador':'master';},
     setRol(id,rol){const c=load().list.find(x=>x.id===id);if(!c||!['master','jugador'].includes(rol))return false;if(rol==='jugador')c.rol='jugador';else delete c.rol;save();return true;},
     remote:id=>{const c=load().list.find(x=>x.id===id);return c&&/^[0-9a-f-]{36}$/.test(c.remoto||'')?c.remoto:'';},
     setRemote(id,uuid){const c=load().list.find(x=>x.id===id);if(!c)return false;if(uuid&&!/^[0-9a-f-]{36}$/.test(uuid))return false;if(uuid)c.remoto=uuid;else delete c.remoto;save();return true;},
@@ -1701,6 +1704,8 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .pagenav .navver{margin-left:auto;font-size:12px}
 /* «Más»: audio, modo seguro, bloqueo, preferencias y versión juntos */
 .pagenav .navsep{font-size:0!important;width:1px!important;height:18px!important;background:var(--line)!important;margin:0 8px!important;padding:0!important;align-self:center}   /* en la barra de arriba, los grupos van separados por una raya; los rótulos se ven en la barra lateral y en el móvil */
+.vistabar{position:sticky;top:0;z-index:60;display:flex;gap:12px;align-items:center;justify-content:center;padding:6px 12px;background:var(--accent);color:var(--accent-fg);font-size:14px}
+.vistabar .btn{color:inherit}
 .navbadge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-fg);font-size:11px;font-weight:700;line-height:18px;text-align:center}
 .pagenav .navmore{position:relative;margin-left:auto}
 .pagenav .navmore>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
@@ -2938,8 +2943,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.86</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.87</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
+<div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
 <section class="vpage" id="view-inicio" hidden>
   <div class="hero">
@@ -3005,7 +3011,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 <section class="vpage" id="view-revision" hidden>
   <div class="vhead"><h2>Revisión</h2><span class="pcsub" id="rv-count"></span><button type="button" class="btn primary" data-act="rvmore" style="margin-left:auto">Otra muestra</button></div>
   <p class="hint" style="display:block">Lo que se importa de un manual (por ejemplo, leído de un PDF) llega con la etiqueta «Pendiente de revisar». Aquí salen al azar unos cuantos, de cualquier tipo, para que los compares con tu manual y los marques como revisados. También puedes revisarlos donde los uses: en un encuentro, en el bestiario o en el compendio.</p>
-  <div class="bfilters"><label class="f">Cuántos<select id="rv-n" aria-label="Cuántos elementos"><option>3</option><option selected>5</option><option>10</option><option>20</option></select></label><label class="f">Tipo<select id="rv-ty" aria-label="Tipo"></select></label></div>
+  <div class="bfilters"><label class="f">Cuántos<select id="rv-n" aria-label="Cuántos elementos"><option>3</option><option selected>5</option><option>10</option><option>20</option><option>50</option></select></label><label class="f">Categoría a revisar<select id="rv-ty" aria-label="Categoría a revisar"></select></label><label class="f">Orden<select id="rv-o" aria-label="Orden"><option value="azar">Al azar</option><option value="az">Por nombre (A–Z)</option><option value="pg">Por página del manual</option></select></label></div>
+  <div class="bfilters rvexp"><label class="f">Manual corregido<select id="rv-mod" aria-label="Manual"></select></label><button type="button" class="btn" data-act="rvbajar" title="Descarga el manual con tus correcciones y lo ya revisado, en el mismo formato que se importa">Descargar manual corregido (JSON)</button></div>
   <div id="rv-list"></div>
 </section>
 <section class="vpage" id="view-homebrew" hidden>
@@ -3135,6 +3142,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.87 <span>22 nov 2026</span></h3><ul>
+      <li><b>Ver como jugador</b> (solo el DM): en Jugadores, cada jugador tiene su botón; la app se recarga como la vería esa persona, con su personaje, sin criaturas ni combate, y sin sincronizar mientras tanto. Un aviso arriba permite salir.</li>
+      <li><b>Revisión</b>: eliges la categoría del compendio que quieres revisar (se actualiza al momento), el orden (al azar, por nombre o por página del manual) y hasta 50 elementos. Nuevo botón para <b>descargar el manual corregido</b> en JSON.</li>
+    </ul></li>
     <li><h3>v1.86 <span>22 nov 2026</span></h3><ul>
       <li><b>Qué ve el jugador del compendio</b>: solo lo que viene en el Manual del Jugador (y el SRD, sin criaturas ni objetos mágicos). Lo de la Guía del Máster, otros manuales y tus módulos propios queda oculto para quien juega.</li>
     </ul></li>
@@ -5809,6 +5820,10 @@ const grpKind={criatura:'Criatura',pnj:'PNJ',pj:'Personaje'};
 /* Estado de la cuenta del jugador y, para el DM con sesión, el botón de crearla. */
 function cuentaHTML(m){
   if(!m)return '';
+  const ver=Store.campaigns.rol()!=='jugador'?` <button type="button" class="btn sm ghost" data-act="grpvercomo" data-id="${esc(m.id)}" title="${esc(T('Recarga la app como la vería este jugador'))}">${esc(T('Ver como jugador'))}</button>`:'';
+  return cuentaBase(m)+(ver?`<div class="pcsub">${ver}</div>`:'');
+}
+function cuentaBase(m){
   if(m.usuario)return `<div class="pcsub pccuenta">${esc(T('Cuenta'))}: <b class="noi18n">${esc(m.usuario)}</b></div>`;
   const puede=SB&&SB_USER&&SB_DM!==false&&Store.campaigns.rol()!=='jugador';
   return `<div class="pcsub pccuenta">${esc(T('Sin cuenta'))}${puede?` <button type="button" class="btn sm" data-act="grpcuenta" data-id="${esc(m.id)}">${esc(T('Crear cuenta'))}</button>`:''}</div>`;
@@ -5905,6 +5920,11 @@ function grpAct(act,b){
     case 'grpdel':{const r=Grupos.borrar(GRP,b.dataset.id);if(!r.ok){toast(T(r.error==='tiene_jugadores'?'Mueve antes a los jugadores a otro grupo':'Debe quedar al menos un grupo de jugadores'));break;}GRP=r.lista;grpSave();renderParty();break;}
     case 'grprm':{const r=Grupos.quitar(GRP,b.dataset.id);if(r.ok){GRP=r.lista;grpSave();renderParty();}break;}
     case 'grpcombat':if(g)grpAlCombate(g);break;
+    case 'grpvistasalir':{Store.campaigns.verComo(null);location.hash='#jugadores';location.reload();break;}
+    case 'grpvercomo':{
+      const m=GRP.flatMap(x=>x.miembros).find(x=>x.id===b.dataset.id);if(!m||Store.campaigns.rol()==='jugador')break;
+      Store.campaigns.verComo({m:m.id,n:m.n||'',pj:m.pj||''});
+      location.hash=m.pj?'#personajes/'+m.pj:'#inicio';location.reload();break;}
     case 'grpcuenta':{
       const m=GRP.flatMap(x=>x.miembros).find(x=>x.id===b.dataset.id);if(!m||m.usuario)break;
       const base=String(m.n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9_.-]+/g,'').slice(0,24);
@@ -6247,11 +6267,18 @@ function pendBar(ty,x){
   return '<div class="pendbar"><span class="badge pend">Pendiente de revisar</span><span class="pcsub">Compáralo con tu manual</span><button type="button" class="btn sm primary" data-act="rvok" data-ty="'+ty+'" data-mid="'+esc(mid)+'" data-n="'+esc(x.n)+'">✓ Marcar como revisado</button></div>'+du;
 }
 let RVSEL=[];
+document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#rv-n,#rv-ty,#rv-o')){RVSEL=[];renderRev();}});   // elegir categoría, cantidad u orden actualiza la lista al momento
 function revRefresh(){
   const todo=pendAll(),ty=$('#rv-ty')?$('#rv-ty').value:'',n=+($('#rv-n')?$('#rv-n').value:5)||5;
   const pool=todo.filter(p=>!ty||p.ty===ty),byK=new Map(pool.map(p=>[pendKey(p),p]));
   RVSEL=RVSEL.filter(k=>byK.has(k));
   const libre=pool.filter(p=>!RVSEL.includes(pendKey(p)));
+  const ord=$('#rv-o')?$('#rv-o').value:'azar';
+  if(ord!=='azar'){   // para priorizar: de la categoría elegida, en orden y sin sorteo
+    const pg=p=>{const m=String(p.x.pg??'').match(/\d+/);return m?+m[0]:1e9;};
+    const l=[...pool].sort(ord==='pg'?(a,b)=>pg(a)-pg(b)||a.x.n.localeCompare(b.x.n,'es'):(a,b)=>a.x.n.localeCompare(b.x.n,'es'));
+    RVSEL=l.slice(0,n).map(pendKey);return {todo,pool,byK};
+  }
   while(RVSEL.length<n&&libre.length){const i=Math.floor(Math.random()*libre.length);RVSEL.push(pendKey(libre.splice(i,1)[0]));}
   RVSEL=RVSEL.slice(0,n);
   return {todo,pool,byK};
@@ -6270,11 +6297,18 @@ function renderRev(){
   const {todo,pool,byK}=revRefresh();
   const cnt={};for(const p of todo)cnt[p.ty]=(cnt[p.ty]||0)+1;
   if(sel){const cur=sel.value;sel.innerHTML='<option value="">Todos ('+todo.length+')</option>'+Object.keys(cnt).map(k=>'<option value="'+k+'"'+(k===cur?' selected':'')+'>'+esc(PEND_TIT[k]||k)+' ('+cnt[k]+')</option>').join('');}
+  {const ms=$('#rv-mod');if(ms){const cur=ms.value,l=mods().list.filter(m=>!m.mine&&PEND_TYPES.some(k=>(m[k]||[]).length));ms.innerHTML=l.map(m=>'<option value="'+esc(m.id)+'"'+(m.id===cur?' selected':'')+'>'+esc(m.n)+'</option>').join('');ms.closest('.rvexp').hidden=!l.length;}}
   $('#rv-count').textContent=todo.length?todo.length+' pendientes':'';
   $('#rv-list').innerHTML=RVSEL.length?RVSEL.map(k=>revCard(byK.get(k))).join(''):'<div class="empty">'+(todo.length?'Nada con ese filtro.':'No hay nada pendiente de revisar. Lo que importes de un manual y venga marcado aparecerá aquí.')+'</div>';
   const hs=$('#hs-rv');if(hs)hs.textContent=todo.length?todo.length+' pendientes':'Nada pendiente';
 }
 function rvAct(act,b){
+  if(act==='rvbajar'){
+    const md=mods().list.find(m=>m.id===($('#rv-mod')||{}).value);if(!md){toast('Elige un manual');return;}
+    const out={modulo:md.n,abrev:md.ab,version:md.version||'1.0',licencia:md.lic||''};
+    for(const [k] of MOD_TYPES)if((md[k]||[]).length)out[k]=md[k];
+    bkBajar(JSON.stringify(out,null,1),(String(md.n).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').toLowerCase()||'manual')+'-corregido.json');
+    toast('Manual descargado: sustituye el archivo original por este para dejarlo corregido');return;}
   if(act==='rvmore'){RVSEL=[];renderRev();return;}
   if(act==='rvok'){
     if(revMark(b.dataset.ty,b.dataset.mid,b.dataset.n)){toast('«'+b.dataset.n+'» marcado como revisado');
@@ -6819,7 +6853,11 @@ function pjAvisos(){
   if(h){const t=[];if(c.pend)t.push(c.pend+' '+T(c.pend===1?'cambio por aprobar':'cambios por aprobar'));if(c.nuevos)t.push(c.nuevos+' '+T(c.nuevos===1?'cambio nuevo de un jugador':'cambios nuevos de jugadores'));
     h.innerHTML=t.length?'<b>'+esc(T('Cambios de jugadores'))+'</b><span class="pcsub">'+esc(t.join(' · '))+'</span><a class="btn primary" href="#personajes">'+esc(T('Revisar'))+'</a>':'';h.hidden=!t.length;}
 }
-function navRev(){const a=$('#nav-rv');if(a)a.hidden=esJug()||!pendAll().length;try{jugNav();}catch{}try{pjAvisos();}catch{}}
+function vistaBar(){
+  const v=Store.campaigns.vista(),b=$('#vistabar');if(!b)return;
+  b.hidden=!v;if(v)b.firstElementChild.textContent=T('Estás viendo la app como')+' '+(v.n||T('un jugador'))+'. '+T('Sin sincronizar; lo que toques aquí queda en este dispositivo.');
+}
+function navRev(){try{vistaBar();}catch{}const a=$('#nav-rv');if(a)a.hidden=esJug()||!pendAll().length;try{jugNav();}catch{}try{pjAvisos();}catch{}}
 document.addEventListener('click',e=>{const m=$('#navmore');if(!m||!m.open||document.documentElement.classList.contains('app-escritorio'))return;if(!e.target.closest('#navmore')||e.target.closest('.navmore-body .btn'))m.open=false;});
 document.addEventListener('keydown',e=>{const m=$('#navmore');if(e.key==='Escape'&&m&&m.open&&!document.documentElement.classList.contains('app-escritorio')){m.open=false;m.querySelector('summary').focus();}});
 setTimeout(()=>{try{safeApply();}catch(e){}try{imCarga();}catch(e){}try{if(document.documentElement.classList.contains('app-escritorio'))$('#navmore').open=true;}catch(e){}try{navRev();}catch(e){}},0);
@@ -7123,7 +7161,7 @@ function pjCambiosHTML(){
 }
 function pjListHTML(){
   grpSync();
-  const crit=pjCriterio(),activos=PJC.filter(f=>f.estado==='activo'),baja=PJC.filter(f=>f.estado!=='activo');
+  const vj=Store.campaigns.vista(),crit=pjCriterio(),activos=PJC.filter(f=>f.estado==='activo'&&(!vj||f.id===vj.pj)),baja=PJC.filter(f=>f.estado!=='activo');
   const t=Ficha.arbol(PJ,pjGruposCamp());
   return '<div class="pjsec"><h3>'+esc(T('En esta campaña'))+' <span class="pcsub noi18n">'+esc(Store.campaigns.activeName()||'')+'</span>'
    +'<label>'+esc(T('Las subidas de nivel se dan por'))+' <select data-pjcfg><option value="hito"'+(crit==='hito'?' selected':'')+'>'+esc(T('Hito'))+'</option><option value="xp"'+(crit==='xp'?' selected':'')+'>'+esc(T('Experiencia'))+'</option></select></label></h3>'
@@ -8702,7 +8740,7 @@ async function scEscribir(cid,u){
 }
 function scEstado(m){SC.msg=m;const e=$('#camp-sc');if(e)e.textContent=m;scConfPinta();}
 async function scRun(manual){
-  if(SC.busy||!SB||!SB_USER)return;
+  if(SC.busy||!SB||!SB_USER||Store.campaigns.vista())return;   // en «ver como jugador» no se sube ni se baja nada
   const cid=Store.campaigns.remote(Store.campaigns.active());if(!cid)return;
   if(typeof navigator!=='undefined'&&navigator.onLine===false){scEstado(T('Sin conexión: los cambios se guardan aquí y se subirán al volver'));return;}
   SC.busy=true;if(!SC.cargada)scLoad();

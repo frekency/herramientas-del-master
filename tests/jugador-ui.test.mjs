@@ -50,6 +50,13 @@ const TAIL=`<script>
     ok('solo módulos del Manual del Jugador',modVeJug({ref:'mdj'})&&modVeJug({n:'Manual del Jugador 2024'})&&!modVeJug({ref:'gdm',n:'Guía del Máster 2024'})&&!modVeJug({n:'Mi módulo',mine:true}));
     ok('sin objetos mágicos',compList('objetos').every(x=>x.k!=='magico'));
     ok('la búsqueda no devuelve criaturas',!searchAll('todo','a').some(x=>x.ty==='criaturas'));
+    // ---- ver como jugador
+    Store.campaigns.setRol(Store.campaigns.active(),'master');Store.campaigns.verComo({m:'x',n:'Ana',pj:'c1'});
+    ok('en «ver como jugador» el rol es de jugador y se sabe quién',Store.campaigns.rol()==='jugador'&&Store.campaigns.vista().n==='Ana');
+    navRev();ok('sale el aviso de la vista de jugador',!document.getElementById('vistabar').hidden&&document.getElementById('vistabar').textContent.includes('Ana'));
+    Store.campaigns.verComo(null);
+    ok('al salir vuelve a ser el máster',Store.campaigns.rol()==='master'&&!Store.campaigns.vista());
+    Store.campaigns.setRol(Store.campaigns.active(),'jugador');
     ok('el jugador no ve avisos de cambios',document.getElementById('nav-pjb').hidden&&document.getElementById('hs-cambios').hidden);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split(String.fromCharCode(10))[1]);}
   R.err=window.__err||[];
@@ -78,6 +85,6 @@ testNav('el DM ve los cambios de los jugadores y el jugador no ve combate ni cri
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=15,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=18,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

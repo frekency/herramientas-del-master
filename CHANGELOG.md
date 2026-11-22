@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.87.0] - 2026-11-22
+### Añadido
+- «Ver como jugador» para el DM (recarga la app con la vista de un jugador, sin sincronizar).
+- Revisión: categoría y orden elegibles, hasta 50 elementos y descarga del manual corregido.
+
 ## [1.86.0] - 2026-11-22
 ### Cambiado
 - Un jugador solo ve del compendio lo que viene en el Manual del Jugador o el SRD; los módulos de otros manuales (Guía del Máster…) y los propios del DM quedan ocultos.
