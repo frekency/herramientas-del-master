@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.81.2] - 2026-11-22
+### Corregido
+- La app de escritorio no arrancaba («Cannot find module ./imagenes»): faltaba ese archivo en el paquete.
+
 ## [1.81.1] - 2026-11-22
 ### Corregido
 - El grupo «Jugadores» se multiplicaba al sincronizar entre dispositivos: cada uno creaba el suyo con un id distinto. Ahora tiene id fijo y los duplicados se funden en uno.
