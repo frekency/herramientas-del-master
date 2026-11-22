@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.81.1] - 2026-11-22
+### Corregido
+- El grupo «Jugadores» se multiplicaba al sincronizar entre dispositivos: cada uno creaba el suyo con un id distinto. Ahora tiene id fijo y los duplicados se funden en uno.
+
 ## [1.81.0] - 2026-11-22
 ### Cambiado
 - Menú reorganizado: grupos Preparar / Jugar / Biblioteca, Revisión en el menú (solo si hay pendientes) y un menú «Más» con Audio, Modo seguro, Bloquear, Preferencias y versión. Vista y Estilo salen de la barra superior (siguen en Preferencias).

@@ -97,3 +97,14 @@ test('grupos: aFilas pasa un grupo rival a filas de encuentro y avisa de lo que 
   assert.equal(r.filas.length,2);assert.equal(r.filas[0].cant,4);assert.equal(r.filas[0].fname,'Bandidos');assert.equal(r.filas[1].pj,true);
   assert.equal(r.fallan.length,1);assert.equal(r.fallan[0].k,'pnj');
 });
+
+test('«Jugadores» no se acumula: id fijo al crearse y los repetidos se funden en uno',()=>{
+  const a=G.sincronizar([],[],{}),b=G.sincronizar([],[],{});
+  assert.equal(a[0].id,b[0].id);                                   // dos dispositivos vacíos crean el mismo grupo
+  const dup=[{id:'x1',n:'Jugadores',tipo:'jugadores',miembros:[{k:'jugador',ref:'p1',n:'Ana'}]},{id:'x2',n:'Jugadores',tipo:'jugadores',miembros:[{k:'jugador',ref:'p2',n:'Luis'}]},{id:'x3',n:'Jugadores',tipo:'jugadores',miembros:[]},{id:'r1',n:'Rivales',tipo:'rivales',miembros:[]}];
+  const l=G.sincronizar(dup,['p1','p2'],{p1:'Ana',p2:'Luis'});
+  assert.equal(l.filter(g=>g.tipo==='jugadores').length,1);
+  assert.equal(l.find(g=>g.tipo==='jugadores').miembros.length,2);  // nadie se pierde
+  assert.ok(l.some(g=>g.id==='r1'));                               // los demás grupos no se tocan
+  assert.deepEqual(G.sincronizar(l,['p1','p2'],{}).map(g=>g.id),l.map(g=>g.id));   // estable: sincronizar otra vez no cambia nada
+});

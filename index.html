@@ -858,6 +858,7 @@ window.Grupos=(()=>{
 const TIPOS=['jugadores','aliados','rivales','neutral'],KINDS=['jugador','criatura','pnj','pj'];
 const COLOR={jugadores:'#3d7bd9',aliados:'#4f9a5a',rivales:'#d0453c',neutral:'#c9a14a'};
 const MAX_G=12,MAX_M=60;
+const ID_JUG='g-jugadores';
 const int=(v,a,b,d=0)=>{v=Math.trunc(Number(v));return Number.isFinite(v)?Math.min(b,Math.max(a,v)):d;};
 const txt=(v,n)=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n):'';
 const id=p=>p+Math.random().toString(36).slice(2,9);
@@ -883,9 +884,18 @@ function normLista(l){
 /* Pone la lista en orden con las tarjetas del grupo (partyIds): toda tarjeta pertenece a un grupo de jugadores (el primero, si no tenía) y las que ya no existen se quitan.
    Siempre hay al menos un grupo de jugadores. Así los datos anteriores (un único grupo) se migran solos. */
 function sincronizar(lista,partyIds,nombres){
-  const l=normLista(lista),ids=new Set(partyIds);
+  let l=normLista(lista);const ids=new Set(partyIds);
+  /* Los «Jugadores» creados solos tienen siempre el mismo id: así dos dispositivos que arrancan vacíos no se inventan cada uno el suyo y la sincronización no los acumula.
+     Los que ya se repitieron (mismo nombre, sin tocar) se funden en uno. */
+  const auto=g=>g.tipo==='jugadores'&&g.n==='Jugadores';
+  const dups=l.filter(auto);
+  if(dups.length>1){
+    const base=dups.find(g=>g.id===ID_JUG)||dups[0];
+    for(const g of dups){if(g===base)continue;for(const m of g.miembros)if(!(m.k==='jugador'&&base.miembros.some(y=>y.k==='jugador'&&y.ref===m.ref))&&base.miembros.length<MAX_M)base.miembros.push(m);}
+    l=l.filter(g=>g===base||!auto(g));
+  }
   let gj=l.find(g=>g.tipo==='jugadores');
-  if(!gj){gj=normGrupo({n:'Jugadores',tipo:'jugadores'});l.unshift(gj);}
+  if(!gj){gj=normGrupo({id:ID_JUG,n:'Jugadores',tipo:'jugadores'});l.unshift(gj);}
   const tiene=new Set();
   for(const g of l)g.miembros=g.miembros.filter(m=>m.k!=='jugador'||(ids.has(m.ref)&&!tiene.has(m.ref)&&tiene.add(m.ref)));
   for(const p of partyIds){if(tiene.has(p))continue;const m=normMiembro({k:'jugador',ref:p,n:(nombres&&nombres[p])||''});if(m)gj.miembros.push(m);}
@@ -3125,6 +3135,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.81 <span>22 nov 2026</span></h3><ul>
       <li><b>Menú más claro</b>: tres grupos — <b>Preparar</b> (Campaña, Personajes), <b>Jugar</b> (Combate, Ventana de mesa, Tablas) y <b>Biblioteca</b> (Compendio, Referencia, Homebrew, Módulos y Revisión, que solo sale si hay algo pendiente). Audio, Modo seguro, Bloquear, Preferencias y la versión van juntos en <b>Más</b>.</li>
+      <li><b>Arreglo</b>: el grupo «Jugadores» ya no se repite una y otra vez al sincronizar; los repetidos que tuvieras se funden en uno sin perder a nadie.</li>
       <li>En la barra de arriba solo quedan la campaña, Grupo y Buscar; Vista y Estilo se cambian en Preferencias.</li>
     </ul></li>
     <li><h3>v1.80 <span>22 nov 2026</span></h3><ul>
