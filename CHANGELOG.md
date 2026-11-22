@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.74.0] - 2026-11-22
+### Cambiado
+- Una criatura de un manual que ya está en el SRD se da por revisada (sin «Pendiente de revisar»).
+- La etiqueta de manual del bestiario usa la abreviatura del módulo (MM2024).
+
 ## [1.73.0] - 2026-11-22
 ### Añadido
 - **Modo seguro**: oculta PG, CA, estadísticas y acciones de las criaturas (ficha, bestiario, combate). Botón para el DM; siempre activo para jugadores.
