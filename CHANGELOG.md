@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.72.0] - 2026-11-22
+### Añadido
+- **Ficha editable por criatura en el encuentro** («Editar ficha» / «Volver al original»): copia propia `sb` por criatura; el compendio sigue de solo lectura (se clona).
+- Calculadora en el editor de criaturas: bonificador de competencia por VD, PG por dados y CON, iniciativa, salvaciones y percepción pasiva.
+- Variables en los textos de acciones: `{atq:FUE}`, `{dmg:2d8+FUE}`, `{cd:CAR}`, `{pb}`.
+
 ## [1.71.0] - 2026-11-22
 ### Añadido
 - Opciones del combate: **vida de las criaturas** (media, tirada, tirada con mínimo la media, máxima) e **iniciativa de las criaturas** (d20 por cada una, por tipo o fija). Sustituye a la casilla de tirar dados de golpe; los combates guardados se migran solos.
