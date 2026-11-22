@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.89.0] - 2026-11-22
+### Añadido
+- Los módulos pueden traer rasgos de clase y de subclase (clase, subclase, nivel); se ven en el compendio y en la Revisión.
+- Herramientas de extracción de libros propios (conjuros, dotes, trasfondos, especies y subclases) que generan módulos privados con todo pendiente de revisar.
+
+### Corregido
+- Los conjuros importados en un módulo conservan la marca «pendiente de revisar» y sus dudas.
+
 ## [1.88.0] - 2026-11-22
 ### Cambiado
 - «Nuevo jugador» pide nombre, nick y correo (opcional) en lugar de la ficha de combate, y puede crear la cuenta al guardar. La función crear-jugador acepta un correo real.
