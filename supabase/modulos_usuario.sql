@@ -15,3 +15,6 @@ create policy "cada uno lo suyo" on public.modulos_usuario
   for all to authenticated
   using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
+
+-- Que la API reconozca la tabla nueva al momento.
+notify pgrst, 'reload schema';
