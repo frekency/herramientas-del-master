@@ -80,6 +80,27 @@ const PRUEBA = `<script>
     window.__cb({...base,capas:[{tipo:'iniciativa',id:'i',x:0,y:0,w:30,h:100,visible:true,op:1,orient:'v',tokens:false}]});
     await wait(300);
     ok('sin tokens la lista es la de siempre',!q('.capa.iniciativa .fl .tk'));
+    // ambiente: efectos visuales y sonido opcional
+    const amb=(ef,i,s)=>({...base,capas:[{tipo:'ambiente',id:'a',x:0,y:0,w:100,h:100,visible:true,op:1,efecto:ef,intensidad:i,sonido:!!s,volumen:40}]});
+    window.__cb(amb('lluvia',5));await until(()=>q('.capa.ambiente'));
+    ok('la lluvia pinta sus gotas',document.querySelectorAll('.capa.ambiente.lluvia .p').length===25+5*18);
+    ok('sin pedir sonido no hay audio',!AMB.cur&&!AMB.ctx);
+    ok('el efecto no recibe clics',getComputedStyle(q('.capa.ambiente')).pointerEvents==='none');
+    window.__cb(amb('tormenta',10));await wait(300);
+    ok('la tormenta añade rayo y más lluvia',!!q('.capa.ambiente .rayo')&&document.querySelectorAll('.capa.ambiente .p').length===25+10*18);
+    window.__cb(amb('niebla',3));await wait(300);ok('la niebla son bancos que se mueven',document.querySelectorAll('.capa.ambiente .b').length===5);
+    window.__cb(amb('nieve',4));await wait(300);ok('la nieve pinta copos',document.querySelectorAll('.capa.ambiente.nieve .p').length===15+4*10);
+    window.__cb(amb('brasas',4));await wait(300);ok('las brasas pintan chispas',document.querySelectorAll('.capa.ambiente.brasas .p').length===10+4*6);
+    window.__cb(amb('noche',8));await wait(300);ok('la noche oscurece la escena',getComputedStyle(q('.capa.ambiente.noche')).backgroundImage.includes('rgb'));
+    window.__cb(amb('lluvia',5,true));await wait(400);
+    ok('con sonido pedido arranca el ambiente de la lluvia',AMB.key==='lluvia|5'&&!!AMB.cur&&!!AMB.ctx);
+    window.__cb(amb('tormenta',5,true));await wait(300);ok('cambiar de efecto cambia el sonido',AMB.key==='tormenta|5'&&AMB.cur.fin.length>=2);
+    window.__cb({tipo:'telon',activo:true,texto:'x'});await wait(300);ok('con el telón bajado el sonido sigue preparado (en silencio)',AMB.key==='tormenta|5');
+    window.__cb({tipo:'telon',activo:false,texto:''});
+    for(const ef of ['niebla','nieve','noche','brasas']){window.__cb(amb(ef,5,true));await wait(200);if(AMB.key!==ef+'|5')ok('suena '+ef,false);}
+    ok('todos los efectos tienen su sonido',AMB.key==='brasas|5');
+    window.__cb({...base,capas:[]});await wait(300);
+    ok('al quitar la capa el sonido se para',!AMB.cur&&AMB.key==='');
     // «mostrar el orden» desde el combate abre una escena con su capa
     window.__cb({tipo:'limpiar'});await wait(200);
     window.__cb({tipo:'iniciativa',abrir:true,activo:true,ronda:1,lista,cuenta:null});
@@ -111,7 +132,7 @@ test('mesa: mapa de combate calibrado, proporciones y orden de iniciativa con to
     const R = JSON.parse(res);
     assert.deepEqual(R.err, [], 'errores de JavaScript');
     assert.deepEqual(R.c.filter(c => !c[1]).map(c => c[0]), [], 'comprobaciones que fallan');
-    assert.ok(R.c.length >= 20, 'el flujo se quedó a medias (' + R.c.length + ')');
+    assert.ok(R.c.length >= 33, 'el flujo se quedó a medias (' + R.c.length + ')');
   } finally {
     try { proc && proc.kill(); } catch { /* ya cerrado */ }
     srv.close();

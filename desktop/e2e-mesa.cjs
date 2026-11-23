@@ -93,6 +93,15 @@ app.whenReady().then(async () => {
     ok('el resultado vuelve al estudio del máster', await until(() => ev(master, '/2d6\\+3 = \\d+/.test((document.getElementById("ms-dres")||{}).textContent||"")'), 10000));
     ok('hay un lienzo WebGL de dados dentro del recuadro', await ev(w1, '!!document.querySelector("#dhost canvas")&&document.getElementById("dhost").getBoundingClientRect().width>0'));
 
+    // sonido de ambiente de verdad: la ventana lo arranca sola (sin clic), y el telón lo silencia
+    await ev(master, `(async()=>{msVentana(1);msAnade('ambiente',{efecto:'lluvia',intensidad:5,sonido:true,volumen:60});msEnviar(true);return true;})()`);
+    ok('el ambiente con sonido arranca solo en la ventana real', await until(() => ev(w1, 'AMB.key==="lluvia|5"&&!!AMB.ctx&&AMB.ctx.state==="running"')));
+    ok('suena (volumen del ambiente)', await until(() => ev(w1, 'AMB.gain.gain.value>0.1'), 8000));
+    await ev(master, 'mesaTelon(1)');
+    ok('con el telón bajado se silencia', await until(() => ev(w1, 'AMB.gain.gain.value<0.02'), 8000));
+    await ev(master, 'mesaTelon(1)');
+    ok('y al subirlo vuelve a sonar', await until(() => ev(w1, 'AMB.gain.gain.value>0.1'), 8000));
+    ok('la lluvia se ve en la ventana', await ev(w1, 'document.querySelectorAll(".capa.ambiente.lluvia .p").length>50'));
     // segunda ventana con su propia escena
     await ev(master, `(async()=>{msVentana(2);MS.capas=[];msAnade('texto',{t:'Solo para la ventana 2'});MS.aspecto='16:9';MS.fundido=0;msEnviar(false);return true;})()`);
     ok('se abre una segunda ventana', await until(() => ventanas().length === 2));

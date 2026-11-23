@@ -104,6 +104,21 @@ const TAIL=`<script>
     ok('se puede poner en horizontal',ic.orient==='h'&&msEscena(false).capas.find(c=>c.tipo==='iniciativa').orient==='h');
     const ct=q('[data-msf="tokens"]');ct.checked=false;ct.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
     ok('y quitar los tokens',ic.tokens===false);
+    // capa de ambiente con sonido opcional
+    await click('[data-ms="add"][data-t="ambiente"]');
+    const am=MS.capas.find(c=>c.tipo==='ambiente');
+    ok('el ambiente nace a pantalla completa, niebla, sin sonido',am.w===100&&am.h===100&&am.efecto==='niebla'&&am.sonido===false&&!q('[data-ms="ambprueba"]'));
+    const se=q('[data-msf="efecto"]');se.value='tormenta';se.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
+    ok('se elige el efecto',am.efecto==='tormenta'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').efecto==='tormenta');
+    await typeIn('[data-msf="intensidad"]','99');
+    ok('la intensidad se acota',am.intensidad===10);
+    const cs=q('[data-msf="sonido"]');cs.checked=true;cs.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
+    ok('el sonido es opcional: al activarlo salen volumen y prueba',am.sonido===true&&!!q('[data-msf="volumen"]')&&!!q('[data-ms="ambprueba"]'));
+    ok('y llega a la escena que se envía',(c=>c.sonido===true&&c.volumen===40)(msEscena(false).capas.find(c=>c.tipo==='ambiente')));
+    await click('[data-ms="ambprueba"]');
+    ok('se puede probar el sonido en la vista previa',MS.ambOn===true&&/Parar/.test(q('[data-ms="ambprueba"]').textContent));
+    await click('[data-ms="sel"][data-id="'+ic.id+'"]');
+    ok('al salir de la capa la prueba se para sola',MS.ambOn===false);
     // una escena guardada de antes (sin estos campos) se sigue cargando
     Store.set('mesa-estudio-v1',JSON.stringify({fondo:'#102030',capas:[{tipo:'iniciativa',x:1,y:1,w:20,h:80}]}));msLoad();
     ok('las escenas antiguas se cargan con valores por defecto',MS.aspecto==='16:9'&&MS.capas[0].orient==='v'&&MS.capas[0].tokens===true);
@@ -137,6 +152,6 @@ testNav('estudio de la mesa: mapa de combate, fichas y criaturas ocultas',{skip:
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=35,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=40,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

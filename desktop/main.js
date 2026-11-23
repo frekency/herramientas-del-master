@@ -83,7 +83,7 @@ function abrirMesa(id) {
   m.win = new BrowserWindow({
     width: 1280, height: 720, title: 'Mesa ' + id, backgroundColor: '#0b0a09', autoHideMenuBar: true,
     icon: path.join(__dirname, 'build', 'icon.png'),
-    webPreferences: { preload: path.join(__dirname, 'mesa-preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false },
+    webPreferences: { preload: path.join(__dirname, 'mesa-preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false, autoplayPolicy: 'no-user-gesture-required' },   // el sonido de ambiente arranca solo con la escena
   });
   if (desp) { const [x, y] = m.win.getPosition(); m.win.setPosition(x + desp, y + desp); }
   m.win.setMenu(null);

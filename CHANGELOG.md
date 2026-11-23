@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.101.0] - 2026-11-23
+### Añadido
+- Mesa: capa «Ambiente» (niebla, lluvia, nieve, tormenta, noche, brasas) con intensidad y sonido de ambiente opcional generado con Web Audio, silenciado con el telón bajado.
+
 ## [1.100.0] - 2026-11-23
 ### Añadido
 - Mesa: capa «Mapa de combate» (color o imagen, cuadrícula calibrada en cm reales de la pantalla, fichas en casillas que se arrastran; fichas del combate y de la galería).

@@ -37,6 +37,15 @@ test('iniciativa: una criatura oculta sale como «Enemigo oculto», sin nombre, 
   assert.equal(validar({ tipo: 'iniciativa', lista: [{ n: 'A', tok: 'data:text/html;base64,AAAA' }] }).lista[0].tok, '', 'solo imágenes data:');
 });
 
+test('ambiente: efecto, intensidad y sonido acotados; el sonido es opcional y nunca llega activo por defecto', () => {
+  const c = validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', efecto: 'lluvia', intensidad: 99, volumen: -5 }, { tipo: 'ambiente', efecto: '<script>', sonido: 'si' },
+    { tipo: 'ambiente', efecto: 'tormenta', sonido: true, volumen: 70, intensidad: 0 }] }).capas;
+  assert.deepEqual([c[0].efecto, c[0].intensidad, c[0].volumen, c[0].sonido], ['lluvia', 10, 0, false]);
+  assert.deepEqual([c[1].efecto, c[1].sonido], ['niebla', false]);
+  assert.deepEqual([c[2].efecto, c[2].sonido, c[2].volumen, c[2].intensidad], ['tormenta', true, 70, 1]);
+  for (const ef of ['niebla', 'lluvia', 'nieve', 'tormenta', 'noche', 'brasas']) assert.equal(validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', efecto: ef }] }).capas[0].efecto, ef);
+});
+
 test('mapa de combate: cuadrícula acotada, fichas validadas y las ocultas no llegan nunca', () => {
   const e = validar({ tipo: 'escena', aspecto: 'auto', capas: [{ tipo: 'mapa', id: 'm', x: 0, y: 0, w: 100, h: 100, celda: 99, pantalla: 5, cuadOp: 9, fondo: 'verde',
     tokens: [{ id: 'a', x: 3, y: 4, tam: 2, n: 'Orco', color: '#d0453c', src: PNG, hp: 50 },
