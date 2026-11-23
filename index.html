@@ -2685,6 +2685,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-add .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:8px 6px;text-align:center;line-height:1.15;white-space:normal;height:auto}
 .ms-add .btn svg{width:20px;height:20px}
 .ms-add.dd{grid-template-columns:repeat(4,1fr)}.ms-add.dd .btn{min-height:34px;padding:4px}
+.ms-vents{display:flex;flex-wrap:wrap;gap:4px;align-items:center;flex-basis:100%}
 .ms-dados{display:flex;flex-wrap:wrap;gap:6px}.ms-dados input{flex:1 1 100%;min-width:0}.ms-dados .btn{flex:1 1 0}
 .ms-docs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .ms-docs button{display:grid;grid-template-columns:44px 1fr;column-gap:8px;align-items:center;width:100%;padding:4px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--fg);text-align:left;cursor:pointer}
@@ -2969,7 +2970,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.98</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.99</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3168,6 +3169,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.99 <span>23 nov 2026</span></h3><ul>
+      <li><b>Varias ventanas de mesa.</b> Abre hasta 8 ventanas (Ventana 1, 2, 3…), cada una con su propia escena: en el estudio hay una pestaña por ventana y «Enviar», «Limpiar», el telón y las tiradas de dados van a la ventana elegida. Las cuentas atrás y el orden de iniciativa se actualizan en todas. Lo que se enviaba antes desde el combate (imagen, aviso, orden) va a la ventana 1.</li>
+      <li><b>Telón por ventana o en todas.</b> «Bajar el telón» actúa sobre la ventana seleccionada; «Telón en todas» baja o sube todas las abiertas. Cada ventana tiene también su botón en el panel de la mesa.</li>
+    </ul></li>
     <li><h3>v1.98 <span>23 nov 2026</span></h3><ul>
       <li><b>v1.98.3 · Ventana de mesa:</b> quitadas las opciones «Mostrar el orden» y «Mostrar el orden automáticamente»: el orden sale de la capa de iniciativa de la escena y del combate activo.</li>
       <li><b>v1.98.3 · Telón:</b> «Bajar el telón» tapa la ventana de mesa con el d20 girando y un texto tuyo («Empezamos enseguida», «Ahora volvemos»…) mientras cambias cosas por debajo sin que se vea; «Subir el telón» lo retira. Está en el panel de la mesa y en el estudio.</li>
@@ -4754,17 +4759,27 @@ function mesaPanelRender(){
    +'<div class="mpbtns">'
    +'<button type="button" class="btn sm" data-mp="limpiar"'+(E.abierta?'':' disabled')+'>'+esc(T('Limpiar la mesa'))+'</button>'
    +(E.abierta&&E.que==='iniciativa'?'<button type="button" class="btn sm" data-mp="congelar">'+esc(E.congelado?T('Reanudar'):T('Dejar de actualizar'))+'</button>':'')
-   +(E.abierta?'<button type="button" class="btn sm'+(E.telon?' primary':'')+'" data-mp="telon" aria-pressed="'+!!E.telon+'">'+esc(E.telon?T('Subir el telón'):T('Bajar el telón'))+'</button>':'')
-   +(E.abierta?'<button type="button" class="btn sm" data-mp="cerrar">'+esc(T('Cerrar la ventana'))+'</button>':'<button type="button" class="btn sm" data-mp="abrir">'+esc(T('Abrir la ventana'))+'</button>')
+   +(E.abiertas&&E.abiertas.length>1?'<button type="button" class="btn sm'+(E.abiertas.every(k=>mesaVent(k).telon)?' primary':'')+'" data-mp="telon" data-id="todas">'+esc(E.abiertas.every(k=>mesaVent(k).telon)?T('Subir el telón en todas'):T('Bajar el telón en todas'))+'</button>':'')
+   +'<button type="button" class="btn sm" data-mp="vabrir" data-id="'+(()=>{let n=1;while((E.abiertas||[]).includes(n)&&n<8)n++;return n;})()+'">'+esc(T('Abrir otra ventana'))+'</button>'
    +'</div><label class="f">'+esc(T('Texto del telón'))+'<input id="mp-tt" maxlength="80" value="'+esc((()=>{try{return Store.get('mesa-telon-t')||'';}catch{return '';}})())+'" placeholder="'+esc(T('Empezamos enseguida'))+'"></label>'
+   +mesaVentanasHTML()
    +mesaCuentasHTML();
+}
+function mesaVentanasHTML(){
+  const ab=mesaEst.abiertas||[];if(!ab.length)return '';
+  return '<h3>'+esc(T('Ventanas'))+'</h3><ul class="mpcu">'+ab.map(n=>{const v=mesaVent(n);
+    return '<li><div class="mpcun"><b>'+esc(T('Ventana')+' '+n)+'</b><span>'+esc(v.que==='escena'?(v.titulo||T('Escena')):v.que==='nada'?T('Vacía'):v.que==='iniciativa'?T('Orden de iniciativa'):v.que==='imagen'?T('Imagen'):T('Aviso'))+'</span></div><div class="mpbtns">'
+     +'<button type="button" class="btn sm'+(v.telon?' primary':'')+'" data-mp="telon" data-id="'+n+'" aria-pressed="'+!!v.telon+'">'+esc(v.telon?T('Subir el telón'):T('Bajar el telón'))+'</button>'
+     +'<button type="button" class="btn sm ghost" data-mp="vcerrar" data-id="'+n+'">'+esc(T('Cerrar'))+'</button></div></li>';}).join('')+'</ul>';
 }
 function mesaPanelAct(a,id){
   const S=window.__AppShell;if(!S||!S.mesa)return;const E=mesaEst;
-  if(a==='limpiar'){mesaIni=false;E.que='nada';E.congelado=false;S.mesa.enviar({tipo:'limpiar'});}
+  if(a==='limpiar'){mesaIni=false;E.que='nada';E.congelado=false;for(let n=2;n<=8;n++)mesaVent(n).que='nada';S.mesa.enviar({tipo:'limpiar',ventana:'todas'});}
   else if(a==='congelar'){E.congelado=!E.congelado;if(!E.congelado)mesaSendIni(false);}
   else if(a==='abrir')S.mesa.abrir();
-  else if(a==='telon'){mesaTelon();return;}
+  else if(a==='telon'){mesaTelon(id==='todas'?'todas':(+id||1));return;}
+  else if(a==='vabrir'){S.mesa.abrir(+id||1);}
+  else if(a==='vcerrar'){S.mesa.cerrar(+id||1);if((+id||1)===1){mesaIni=false;E.que='nada';E.congelado=false;}else mesaVent(+id).que='nada';}
   else if(a==='cnew'){const n=($('#mp-cn')||{}).value||'',m=parseFloat((($('#mp-cm')||{}).value||'').replace(',','.'));
     if(!(m>0)){toast(T('Indica los minutos'));return;}if(CUL.length>=Cuentas.MAX){toast(T('Demasiadas cuentas atrás'));return;}
     CUL.push(Cuentas.nueva(n,Math.round(m*60)));cuSave();cuentasMesa();}
@@ -4778,19 +4793,25 @@ function mesaIniData(){
   const lista=s.order.map(id=>{const c=get(id);return c?{n:c.name,actual:id===cur,caido:c.hp<=0&&!isPC(c),color:fac(c.factionId).color}:null;}).filter(Boolean);
   return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista,cuenta:Eventos.cuentaAtras(s.ev,Date.now())};
 }
-var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false,telon:false};
+var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false,telon:false,abiertas:[],otras:{}};
+/* ventana 1 = mesaEst; las demás (2 a 8) guardan su propio estado en mesaEst.otras */
+const mesaVent=n=>n===1?mesaEst:(mesaEst.otras[n]??={abierta:false,que:'nada',titulo:'',telon:false});
+const msEstV=()=>mesaVent(MS.vent);
 /* telón: tapa la mesa con la animación del d20 y un texto, para cambiar cosas sin que los jugadores lo vean */
-function mesaTelon(){
-  const S=window.__AppShell;if(!S||!S.mesa)return;const E=mesaEst;E.telon=!E.telon;
+function mesaTelon(n){
+  const S=window.__AppShell;if(!S||!S.mesa)return;n=n||MS.vent;
+  /* «todas»: si alguna ventana abierta no tiene el telón bajado, se bajan todas; si no, se suben todas */
+  const ab=mesaEst.abiertas||[],todas=n==='todas',on=todas?ab.some(k=>!mesaVent(k).telon):!mesaVent(n).telon;
+  if(todas){if(!ab.length)return;ab.forEach(k=>{mesaVent(k).telon=on;});}else mesaVent(n).telon=on;
   const i=$('#mp-tt');let t=i?i.value:'';if(!i){try{t=Store.get('mesa-telon-t')||'';}catch{}}
   try{Store.set('mesa-telon-t',t);}catch{}
-  S.mesa.enviar({tipo:'telon',activo:E.telon,texto:t||T('Empezamos enseguida')});
-  document.querySelectorAll('[data-ms="telon"]').forEach(b=>{b.setAttribute('aria-pressed',E.telon);b.textContent=E.telon?T('Subir el telón'):T('Bajar el telón');});
+  S.mesa.enviar({tipo:'telon',activo:on,texto:t||T('Empezamos enseguida'),ventana:n});
+  document.querySelectorAll('[data-ms="telon"]').forEach(b=>{const x=msEstV().telon;b.setAttribute('aria-pressed',x);b.textContent=x?T('Subir el telón'):T('Bajar el telón');});
   mesaPanelRender();
 }
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 /* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
-const MS={nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
+const MS={vent:1,otros:{},nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
 const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},cuentas:{x:72,y:76,w:25,h:19},dados:{x:60,y:30,w:38,h:62}};
 const msId=()=>'c'+Math.random().toString(36).slice(2,9);
 const msNum=(v,a,b,d)=>{const n=Number(v);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):d;};
@@ -4811,13 +4832,16 @@ function msNormEsc(e){
 }
 function msLoad(){
   try{Object.assign(MS,msNormEsc(JSON.parse(Store.get('mesa-estudio-v1')||'null')));}catch{}
+  try{const v=JSON.parse(Store.get('mesa-estudio-ventanas')||'null')||{};MS.vent=Number.isInteger(v.vent)&&v.vent>=1&&v.vent<=8?v.vent:1;MS.otros={};
+    for(const [k,e] of Object.entries(v.otros&&typeof v.otros==='object'?v.otros:{})){const n=+k;if(Number.isInteger(n)&&n>=1&&n<=8&&n!==MS.vent)MS.otros[n]=msNormEsc(e);}}catch{MS.vent=1;MS.otros={};}
   try{const p=JSON.parse(Store.get('mesa-plantillas-v1')||'[]');MS.pl=(Array.isArray(p)?p:[]).filter(x=>x&&typeof x.id==='string'&&x.esc).slice(0,50).map(x=>({id:x.id.slice(0,40),nombre:String(x.nombre||'').slice(0,80),esc:msNormEsc(x.esc)}));}catch{MS.pl=[];}
   if(!MS.capas.some(c=>c.id===MS.sel))MS.sel=null;
 }
-const msSave=()=>{try{Store.set('mesa-estudio-v1',JSON.stringify({nombre:MS.nombre,fondo:MS.fondo,fondo2:MS.fondo2,ang:MS.ang,fnid:MS.fnid,fajuste:MS.fajuste,fundido:MS.fundido,capas:MS.capas}));}catch{}};
+const msSnap=()=>({nombre:MS.nombre,fondo:MS.fondo,fondo2:MS.fondo2,ang:MS.ang,fnid:MS.fnid,fajuste:MS.fajuste,fundido:MS.fundido,capas:MS.capas});
+const msSave=()=>{try{Store.set('mesa-estudio-v1',JSON.stringify(msSnap()));Store.set('mesa-estudio-ventanas',JSON.stringify({vent:MS.vent,otros:MS.otros}));}catch{}};
 const msPlSave=()=>{try{Store.set('mesa-plantillas-v1',JSON.stringify(MS.pl));}catch{}};
 const msApp=()=>!!(window.__AppShell&&window.__AppShell.mesa);
-const msVivo=()=>msApp()&&mesaEst.abierta&&mesaEst.que==='escena';
+const msVivo=()=>msApp()&&msEstV().abierta&&msEstV().que==='escena';
 const msCapa=id=>MS.capas.find(c=>c.id===id)||null;
 const msSelC=()=>msCapa(MS.sel);
 function msEj(){return [
@@ -4868,20 +4892,35 @@ setInterval(()=>{const v=$('#view-mesa');if(v&&!v.hidden&&MS.capas.some(c=>c.vis
 function msEnviar(rapido){
   const S=window.__AppShell;if(!S||!S.mesa)return;
   const e=msEscena(false);if(rapido)e.fundido=0;
-  S.mesa.enviar(e);
-  mesaIni=false;mesaEst.que='escena';mesaEst.titulo=MS.nombre;mesaEst.congelado=false;mesaEst.abierta=true;
+  e.ventana=MS.vent;S.mesa.enviar(e);
+  const EV=msEstV();EV.que='escena';EV.titulo=MS.nombre;EV.abierta=true;
+  if(MS.vent===1){mesaIni=false;mesaEst.congelado=false;}
   mesaEscIni=MS.capas.some(c=>c.visible&&c.tipo==='iniciativa');
   if(mesaEscIni)mesaSendIni(false);
   cuentasMesa();msEstado();
 }
-function msLimpiar(){const S=window.__AppShell;if(!S||!S.mesa)return;mesaIni=false;mesaEscIni=false;mesaEst.que='nada';mesaEst.congelado=false;S.mesa.enviar({tipo:'limpiar'});msEstado();mesaPanelRender();}
+function msLimpiar(){const S=window.__AppShell;if(!S||!S.mesa)return;if(MS.vent===1){mesaIni=false;mesaEscIni=false;mesaEst.congelado=false;}msEstV().que='nada';S.mesa.enviar({tipo:'limpiar',ventana:MS.vent});msEstado();mesaPanelRender();}
 let msLT=0;
 function msLive(){if(!MS.live||!msVivo())return;clearTimeout(msLT);msLT=setTimeout(()=>msEnviar(true),250);}
 function msCambio(){msSave();msPrev();msLive();}
+/* cada ventana tiene su propia escena: al cambiar de pestaña se guarda la actual y se carga la de la otra */
+function msVentana(n){
+  n=Math.trunc(n);if(!(n>=1&&n<=8)||n===MS.vent)return;
+  MS.otros[MS.vent]=msNormEsc(msSnap());
+  Object.assign(MS,MS.otros[n]||msNormEsc({}));delete MS.otros[n];
+  MS.vent=n;MS.sel=null;
+  msBarra();msOv();msInsp();msBiblio();msEstado();msCambio();
+}
+const msVentLista=()=>[...new Set([1,MS.vent,...Object.keys(MS.otros).map(Number),...(mesaEst.abiertas||[])])].sort((a,b)=>a-b);
+function msVentTabs(){
+  const e=$('#ms-vents');if(!e)return;const L=msVentLista(),ab=mesaEst.abiertas||[];
+  e.innerHTML=L.map(n=>'<button type="button" class="btn sm'+(n===MS.vent?' primary':' ghost')+'" data-ms="vent" data-n="'+n+'" aria-pressed="'+(n===MS.vent)+'" title="'+esc(ab.includes(n)?T('Ventana abierta'):T('Ventana cerrada'))+'">'+(ab.includes(n)?'● ':'')+esc(T('Ventana')+' '+n)+'</button>').join('')
+    +(L.length<8?'<button type="button" class="btn sm ghost" data-ms="ventmas" title="'+esc(T('Añadir otra ventana'))+'" aria-label="'+esc(T('Añadir otra ventana'))+'">+</button>':'');
+}
 /* estado y barras */
 function msEstado(){
   const st=$('#ms-st');if(!st)return;
-  const E=mesaEst;
+  const E=msEstV();
   st.textContent=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='escena'?T('En la mesa')+': '+(E.titulo||T('Escena')):E.que==='nada'?T('La mesa está vacía'):T('En la mesa')+': '+(E.que==='iniciativa'?T('Orden de iniciativa'):E.que==='imagen'?T('Imagen'):T('Aviso'));
   st.classList.toggle('vivo',!!E.abierta&&E.que!=='nada');
   const ab=$('#ms-win');if(ab){ab.textContent=E.abierta?T('Cerrar la ventana'):T('Abrir la ventana');ab.dataset.ms=E.abierta?'cerrarwin':'abrirwin';}
@@ -4895,7 +4934,7 @@ function msPlSel(){
 }
 function msBarra(){
   const sel=(v,l)=>'<option value="'+v+'"'+(MS.fundido===v?' selected':'')+'>'+esc(l)+'</option>';
-  $('#ms-bar').innerHTML='<label class="f ms-nombre">'+esc(T('Nombre de la escena'))+'<input type="text" data-msg="nombre" maxlength="80" value="'+esc(MS.nombre)+'" placeholder="'+esc(T('Ej.: La taberna del Dragón'))+'"></label>'
+  $('#ms-bar').innerHTML='<div class="ms-vents" id="ms-vents" role="group" aria-label="'+esc(T('Ventanas de la mesa'))+'"></div><label class="f ms-nombre">'+esc(T('Nombre de la escena'))+'<input type="text" data-msg="nombre" maxlength="80" value="'+esc(MS.nombre)+'" placeholder="'+esc(T('Ej.: La taberna del Dragón'))+'"></label>'
    +'<label class="f">'+esc(T('Fondo'))+'<select data-msg="ftipo"><option value="liso"'+(MS.fondo2?'':' selected')+'>'+esc(T('Color liso'))+'</option><option value="degradado"'+(MS.fondo2?' selected':'')+'>'+esc(T('Degradado'))+'</option></select></label>'
    +'<label class="f">'+esc(MS.fondo2?T('Color 1'):T('Color'))+'<input type="color" data-msg="fondo" value="'+esc(MS.fondo)+'"></label>'
    +(MS.fondo2?'<label class="f">'+esc(T('Color 2'))+'<input type="color" data-msg="fondo2" value="'+esc(MS.fondo2)+'"></label><label class="f">'+esc(T('Ángulo'))+'<input type="number" data-msg="ang" min="0" max="360" step="15" value="'+MS.ang+'" style="width:70px"></label>':'')
@@ -4908,8 +4947,9 @@ function msBarra(){
    +'<button type="button" class="btn sm" data-ms="plguardar">'+esc(T('Guardar como plantilla'))+'</button>'
    +'<button type="button" class="btn sm ghost" data-ms="plborrar">'+esc(T('Borrar plantilla'))+'</button>'
    +'<button type="button" class="btn sm ghost" data-ms="nueva">'+esc(T('Escena nueva'))+'</button>'
-   +'<button type="button" class="btn sm" data-ms="telon" aria-pressed="'+!!mesaEst.telon+'" title="'+esc(T('Tapa la mesa con un mensaje mientras cambias cosas'))+'">'+esc(mesaEst.telon?T('Subir el telón'):T('Bajar el telón'))+'</button>';
-  msPlSel();
+   +'<button type="button" class="btn sm ghost" data-ms="telontodas" title="'+esc(T('Baja o sube el telón en todas las ventanas abiertas'))+'">'+esc(T('Telón en todas'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="telon" aria-pressed=""'+!!msEstV().telon+'" title="'+esc(T('Tapa la mesa con un mensaje mientras cambias cosas'))+'">'+esc(msEstV().telon?T('Subir el telón'):T('Bajar el telón'))+'</button>';
+  msPlSel();msVentTabs();
   $('#ms-under').innerHTML='<button type="button" class="btn primary ms-enviar" data-ms="enviar" title="Ctrl+Intro">'+ic('eye')+' '+esc(T('Enviar a la mesa'))+'</button>'
    +'<button type="button" class="btn" id="ms-limpiar" data-ms="limpiar">'+esc(T('Limpiar la mesa'))+'</button>'
    +'<label class="chk"><input type="checkbox" data-msg="live"'+(MS.live?' checked':'')+'> '+esc(T('En vivo: los cambios llegan solos'))+'</label>'
@@ -5031,7 +5071,7 @@ function msTirar(prueba){
     if(!MS.capas.some(c=>c.visible&&c.tipo==='dados')){toast(T('Añade una bandeja de dados a la escena para probarla'),4000);return;}
     if(f&&f.contentWindow&&MS.listo){f.contentWindow.postMessage({tipo:'dados',notacion:n},location.origin);i.value='';MS.dn='';}return;}
   if(!msVivo()||!MS.capas.some(c=>c.visible&&c.tipo==='dados')){toast(T('Envía a la mesa una escena con una bandeja de dados para poder tirar'),5000);return;}
-  S.mesa.enviar({tipo:'dados',notacion:n});i.value='';MS.dn='';
+  S.mesa.enviar({tipo:'dados',notacion:n,ventana:MS.vent});i.value='';MS.dn='';
   const r=$('#ms-dres');if(r)r.textContent=T('Tirando…');
 }
 function mesaResultado(r){
@@ -5045,12 +5085,15 @@ function msAct(a,b){
   const c=msSelC(),id=b.dataset.id;
   if(a==='enviar')msEnviar(false);
   else if(a==='limpiar')msLimpiar();
-  else if(a==='abrirwin'){window.__AppShell.mesa.abrir();}
-  else if(a==='cerrarwin'){window.__AppShell.mesa.cerrar();mesaIni=false;mesaEscIni=false;mesaEst.que='nada';mesaEst.congelado=false;msEstado();}
+  else if(a==='abrirwin'){window.__AppShell.mesa.abrir(MS.vent);}
+  else if(a==='cerrarwin'){window.__AppShell.mesa.cerrar(MS.vent);if(MS.vent===1){mesaIni=false;mesaEscIni=false;mesaEst.congelado=false;}msEstV().que='nada';msEstado();}
+  else if(a==='vent')msVentana(+b.dataset.n);
+  else if(a==='ventmas'){const L=msVentLista();let n=1;while(L.includes(n))n++;if(n<=8)msVentana(n);}
   else if(a==='popover'){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
   else if(a==='add'){const t=b.dataset.t,n=msAnade(t,t==='texto'?{t:T('Escribe aquí el texto')}:t==='cuentas'?{nombre:T('Cuenta atrás'),min:5}:undefined);if(n&&t==='cuentas'){msCuenta(n);msCambio();cuentasMesa();msInsp();}}
   else if((a==='cuplay'||a==='cureset')&&c&&c.tipo==='cuentas'){const q=msCuenta(c);if(q){cuentaAct(a==='cuplay'?'cplay':'creset',q.id);msInsp();}}
-  else if(a==='telon')mesaTelon();
+  else if(a==='telon')mesaTelon(MS.vent);
+  else if(a==='telontodas')mesaTelon('todas');
   else if(a==='tirar')msTirar();
   else if(a==='probar')msTirar(true);
   else if(a==='dadd'){const i=$('#ms-dn'),d=b.dataset.d,t=String(i.value||'').replace(/\s+/g,'').toLowerCase(),r=new RegExp('(^|[+-])(\\d{1,2})d'+d+'(?![0-9])');
@@ -8872,7 +8915,12 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   /* ventana de mesa (lo que ven los jugadores): acceso en la barra lateral y botón de orden en el combate */
   if(S.mesa){
     if(S.mesa.onResultado)S.mesa.onResultado(mesaResultado);
-    if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(v)setTimeout(cuentasMesa,600);if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;mesaEst.telon=false;}mesaPanelRender();});
+    if(S.mesa.onEstado)S.mesa.onEstado(ids=>{
+      const antes=mesaEst.abiertas||[];mesaEst.abiertas=ids;mesaEst.abierta=ids.includes(1);
+      if(ids.some(i=>!antes.includes(i)))setTimeout(cuentasMesa,600);
+      if(!mesaEst.abierta){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;mesaEst.telon=false;}
+      for(let n=2;n<=8;n++){const o=mesaVent(n);o.abierta=ids.includes(n);if(!o.abierta){o.que='nada';o.titulo='';o.telon=false;}}
+      mesaPanelRender();msVentTabs();});
     const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
     if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}
   }

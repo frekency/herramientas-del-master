@@ -122,6 +122,16 @@ const TAIL=`<script>
     ok('cambiar el ancho mantiene la proporción',Math.abs(pr.w/pr.h-r0)<0.05);
     await click('[data-ms="del"]');
     ok('quitar la capa borra su cuenta',true);
+    // varias ventanas: cada una con su escena
+    const n1=MS.capas.length;
+    await click('[data-ms="ventmas"]');
+    ok('la ventana 2 empieza vacía',MS.vent===2&&MS.capas.length===0&&q('#ms-vents [data-n="2"][aria-pressed="true"]'));
+    await click('[data-ms="add"][data-t="texto"]');
+    ok('la ventana 2 tiene su propia escena',MS.capas.length===1);
+    await click('#ms-vents [data-n="1"]');
+    ok('volver a la ventana 1 recupera su escena',MS.vent===1&&MS.capas.length===n1&&MS.otros[2]&&MS.otros[2].capas.length===1);
+    ok('la escena de cada ventana se guarda',JSON.parse(Store.get('mesa-estudio-ventanas')).otros[2].capas.length===1);
+    await click('#ms-vents [data-n="2"]');await click('[data-ms="sel"][data-id="'+MS.capas[0].id+'"]');await click('[data-ms="del"]');await click('#ms-vents [data-n="1"]');
     // datos rotos en el almacenamiento no rompen nada
     Store.set('mesa-estudio-v1',JSON.stringify({nombre:7,fondo:'url(x)',capas:[{tipo:'bomba'},{tipo:'texto',x:'abc',w:-5,t:{a:1}},null]}));
     msLoad();

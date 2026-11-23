@@ -60,74 +60,115 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
   }
 });
 
-// Ventana de la mesa: la que ven los jugadores (imágenes y orden de iniciativa). La abre el máster.
-let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, ultimoTelon = { tipo: 'telon', activo: false, texto: '' }, master = null;
+// Ventanas de la mesa: las que ven los jugadores (hasta 8, cada una con su escena y su telón). Las abre el máster.
+const MAX_VENTANAS = 8;
+const mesas = new Map();   // id → { win, lista, ultimoMesa, ultimoTelon }
+let ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, master = null;
+const TELON_OFF = { tipo: 'telon', activo: false, texto: '' };
+const idVentana = n => (Number.isInteger(n) && n >= 1 && n <= MAX_VENTANAS ? n : 1);
+const viva = m => !!(m && m.win && !m.win.isDestroyed());
+const abiertas = () => [...mesas.entries()].filter(([, m]) => viva(m)).map(([i]) => i).sort((a, b) => a - b);
 const avisarMesa = () => {
-  if (master && !master.isDestroyed()) master.webContents.send('mesa:estado', !!(mesa && !mesa.isDestroyed()));
+  if (master && !master.isDestroyed()) master.webContents.send('mesa:estado', abiertas());
 };
 const delMaster = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/index.html');
-function abrirMesa() {
-  if (mesa && !mesa.isDestroyed()) { if (mesa.isMinimized()) mesa.restore(); mesa.show(); mesa.focus(); return; }
-  mesaLista = false;
-  mesa = new BrowserWindow({
-    width: 1280, height: 720, title: 'Mesa', backgroundColor: '#0b0a09', autoHideMenuBar: true,
+const mandar = (m, v) => { if (viva(m) && m.lista) m.win.webContents.send('mesa:mostrar', v); };
+const dePagina = sender => [...mesas.entries()].find(([, m]) => viva(m) && m.win.webContents === sender) || null;
+function abrirMesa(id) {
+  let m = mesas.get(id);
+  if (viva(m)) { if (m.win.isMinimized()) m.win.restore(); m.win.show(); m.win.focus(); return; }
+  m = { win: null, lista: false, ultimoMesa: { tipo: 'limpiar' }, ultimoTelon: TELON_OFF };
+  mesas.set(id, m);
+  const desp = (id - 1) * 32;
+  m.win = new BrowserWindow({
+    width: 1280, height: 720, title: 'Mesa ' + id, backgroundColor: '#0b0a09', autoHideMenuBar: true,
     icon: path.join(__dirname, 'build', 'icon.png'),
     webPreferences: { preload: path.join(__dirname, 'mesa-preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false },
   });
-  mesa.setMenu(null);
-  mesa.loadURL('app://local/mesa.html');
-  mesa.on('closed', () => { mesa = null; mesaLista = false; ultimoTelon = { tipo: 'telon', activo: false, texto: '' }; avisarMesa(); });
+  if (desp) { const [x, y] = m.win.getPosition(); m.win.setPosition(x + desp, y + desp); }
+  m.win.setMenu(null);
+  m.win.loadURL('app://local/mesa.html');
+  m.win.on('closed', () => { m.win = null; m.lista = false; m.ultimoTelon = TELON_OFF; avisarMesa(); });
   avisarMesa();
 }
 function registrarMesa() {
-  ipcMain.on('mesa:abrir', e => { if (delMaster(e)) abrirMesa(); });
-  ipcMain.on('mesa:cerrar', e => { if (delMaster(e) && mesa && !mesa.isDestroyed()) mesa.close(); });
+  ipcMain.on('mesa:abrir', (e, n) => { if (delMaster(e)) abrirMesa(idVentana(n)); });
+  ipcMain.on('mesa:cerrar', (e, n) => {
+    if (!delMaster(e)) return;
+    const ids = n === 'todas' ? abiertas() : [idVentana(n)];
+    for (const i of ids) { const m = mesas.get(i); if (viva(m)) m.win.close(); }
+  });
   ipcMain.on('mesa:enviar', (e, p) => {
     if (!delMaster(e)) return;
     const v = validar(p);
     if (!v) return;
+    const todas = p && p.ventana === 'todas';
+    const id = idVentana(p && p.ventana);
+    const destinos = todas ? abiertas() : [id];
     if (v.tipo === 'dados') {
       // una tirada es un hecho puntual: no sustituye lo que se está viendo ni se recuerda al reabrir la ventana
-      if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+      mandar(mesas.get(id), v);
       return;
     }
     if (v.tipo === 'telon') {
       // el telón tapa la mesa mientras el máster cambia cosas por debajo; se recuerda al reabrir la ventana
-      ultimoTelon = v;
-      if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+      for (const i of destinos) { const m = mesas.get(i); if (m) { m.ultimoTelon = v; mandar(m, v); } }
       return;
     }
     if (v.tipo === 'cuentas') {
-      // las cuentas atrás van aparte: se superponen a lo que haya y no lo sustituyen
+      // las cuentas atrás van aparte: se superponen a lo que haya y no lo sustituyen (a todas las ventanas)
       ultimoCuentas = v;
-      if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+      for (const i of abiertas()) mandar(mesas.get(i), v);
       return;
     }
-    // lo que se está viendo (escena, imagen, aviso, iniciativa o nada) y, aparte, los últimos datos de iniciativa:
-    // dentro de una escena la iniciativa es una capa que solo necesita sus datos
-    if (v.tipo === 'iniciativa') ultimaIni = v;
-    if (v.tipo !== 'iniciativa' || v.abrir || !(ultimoMesa && ultimoMesa.tipo === 'escena')) ultimoMesa = v;
-    const abierta = mesa && !mesa.isDestroyed();
-    // el orden de iniciativa solo abre la ventana la primera vez que el máster lo pide; después se limita a actualizarla
-    if (!abierta && (v.tipo === 'imagen' || v.tipo === 'escena' || (v.tipo === 'iniciativa' && v.abrir))) abrirMesa();
-    if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+    if (v.tipo === 'iniciativa') {
+      ultimaIni = v;
+      if (v.abrir) {
+        // el orden de iniciativa solo abre la ventana la primera vez que el máster lo pide; después se limita a actualizarla
+        if (!viva(mesas.get(id))) abrirMesa(id);
+        const m = mesas.get(id);
+        m.ultimoMesa = v;
+        mandar(m, v);
+        return;
+      }
+      // dentro de una escena la iniciativa es una capa que solo necesita sus datos
+      for (const i of abiertas()) {
+        const m = mesas.get(i);
+        if (!(m.ultimoMesa && m.ultimoMesa.tipo === 'escena')) m.ultimoMesa = v;
+        mandar(m, v);
+      }
+      return;
+    }
+    // lo que se está viendo en una ventana: escena, imagen, aviso o nada
+    for (const i of destinos) {
+      if (todas && !viva(mesas.get(i))) continue;
+      if (!viva(mesas.get(i)) && (v.tipo === 'imagen' || v.tipo === 'escena')) abrirMesa(i);
+      const m = mesas.get(i);
+      if (!m) continue;
+      m.ultimoMesa = v;
+      mandar(m, v);
+    }
   });
   // el resultado de la tirada vuelve al máster: solo cifras y una etiqueta corta
   ipcMain.on('mesa:resultado', (e, r) => {
-    if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents || !master || master.isDestroyed()) return;
+    const d = dePagina(e.sender);
+    if (!d || !master || master.isDestroyed()) return;
     if (!r || typeof r !== 'object' || !Number.isFinite(r.total) || !Array.isArray(r.dados)) return;
-    master.webContents.send('mesa:resultado', { notacion: String(r.notacion || '').slice(0, 60), total: Math.trunc(r.total), dados: r.dados.slice(0, 20).map(Number).filter(Number.isFinite), mod: Number.isFinite(r.mod) ? Math.trunc(r.mod) : 0 });
+    master.webContents.send('mesa:resultado', { ventana: d[0], notacion: String(r.notacion || '').slice(0, 60), total: Math.trunc(r.total), dados: r.dados.slice(0, 20).map(Number).filter(Number.isFinite), mod: Number.isFinite(r.mod) ? Math.trunc(r.mod) : 0 });
   });
   ipcMain.on('mesa:listo', e => {
-    if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents) return;
-    mesaLista = true;
-    mesa.webContents.send('mesa:mostrar', ultimoMesa);
-    if (ultimaIni && ultimoMesa.tipo === 'escena') mesa.webContents.send('mesa:mostrar', ultimaIni);
-    mesa.webContents.send('mesa:mostrar', ultimoCuentas);
-    if (ultimoTelon.activo) mesa.webContents.send('mesa:mostrar', ultimoTelon);
+    const d = dePagina(e.sender);
+    if (!d) return;
+    const m = d[1];
+    m.lista = true;
+    mandar(m, m.ultimoMesa);
+    if (ultimaIni && m.ultimoMesa.tipo === 'escena') mandar(m, ultimaIni);
+    mandar(m, ultimoCuentas);
+    if (m.ultimoTelon.activo) mandar(m, m.ultimoTelon);
   });
   ipcMain.on('mesa:pantalla', e => {
-    if (mesa && !mesa.isDestroyed() && e.sender === mesa.webContents) mesa.setFullScreen(!mesa.isFullScreen());
+    const d = dePagina(e.sender);
+    if (d) d[1].win.setFullScreen(!d[1].win.isFullScreen());
   });
 }
 

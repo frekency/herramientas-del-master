@@ -52,10 +52,10 @@ contextBridge.exposeInMainWorld('__AppShell', {
   },
   // Ventana de la mesa (la que ven los jugadores)
   mesa: {
-    abrir: () => ipcRenderer.send('mesa:abrir'),
-    cerrar: () => ipcRenderer.send('mesa:cerrar'),
+    abrir: n => ipcRenderer.send('mesa:abrir', n),
+    cerrar: n => ipcRenderer.send('mesa:cerrar', n),
     enviar: x => ipcRenderer.send('mesa:enviar', x),
-    onEstado: cb => ipcRenderer.on('mesa:estado', (_e, v) => cb(!!v)),
+    onEstado: cb => ipcRenderer.on('mesa:estado', (_e, v) => cb(Array.isArray(v) ? v.filter(Number.isInteger) : [])),
     onResultado: cb => ipcRenderer.on('mesa:resultado', (_e, r) => cb(r)),
   },
 });

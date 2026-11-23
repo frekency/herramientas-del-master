@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.99.0] - 2026-11-23
+### Añadido
+- Mesa: hasta 8 ventanas, cada una con su escena (pestañas en el estudio) y su telón; telón en la ventana elegida o en todas.
+
 ## [1.98.3] - 2026-11-23
 ### Añadido
 - Bandeja de dados: d2 (cae un d6; 1-3 vale 1 y 4-6 vale 2).
