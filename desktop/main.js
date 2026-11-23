@@ -61,7 +61,7 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
 });
 
 // Ventana de la mesa: la que ven los jugadores (imágenes y orden de iniciativa). La abre el máster.
-let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, master = null;
+let mesa = null, mesaLista = false, ultimoMesa = { tipo: 'limpiar' }, ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, ultimoTelon = { tipo: 'telon', activo: false, texto: '' }, master = null;
 const avisarMesa = () => {
   if (master && !master.isDestroyed()) master.webContents.send('mesa:estado', !!(mesa && !mesa.isDestroyed()));
 };
@@ -76,7 +76,7 @@ function abrirMesa() {
   });
   mesa.setMenu(null);
   mesa.loadURL('app://local/mesa.html');
-  mesa.on('closed', () => { mesa = null; mesaLista = false; avisarMesa(); });
+  mesa.on('closed', () => { mesa = null; mesaLista = false; ultimoTelon = { tipo: 'telon', activo: false, texto: '' }; avisarMesa(); });
   avisarMesa();
 }
 function registrarMesa() {
@@ -88,6 +88,12 @@ function registrarMesa() {
     if (!v) return;
     if (v.tipo === 'dados') {
       // una tirada es un hecho puntual: no sustituye lo que se está viendo ni se recuerda al reabrir la ventana
+      if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+      return;
+    }
+    if (v.tipo === 'telon') {
+      // el telón tapa la mesa mientras el máster cambia cosas por debajo; se recuerda al reabrir la ventana
+      ultimoTelon = v;
       if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
       return;
     }
@@ -118,6 +124,7 @@ function registrarMesa() {
     mesa.webContents.send('mesa:mostrar', ultimoMesa);
     if (ultimaIni && ultimoMesa.tipo === 'escena') mesa.webContents.send('mesa:mostrar', ultimaIni);
     mesa.webContents.send('mesa:mostrar', ultimoCuentas);
+    if (ultimoTelon.activo) mesa.webContents.send('mesa:mostrar', ultimoTelon);
   });
   ipcMain.on('mesa:pantalla', e => {
     if (mesa && !mesa.isDestroyed() && e.sender === mesa.webContents) mesa.setFullScreen(!mesa.isFullScreen());

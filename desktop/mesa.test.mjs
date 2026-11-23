@@ -127,3 +127,9 @@ test('escena: fondo con degradado e imagen, y cuenta atrás propia de la capa', 
   const n = validar({ tipo: 'escena', fondo2: 'rojo', fsrc: 'http://x/y.png', capas: [] });
   assert.deepEqual([n.fondo2, n.fsrc, n.ang, n.fajuste], ['', '', 180, 'cubrir']);
 });
+
+test('telón: se baja con un texto corto y se sube', () => {
+  assert.deepEqual(validar({ tipo: 'telon', activo: true, texto: ' Ahora volvemos' }), { tipo: 'telon', activo: true, texto: 'Ahora volvemos' });
+  assert.deepEqual(validar({ tipo: 'telon', activo: 'si', texto: 'x'.repeat(300) }).texto.length, 80);
+  assert.equal(validar({ tipo: 'telon', activo: 'si' }).activo, false);
+});

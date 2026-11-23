@@ -15,7 +15,7 @@ const ROOT = path.join(here, '..');
 const { validar, notacionValida } = createRequire(import.meta.url)('./mesa.js');
 
 test('mesa: la tirada de dados solo admite notación segura', () => {
-  for (const n of ['1d20', '2d6+3', '1d20+1d4-1', '4d6', '1d100', '1d8+1d6+2'])
+  for (const n of ['1d20', '2d6+3', '1d20+1d4-1', '4d6', '1d100', '1d8+1d6+2', '1d2', '3d2+1d20'])
     assert.ok(notacionValida(n), n);
   for (const n of ['', '1d7', '25d6', 'd20', '1d20; alert(1)', '1d20+', '1d20++2', '99d4+99d6', 5, null, '1d20+1d4+1d6+1d8+1d10+1d12+20d20'])
     assert.ok(!notacionValida(n), String(n));
@@ -61,6 +61,14 @@ const PRUEBA = `<script>
     await esperar(()=>window.__res&&window.__res.length>=2);
     const b=(window.__res||[])[1];
     ok('varias clases de dados y un modificador negativo',!!b&&b.dados.length===2&&b.dados[0]>=1&&b.dados[0]<=20&&b.dados[1]>=1&&b.dados[1]<=4&&b.total===b.dados[0]+b.dados[1]-1);
+    window.__cb({tipo:'dados',notacion:'3d2+1'});
+    await esperar(()=>window.__res&&window.__res.length>=3);
+    const c3=(window.__res||[])[2];
+    ok('el d2 da 1 o 2 (cae un d6 y cuenta la mitad alta o baja)',!!c3&&c3.dados.length===3&&c3.dados.every(v=>v===1||v===2)&&c3.total===c3.dados.reduce((x,y)=>x+y,0)+1);
+    window.__cb({tipo:'telon',activo:true,texto:'Ahora volvemos'});await wait(900);
+    ok('el telón tapa la mesa con su texto',document.getElementById('telon').classList.contains('on')&&document.getElementById('telont').textContent==='Ahora volvemos'&&getComputedStyle(document.getElementById('telon')).visibility==='visible');
+    window.__cb({tipo:'telon',activo:false,texto:''});await wait(900);
+    ok('y se sube',getComputedStyle(document.getElementById('telon')).visibility==='hidden');
     window.__cb({tipo:'limpiar'});await wait(300);
     ok('sin escena el tablero se oculta',getComputedStyle(host).display==='none');
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
@@ -92,7 +100,7 @@ test('mesa: la bandeja tira dados 3D con física real y enseña el resultado', {
     const R = JSON.parse(res);
     assert.deepEqual(R.err, [], 'errores de JavaScript');
     assert.deepEqual(R.c.filter(c => !c[1]).map(c => c[0]), [], 'comprobaciones que fallan');
-    assert.ok(R.c.length >= 8, 'el flujo se quedó a medias (' + R.c.length + ')');
+    assert.ok(R.c.length >= 10, 'el flujo se quedó a medias (' + R.c.length + ')');
   } finally {
     try { proc && proc.kill(); } catch { /* ya cerrado */ }
     srv.close();

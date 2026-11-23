@@ -3169,6 +3169,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.98 <span>23 nov 2026</span></h3><ul>
+      <li><b>v1.98.3 · Ventana de mesa:</b> quitadas las opciones «Mostrar el orden» y «Mostrar el orden automáticamente»: el orden sale de la capa de iniciativa de la escena y del combate activo.</li>
+      <li><b>v1.98.3 · Telón:</b> «Bajar el telón» tapa la ventana de mesa con el d20 girando y un texto tuyo («Empezamos enseguida», «Ahora volvemos»…) mientras cambias cosas por debajo sin que se vea; «Subir el telón» lo retira. Está en el panel de la mesa y en el estudio.</li>
+      <li><b>v1.98.3 · Dados:</b> añadido el d2 (dos caras). No hay dado de dos caras en el motor 3D: cae un d6 y cuenta 1 con 1-3 y 2 con 4-6.</li>
       <li><b>v1.98.2 · Tirar iniciativa PNJ:</b> ahora tira la iniciativa de todas las criaturas que no son personajes de jugador (también las que estén en la banda de los jugadores) y pregunta quién lleva la sorpresa: nadie, los jugadores o una o varias bandas. Quien sufre la sorpresa tira con desventaja. Al terminar, el orden se ajusta solo.</li>
       <li><b>v1.98.1 · Bandeja de dados:</b> tablero transparente (los dados caen sobre la escena), botón «Ocupar toda la ventana», los dados se retiran solos tras unos segundos (configurable) y la tirada se vacía al tirar. «Añadir a la escena» se ve ahora ordenado, con iconos.</li>
       <li><b>Mesa: tamaño proporcional.</b> Al arrastrar una esquina o escribir el ancho o el alto, la capa mantiene su proporción (Mayús para cambiarla libremente; casilla para desactivarlo).</li>
@@ -3177,7 +3180,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li><b>Mesa: «Probar».</b> La vista previa tira los dados y cuenta atrás de verdad, sin enviar nada a la mesa.</li>
     </ul></li>
     <li><h3>v1.97 <span>23 nov 2026</span></h3><ul>
-      <li><b>Bandeja de dados en la mesa.</b> Nueva capa para las escenas de la ventana de mesa: un recuadro donde caen dados 3D con física real (los dados no pueden salir de él) y se enseña el resultado. Se tira desde el estudio de la mesa («Tirar en la bandeja»: 2d6+3, 1d20+1d4…, d4 a d100) y el resultado también te llega al panel. Tablero, color y tamaño de los dados se ajustan. Solo en la app de escritorio; usa dice-box (MIT).</li>
+      <li><b>Bandeja de dados en la mesa.</b> Nueva capa para las escenas de la ventana de mesa: un recuadro donde caen dados 3D con física real (los dados no pueden salir de él) y se enseña el resultado. Se tira desde el estudio de la mesa («Tirar en la bandeja»: 2d6+3, 1d20+1d4…, d2 a d100) y el resultado también te llega al panel. Tablero, color y tamaño de los dados se ajustan. Solo en la app de escritorio; usa dice-box (MIT).</li>
     </ul></li>
     <li><h3>v1.96 <span>23 nov 2026</span></h3><ul>
       <li><b>Subclases en el Compendio.</b> Pestaña propia «Subclases» (filtro por clase): cada una enseña su texto y los rasgos que da por nivel. Ya no se mezclan con los rasgos de clase.</li>
@@ -4684,8 +4687,7 @@ function render(){
   if(!$('#view-inicio').hidden)renderHome();
   /* ventana de mesa: al empezar un combate el orden pasa a la mesa (si está abierta) y al terminarlo se limpia */
   if(window.__AppShell){
-    if(state.active&&!mesaWasActive){let a=true;try{a=Store.get('mesa-auto')!=='0';}catch{}if(a){mesaIni=true;mesaEst.que='iniciativa';mesaEst.congelado=false;}}
-    else if(!state.active&&mesaWasActive&&mesaIni){mesaIni=false;mesaEst.que='nada';window.__AppShell.mesa.enviar({tipo:'limpiar'});}
+    if(!state.active&&mesaWasActive&&mesaIni){mesaIni=false;mesaEst.que='nada';window.__AppShell.mesa.enviar({tipo:'limpiar'});}
     mesaWasActive=!!state.active;
     if(mesaIni||mesaEscIniOn())mesaSendIni(false);
   }
@@ -4739,7 +4741,6 @@ setInterval(()=>{
 /* panel de la mesa: qué se está enviando y cómo pararlo */
 function mesaPanelEl(){let p=$('#mesapanel');if(!p){p=document.createElement('div');p.id='mesapanel';p.className='mesapanel';p.setAttribute('role','dialog');p.setAttribute('aria-label',T('Ventana de mesa'));p.hidden=true;document.body.append(p);
   p.addEventListener('click',e=>{const b=e.target.closest('[data-mp]');if(b)mesaPanelAct(b.dataset.mp,b.dataset.id);});
-  p.addEventListener('change',e=>{if(e.target.dataset.mpauto!==undefined){try{Store.set('mesa-auto',e.target.checked?'1':'0');}catch{}}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden){p.hidden=true;}});
   document.addEventListener('mousedown',e=>{if(!p.hidden&&!e.target.closest('#mesapanel,.sbmesa,[data-ms="popover"]'))p.hidden=true;});}
   return p;}
@@ -4747,23 +4748,23 @@ function mesaPanelToggle(){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden
 function mesaPanelRender(){
   msEstado();
   const p=$('#mesapanel');if(!p||p.hidden)return;
-  const E=mesaEst;let auto=true;try{auto=Store.get('mesa-auto')!=='0';}catch{}
+  const E=mesaEst;
   const que=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='iniciativa'?T('Orden de iniciativa')+(E.congelado?' ('+T('congelado')+')':''):E.que==='escena'?T('Escena')+(E.titulo?': '+E.titulo:''):E.que==='imagen'?T('Imagen')+(E.titulo?': '+E.titulo:''):E.que==='aviso'?T('Aviso')+(E.titulo?': '+E.titulo:''):T('Nada (pantalla en negro)');
   p.innerHTML='<h3>'+esc(T('Ventana de mesa'))+'</h3><p class="mpstate"><span>'+esc(T('En la mesa'))+'</span><b>'+esc(que)+'</b></p>'
    +'<div class="mpbtns">'
-   +'<button type="button" class="btn sm primary" data-mp="orden">'+esc(T('Mostrar el orden'))+'</button>'
    +'<button type="button" class="btn sm" data-mp="limpiar"'+(E.abierta?'':' disabled')+'>'+esc(T('Limpiar la mesa'))+'</button>'
    +(E.abierta&&E.que==='iniciativa'?'<button type="button" class="btn sm" data-mp="congelar">'+esc(E.congelado?T('Reanudar'):T('Dejar de actualizar'))+'</button>':'')
+   +(E.abierta?'<button type="button" class="btn sm'+(E.telon?' primary':'')+'" data-mp="telon" aria-pressed="'+!!E.telon+'">'+esc(E.telon?T('Subir el telón'):T('Bajar el telón'))+'</button>':'')
    +(E.abierta?'<button type="button" class="btn sm" data-mp="cerrar">'+esc(T('Cerrar la ventana'))+'</button>':'<button type="button" class="btn sm" data-mp="abrir">'+esc(T('Abrir la ventana'))+'</button>')
-   +'</div><label class="chk"><input type="checkbox" data-mpauto'+(auto?' checked':'')+'> '+esc(T('Mostrar el orden automáticamente al empezar un combate'))+'</label>'
+   +'</div><label class="f">'+esc(T('Texto del telón'))+'<input id="mp-tt" maxlength="80" value="'+esc((()=>{try{return Store.get('mesa-telon-t')||'';}catch{return '';}})())+'" placeholder="'+esc(T('Empezamos enseguida'))+'"></label>'
    +mesaCuentasHTML();
 }
 function mesaPanelAct(a,id){
   const S=window.__AppShell;if(!S||!S.mesa)return;const E=mesaEst;
-  if(a==='orden'){mesaIni=true;E.que='iniciativa';E.congelado=false;E.abierta=true;mesaSendIni(true);}
-  else if(a==='limpiar'){mesaIni=false;E.que='nada';E.congelado=false;S.mesa.enviar({tipo:'limpiar'});}
+  if(a==='limpiar'){mesaIni=false;E.que='nada';E.congelado=false;S.mesa.enviar({tipo:'limpiar'});}
   else if(a==='congelar'){E.congelado=!E.congelado;if(!E.congelado)mesaSendIni(false);}
   else if(a==='abrir')S.mesa.abrir();
+  else if(a==='telon'){mesaTelon();return;}
   else if(a==='cnew'){const n=($('#mp-cn')||{}).value||'',m=parseFloat((($('#mp-cm')||{}).value||'').replace(',','.'));
     if(!(m>0)){toast(T('Indica los minutos'));return;}if(CUL.length>=Cuentas.MAX){toast(T('Demasiadas cuentas atrás'));return;}
     CUL.push(Cuentas.nueva(n,Math.round(m*60)));cuSave();cuentasMesa();}
@@ -4777,7 +4778,16 @@ function mesaIniData(){
   const lista=s.order.map(id=>{const c=get(id);return c?{n:c.name,actual:id===cur,caido:c.hp<=0&&!isPC(c),color:fac(c.factionId).color}:null;}).filter(Boolean);
   return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista,cuenta:Eventos.cuentaAtras(s.ev,Date.now())};
 }
-var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false};
+var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false,telon:false};
+/* telón: tapa la mesa con la animación del d20 y un texto, para cambiar cosas sin que los jugadores lo vean */
+function mesaTelon(){
+  const S=window.__AppShell;if(!S||!S.mesa)return;const E=mesaEst;E.telon=!E.telon;
+  const i=$('#mp-tt');let t=i?i.value:'';if(!i){try{t=Store.get('mesa-telon-t')||'';}catch{}}
+  try{Store.set('mesa-telon-t',t);}catch{}
+  S.mesa.enviar({tipo:'telon',activo:E.telon,texto:t||T('Empezamos enseguida')});
+  document.querySelectorAll('[data-ms="telon"]').forEach(b=>{b.setAttribute('aria-pressed',E.telon);b.textContent=E.telon?T('Subir el telón'):T('Bajar el telón');});
+  mesaPanelRender();
+}
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 /* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
 const MS={nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
@@ -4897,7 +4907,8 @@ function msBarra(){
    +'<button type="button" class="btn sm" data-ms="plcargar">'+esc(T('Cargar'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="plguardar">'+esc(T('Guardar como plantilla'))+'</button>'
    +'<button type="button" class="btn sm ghost" data-ms="plborrar">'+esc(T('Borrar plantilla'))+'</button>'
-   +'<button type="button" class="btn sm ghost" data-ms="nueva">'+esc(T('Escena nueva'))+'</button>';
+   +'<button type="button" class="btn sm ghost" data-ms="nueva">'+esc(T('Escena nueva'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="telon" aria-pressed="'+!!mesaEst.telon+'" title="'+esc(T('Tapa la mesa con un mensaje mientras cambias cosas'))+'">'+esc(mesaEst.telon?T('Subir el telón'):T('Bajar el telón'))+'</button>';
   msPlSel();
   $('#ms-under').innerHTML='<button type="button" class="btn primary ms-enviar" data-ms="enviar" title="Ctrl+Intro">'+ic('eye')+' '+esc(T('Enviar a la mesa'))+'</button>'
    +'<button type="button" class="btn" id="ms-limpiar" data-ms="limpiar">'+esc(T('Limpiar la mesa'))+'</button>'
@@ -4922,7 +4933,7 @@ function msLibHTML(){
    +'<button type="button" class="btn sm" data-ms="add" data-t="dados">'+ic('d20')+' '+esc(T('Bandeja de dados'))+'</button></div>'
    +'<h3>'+esc(T('Tirar en la bandeja'))+'</h3><div class="ms-dados"><input type="text" id="ms-dn" maxlength="60" value="'+esc(MS.dn||'1d20')+'" aria-label="'+esc(T('Tirada, por ejemplo 2d6+3'))+'" placeholder="2d6+3" autocomplete="off" spellcheck="false">'
    +'<button type="button" class="btn sm" data-ms="probar" title="'+esc(T('Tira aquí, en la vista previa, sin enviar nada a la mesa'))+'">'+esc(T('Probar'))+'</button><button type="button" class="btn sm primary" data-ms="tirar" title="'+esc(T('Tira en la ventana de la mesa'))+'">'+ic('d20')+' '+esc(T('Tirar'))+'</button></div>'
-   +'<div class="ms-add dd">'+['4','6','8','10','12','20','100'].map(d=>'<button type="button" class="btn sm ghost" data-ms="dadd" data-d="'+d+'" title="'+esc(T('Añadir un dado')+' d'+d)+'">d'+d+'</button>').join('')+'<button type="button" class="btn sm ghost" data-ms="dborrar" title="'+esc(T('Vaciar la tirada'))+'">✕</button></div>'
+   +'<div class="ms-add dd">'+['2','4','6','8','10','12','20','100'].map(d=>'<button type="button" class="btn sm ghost" data-ms="dadd" data-d="'+d+'" title="'+esc(T('Añadir un dado')+' d'+d)+'">d'+d+'</button>').join('')+'<button type="button" class="btn sm ghost" data-ms="dborrar" title="'+esc(T('Vaciar la tirada'))+'">✕</button></div>'
    +'<p class="hint" id="ms-dres">'+esc(T('Los dados se tiran en la bandeja de la mesa: la escena enviada debe tener una.'))+'</p>'
    +'<h3>'+esc(T('Imágenes y documentos'))+'</h3><label class="btn sm">'+ic('image')+' '+esc(T('Subir una imagen'))+'<input type="file" accept="image/*" data-msup hidden></label><p class="hint">'+esc(T('Pulsa una para ponerla en la zona elegida; si no hay zona elegida, se crea una nueva.'))+'</p>'
    +'<input type="search" data-msq placeholder="'+esc(T('Buscar…'))+'" aria-label="'+esc(T('Buscar imágenes'))+'" value="'+esc(MS.q)+'"><ul class="ms-docs" id="ms-docs"></ul>';
@@ -5014,8 +5025,8 @@ function msPonerImagen(id){
 /* Tirada en la bandeja de dados de la mesa (solo escritorio): la física se calcula en la ventana de los jugadores y el resultado vuelve aquí */
 function msTirar(prueba){
   const S=window.__AppShell;if(!S||!S.mesa)return;
-  const i=$('#ms-dn'),n=String(i.value||'').replace(/\s+/g,'').toLowerCase(),D='\\d{1,2}d(?:4|6|8|10|12|20|100)';MS.dn=i.value;
-  if(!new RegExp('^'+D+'(?:[+-](?:'+D+'|\\d{1,3}))*$').test(n)||(n.match(/\d{1,2}d/g)||[]).reduce((t,x)=>t+parseInt(x,10),0)>20){toast(T('Escribe una tirada como 2d6+3 (dados d4, d6, d8, d10, d12, d20 o d100; hasta 20 dados)'),5000);return;}
+  const i=$('#ms-dn'),n=String(i.value||'').replace(/\s+/g,'').toLowerCase(),D='\\d{1,2}d(?:4|6|8|10|12|20|100|2)';MS.dn=i.value;
+  if(!new RegExp('^'+D+'(?:[+-](?:'+D+'|\\d{1,3}))*$').test(n)||(n.match(/\d{1,2}d/g)||[]).reduce((t,x)=>t+parseInt(x,10),0)>20){toast(T('Escribe una tirada como 2d6+3 (dados d2, d4, d6, d8, d10, d12, d20 o d100; hasta 20 dados)'),5000);return;}
   if(prueba){const f=$('#ms-prev');
     if(!MS.capas.some(c=>c.visible&&c.tipo==='dados')){toast(T('Añade una bandeja de dados a la escena para probarla'),4000);return;}
     if(f&&f.contentWindow&&MS.listo){f.contentWindow.postMessage({tipo:'dados',notacion:n},location.origin);i.value='';MS.dn='';}return;}
@@ -5039,6 +5050,7 @@ function msAct(a,b){
   else if(a==='popover'){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
   else if(a==='add'){const t=b.dataset.t,n=msAnade(t,t==='texto'?{t:T('Escribe aquí el texto')}:t==='cuentas'?{nombre:T('Cuenta atrás'),min:5}:undefined);if(n&&t==='cuentas'){msCuenta(n);msCambio();cuentasMesa();msInsp();}}
   else if((a==='cuplay'||a==='cureset')&&c&&c.tipo==='cuentas'){const q=msCuenta(c);if(q){cuentaAct(a==='cuplay'?'cplay':'creset',q.id);msInsp();}}
+  else if(a==='telon')mesaTelon();
   else if(a==='tirar')msTirar();
   else if(a==='probar')msTirar(true);
   else if(a==='dadd'){const i=$('#ms-dn'),d=b.dataset.d,t=String(i.value||'').replace(/\s+/g,'').toLowerCase(),r=new RegExp('(^|[+-])(\\d{1,2})d'+d+'(?![0-9])');
@@ -8860,7 +8872,7 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   /* ventana de mesa (lo que ven los jugadores): acceso en la barra lateral y botón de orden en el combate */
   if(S.mesa){
     if(S.mesa.onResultado)S.mesa.onResultado(mesaResultado);
-    if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(v)setTimeout(cuentasMesa,600);if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;}mesaPanelRender();});
+    if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(v)setTimeout(cuentasMesa,600);if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;mesaEst.telon=false;}mesaPanelRender();});
     const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
     if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}
   }

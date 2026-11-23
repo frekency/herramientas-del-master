@@ -79,6 +79,12 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 #dres .tot{font-size:calc(var(--hh,300px)*.2);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
 #dres .det{font-size:calc(var(--hh,300px)*.06);font-weight:600;color:#f1ece0;margin-top:.4em}
 #dres .eti{font-size:calc(var(--hh,300px)*.05);color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+#telon{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vmin;opacity:0;visibility:hidden;transition:opacity .7s,visibility 0s .7s;pointer-events:none}
+#telon.on{opacity:1;visibility:visible;transition:opacity .7s}
+#telon svg{width:clamp(70px,16vmin,150px);height:auto;fill:none;stroke:var(--ac);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;animation:giro 2.4s linear infinite}
+#telon p{margin:0;max-width:80vw;text-align:center;font-size:clamp(22px,5vmin,56px);font-weight:600;color:var(--fg);letter-spacing:.03em}
+@keyframes giro{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#telon svg{animation:none}}
 body.previa{cursor:default}body.previa #aviso{display:none!important}
 
 </style>
@@ -89,6 +95,7 @@ body.previa{cursor:default}body.previa #aviso{display:none!important}
 <div id="ini"><header><h1>Iniciativa</h1><span class="ronda"></span><span class="cuenta" hidden></span></header><div id="lista"></div></div>
 <div id="avi"><h1></h1><p></p></div>
 <div id="esc"></div>
+<div id="telon" role="status" aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M12 7.5l-5 8.5h10z"/><path d="M12 2.5v5M3.5 7.3L7 16M20.5 7.3L17 16M7 16l5 5.5 5-5.5"/></svg><p id="telont"></p></div>
 <div id="dhost"><div id="dres" aria-live="polite"></div></div>
 <div id="cuentas" aria-live="polite"></div>
 <div id="aviso">F11 o doble clic: pantalla completa</div>
@@ -180,7 +187,7 @@ function troceaTirada(n){
   const g=[];let mod=0;
   for(const m of n.matchAll(/([+-]?)(\d+)(d(\d+))?/g)){
     const sg=m[1]==='-'?-1:1;
-    if(m[3])g.push({sg,qty:+m[2],sides:+m[4],not:m[2]+'d'+m[4]});else mod+=sg*+m[2];
+    if(m[3])g.push({sg,qty:+m[2],sides:+m[4],not:m[2]+'d'+(+m[4]===2?6:m[4])});else mod+=sg*+m[2];
   }
   return {g,mod};
 }
@@ -200,7 +207,7 @@ async function tirar(p){
 function dadosResultado(r){
   const pe=dbPend;if(!pe||!Array.isArray(r))return;dbPend=null;
   const valores=[];let total=pe.t.mod;
-  pe.t.g.forEach((g,i)=>{const gr=r[i]||{rolls:[]};const v=gr.rolls.map(x=>+x.value);valores.push(...v.map(x=>g.sg*x));total+=g.sg*v.reduce((a,b)=>a+b,0);});
+  pe.t.g.forEach((g,i)=>{const gr=r[i]||{rolls:[]};/* el d2 no tiene dado propio: cae un d6 y vale 1 con 1-3 y 2 con 4-6 */const v=gr.rolls.map(x=>g.sides===2?(+x.value>3?2:1):+x.value);valores.push(...v.map(x=>g.sg*x));total+=g.sg*v.reduce((a,b)=>a+b,0);});
   const R=$('#dres');R.textContent='';
   if(pe.p.etiqueta)R.append(el('div','eti',pe.p.etiqueta));
   R.append(el('div','tot',String(total)));
@@ -239,6 +246,7 @@ function actualizaOverlay(){
 function mostrar(p){
   if(!p)return;
   if(p.tipo==='dados'){tirar(p);return;}
+  if(p.tipo==='telon'){$('#telont').textContent=p.texto||'Empezamos enseguida';$('#telon').classList.toggle('on',!!p.activo);return;}
   if(p.tipo==='escena'){modo='escena';escena=p;ver('#esc');ponerEscena(p);return;}
   if(p.tipo==='cuentas'){
     cuData=p;

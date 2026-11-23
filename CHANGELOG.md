@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.98.3] - 2026-11-23
+### Añadido
+- Bandeja de dados: d2 (cae un d6; 1-3 vale 1 y 4-6 vale 2).
+### Añadido
+- Mesa: telón (pausa con animación y texto personalizado).
+### Quitado
+- Panel de la mesa: «Mostrar el orden» y «Mostrar el orden automáticamente» (lo toma la capa de iniciativa y el combate activo).
+
 ## [1.98.2] - 2026-11-23
 ### Corregido
 - «Tirar iniciativa PNJ» no tiraba las criaturas puestas en la banda de los jugadores; ahora tira a todas las que no son personajes y pregunta quién lleva la sorpresa (desventaja), ordenando al final.
