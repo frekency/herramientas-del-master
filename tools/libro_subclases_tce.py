@@ -67,7 +67,7 @@ def ocr_recortes(d, lst, vocab):
 
 
 CLASE_POR = [('alquimista', 'Artífice'), ('armero', 'Artífice'), ('artillero', 'Artífice'), ('herrero de batalla', 'Artífice'), ('senor de las bestias', 'Explorador'), ('creacion', 'Bardo'), ('elocuencia', 'Bardo'), ('bestia', 'Bárbaro'), ('magia salvaje', 'Bárbaro'), ('genio', 'Brujo'), ('insondable', 'Brujo'),
-             ('paz', 'Clérigo'), ('crepusculo', 'Clérigo'), ('orden', 'Clérigo'), ('esporas', 'Druida'), ('estrellas', 'Druida'), ('fuego salvaje', 'Druida'),
+             ('paz', 'Clérigo'), ('crepusculo', 'Clérigo'), ('escribas', 'Mago'), ('orden', 'Clérigo'), ('esporas', 'Druida'), ('estrellas', 'Druida'), ('fuego salvaje', 'Druida'),
              ('enjambre', 'Explorador'), ('vagabundo', 'Explorador'), ('runico', 'Guerrero'), ('psionico', 'Guerrero'), ('mecanica', 'Hechicero'), ('aberrante', 'Hechicero'),
              ('hoja', 'Mago'), ('escribas', 'Mago'), ('misericordia', 'Monje'), ('astral', 'Monje'), ('gloria', 'Paladín'), ('vigilantes', 'Paladín'),
              ('fantasma', 'Pícaro'), ('cuchillo del alma', 'Pícaro')]

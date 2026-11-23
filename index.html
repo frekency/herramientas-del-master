@@ -1638,6 +1638,8 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .cmtabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .cmtabs button .pcsub{margin-left:6px;color:inherit;opacity:.75}
 .cmbody{line-height:1.5}
+.cmimg{float:right;width:min(220px,38%);height:auto;margin:0 0 10px 16px;border-radius:10px;border:1px solid var(--line,#8884)}
+.cmwrap::after{content:"";display:block;clear:both}
 .cmbody p{margin:0 0 .6em}
 .cmbody h3{font-family:var(--f-display);font-size:19px;margin:1em 0 .3em}
 .cmbody h4{font-size:16px;margin:.9em 0 .25em}
@@ -4084,10 +4086,12 @@ let SRD=[], SRD_ALL=[], MY=[];   // SRD = lo visible (solo si el módulo está a
 // Datos guardados o importados con otra forma (archivos ajenos, módulos del catálogo): solo objetos y con nombre de texto
 const cleanList=(a,named=true)=>(Array.isArray(a)?a:[]).filter(x=>x&&typeof x==='object'&&!Array.isArray(x)&&(!named||String(x.n??'').trim())).map(x=>named||x.n!=null?{...x,n:String(x.n??'')}:x);
 // Cada campo con el tipo que espera la página: los textos como texto y las listas como listas
+const IMG_TYPES=['objetos','conjuros','especies','trasfondos','dotes','clases','rasgos'];   // tipos de módulo que pueden traer ilustración (campo img)
 const ITEM_STR={objetos:'t r s k d precio',dotes:'cat req d',clases:'d',rasgos:'d cls sub tipo base',especies:'tipo tam vel d',trasfondos:'car dote hab herr equipo d',reglas:'cat tag d',
   conjuros:'d dur rg ct comp sch en fl',criaturas:'ty sz al cr sp sk se la im re vu tyl hd en'};
 const txt=v=>v==null||typeof v==='string'?v:typeof v==='object'?'':String(v);
 function normItem(k,x){
+  if(IMG_TYPES.includes(k)&&'img' in x&&!(typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=90000))delete x.img;
   for(const f of (ITEM_STR[k]||'').split(' '))if(f&&f in x)x[f]=txt(x[f]);
   if(k==='clases'){x.sub=(Array.isArray(x.sub)?x.sub:[]).map(String);if(x.info!=null&&(typeof x.info!=='object'||Array.isArray(x.info)))x.info={};
     else if(x.info)for(const i in x.info)x.info[i]=txt(x.info[i])??'';}
@@ -5616,10 +5620,12 @@ function saveMods(){
 /* ---- imágenes (tokens) de los módulos: viven en IndexedDB y no en localStorage, que solo da unos 5 MB y con ellas se llenaba ---- */
 const TOKC=new Map();   // 'idmodulo|nombre' → imagen
 const tokKey=(md,c)=>md.id+'|'+fold(c.en||c.n);
+const imgKey=(md,k,x)=>md.id+'|'+k+'|'+fold(x.n);
 function tokDB(){return new Promise((ok,ko)=>{try{const r=indexedDB.open('hdm-tokens',1);r.onupgradeneeded=()=>r.result.createObjectStore('t');r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);}catch(e){ko(e);}});}
 function tokExtraer(list){
   const pend=[];
   for(const md of list)for(const c of md.criaturas||[])if(c&&typeof c.tok==='string'&&c.tok.startsWith('data:')){const k=tokKey(md,c);TOKC.set(k,c.tok);pend.push([k,c.tok]);delete c.tok;}
+  for(const md of list)for(const t of IMG_TYPES)for(const x of md[t]||[])if(x&&typeof x.img==='string'&&x.img.startsWith('data:')){const k=imgKey(md,t,x);TOKC.set(k,x.img);pend.push([k,x.img]);delete x.img;}
   return pend;
 }
 async function tokGuardar(pend){
@@ -5632,7 +5638,7 @@ async function tokBoot(){
   const pend=tokExtraer(mods().list);
   if(pend.length){
     if(await tokGuardar(pend))saveMods();
-    else for(const md of mods().list)for(const c of md.criaturas||[]){const t=TOKC.get(tokKey(md,c));if(t&&!c.tok)c.tok=t;}   // no se pudo: todo sigue como estaba
+    else for(const md of mods().list){for(const c of md.criaturas||[]){const t=TOKC.get(tokKey(md,c));if(t&&!c.tok)c.tok=t;}for(const ty of IMG_TYPES)for(const x of md[ty]||[]){const t=TOKC.get(imgKey(md,ty,x));if(t&&!x.img)x.img=t;}}   // no se pudo: todo sigue como estaba
   }
   try{refreshMods();render();refreshCompView();}catch{}
 }
@@ -6507,12 +6513,13 @@ function hbSet(n,on){
 function compList(tab,todas){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
   const camp=tab==='reglas'&&!todas?hbcLoad().map(x=>({n:String(x.n),cat:String(x.cat||'Homebrew'),tag:String(x.tag||''),d:String(x.d).slice(0,20000),ref:x.ref!==false,_src:'Homebrew de la campaña',_full:'Homebrew de la campaña',_camp:true,_html:false})):[];
-  const mod=activeMods().filter(modVeJug).sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mid:md.id,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
+  const mod=activeMods().filter(modVeJug).sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mid:md.id,_mine:!!md.mine,_html:false,img:IMG_TYPES.includes(tab)?(x.img||TOKC.get(imgKey(md,tab,x))):undefined})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   // mismo nombre en varias fuentes: gana lo revisado (o lo propio); lo pendiente no pisa al SRD ni a lo anterior y solo le añade su etiqueta
+  const imgDe=new Map();for(const x of mod)if(x.img&&!imgDe.has(fold(x.n)))imgDe.set(fold(x.n),x.img);   // la ilustración de un módulo no se pierde si manda la ficha del SRD
   const by=new Map();for(const x of [...srd,...mod,...camp]){const k=fold(x.n),e=by.get(k);
     if(!e||x._camp||!x.pend){if(e&&e._src!==x._src)x._also=[...new Set([...(x._also||[]),...(e._also||[]),e._src])].filter(a=>a!==x._src);by.set(k,x);}
     else if(e._src!==x._src)e._also=[...new Set([...(e._also||[]),x._src])];}
-  return [...by.values()].filter(x=>!(esJug()&&tab==='objetos'&&x.k==='magico')).filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
+  return [...by.values()].map(x=>x.img||!imgDe.has(fold(x.n))?x:{...x,img:imgDe.get(fold(x.n))}).filter(x=>!(esJug()&&tab==='objetos'&&x.k==='magico')).filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
 }
 const cmTxt=v=>esc(String(v??''));
 const CM_COLS={
@@ -6557,7 +6564,7 @@ function cmBody(x,tab=cmTab){
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):tab==='rasgos'?[['Clase',x.cls],['Subclase',x.sub],['Nivel',x.nv]]:[];
   const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')))
     +(tab==='clases'?(()=>{const l=compList('rasgos').filter(r=>r.tipo==='Subclase'&&fold(r.cls)===fold(x.n));return l.length?`<p><b>Subclases de manuales:</b> ${l.map(r=>esc(r.sub||r.base)+' <span class="tag">'+esc(r._src||'')+'</span>').join(', ')}</p>`:'';})():'');
-  return `<div class="cmbody">${pendBar(tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
+  return `<div class="cmbody">${pendBar(tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${x.img&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)?`<img class="cmimg" src="${x.img}" alt="" loading="lazy">`:''}${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }
 function toggleCompRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
