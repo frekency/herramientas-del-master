@@ -2681,9 +2681,11 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-main{display:grid;grid-template-columns:220px minmax(0,1fr) 260px;gap:12px;align-items:start}
 .ms-lib,.ms-insp{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg));max-height:calc(100dvh - 190px);overflow:auto}
 .ms-lib h3,.ms-insp h3{margin:4px 0 0;font:600 12px/1.2 var(--f-body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,inherit)}
-.ms-add{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ms-add .btn{justify-content:flex-start;text-align:left}
-.ms-dados{display:flex;gap:6px}.ms-dados input{flex:1;min-width:0}
-.ms-add .ms-dn{grid-column:1/-1}
+.ms-add{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.ms-add .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:8px 6px;text-align:center;line-height:1.15;white-space:normal;height:auto}
+.ms-add .btn svg{width:20px;height:20px}
+.ms-add.dd{grid-template-columns:repeat(4,1fr)}.ms-add.dd .btn{min-height:34px;padding:4px}
+.ms-dados{display:flex;flex-wrap:wrap;gap:6px}.ms-dados input{flex:1 1 100%;min-width:0}.ms-dados .btn{flex:1 1 0}
 .ms-docs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .ms-docs button{display:grid;grid-template-columns:44px 1fr;column-gap:8px;align-items:center;width:100%;padding:4px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--fg);text-align:left;cursor:pointer}
 .ms-docs button:hover,.ms-docs button:focus-visible{border-color:var(--line);background:color-mix(in srgb,var(--accent) 8%,transparent)}
@@ -3167,6 +3169,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.98 <span>23 nov 2026</span></h3><ul>
+      <li><b>v1.98.1 · Bandeja de dados:</b> tablero transparente (los dados caen sobre la escena), botón «Ocupar toda la ventana», los dados se retiran solos tras unos segundos (configurable) y la tirada se vacía al tirar. «Añadir a la escena» se ve ahora ordenado, con iconos.</li>
       <li><b>Mesa: tamaño proporcional.</b> Al arrastrar una esquina o escribir el ancho o el alto, la capa mantiene su proporción (Mayús para cambiarla libremente; casilla para desactivarlo).</li>
       <li><b>Mesa: la cuenta atrás se configura en su capa.</b> Nombre, minutos, iniciar, pausar y reiniciar están en la propia capa, y puedes elegir que desaparezca de la mesa al llegar a 0.</li>
       <li><b>Mesa: fondo de la escena.</b> Color liso, degradado (dos colores y ángulo) y una imagen de fondo de tu Galería.</li>
@@ -4763,7 +4766,7 @@ function msNorm(c){
   if(c.tipo==='imagen'){o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='cubrir'?'cubrir':'contener';o.titulo=String(c.titulo||'').slice(0,200);o.marco=!!c.marco;}
   if(c.tipo==='texto'){o.t=String(c.t??'').slice(0,2000);o.tam=msNum(c.tam,1,60,6);o.color=msCol(c.color,'#f1ece0');o.fondo=msCol(c.fondo,'');o.alin=['izq','centro','der'].includes(c.alin)?c.alin:'centro';o.fuente=['sans','serif','manuscrita'].includes(c.fuente)?c.fuente:'sans';o.negrita=!!c.negrita;}
   if(c.tipo==='cuentas'){o.cid=/^[a-z0-9]{1,24}$/i.test(c.cid||'')?c.cid:'';o.nombre=String(c.nombre??'').replace(/[\u0000-\u001f]/g,' ').slice(0,60);o.min=msNum(c.min,0.5,1440,5);o.fin=c.fin==='quitar'?'quitar':'mantener';}
-  if(c.tipo==='dados'){o.fondo=msCol(c.fondo,'#1d3a2b');o.color=msCol(c.color,'#b3262d');o.escala=msNum(c.escala,2,12,8);}
+  if(c.tipo==='dados'){o.fondo=c.fondo===''?'':msCol(c.fondo,'#1d3a2b');o.color=msCol(c.color,'#b3262d');o.escala=msNum(c.escala,2,12,8);o.limpia=msNum(c.limpia,0,120,10);}
   return o;
 }
 function msNormEsc(e){
@@ -4888,13 +4891,13 @@ function msBiblio(){
 function msLibHTML(){
   $('#ms-lib').innerHTML='<h3>'+esc(T('Añadir a la escena'))+'</h3><div class="ms-add">'
    +'<button type="button" class="btn sm" data-ms="add" data-t="imagen">'+ic('image')+' '+esc(T('Zona de imágenes'))+'</button>'
-   +'<button type="button" class="btn sm" data-ms="add" data-t="texto">'+esc(T('Texto'))+'</button>'
-   +'<button type="button" class="btn sm" data-ms="add" data-t="iniciativa">'+esc(T('Orden de iniciativa'))+'</button>'
-   +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+esc(T('Cuentas atrás'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="texto">'+ic('scroll')+' '+esc(T('Texto'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="iniciativa">'+ic('sword')+' '+esc(T('Orden de iniciativa'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+ic('hourglass')+' '+esc(T('Cuentas atrás'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="dados">'+ic('d20')+' '+esc(T('Bandeja de dados'))+'</button></div>'
    +'<h3>'+esc(T('Tirar en la bandeja'))+'</h3><div class="ms-dados"><input type="text" id="ms-dn" maxlength="60" value="'+esc(MS.dn||'1d20')+'" aria-label="'+esc(T('Tirada, por ejemplo 2d6+3'))+'" placeholder="2d6+3" autocomplete="off" spellcheck="false">'
    +'<button type="button" class="btn sm" data-ms="probar" title="'+esc(T('Tira aquí, en la vista previa, sin enviar nada a la mesa'))+'">'+esc(T('Probar'))+'</button><button type="button" class="btn sm primary" data-ms="tirar" title="'+esc(T('Tira en la ventana de la mesa'))+'">'+ic('d20')+' '+esc(T('Tirar'))+'</button></div>'
-   +'<div class="ms-add">'+['4','6','8','10','12','20','100'].map(d=>'<button type="button" class="btn sm ghost" data-ms="dadd" data-d="'+d+'" title="'+esc(T('Añadir un dado')+' d'+d)+'">d'+d+'</button>').join('')+'<button type="button" class="btn sm ghost" data-ms="dborrar" title="'+esc(T('Vaciar la tirada'))+'">✕</button></div>'
+   +'<div class="ms-add dd">'+['4','6','8','10','12','20','100'].map(d=>'<button type="button" class="btn sm ghost" data-ms="dadd" data-d="'+d+'" title="'+esc(T('Añadir un dado')+' d'+d)+'">d'+d+'</button>').join('')+'<button type="button" class="btn sm ghost" data-ms="dborrar" title="'+esc(T('Vaciar la tirada'))+'">✕</button></div>'
    +'<p class="hint" id="ms-dres">'+esc(T('Los dados se tiran en la bandeja de la mesa: la escena enviada debe tener una.'))+'</p>'
    +'<h3>'+esc(T('Imágenes y documentos'))+'</h3><label class="btn sm">'+ic('image')+' '+esc(T('Subir una imagen'))+'<input type="file" accept="image/*" data-msup hidden></label><p class="hint">'+esc(T('Pulsa una para ponerla en la zona elegida; si no hay zona elegida, se crea una nueva.'))+'</p>'
    +'<input type="search" data-msq placeholder="'+esc(T('Buscar…'))+'" aria-label="'+esc(T('Buscar imágenes'))+'" value="'+esc(MS.q)+'"><ul class="ms-docs" id="ms-docs"></ul>';
@@ -4942,8 +4945,10 @@ function msInsp(){
       +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con fondo de color'))+'</label>'+(c.fondo?'<label class="f">'+esc(T('Color del fondo'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label>':'');
     if(c.tipo==='iniciativa')p+='<p class="hint">'+esc(T('Muestra el orden del combate en curso, sin PG ni CA.'))+'</p>';
     if(c.tipo==='dados')p+='<p class="hint">'+esc(T('Aquí caen los dados, con física real: no pueden salirse del recuadro. Tira desde «Tirar en la bandeja».'))+'</p>'
-      +'<div class="ms-geo"><label class="f">'+esc(T('Tablero'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label><label class="f">'+esc(T('Dados'))+'<input type="color" data-msf="color" value="'+esc(c.color)+'"></label></div>'
-      +n('escala',T('Tamaño de los dados'),2,12);
+      +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con tablero (si no, los dados caen sobre la escena)'))+'</label>'
+      +'<div class="ms-geo">'+(c.fondo?'<label class="f">'+esc(T('Tablero'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label>':'')+'<label class="f">'+esc(T('Dados'))+'<input type="color" data-msf="color" value="'+esc(c.color)+'"></label></div>'
+      +n('escala',T('Tamaño de los dados'),2,12)+n('limpia',T('Retirar los dados a los (s, 0 = nunca)'),0,120)
+      +'<button type="button" class="btn sm" data-ms="llena">'+esc(T('Ocupar toda la ventana'))+'</button>';
     if(c.tipo==='cuentas'){const q=msCuenta(c);
       p+='<label class="f">'+esc(T('Nombre'))+'<input type="text" data-msf="nombre" maxlength="60" value="'+esc(c.nombre)+'" placeholder="'+esc(T('Trampa, puzle…'))+'"></label>'
         +'<div class="ms-geo"><label class="f">'+esc(T('Minutos'))+'<input type="number" data-msf="min" data-t="n" min="0.5" max="1440" step="0.5" value="'+c.min+'"></label>'
@@ -4988,9 +4993,9 @@ function msTirar(prueba){
   if(!new RegExp('^'+D+'(?:[+-](?:'+D+'|\\d{1,3}))*$').test(n)||(n.match(/\d{1,2}d/g)||[]).reduce((t,x)=>t+parseInt(x,10),0)>20){toast(T('Escribe una tirada como 2d6+3 (dados d4, d6, d8, d10, d12, d20 o d100; hasta 20 dados)'),5000);return;}
   if(prueba){const f=$('#ms-prev');
     if(!MS.capas.some(c=>c.visible&&c.tipo==='dados')){toast(T('Añade una bandeja de dados a la escena para probarla'),4000);return;}
-    if(f&&f.contentWindow&&MS.listo)f.contentWindow.postMessage({tipo:'dados',notacion:n},location.origin);return;}
+    if(f&&f.contentWindow&&MS.listo){f.contentWindow.postMessage({tipo:'dados',notacion:n},location.origin);i.value='';MS.dn='';}return;}
   if(!msVivo()||!MS.capas.some(c=>c.visible&&c.tipo==='dados')){toast(T('Envía a la mesa una escena con una bandeja de dados para poder tirar'),5000);return;}
-  S.mesa.enviar({tipo:'dados',notacion:n});
+  S.mesa.enviar({tipo:'dados',notacion:n});i.value='';MS.dn='';
   const r=$('#ms-dres');if(r)r.textContent=T('Tirando…');
 }
 function mesaResultado(r){
@@ -5023,7 +5028,8 @@ function msAct(a,b){
   else if(a==='centrar'&&c){c.x=Math.round((100-c.w)/2*10)/10;c.y=Math.round((100-c.h)/2*10)/10;msGeo(c);msCambio();}
   else if(a==='llenar'&&c){c.x=0;c.y=0;c.w=100;c.h=100;msGeo(c);msCambio();}
   else if(a==='quitaimg'&&c){c.nid='';msOv();msInsp();msCambio();}
-  else if(a==='confondo'&&c){c.fondo=b.checked?'#000000':'';msInsp();msCambio();}
+  else if(a==='llena'&&c){c.x=0;c.y=0;c.w=100;c.h=100;msGeo(c);msInsp();msCambio();}
+  else if(a==='confondo'&&c){c.fondo=b.checked?(c.tipo==='dados'?'#1d3a2b':'#000000'):'';msInsp();msCambio();}
   else if(a==='nueva'){const vaciar=()=>{MS.nombre='';MS.fondo='#0b0a09';MS.fundido=400;MS.capas=[];MS.sel=null;msBarra();msOv();msInsp();msCambio();};if(!MS.capas.length)vaciar();else Dlg.si(T('¿Vaciar la escena actual? Las plantillas guardadas no se tocan.'),{peligro:true,aceptar:T('Vaciar')}).then(ok=>{if(ok)vaciar();});}
   else if(a==='plcargar'){
     const v=($('#ms-pl')||{}).value||'';let e=null;

@@ -32,7 +32,8 @@ function validarCapa(c, i) {
     op: num(c.op, 0, 1, 1),
   };
   if (c.tipo === 'dados') {
-    o.fondo = typeof c.fondo === 'string' && COLOR.test(c.fondo) ? c.fondo : '#1d3a2b';
+    o.fondo = c.fondo === '' ? '' : typeof c.fondo === 'string' && COLOR.test(c.fondo) ? c.fondo : '#1d3a2b';   // '' = tablero transparente
+    o.limpia = num(c.limpia, 0, 120, 10);   // segundos hasta que los dados se retiran solos (0 = nunca)
     o.color = typeof c.color === 'string' && COLOR.test(c.color) ? c.color : '#b3262d';
     o.escala = num(c.escala, 2, 12, 8);
     return o;

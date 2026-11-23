@@ -70,6 +70,7 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .capa .vacio{color:var(--muted);font-size:4cqh;margin:auto}
 .capa.cuentas.fuera{opacity:0!important;transition:opacity .6s;pointer-events:none}
 .capa.dados{border-radius:2.4cqh;box-shadow:inset 0 0 0 .9cqh #5b3a1e,inset 0 0 7cqh #000c;display:flex;align-items:center;justify-content:center}
+.capa.dados.libre{box-shadow:none;border-radius:0}
 .capa.dados .dlabel{color:#ffffff55;font-size:5cqh;font-weight:700}
 /* tablero de la física de los dados: se coloca encima de la capa «dados»; los dados no pueden salir de su recuadro */
 #dhost{position:fixed;display:none;z-index:4;pointer-events:none;overflow:hidden;border-radius:1.2vmin}
@@ -145,7 +146,7 @@ function construir(p){
     else if(c.tipo==='texto'){d.classList.add(c.alin==='izq'?'izq':c.alin==='der'?'der':'cen',c.fuente);if(c.negrita)d.classList.add('negrita');
       d.style.setProperty('--tam',c.tam);d.style.color=c.color;if(c.fondo)d.style.background=c.fondo;
       const t=el('div','',c.t);t.style.textAlign=c.alin==='izq'?'left':c.alin==='der'?'right':'center';d.append(t);}
-    else if(c.tipo==='dados'){d.style.background=c.fondo;d.append(el('div','dlabel',REAL?'':'🎲 Bandeja de dados'));}
+    else if(c.tipo==='dados'){if(c.fondo)d.style.background=c.fondo;else d.classList.add('libre');d.append(el('div','dlabel',REAL?'':'🎲 Bandeja de dados'));}
     else if(c.tipo==='iniciativa')pintaIni(d);
     else if(c.tipo==='cuentas'){d.dataset.cid=c.cid||'';d.dataset.fin=c.fin||'';pintaCuentas(d);}
     L.append(d);
@@ -183,7 +184,9 @@ function troceaTirada(n){
   }
   return {g,mod};
 }
+let dbT=0;
 async function tirar(p){
+  clearTimeout(dbT);
   if(!dadosCapa())return;
   const cfg=escena&&escena.capas.find(c=>c.tipo==='dados'&&c.visible);if(!cfg)return;
   let b;try{b=await dadosMotor(cfg);}catch(e){$('#dres').textContent='';const d=el('div','det','No se pudo cargar la bandeja de dados');$('#dres').append(d);return;}
@@ -203,6 +206,8 @@ function dadosResultado(r){
   R.append(el('div','tot',String(total)));
   const det=valores.map((v,i)=>v<0?'− '+(-v):(i?'+ ':'')+v).join(' ')+(pe.t.mod?(pe.t.mod<0?' − ':' + ')+Math.abs(pe.t.mod):'');
   R.append(el('div','det',pe.p.notacion+' · '+det));
+  const cf=escena&&escena.capas.find(c=>c.tipo==='dados'&&c.visible);
+  if(cf&&cf.limpia>0){clearTimeout(dbT);dbT=setTimeout(()=>{try{DB.clear();}catch{}R.textContent='';},cf.limpia*1000);}
   if(P.resultado)P.resultado({notacion:pe.p.notacion,total,dados:valores,mod:pe.t.mod});
 }
 addEventListener('resize',posicionaDados);

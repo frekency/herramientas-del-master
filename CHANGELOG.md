@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.98.1] - 2026-11-23
+### Cambiado
+- Bandeja de dados: tablero transparente, ocupar toda la ventana, retirada automática de los dados y de la tirada escrita; rediseño de «Añadir a la escena».
+
 ## [1.98.0] - 2026-11-23
 ### Añadido
 - Mesa: redimensión proporcional de las capas; cuenta atrás configurable dentro de su capa (con opción de retirarla al llegar a 0); fondo de escena con degradado e imagen; «Probar» dados y cuentas en la vista previa.
