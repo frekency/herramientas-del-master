@@ -9004,7 +9004,7 @@ function mdbFilas(){
     for(const t of tipos){
       let parte=[],tam=0,i=0;
       const vuelca=()=>{if(parte.length){f[`m.${sl}.${t}.${i++}`]={t,items:parte};parte=[];tam=0;}};
-      for(const x of md[t]){const n=JSON.stringify(x).length;if(tam+n>3000000)vuelca();parte.push(x);tam+=n;}
+      for(const x of md[t]){const n=JSON.stringify(x).length;if(tam+n>2000000)vuelca();parte.push(x);tam+=n;}
       vuelca();
     }
   }

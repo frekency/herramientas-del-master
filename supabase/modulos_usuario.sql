@@ -18,3 +18,19 @@ create policy "cada uno lo suyo" on public.modulos_usuario
 
 -- Que la API reconozca la tabla nueva al momento.
 notify pgrst, 'reload schema';
+
+-- Cada cambio deja la hora, y como mucho 400 filas por persona (los cuatro manuales con todo ocupan unas 60) para que nadie llene la base de datos.
+create or replace function public.proteger_modulo_usuario() returns trigger
+language plpgsql set search_path = '' as $$
+begin
+  if current_user not in ('authenticated','anon') then return new; end if;
+  if tg_op = 'INSERT' and (select count(*) from public.modulos_usuario where user_id = new.user_id) >= 400 then
+    raise exception 'Has llegado al límite de 400 trozos de módulos';
+  end if;
+  new.actualizado := now();
+  return new;
+end $$;
+drop trigger if exists proteger_modulo_usuario on public.modulos_usuario;
+create trigger proteger_modulo_usuario before insert or update on public.modulos_usuario
+  for each row execute function public.proteger_modulo_usuario();
+notify pgrst, 'reload schema';
