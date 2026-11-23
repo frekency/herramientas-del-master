@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.93.0] - 2026-11-23
+### Añadido
+- Los módulos activos en la cuenta y en la campaña del máster se comparten con los jugadores de la campaña (compendio, conjuros y creador de fichas), sin criaturas, tablas ni objetos mágicos. Al desactivarlos, dejan de verse.
+
 ## [1.92.1] - 2026-11-23
 ### Cambiado
 - Las tablas que pertenecen a un objeto o rasgo ya no salen en la lista de tablas aleatorias ni en la herramienta Tablas: solo en su ficha.

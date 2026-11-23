@@ -66,7 +66,7 @@ test('Supabase: todas las tablas con RLS y las funciones security definer con se
 
 test('los datos de terceros (módulos) no pueden marcarse como HTML de confianza',()=>{
   // Solo el SRD propio se pinta como HTML; un módulo con «_html:true» colaría código en la página.
-  const m=PAGE.match(/const mod=activeMods\(\)[^\n]*/)?.[0]||'';
+  const m=PAGE.match(/const mod=\[\.\.\.activeMods\(\)[^\n]*/)?.[0]||'';
   assert.match(m,/_html:false/,'compList no anula _html en los módulos');
 });
 
