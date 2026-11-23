@@ -3157,6 +3157,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.95 <span>23 nov 2026</span></h3><ul>
+      <li><b>Nuevo jugador: elige el grupo.</b> Si hay más de un grupo de jugadores, el formulario deja elegir en cuál aparece (por defecto, el actual).</li>
       <li><b>Web: los módulos viven en tu cuenta.</b> El navegador solo guarda lo esencial; tus manuales y homebrew se guardan en Supabase (tabla <code>modulos_usuario</code>, troceados, solo tuyos) y se bajan al entrar. Hay que ejecutar <code>supabase/modulos_usuario.sql</code> una vez. En la app de escritorio siguen en el disco.</li>
     </ul></li>
     <li><h3>v1.94 <span>23 nov 2026</span></h3><ul>
@@ -3765,6 +3766,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <div class="mbody" style="display:grid;gap:12px">
       <label class="f">Nombre del jugador<input id="jg-n" required maxlength="60"></label>
       <label class="f">Nick o usuario <small class="pcsub">(opcional; con él entra a la app)</small><input id="jg-u" maxlength="24" autocapitalize="none" spellcheck="false"></label>
+      <label class="f" id="jg-gw">Grupo <small class="pcsub">(donde aparece en Jugadores)</small><select id="jg-g"></select></label>
       <label class="f" id="jg-ew">Correo <small class="pcsub">(opcional; solo para crear su cuenta, no se guarda)</small><input id="jg-e" type="email" maxlength="120"></label>
       <label class="chk" id="jg-cw"><input type="checkbox" id="jg-c"> Crear su cuenta ahora (con contraseña provisional)</label>
       <p class="hint" style="display:block;margin:0" id="jg-hint">Un jugador es una persona de tu mesa. Sus personajes se crean y se le asignan después, en Personajes.</p>
@@ -6114,6 +6116,8 @@ function openJug(id){
   $('#jg-n').value=p?p.n:'';$('#jg-u').value=p&&p.nick||'';$('#jg-e').value='';
   const m=p&&GRP.flatMap(x=>x.miembros).find(x=>x.k==='jugador'&&x.ref===p.id),puede=!!(SB&&SB_USER&&SB_DM!==false&&Store.campaigns.rol()!=='jugador'&&!(m&&m.usuario));
   $('#jg-cw').hidden=$('#jg-ew').hidden=!puede;$('#jg-c').checked=puede&&!p;
+  const gs=GRP.filter(g=>g.tipo==='jugadores'),act=m&&GRP.find(g=>g.miembros.some(y=>y.id===m.id));
+  $('#jg-g').innerHTML=gs.map(g=>`<option value="${esc(g.id)}">${esc(g.n)}</option>`).join('');$('#jg-g').value=act?act.id:(gs[0]?gs[0].id:'');$('#jg-gw').hidden=gs.length<2;
   $('#jugmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#jg-n').focus(),0);
 }
 $('#jugform').addEventListener('submit',async e=>{
@@ -6125,6 +6129,8 @@ $('#jugform').addEventListener('submit',async e=>{
   p.n=n;if(nick)p.nick=nick;else delete p.nick;p.tyl=pcSub(p);
   if(!old)PARTY.push(p);
   saveParty();grpSync();
+  {const gid=$('#jg-g').value,mm=GRP.flatMap(x=>x.miembros).find(x=>x.k==='jugador'&&x.ref===p.id),act=mm&&GRP.find(g=>g.miembros.some(y=>y.id===mm.id));
+   if(gid&&mm&&act&&act.id!==gid&&GRP.some(g=>g.id===gid&&g.tipo==='jugadores')){const r=Grupos.mover(GRP,mm.id,gid);if(r.ok){GRP=r.lista;grpSave();}}}
   $('#jugmodal').hidden=true;syncModalOpen();renderParty();
   toast(`«${p.n}» ${T(old?'guardado':'añadido a la campaña')}`);
   if(crear){

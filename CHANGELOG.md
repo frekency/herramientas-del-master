@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.95.1] - 2026-11-23
+### Añadido
+- Nuevo jugador: selector de grupo cuando hay varios grupos de jugadores.
+
 ## [1.95.0] - 2026-11-23
 ### Cambiado
 - Web: los módulos se guardan en la cuenta (tabla `modulos_usuario`, ver `supabase/modulos_usuario.sql`) y no en el navegador; en el escritorio siguen en el disco.
