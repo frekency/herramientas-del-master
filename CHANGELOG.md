@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.104.0] - 2026-11-24
+### Añadido
+- Creador de personajes por pasos (Clase, Especie, Trasfondo, Características, Detalles, Resumen) con Siguiente/Atrás: habilidades de clase, puntos del trasfondo, conjunto estándar, 4d6 o compra de puntos, y desglose del origen de cada valor en el registro de la ficha. Sustituye al formulario único.
+
 ## [1.103.0] - 2026-11-24
 ### Añadido
 - Ambiente: buscador de sonidos de Freesound y Jamendo con la clave del usuario (guardada en la carpeta de datos, no en la página ni en las escenas), con autor, licencia, duración, escucha previa y crédito en la capa.

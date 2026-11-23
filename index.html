@@ -2610,6 +2610,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .pjab .k{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)}.pjab .m{font-size:30px;font-weight:800;line-height:1.05}.pjab .sv{font-size:12px;color:var(--muted)}
 .pjab input{width:58px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--fg);padding:3px}
 .pjab .lk{font-size:13px;color:var(--muted)}
+.pjw{max-width:760px}.pjw-pasos{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}.pjw-pasos button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;cursor:pointer;font:inherit}.pjw-pasos button.on{background:var(--accent);color:var(--on-accent,#fff);border-color:var(--accent)}.pjw-pasos button.hecho{color:var(--fg)}.pjw-pasos span{font-weight:700}
+.pjw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:8px 0}.pjw-op{text-align:left;border:1px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:8px;padding:8px 10px;cursor:pointer;font:inherit;display:grid;gap:2px}.pjw-op small{color:var(--muted)}.pjw-op.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pjw-chips{display:flex;flex-wrap:wrap;gap:6px}.pjw-chip{border:1px solid var(--line);border-radius:999px;padding:3px 10px}.pjw-det{border-left:3px solid var(--accent);padding:2px 10px;margin:8px 0;max-height:240px;overflow:auto}.pjw-car{border-collapse:collapse;margin:8px 0}.pjw-car th,.pjw-car td{padding:4px 10px;text-align:left}.pjw-pie{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}.pjw-orig{margin:6px 0;padding-left:18px;display:grid;gap:2px}
 .pjrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .pjrow label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
 .pjbox input,.pjbox select,.pjbox textarea,.pjm input,.pjm select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-width:0}
@@ -2977,7 +2980,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.103</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.104</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3176,6 +3179,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.104 <span>24 nov 2026</span></h3><ul>
+      <li><b>Creador de personajes por pasos</b> (primer borrador): Clase → Especie → Trasfondo → Características → Detalles → Resumen, con Siguiente y Atrás como en D&amp;D Beyond. Elige las habilidades de la clase, reparte los 3 puntos del trasfondo (+2/+1 o +1/+1/+1), asigna las características (conjunto estándar, 4d6 o compra de puntos) y al final ves de dónde sale cada cosa. La hoja nace con salvaciones, competencias, dote de origen, herramienta, velocidad y alineamiento, y el desglose queda en el registro.</li>
+    </ul></li>
     <li><h3>v1.103 <span>24 nov 2026</span></h3><ul>
       <li><b>Buscar sonidos en Freesound y Jamendo</b> desde la capa de ambiente (origen «Enlace»). Hace falta tu propia clave gratuita de cada servicio: se pega una vez, se guarda solo en este equipo y la página nunca la vuelve a ver. En Freesound se puede limitar a CC0 (sin citar al autor). Cada resultado enseña autor, licencia y duración, se puede escuchar antes de elegirlo y, al usarlo, queda el crédito anotado en la capa.</li>
     </ul></li>
@@ -6964,7 +6970,7 @@ function rasgosDeClases(cl){
 }
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
-  getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;refreshCompView();renderHome();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
+  getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;refreshCompView();renderHome();if(pjEdit==='new')pjRender();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
 }
 /* Reglas homebrew por campaña: sin ajuste guardado valen todas; con ajuste, solo las marcadas (en la configuración de la campaña, que viaja con ella). */
 /* Reglas homebrew que el máster tiene activas en la campaña: el jugador recibe una copia de solo lectura (clave camp-homebrew-v1). */
@@ -7145,10 +7151,9 @@ function extraAct(act,b,c,e){
     case 'epadd':{const m=epHits[+b.dataset.i];if(m)epAddMon(m);break;}
     case 'eprm':epDraft.rows.splice(+b.dataset.i,1);epRenderDet();break;
     case 'epgen':epGenerar();break;
-    case 'pjnew':pjEdit='new';pjSel=null;if(location.hash!=='#personajes')location.hash='personajes';pjRender();break;
-    case 'pjcancel':pjEdit=null;pjRender();break;
-    case 'pjstd':Ficha.AB.forEach((a,i)=>{$('#pjn-'+a).value=[15,14,13,12,10,8][i];});break;
-    case 'pjrand':Ficha.AB.forEach(a=>{const d=[1,2,3,4].map(()=>1+Math.floor(Math.random()*6)).sort((x,y)=>y-x);$('#pjn-'+a).value=d[0]+d[1]+d[2];});break;
+    case 'pjw':pjwAct(b);break;
+    case 'pjnew':PJW=null;pjEdit='new';pjSel=null;if(location.hash!=='#personajes')location.hash='personajes';pjRender();break;
+    case 'pjcancel':pjEdit=null;PJW=null;pjRender();break;
     case 'pjimport':pjModo='importar';pjModal(T('Importar personaje'),pjImportHTML());break;
     case 'pjimpgo':{const txt=$('#pji-txt').value;let r=Ficha.importar(txt);
       if(!r.ok)r=Ficha.desdeRoliando(txt,n=>{const q=SPELLS[n.toLowerCase()];return q?{n:q.n,lv:q.lv}:null;});
@@ -7856,16 +7861,161 @@ function pjRelHTML(f){
   const n=Ficha.arbol([f],pjGruposCamp()).nodos[0];
   return n&&n.copias.length?'<div class="pjbox pjrel"><div class="pjrow"><span class="pcsub">'+esc(T('Versiones en campañas'))+'</span>'+n.copias.map(pjChip).join('')+'</div></div>':'';
 }
-function pjFormHTML(){
-  return '<form id="pj-form" class="pjbox" style="max-width:640px"><h3>'+esc(T('Nuevo personaje'))+'</h3><div class="pjrow">'
-   +'<label style="flex:1 1 200px">'+esc(T('Nombre'))+'<input id="pjn-n" maxlength="80" required></label>'
-   +'<label>'+esc(T('Clase'))+'<select id="pjn-c">'+Object.keys(CLSN).map(c=>'<option value="'+c+'">'+esc(T(CLSN[c]))+'</option>').join('')+'</select></label>'
-   +'<label>'+esc(T('Especie'))+'<input id="pjn-e" maxlength="80" list="cm-esp-dl"></label><label>'+esc(T('Trasfondo'))+'<input id="pjn-t" maxlength="80" list="cm-tf-dl"></label></div>'
-   +'<div class="pjrow">'+Ficha.AB.map((a,i)=>'<label>'+esc(T(ABK[a]))+'<input id="pjn-'+a+'" type="number" min="1" max="30" value="'+[15,14,13,12,10,8][i]+'"></label>').join('')+'</div>'
-   +'<div class="pjrow"><button type="button" class="btn sm" data-act="pjstd">'+esc(T('Valores estándar'))+'</button><button type="button" class="btn sm" data-act="pjrand">'+esc(T('Tirar 4d6'))+'</button></div>'
-   +'<div class="pjrow"><label>'+esc(T('Dónde'))+'<select id="pjn-donde"><option value="libre">'+esc(T('Mis personajes (libre)'))+'</option><option value="campana">'+esc(T('Esta campaña'))+'</option></select></label></div>'
-   +'<div class="pjrow"><button type="submit" class="btn primary">'+esc(T('Crear'))+'</button><button type="button" class="btn ghost" data-act="pjcancel">'+esc(T('Cancelar'))+'</button></div></form>';
+/* ---- asistente de creación de personaje (pasos del Manual del Jugador 2024): clase → origen (especie, trasfondo) → características → detalles ---- */
+const PJW_PASOS=['Clase','Especie','Trasfondo','Características','Detalles','Resumen'];
+const PJW_STD=[15,14,13,12,10,8],PJW_COSTE={8:0,9:1,10:2,11:3,12:4,13:5,14:7,15:9},PJW_PUNTOS=27;
+const PJW_NUM={una:1,uno:1,dos:2,tres:3,cuatro:4};
+const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
+let PJW=null;
+function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',donde:'libre'};}
+const pjwComp=(lista,n)=>((COMP_SRD&&COMP_SRD[lista])||[]).find(x=>fold(x.n)===fold(n))||null;
+const pjwClase=k=>pjwComp('clases',CLSN[k]);
+const pjwAbKey=s=>{const f=fold(s);return Ficha.AB.find(a=>fold(({fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'})[a])===f)||'';};
+const pjwHabKey=s=>{const f=fold(s).replace(/^conocimiento arcano$/,'arcanos');return Object.keys(Ficha.HAB_NOM).find(k=>fold(Ficha.HAB_NOM[k])===f)||'';};
+/* competencias en habilidades que da la clase: cuántas y entre cuáles (el compendio parte el texto de Bardo y Druida en dos filas) */
+function pjwHabClase(k){
+  const c=pjwClase(k);if(!c||!c.info)return {n:0,op:[]};
+  const e=Object.entries(c.info),i=e.findIndex(([a])=>/habilidades|^Competencias( en)?$/.test(a));if(i<0)return {n:0,op:[]};
+  let s='';for(let j=i;j<e.length&&!/^Competencias con/.test(e[j][0]);j++)s+=' '+e[j][1];
+  const m=/Elige (\w+)/i.exec(s),n=PJW_NUM[fold(m?m[1]:'')]||0;
+  if(/cualesquiera/i.test(s))return {n,op:Object.keys(Ficha.HAB_NOM)};
+  const op=s.replace(/^[^:]*:/,'').split(/,| o /).map(x=>pjwHabKey(x.trim().replace(/\.$/,''))).filter(Boolean);
+  return {n,op:[...new Set(op)]};
 }
+const pjwOpcTf=tf=>String(tf&&tf.car||'').split(/,| o | y /).map(pjwAbKey).filter(Boolean);
+function pjwBono(w){
+  const o={},tf=pjwComp('trasfondos',w.tf);if(!tf)return o;
+  if(w.tfm==='111'){for(const a of pjwOpcTf(tf))o[a]=1;}else{if(w.tfa[0])o[w.tfa[0]]=2;if(w.tfa[1])o[w.tfa[1]]=(o[w.tfa[1]]||0)+1;}
+  return o;
+}
+function pjwBase(w){
+  if(w.met==='compra')return {...w.compra};
+  const b={};for(const a of Ficha.AB){const i=w.asig[a];b[a]=i!==undefined&&i>=0?w.pool[i]:0;}return b;
+}
+const pjwGastado=w=>Ficha.AB.reduce((s,a)=>s+PJW_COSTE[w.compra[a]],0);
+function pjwFinal(w){const b=pjwBase(w),n=pjwBono(w),o={};for(const a of Ficha.AB)o[a]=Math.min(20,(b[a]||0)+(n[a]||0));return o;}
+function pjwValido(w,p){
+  if(p===0){const h=pjwHabClase(w.cls);return !!w.cls&&(!h.n||w.sk.length===h.n);}
+  if(p===1)return !!w.esp;
+  if(p===2){const tf=pjwComp('trasfondos',w.tf);if(!tf)return false;return w.tfm==='111'||(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
+  if(p===3){if(w.met==='compra')return pjwGastado(w)<=PJW_PUNTOS;const u=Ficha.AB.map(a=>w.asig[a]);return u.every(i=>i!==undefined&&i>=0)&&new Set(u).size===6;}
+  return true;
+}
+const pjwTarj=(act,val,sel,tit,sub)=>'<button type="button" class="pjw-op'+(sel?' on':'')+'" data-act="pjw" data-w="'+act+'" data-v="'+esc(val)+'" aria-pressed="'+!!sel+'"><b>'+esc(tit)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</button>';
+const pjwPlano=h=>String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+function pjwPaso(w){
+  const cargando=!COMP_SRD;
+  if(cargando&&w.paso<3)return '<p class="hint" role="status">'+esc(T('Cargando el compendio…'))+'</p>';
+  if(w.paso===0){
+    const h=pjwHabClase(w.cls);
+    let s='<p class="hint">'+esc(T('Paso 1 del Manual del Jugador: elige tu clase. Marca tu forma de jugar: el dado de golpe, las salvaciones y el lanzamiento de conjuros salen de ella.'))+'</p><div class="pjw-grid">'
+      +Object.keys(CLSN).map(k=>{const C=Ficha.CLASES[k],c=pjwClase(k);return pjwTarj('cls',k,w.cls===k,T(CLSN[k]),'d'+C.d+' · '+T('Salvaciones')+' '+C.sv.map(a=>ABK[a]).join('/')+(C.cast?' · '+T('Conjuros'):'')+(c&&c.info&&c.info['Característica principal']?' · '+c.info['Característica principal']:''));}).join('')+'</div>';
+    if(w.cls&&h.n)s+='<h4>'+esc(T('Habilidades de clase'))+': '+esc(T('elige'))+' '+h.n+' ('+w.sk.length+'/'+h.n+')</h4><div class="pjw-chips">'
+      +h.op.map(k=>'<label class="pjw-chip"><input type="checkbox" data-pjw="sk" value="'+k+'"'+(w.sk.includes(k)?' checked':'')+(!w.sk.includes(k)&&w.sk.length>=h.n?' disabled':'')+'> '+esc(T(Ficha.HAB_NOM[k]))+'</label>').join('')+'</div>';
+    return s;
+  }
+  if(w.paso===1){
+    const L=(COMP_SRD.especies||[]);const e=pjwComp('especies',w.esp);
+    return '<p class="hint">'+esc(T('Paso 2: tu origen. Primero la especie. Sus rasgos (visión, resistencias, conjuros…) se anotan en la hoja al terminar.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('esp',x.n,w.esp===x.n,x.n,String(x.vel||'')+' · '+String(x.tam||'').split(' (')[0])).join('')+'</div>'
+      +(e?'<div class="pjw-det"><h4>'+esc(e.n)+'</h4>'+e.d+'</div>':'');
+  }
+  if(w.paso===2){
+    const L=(COMP_SRD.trasfondos||[]),tf=pjwComp('trasfondos',w.tf);
+    let s='<p class="hint">'+esc(T('Paso 2 (cont.): el trasfondo da una dote de origen, dos competencias en habilidades, una herramienta y 3 puntos de característica que repartes tú.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('tf',x.n,w.tf===x.n,x.n,x.dote)).join('')+'</div>';
+    if(tf){
+      const op=pjwOpcTf(tf);
+      s+='<div class="pjw-det"><h4>'+esc(tf.n)+'</h4><p><b>'+esc(T('Dote'))+':</b> '+esc(tf.dote)+' · <b>'+esc(T('Habilidades'))+':</b> '+esc(tf.hab)+' · <b>'+esc(T('Herramienta'))+':</b> '+esc(tf.herr)+'</p>'
+       +'<p><b>'+esc(T('Equipo'))+':</b> '+esc(tf.equipo)+'</p></div>'
+       +'<h4>'+esc(T('Puntos de característica del trasfondo'))+'</h4><div class="pjrow">'
+       +'<label><input type="radio" name="pjw-tfm" data-pjw="tfm" value="21"'+(w.tfm==='21'?' checked':'')+'> +2 / +1</label><label><input type="radio" name="pjw-tfm" data-pjw="tfm" value="111"'+(w.tfm==='111'?' checked':'')+'> +1 / +1 / +1</label></div>';
+      if(w.tfm==='21')s+='<div class="pjrow">'+[['0','+2'],['1','+1']].map(([i,l])=>'<label>'+l+' <select data-pjw="tfa" data-i="'+i+'"><option value="">—</option>'+op.map(a=>'<option value="'+a+'"'+(w.tfa[+i]===a?' selected':'')+'>'+esc(ABK[a])+'</option>').join('')+'</select></label>').join('')+'</div>'
+        +(w.tfa[0]&&w.tfa[0]===w.tfa[1]?'<p class="hint" role="alert">'+esc(T('Elige dos características distintas'))+'</p>':'');
+      else s+='<p class="hint">'+op.map(a=>ABK[a]).join(', ')+' +1</p>';
+    }
+    return s;
+  }
+  if(w.paso===3){
+    const fin=pjwFinal(w),b=pjwBase(w),n=pjwBono(w);
+    let s='<p class="hint">'+esc(T('Paso 3: puntuaciones de característica. Asigna los valores y se suman los puntos del trasfondo (máximo 20).'))+'</p><div class="pjrow">'
+      +[['std','Conjunto estándar'],['dados','Tirar 4d6'],['compra','Compra de puntos']].map(([k,l])=>'<label><input type="radio" name="pjw-met" data-pjw="met" value="'+k+'"'+(w.met===k?' checked':'')+'> '+esc(T(l))+'</label>').join('')
+      +(w.met==='dados'?'<button type="button" class="btn sm" data-act="pjw" data-w="tirar">'+esc(T('Volver a tirar'))+'</button>':'')+'</div>';
+    if(w.met==='compra')s+='<p role="status"><b>'+esc(T('Puntos gastados'))+': '+pjwGastado(w)+' / '+PJW_PUNTOS+'</b></p>';
+    else s+='<p class="hint">'+esc(T('Valores'))+': '+w.pool.slice().sort((x,y)=>y-x).join(', ')+'</p>';
+    s+='<table class="pjw-car"><thead><tr><th>'+esc(T('Característica'))+'</th><th>'+esc(T('Base'))+'</th><th>'+esc(T('Trasfondo'))+'</th><th>'+esc(T('Total'))+'</th><th>'+esc(T('Mod.'))+'</th></tr></thead><tbody>'
+      +Ficha.AB.map(a=>{
+        const usados=new Set(Object.values(w.asig).filter(i=>i>=0));
+        const celda=w.met==='compra'
+          ?'<button type="button" class="btn sm" data-act="pjw" data-w="menos" data-v="'+a+'" aria-label="'+esc(T('Bajar')+' '+ABK[a])+'">−</button> <b>'+w.compra[a]+'</b> <button type="button" class="btn sm" data-act="pjw" data-w="mas" data-v="'+a+'" aria-label="'+esc(T('Subir')+' '+ABK[a])+'">+</button>'
+          :'<select data-pjw="asig" data-a="'+a+'" aria-label="'+esc(ABK[a])+'"><option value="-1">—</option>'+w.pool.map((v,i)=>'<option value="'+i+'"'+(w.asig[a]===i?' selected':'')+(usados.has(i)&&w.asig[a]!==i?' disabled':'')+'>'+v+'</option>').join('')+'</select>';
+        return '<tr><th scope="row">'+esc(ABK[a])+'</th><td>'+celda+'</td><td>'+(n[a]?'+'+n[a]:'')+'</td><td><b>'+(b[a]?fin[a]:'—')+'</b></td><td>'+(b[a]?(Math.floor((fin[a]-10)/2)>=0?'+':'')+Math.floor((fin[a]-10)/2):'')+'</td></tr>';}).join('')+'</tbody></table>';
+    return s;
+  }
+  if(w.paso===4)return '<p class="hint">'+esc(T('Paso 4: alineamiento y detalles. Todo es opcional y se puede cambiar luego en la hoja.'))+'</p><div class="pjrow"><label style="flex:1 1 220px">'+esc(T('Nombre'))+'<input id="pjw-n" data-pjw="nombre" maxlength="80" value="'+esc(w.nombre)+'" autocomplete="off"></label>'
+    +'<label>'+esc(T('Alineamiento'))+'<select data-pjw="alin">'+PJW_ALIN.map(x=>'<option value="'+esc(x)+'"'+(w.alin===x?' selected':'')+'>'+esc(x?T(x):'—')+'</option>').join('')+'</select></label></div>'
+    +'<div class="pjrow"><label>'+esc(T('Dónde'))+'<select data-pjw="donde"><option value="libre"'+(w.donde==='libre'?' selected':'')+'>'+esc(T('Mis personajes (libre)'))+'</option><option value="campana"'+(w.donde==='campana'?' selected':'')+'>'+esc(T('Esta campaña'))+'</option></select></label></div>';
+  const R=pjwResumen(w);
+  return '<p class="hint">'+esc(T('Así queda la hoja y de dónde sale cada cosa. Pulsa «Crear personaje» o vuelve atrás para cambiar algo.'))+'</p><h4>'+esc(w.nombre||T('Sin nombre'))+' · '+esc(T(CLSN[w.cls]))+' 1 · '+esc(w.esp)+' · '+esc(w.tf)+'</h4><ul class="pjw-orig">'+R.origen.map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>';
+}
+/* la ficha que sale del asistente, con el desglose de dónde viene cada cosa (se guarda en el registro de la ficha) */
+function pjwResumen(w){
+  const C=Ficha.CLASES[w.cls],tf=pjwComp('trasfondos',w.tf),esp=pjwComp('especies',w.esp),b=pjwBase(w),n=pjwBono(w),fin=pjwFinal(w);
+  const hab={};const o=[];
+  for(const k of w.sk){hab[k]=1;o.push(T('Competencia en')+' '+Ficha.HAB_NOM[k]+' ('+T('clase')+' '+CLSN[w.cls]+')');}
+  for(const x of String(tf&&tf.hab||'').split(/,| y /)){const k=pjwHabKey(x.trim());if(k){if(hab[k])o.push(T('Ya tenías')+' '+Ficha.HAB_NOM[k]+': '+T('elige otra habilidad en la hoja'));else{hab[k]=1;o.push(T('Competencia en')+' '+Ficha.HAB_NOM[k]+' ('+T('trasfondo')+' '+w.tf+')');}}}
+  for(const a of Ficha.AB)o.push(ABK[a]+' '+fin[a]+' = '+b[a]+(n[a]?' + '+n[a]+' ('+T('trasfondo')+' '+w.tf+')':''));
+  o.push(T('Salvaciones')+': '+C.sv.map(a=>ABK[a]).join(', ')+' ('+T('clase')+' '+CLSN[w.cls]+')');
+  o.push(T('Dado de golpe')+' d'+C.d+' · '+T('PG de nivel 1')+' '+Math.max(1,C.d+Math.floor((fin.con-10)/2)));
+  if(tf&&tf.dote)o.push(T('Dote de origen')+': '+tf.dote+' ('+T('trasfondo')+' '+w.tf+')');
+  if(tf&&tf.herr)o.push(T('Herramienta')+': '+tf.herr+' ('+T('trasfondo')+' '+w.tf+')');
+  if(esp)o.push(T('Especie')+' '+esp.n+': '+T('velocidad')+' '+esp.vel+' · '+String(esp.tam||'').split(' (')[0]);
+  return {origen:o,hab,fin};
+}
+function pjwCrear(w){
+  const R=pjwResumen(w),tf=pjwComp('trasfondos',w.tf),esp=pjwComp('especies',w.esp),camp=w.donde==='campana',C=Ficha.CLASES[w.cls];
+  const tam=String(esp&&esp.tam||'').split(' (')[0].split(' ')[0];
+  const ahora=Date.now();
+  const f=Ficha.norm({nombre:w.nombre.trim()||T('Sin nombre'),especie:w.esp,trasfondo:w.tf,car:R.fin,niveles:[{c:w.cls,hp:C.d}],habil:R.hab,salvac:C.sv,
+    dotes:tf&&tf.dote?[tf.dote]:[],vel:esp&&esp.vel||'9 m',tamano:/^(Mediano|Pequeño)$/.test(tam)?tam:'',pers:{alineamiento:w.alin},
+    otras:{herramientas:tf&&tf.herr?[tf.herr]:[]},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
+    registro:R.origen.map(d=>({t:ahora,a:'creacion',d:d.slice(0,200),por:''}))});
+  (camp?PJC:PJ).push(f);pjSave();pjEdit=null;PJW=null;location.hash='personajes/'+f.id;
+}
+function pjwAct(b){
+  const w=PJW,a=b.dataset.w,v=b.dataset.v;if(!w)return;
+  if(a==='cls'){if(w.cls!==v){w.cls=v;w.sk=[];}}
+  else if(a==='esp')w.esp=v;
+  else if(a==='tf'){if(w.tf!==v){w.tf=v;w.tfa=['',''];}}
+  else if(a==='tirar'){w.pool=Array.from({length:6},()=>{const d=[1,2,3,4].map(()=>1+Math.floor(Math.random()*6)).sort((x,y)=>y-x);return d[0]+d[1]+d[2];});w.asig={};}
+  else if(a==='mas'){const n=w.compra[v];if(n<15&&pjwGastado(w)-PJW_COSTE[n]+PJW_COSTE[n+1]<=PJW_PUNTOS)w.compra[v]=n+1;}
+  else if(a==='menos'){if(w.compra[v]>8)w.compra[v]--;}
+  else if(a==='sig'){if(pjwValido(w,w.paso)&&w.paso<PJW_PASOS.length-1)w.paso++;else if(w.paso===PJW_PASOS.length-1)return pjwCrear(w);}
+  else if(a==='atras'){if(w.paso>0)w.paso--;}
+  else if(a==='ir'){const p=+v;if(p<=w.paso||PJW_PASOS.slice(0,p).every((_,i)=>pjwValido(w,i)))w.paso=p;}
+  pjRender();
+}
+function pjwCambio(el){
+  const w=PJW,k=el.dataset.pjw;if(!w)return false;
+  if(k==='sk'){const i=w.sk.indexOf(el.value);if(el.checked&&i<0)w.sk.push(el.value);else if(!el.checked&&i>=0)w.sk.splice(i,1);}
+  else if(k==='tfm')w.tfm=el.value;
+  else if(k==='tfa')w.tfa[+el.dataset.i]=el.value;
+  else if(k==='met'){w.met=el.value;w.asig={};w.pool=el.value==='std'?PJW_STD.slice():w.pool;if(el.value==='dados'&&w.pool===PJW_STD)w.pool=PJW_STD.slice();}
+  else if(k==='asig')w.asig[el.dataset.a]=+el.value;
+  else if(k==='alin'){w.alin=el.value;return true;}
+  else if(k==='donde'){w.donde=el.value==='campana'?'campana':'libre';return true;}
+  else return false;
+  pjRender();return true;
+}
+function pjFormHTML(){
+  if(!PJW)PJW=pjwNuevo();compLoad();
+  const w=PJW,ult=w.paso===PJW_PASOS.length-1;
+  return '<section class="pjbox pjw" aria-labelledby="pjw-h"><h3 id="pjw-h">'+esc(T('Nuevo personaje'))+'</h3>'
+    +'<ol class="pjw-pasos">'+PJW_PASOS.map((p,i)=>'<li><button type="button" data-act="pjw" data-w="ir" data-v="'+i+'" class="'+(i===w.paso?'on':i<w.paso?'hecho':'')+'"'+(i===w.paso?' aria-current="step"':'')+'><span>'+(i+1)+'</span> '+esc(T(p))+'</button></li>').join('')+'</ol>'
+    +'<div class="pjw-cuerpo">'+pjwPaso(w)+'</div>'
+    +'<div class="pjrow pjw-pie"><button type="button" class="btn ghost" data-act="pjcancel">'+esc(T('Cancelar'))+'</button><span style="flex:1"></span>'
+    +(w.paso>0?'<button type="button" class="btn" data-act="pjw" data-w="atras">← '+esc(T('Atrás'))+'</button>':'')
+    +'<button type="button" class="btn primary" data-act="pjw" data-w="sig"'+(pjwValido(w,w.paso)?'':' disabled')+'>'+esc(ult?T('Crear personaje'):T('Siguiente')+' →')+'</button></div></section>';
+}
+
 const pjPips=(max,usados,act,extra)=>{let s='<span class="pips">';for(let i=0;i<max;i++){const libre=i<max-usados;s+='<button type="button" class="pip'+(libre?'':' off')+'" data-act="'+act+'" data-on="'+(libre?1:0)+'"'+extra+' aria-label="'+esc(libre?T('Gastar'):T('Recuperar'))+'"></button>';}return s+'</span>';};
 /* ---- ficha completa: apartados plegables, todo opcional ---- */
 const PJ_ABIERTO=new Set(['hab','atq','ras']);
@@ -8056,14 +8206,8 @@ document.addEventListener('change',e=>{
     else if(el.id==='pji-file'&&el.files&&el.files[0]){const r=new FileReader();r.onload=()=>{$('#pji-txt').value=String(r.result||'').slice(0,2e6);};r.readAsText(el.files[0]);}
   }
 });
-document.addEventListener('submit',e=>{
-  if(e.target.id!=='pj-form')return;e.preventDefault();
-  const g=id=>($('#'+id)||{}).value||'',cls=g('pjn-c');if(!Ficha.CLASES[cls])return;
-  const car={};for(const a of Ficha.AB)car[a]=Math.min(30,Math.max(1,Math.trunc(+g('pjn-'+a))||10));
-  const camp=g('pjn-donde')==='campana';
-  const f=Ficha.norm({nombre:g('pjn-n').trim()||T('Sin nombre'),especie:g('pjn-e'),trasfondo:g('pjn-t'),car,niveles:[{c:cls,hp:Ficha.CLASES[cls].d}],origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():''});
-  (camp?PJC:PJ).push(f);pjSave();pjEdit=null;location.hash='personajes/'+f.id;
-});
+document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.pjw)pjwCambio(e.target);});
+document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.pjw==='nombre'&&PJW)PJW.nombre=el.value.slice(0,80);});
 /* ---------- eventos del combate (tarjetas, reloj y efectos; el máster decide siempre) ---------- */
 const evFmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 function evCheck(){
