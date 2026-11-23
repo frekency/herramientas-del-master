@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.99.1] - 2026-11-23
+### Cambiado
+- Estudio de la mesa: enviar abre la ventana con el telón bajado (texto en la barra); quitado el panel flotante y «Abrir la ventana»; botón «Cerrar mesa». Galería: títulos editables, título al subir, búsqueda por título y texto, arte de criaturas.
+
 ## [1.99.0] - 2026-11-23
 ### Añadido
 - Mesa: hasta 8 ventanas, cada una con su escena (pestañas en el estudio) y su telón; telón en la ventana elegida o en todas.

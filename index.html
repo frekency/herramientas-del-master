@@ -1039,7 +1039,7 @@ window.Dlg=(()=>{
     return new Promise(res=>{
       const d=document.createElement('dialog');d.className='ask';d.setAttribute('aria-labelledby','ask-t');
       const f=document.createElement('form'),p=document.createElement('p');p.id='ask-t';p.className='askt';p.textContent=msg;f.append(p);
-      let inp=null;if(o.texto){inp=document.createElement('input');inp.type='text';inp.className='askin';inp.maxLength=500;inp.autocomplete='off';inp.setAttribute('aria-labelledby','ask-t');f.append(inp);}
+      let inp=null;if(o.texto){inp=document.createElement('input');if(o.valor)inp.value=o.valor;inp.type='text';inp.className='askin';inp.maxLength=500;inp.autocomplete='off';inp.setAttribute('aria-labelledby','ask-t');f.append(inp);}
       const row=document.createElement('div');row.className='inline askrow';
       const no=document.createElement('button');no.type='button';no.className='btn ghost';no.textContent=o.cancelar||'Cancelar';
       const si=document.createElement('button');si.type='submit';si.className='btn '+(o.peligro?'danger':'primary');si.textContent=o.aceptar||'Aceptar';
@@ -2692,6 +2692,9 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-docs button:hover,.ms-docs button:focus-visible{border-color:var(--line);background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .ms-docs img,.ms-docs .ph{grid-row:1/3;width:44px;height:44px;object-fit:cover;background:#fffdf6;border:1px solid var(--line);display:grid;place-items:center;color:#8a6d3b}
 .ms-docs .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ms-docs small{color:var(--muted,inherit);font-size:11px}
+.ms-docs li{position:relative}.ms-docs .ms-ren{position:absolute;right:2px;top:2px;width:26px;height:26px;display:grid;grid-template-columns:none;padding:0;place-items:center;font-size:13px;opacity:.6}.ms-docs .ms-ren:hover,.ms-docs .ms-ren:focus-visible{opacity:1}
+.ms-docs .sep{font:600 11px/1 var(--f-body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,inherit);padding:8px 4px 2px}
+.ms-telont{min-width:180px}
 .ms-docs .empty{font-size:13px;color:var(--muted,inherit);padding:6px}
 .ms-center{display:flex;flex-direction:column;gap:10px;min-width:0}
 .ms-stage{position:relative;aspect-ratio:16/9;width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:4px;overflow:hidden;box-shadow:0 2px 10px #0004}
@@ -3170,6 +3173,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.99 <span>23 nov 2026</span></h3><ul>
+      <li><b>v1.99.1 · Estudio de la mesa:</b> «Enviar a la mesa» abre siempre la ventana con el telón bajado (el texto del telón se escribe en la barra del estudio); quitados «Abrir la ventana» y el panel «Cuentas atrás y orden», y añadido «Cerrar mesa». Galería del estudio: título editable (✎), pregunta el título al subir, búsqueda por título y texto, y arte de criaturas del bestiario (si tienes la carpeta de imágenes) y de PNJ.</li>
       <li><b>Varias ventanas de mesa.</b> Abre hasta 8 ventanas (Ventana 1, 2, 3…), cada una con su propia escena: en el estudio hay una pestaña por ventana y «Enviar», «Limpiar», el telón y las tiradas de dados van a la ventana elegida. Las cuentas atrás y el orden de iniciativa se actualizan en todas. Lo que se enviaba antes desde el combate (imagen, aviso, orden) va a la ventana 1.</li>
       <li><b>Telón por ventana o en todas.</b> «Bajar el telón» actúa sobre la ventana seleccionada; «Telón en todas» baja o sube todas las abiertas. Cada ventana tiene también su botón en el panel de la mesa.</li>
     </ul></li>
@@ -4892,7 +4896,12 @@ setInterval(()=>{const v=$('#view-mesa');if(v&&!v.hidden&&MS.capas.some(c=>c.vis
 function msEnviar(rapido){
   const S=window.__AppShell;if(!S||!S.mesa)return;
   const e=msEscena(false);if(rapido)e.fundido=0;
+  const estabaAbierta=!!msEstV().abierta;
   e.ventana=MS.vent;S.mesa.enviar(e);
+  if(!estabaAbierta){/* la ventana se abre con el telón bajado: los jugadores ven el mensaje hasta que lo subas */
+    const ti=$('#mp-tt');let tx=ti?ti.value:'';if(!ti){try{tx=Store.get('mesa-telon-t')||'';}catch{}}
+    msEstV().telon=true;S.mesa.enviar({tipo:'telon',activo:true,texto:tx||T('Empezamos enseguida'),ventana:MS.vent});
+    document.querySelectorAll('[data-ms="telon"]').forEach(b=>{b.setAttribute('aria-pressed','true');b.textContent=T('Subir el telón');});}
   const EV=msEstV();EV.que='escena';EV.titulo=MS.nombre;EV.abierta=true;
   if(MS.vent===1){mesaIni=false;mesaEst.congelado=false;}
   mesaEscIni=MS.capas.some(c=>c.visible&&c.tipo==='iniciativa');
@@ -4923,7 +4932,7 @@ function msEstado(){
   const E=msEstV();
   st.textContent=!E.abierta?T('La ventana de mesa está cerrada'):E.que==='escena'?T('En la mesa')+': '+(E.titulo||T('Escena')):E.que==='nada'?T('La mesa está vacía'):T('En la mesa')+': '+(E.que==='iniciativa'?T('Orden de iniciativa'):E.que==='imagen'?T('Imagen'):T('Aviso'));
   st.classList.toggle('vivo',!!E.abierta&&E.que!=='nada');
-  const ab=$('#ms-win');if(ab){ab.textContent=E.abierta?T('Cerrar la ventana'):T('Abrir la ventana');ab.dataset.ms=E.abierta?'cerrarwin':'abrirwin';}
+  const ab=$('#ms-win');if(ab)ab.hidden=!E.abierta;
   const lm=$('#ms-limpiar');if(lm)lm.disabled=!E.abierta||E.que==='nada';
 }
 function msPlSel(){
@@ -4947,6 +4956,7 @@ function msBarra(){
    +'<button type="button" class="btn sm" data-ms="plguardar">'+esc(T('Guardar como plantilla'))+'</button>'
    +'<button type="button" class="btn sm ghost" data-ms="plborrar">'+esc(T('Borrar plantilla'))+'</button>'
    +'<button type="button" class="btn sm ghost" data-ms="nueva">'+esc(T('Escena nueva'))+'</button>'
+   +'<label class="f ms-telont">'+esc(T('Texto del telón'))+'<input id="mp-tt" maxlength="80" value="'+esc((()=>{try{return Store.get('mesa-telon-t')||'';}catch{return '';}})())+'" placeholder="'+esc(T('Empezamos enseguida'))+'"></label>'
    +'<button type="button" class="btn sm ghost" data-ms="telontodas" title="'+esc(T('Baja o sube el telón en todas las ventanas abiertas'))+'">'+esc(T('Telón en todas'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="telon" aria-pressed=""'+!!msEstV().telon+'" title="'+esc(T('Tapa la mesa con un mensaje mientras cambias cosas'))+'">'+esc(msEstV().telon?T('Subir el telón'):T('Bajar el telón'))+'</button>';
   msPlSel();msVentTabs();
@@ -4954,15 +4964,38 @@ function msBarra(){
    +'<button type="button" class="btn" id="ms-limpiar" data-ms="limpiar">'+esc(T('Limpiar la mesa'))+'</button>'
    +'<label class="chk"><input type="checkbox" data-msg="live"'+(MS.live?' checked':'')+'> '+esc(T('En vivo: los cambios llegan solos'))+'</label>'
    +'<span class="ms-st" id="ms-st" role="status"></span>'
-   +'<button type="button" class="btn sm ghost" id="ms-win" data-ms="abrirwin"></button>'
-   +'<button type="button" class="btn sm ghost" data-ms="popover">'+esc(T('Cuentas atrás y orden…'))+'</button>';
+   +'<button type="button" class="btn sm" id="ms-win" data-ms="cerrarwin" hidden>'+esc(T('Cerrar mesa'))+'</button>';
   msEstado();
 }
 function msBiblio(){
   const q=MS.q.trim().toLowerCase();
-  const L=CP.filter(i=>!i.id.startsWith('pub_')&&(i.img||(i.tipo==='handout'&&i.texto))&&(!q||cpName(i).toLowerCase().includes(q))).sort((a,b)=>(b.tipo==='handout')-(a.tipo==='handout')||cpName(a).localeCompare(cpName(b),'es')).slice(0,120);
-  $('#ms-docs').innerHTML=L.length?L.map(i=>'<li><button type="button" data-ms="img" data-id="'+esc(i.id)+'">'+(i.img?'<img src="'+i.img+'" alt="" loading="lazy">':'<span class="ph">'+ic('scroll')+'</span>')+'<span class="nm">'+esc(cpName(i))+'</span><small>'+esc(i.tipo==='handout'?T('Documento'):'')+'</small></button></li>').join('')
+  const L=CP.filter(i=>!i.id.startsWith('pub_')&&(i.img||(i.tipo==='handout'&&i.texto))&&(!q||(cpName(i)+' '+(i.texto||'')).toLowerCase().includes(q))).sort((a,b)=>(b.tipo==='handout')-(a.tipo==='handout')||cpName(a).localeCompare(cpName(b),'es')).slice(0,120);
+  $('#ms-docs').innerHTML=L.length?L.map(i=>'<li><button type="button" data-ms="img" data-id="'+esc(i.id)+'">'+(i.img?'<img src="'+i.img+'" alt="" loading="lazy">':'<span class="ph">'+ic('scroll')+'</span>')+'<span class="nm">'+esc(cpName(i))+'</span><small>'+esc(i.tipo==='handout'?(i.img?'':T('Documento')):(Notas.SING?T(Notas.SING[i.tipo]||''):''))+'</small></button><button type="button" class="ib ms-ren" data-ms="imgtitulo" data-id="'+esc(i.id)+'" title="'+esc(T('Poner título o texto para encontrarla'))+'" aria-label="'+esc(T('Poner título o texto para encontrarla'))+'">✎</button></li>').join('')
     :'<li class="empty">'+esc(q?T('Nada coincide'):T('Aún no hay imágenes. Añádelas en Campaña → Galería, o como imagen de un PNJ o lugar.'))+'</li>';
+  /* arte de criaturas (carpeta de imágenes del bestiario): se escribe el nombre y se importa a la Galería al elegirla */
+  MS.crL=[];
+  if(q.length>=2&&typeof IMGIDX!=='undefined'&&IMGIDX){
+    MS.crL=[...SRD_ALL,...MODCR].filter(m=>m.img&&(m.n+' '+(m.en||'')).toLowerCase().includes(q)).slice(0,12);
+    if(MS.crL.length)$('#ms-docs').insertAdjacentHTML('beforeend','<li class="sep">'+esc(T('Arte de criaturas'))+'</li>'+MS.crL.map((m,k)=>'<li><button type="button" data-ms="crimg" data-k="'+k+'"><img src="'+esc(m.img)+'" alt="" loading="lazy"><span class="nm">'+esc(m.n)+'</span><small>'+esc(T('Criatura'))+'</small></button></li>').join(''));
+  }
+}
+async function msCriatura(k){
+  const m=(MS.crL||[])[k];if(!m)return;
+  let it=CP.find(x=>x.tipo==='handout'&&x.nombre===m.n&&x.img);
+  if(!it){
+    try{const r=await fetch(m.img);if(!r.ok)throw 0;const b=await r.blob();
+      it=Notas.nuevo('handout',String(m.n).slice(0,80));
+      await Promise.race([new Promise(ok=>cpImage(new File([b],m.n+'.webp',{type:b.type||'image/webp'}),it,ok)),new Promise((_,ko)=>setTimeout(ko,15000))]);
+      CP.push(it);cpDirty=true;cpFlush();msBiblio();toast(T('Imagen guardada también en la Galería'));
+    }catch{toast(T('No se pudo cargar la imagen de la criatura'),5000);return;}
+  }
+  msPonerImagen(it.id);
+}
+async function msTituloImg(id){
+  const it=cpGet(id);if(!it)return;
+  const t=await Dlg.texto(T('Título o texto para encontrar esta imagen'),{valor:it.nombre||'',aceptar:T('Guardar')});
+  if(t===null)return;
+  it.nombre=t.trim().slice(0,80);cpDirty=true;cpFlush();msBiblio();msOv();msInsp();msCambio();
 }
 function msLibHTML(){
   $('#ms-lib').innerHTML='<h3>'+esc(T('Añadir a la escena'))+'</h3><div class="ms-add">'
@@ -5050,9 +5083,12 @@ function msAnade(tipo,extra){
   const c=msNorm({tipo,id:msId(),...MS_DEF[tipo],...extra});
   MS.capas.push(c);MS.sel=c.id;msOv();msInsp();msCambio();return c;
 }
-function msSubir(file){
+async function msSubir(file){
   if(!file)return;
-  const it=Notas.nuevo('handout',(file.name||T('Imagen')).replace(/\.[a-z0-9]+$/i,'').slice(0,80));
+  const base=(file.name||T('Imagen')).replace(/\.[a-z0-9]+$/i,'').slice(0,80);
+  const tit=await Dlg.texto(T('Título de la imagen (para encontrarla después)'),{valor:base,aceptar:T('Subir')});
+  if(tit===null)return;
+  const it=Notas.nuevo('handout',(tit.trim()||base).slice(0,80));
   cpImage(file,it,()=>{CP.push(it);cpDirty=true;cpFlush();msBiblio();msPonerImagen(it.id);toast(T('Imagen guardada también en la Galería'));});
 }
 function msPonerImagen(id){
@@ -5089,11 +5125,12 @@ function msAct(a,b){
   else if(a==='cerrarwin'){window.__AppShell.mesa.cerrar(MS.vent);if(MS.vent===1){mesaIni=false;mesaEscIni=false;mesaEst.congelado=false;}msEstV().que='nada';msEstado();}
   else if(a==='vent')msVentana(+b.dataset.n);
   else if(a==='ventmas'){const L=msVentLista();let n=1;while(L.includes(n))n++;if(n<=8)msVentana(n);}
-  else if(a==='popover'){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
   else if(a==='add'){const t=b.dataset.t,n=msAnade(t,t==='texto'?{t:T('Escribe aquí el texto')}:t==='cuentas'?{nombre:T('Cuenta atrás'),min:5}:undefined);if(n&&t==='cuentas'){msCuenta(n);msCambio();cuentasMesa();msInsp();}}
   else if((a==='cuplay'||a==='cureset')&&c&&c.tipo==='cuentas'){const q=msCuenta(c);if(q){cuentaAct(a==='cuplay'?'cplay':'creset',q.id);msInsp();}}
   else if(a==='telon')mesaTelon(MS.vent);
   else if(a==='telontodas')mesaTelon('todas');
+  else if(a==='crimg')msCriatura(+b.dataset.k);
+  else if(a==='imgtitulo')msTituloImg(b.dataset.id);
   else if(a==='tirar')msTirar();
   else if(a==='probar')msTirar(true);
   else if(a==='dadd'){const i=$('#ms-dn'),d=b.dataset.d,t=String(i.value||'').replace(/\s+/g,'').toLowerCase(),r=new RegExp('(^|[+-])(\\d{1,2})d'+d+'(?![0-9])');
@@ -5147,6 +5184,8 @@ function msAct(a,b){
   });
   v.addEventListener('input',e=>{
     const t=e.target;
+    if(t.id==='mp-tt'){try{Store.set('mesa-telon-t',t.value);}catch{}const S=window.__AppShell;
+      for(const n of (mesaEst.abiertas||[]))if(mesaVent(n).telon&&S&&S.mesa)S.mesa.enviar({tipo:'telon',activo:true,texto:t.value||T('Empezamos enseguida'),ventana:n});return;}
     if(t.dataset.msq!==undefined){MS.q=t.value;msBiblio();return;}
     if(t.dataset.msg){const k=t.dataset.msg;if(k==='nombre')MS.nombre=t.value.slice(0,80);else if(k==='fondo')MS.fondo=msCol(t.value,'#0b0a09');else if(k==='fundido')MS.fundido=msNum(t.value,0,3000,400);else if(k==='fondo2')MS.fondo2=msCol(t.value,'#3a2a1a');else if(k==='ang')MS.ang=msNum(t.value,0,360,180);else if(k==='fnid'){MS.fnid=t.value;msBarra();}else if(k==='fajuste')MS.fajuste=t.value==='contener'?'contener':'cubrir';else if(k==='ftipo'){MS.fondo2=t.value==='degradado'?(MS.fondo2||'#3a2a1a'):'';msBarra();}else if(k==='prop')MS.prop=t.checked;if(k!=='live')msCambio();return;}
     if(t.dataset.msf&&t.tagName!=='SELECT'&&t.type!=='checkbox'){const k0=t.dataset.msf,c0=msSelC();if(MS.prop&&c0&&(k0==='w'||k0==='h')){const r=c0.w/c0.h,v=msNum(t.value,1,200,c0[k0]),o=k0==='w'?'h':'w',nv=Math.round((k0==='w'?v/r:v*r)*10)/10;c0[o]=Math.min(200,Math.max(1,nv));const oi=document.querySelector('[data-msf="'+o+'"]');if(oi)oi.value=c0[o];}

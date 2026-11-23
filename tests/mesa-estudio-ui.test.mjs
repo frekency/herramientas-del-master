@@ -30,7 +30,7 @@ const TAIL=`<script>
     location.hash='#mesa';await wait(600);
     ok('la página del estudio se abre',!q('#view-mesa').hidden&&q('#ms-web').hidden&&!q('#ms-app').hidden);
     ok('el enlace de la barra lateral queda marcado',q('.pagenav a.sbmesa.on'));
-    ok('la biblioteca lista los documentos con imagen y los de solo texto',q('#ms-docs').querySelectorAll('button').length===2);
+    ok('la biblioteca lista los documentos con imagen y los de solo texto',q('#ms-docs').querySelectorAll('[data-ms="img"]').length===2);
     // capas
     await click('[data-ms="add"][data-t="imagen"]');
     ok('se añade una zona de imágenes vacía y queda elegida',MS.capas.length===1&&MS.capas[0].tipo==='imagen'&&MS.sel===MS.capas[0].id&&!MS.capas[0].nid);
@@ -79,6 +79,8 @@ const TAIL=`<script>
      const antes=CP.filter(x=>x.tipo==='handout').length;
      await click('[data-ms="add"][data-t="imagen"]');
      msSubir(new File([blob],'mapa-del-tesoro.png',{type:'image/png'}));
+     await wait(200);ok('pregunta el título al subir, con el nombre del archivo',document.querySelector('dialog.ask .askin')&&document.querySelector('dialog.ask .askin').value==='mapa-del-tesoro');
+     document.querySelector('dialog.ask button.primary').click();
      for(let i=0;i<40&&CP.filter(x=>x.tipo==='handout').length===antes;i++)await wait(50);
      const nuevo=CP.find(x=>x.nombre==='mapa-del-tesoro');
      ok('la imagen subida pasa a ser un documento de la galería',nuevo&&nuevo.tipo==='handout'&&/^data:image\\/jpeg/.test(nuevo.img));
