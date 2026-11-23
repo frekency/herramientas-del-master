@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.92.0] - 2026-11-23
+### Añadido
+- Las tablas de un módulo pueden pertenecer a un objeto o rasgo (`rel`) y salen incrustadas, con tirada, en su ficha del compendio.
+
 ## [1.91.0] - 2026-11-23
 ### Añadido
 - Compendio: pestaña «Tablas aleatorias» con las tablas de los módulos (tirada y filas por rangos) y tus tablas propias como Homebrew.
