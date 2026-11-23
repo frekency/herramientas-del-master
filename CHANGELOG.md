@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.89.1] - 2026-11-23
+### Cambiado
+- Las etiquetas de los manuales oficiales siguen las de 5etools: XPHB, XDMG, XMM, XGE y TCE (las antiguas se migran solas).
+- En el compendio, el filtro de fuente pasa a ser de módulo y muestra la sigla con el nombre del libro.
+- Las tarjetas de módulo cuentan las subclases y las opciones de clase aparte, y la ficha de cada clase lista las subclases de los manuales.
+
+### Corregido
+- Un manual oficial solo entra en su sitio: si el archivo es de otro libro (por ejemplo la Guía del DM en el Manual del Jugador) se rechaza con un aviso.
+
 ## [1.89.0] - 2026-11-22
 ### Añadido
 - Los módulos pueden traer rasgos de clase y de subclase (clase, subclase, nivel); se ven en el compendio y en la Revisión.
