@@ -5566,6 +5566,7 @@ const MOD_TYPES=[['criaturas','criatura'],['conjuros','conjuro'],['tablas','tabl
 const OFFICIAL_FREE=[
   {id:'srd521',n:'SRD 5.2.1',ab:'SRD',year:'2024',lic:'CC-BY-4.0',desc:'Documento de referencia oficial de D&D 2024 en español: criaturas, conjuros, objetos mágicos y equipo, dotes, clases, especies y trasfondos.'},
   {id:'srd51',n:'SRD 5.1',ab:'SRD51',year:'2014',lic:'CC-BY-4.0',desc:'Las reglas de 2014.',soon:true}];
+const offFold=s=>fold(s).replace('dungeon master','master');   // «Guía del Dungeon Master» = «Guía del Máster»
 const OFFICIAL_BYO=[
   {id:'mdj',n:'Manual del Jugador 2024',ab:'XPHB',k:'manual del jugador'},
   {id:'gdm',n:'Guía del Máster 2024',ab:'XDMG',k:'guia del master'},
@@ -5578,7 +5579,7 @@ function loadMods(){
   // Primera vez: quien ya usaba la herramienta conserva el SRD activado y sus libros pasan a ser módulos.
   const used=['combat-tracker-v1','combat-bestiary-v1','combat-party-v1','combat-tables-v1',LBKEY,SKEY].some(k=>{try{return !!Store.get(k);}catch{return false;}});
   m={on:{srd521:used},list:[]};
-  for(const bk of getBooks()){const o=OFFICIAL_BYO.find(x=>fold(bk.n).includes(x.k));
+  for(const bk of getBooks()){const o=OFFICIAL_BYO.find(x=>offFold(bk.n).includes(x.k));
     m.list.push({id:o?o.id:modSlug(bk.n),n:o?o.n:bk.n,ab:o?o.ab:bk.ab,ref:o?o.id:'',on:true,conjuros:bk.spells});}
   lsSet(MKEY,m);return m;
 }
@@ -5686,7 +5687,11 @@ function parseModule(text,fileName,ref=''){
   let n=String(d.modulo||d.libro||d.nombre||d.book||'').trim();
   const sp=d.conjuros||d.spells,groups=sp?parseBook({libro:n||undefined,abrev:d.abrev,conjuros:sp},fileName):[];
   n=n||groups[0]?.n||String(fileName||'Módulo importado').replace(/\.[^.]+$/,'');
-  const o=OFFICIAL_BYO.find(x=>x.id===ref)||OFFICIAL_BYO.find(x=>fold(n).includes(x.k));
+  const o=OFFICIAL_BYO.find(x=>x.id===ref)||OFFICIAL_BYO.find(x=>offFold(n).includes(x.k));
+  // Un libro oficial solo entra en su sitio: si el archivo dice ser de otro manual (la Guía del DM en el Manual del Jugador…), se rechaza.
+  if(ref){const slot=OFFICIAL_BYO.find(x=>x.id===ref),dec=OFFICIAL_BYO.find(x=>offFold(n).includes(x.k));
+    if(slot&&n&&dec&&dec.id!==ref)throw new Error('ese archivo es de «'+dec.n+'», no de «'+slot.n+'»');
+    if(slot&&n&&!dec)throw new Error('ese archivo se llama «'+n+'» y no parece ser «'+slot.n+'»');}
   const main={id:o?o.id:modSlug(n),n:o?o.n:n,ab:o?o.ab:String(d.abrev||d.abreviatura||'').trim()||modAbbr(n),ref:o?o.id:'',
     autor:String(d.autor||'').trim(),version:String(d.version||'').trim(),lic:String(d.licencia||d.license||'').trim(),desc:String(d.descripcion||'').trim(),on:true};
   for(const[k] of MOD_TYPES)if(Array.isArray(d[k])&&k!=='conjuros')main[k]=cleanList(d[k]);
@@ -5745,7 +5750,7 @@ const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 let SRD_SPELLS=[];
 // Libros registrados: [{n:'Manual del Jugador 2024',ab:'XPHB',spells:[…]}], guardados solo en este navegador.
 const KNOWN_BOOKS=[['manual del jugador','XPHB'],['guia del master','XDMG'],['manual de monstruos','XMM'],['xanathar','XGE'],['tasha','TCE']];
-const bookAbbr=n=>(KNOWN_BOOKS.find(([k])=>fold(n).includes(k))||[])[1]||n;
+const bookAbbr=n=>(KNOWN_BOOKS.find(([k])=>offFold(n).includes(k))||[])[1]||n;
 const ABBR_BOOK={mdj:'Manual del Jugador 2024',gdm:'Guía del Máster 2024',mdm:'Manual de Monstruos 2024'};
 const pgNum=pg=>(String(pg??'').match(/\d+/)||[''])[0];
 const spellSrcLabel=s=>s.src==='srd'?'SRD 5.2.1':`${s.ab||s.book||'Libro'}${pgNum(s.pg)?` p. ${pgNum(s.pg)}`:''}`;
@@ -9305,7 +9310,7 @@ function renderCatalog(){
 $('#cat-q').addEventListener('input',renderCatalog);
 async function publishModule(out){
   if(!SB_USER){acOpen('in');acMsg('Entra en tu cuenta para publicar en el catálogo',true);return;}
-  if(OFFICIAL_BYO.some(o=>fold(out.modulo).includes(o.k))){toast('Los manuales oficiales no se pueden publicar');return;}
+  if(OFFICIAL_BYO.some(o=>offFold(out.modulo).includes(o.k))){toast('Los manuales oficiales no se pueden publicar');return;}
   if(!LICS.includes(out.licencia)){toast('Indica una licencia para publicarlo');return;}
   const resumen=Object.fromEntries(MOD_TYPES.map(([k])=>[k,(out[k]||[]).length]).filter(([,n])=>n));
   const row={autor_id:SB_USER.id,slug:modSlug(out.modulo).slice(3),nombre:out.modulo,abrev:String(out.abrev||'').slice(0,6),autor:out.autor||SB_NAME,version:out.version||'1.0',

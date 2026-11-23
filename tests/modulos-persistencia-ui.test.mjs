@@ -34,6 +34,13 @@ const TAIL=`<script>
     ok('la imagen está en IndexedDB',typeof v==='string'&&v.startsWith('data:image'));
     // revisar una y volver a importar: no se pierde lo revisado
     revMark('criaturas',md.id,'Bicho Uno');
+    {let e1='',e2='',e3='';
+      try{parseModule(JSON.stringify({modulo:'Guía del Dungeon Master 2024',objetos:[{n:'Daga',t:'Arma'}]}),'x.json','mdj');}catch(x){e1=x.message;}
+      try{parseModule(JSON.stringify({modulo:'Libro de prueba',objetos:[{n:'Daga',t:'Arma'}]}),'x.json','gdm');}catch(x){e2=x.message;}
+      try{parseModule(JSON.stringify({modulo:'Guía del Dungeon Master 2024',objetos:[{n:'Daga',t:'Arma'}]}),'x.json','gdm');}catch(x){e3=x.message;}
+      ok('la Guía del DM no entra en el Manual del Jugador',/no de/.test(e1));
+      ok('un libro cualquiera no entra en la ranura de un manual oficial',/no parece/.test(e2));
+      ok('el libro correcto sí entra en su ranura',e3==='');}
     const add2=importModule(TEXTO,'prueba.json','');await wait(300);
     const md2=mods().list.find(m=>m.id===md.id);
     ok('reimportar no duplica',md2.criaturas.length===2);
