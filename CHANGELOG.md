@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.98.0] - 2026-11-23
+### Añadido
+- Mesa: redimensión proporcional de las capas; cuenta atrás configurable dentro de su capa (con opción de retirarla al llegar a 0); fondo de escena con degradado e imagen; «Probar» dados y cuentas en la vista previa.
+
 ## [1.97.0] - 2026-11-23
 ### Añadido
 - Mesa: capa «Bandeja de dados». Los dados (d4 a d100) se tiran en 3D con física real dentro del recuadro de la capa y se muestra el resultado; el máster tira desde el estudio (`2d6+3`, `1d20+1d4`…) y el resultado vuelve a su panel. Usa dice-box 1.1.4 (MIT), incluido en `vendor/dice-box/`. Solo escritorio.

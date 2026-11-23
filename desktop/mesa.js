@@ -37,6 +37,10 @@ function validarCapa(c, i) {
     o.escala = num(c.escala, 2, 12, 8);
     return o;
   }
+  if (c.tipo === 'cuentas') {
+    o.cid = typeof c.cid === 'string' && /^[a-z0-9]{1,24}$/i.test(c.cid) ? c.cid : '';
+    o.fin = c.fin === 'quitar' ? 'quitar' : 'mantener';
+  }
   if (c.tipo === 'imagen') {
     if (typeof c.src !== 'string' || c.src.length > MAX_IMG || !IMG.test(c.src)) return null;
     o.src = c.src;
@@ -66,9 +70,16 @@ function validarEscena(p) {
     if (capas.some(x => x.id === v.id)) v.id = v.id + '_' + capas.length;
     capas.push(v);
   }
+  // fondo: color liso, degradado (segundo color y ángulo) y/o una imagen debajo
+  let fsrc = '';
+  if (typeof p.fsrc === 'string' && p.fsrc.length <= MAX_IMG && IMG.test(p.fsrc)) { fsrc = p.fsrc; bytes += fsrc.length; if (bytes > MAX_ESCENA_IMG) fsrc = ''; }
   return {
     tipo: 'escena',
     nombre: txt(p.nombre, 80),
+    fondo2: typeof p.fondo2 === 'string' && COLOR.test(p.fondo2) ? p.fondo2 : '',
+    ang: num(p.ang, 0, 360, 180),
+    fsrc,
+    fajuste: p.fajuste === 'contener' ? 'contener' : 'cubrir',
     fondo: typeof p.fondo === 'string' && COLOR.test(p.fondo) ? p.fondo : '#0b0a09',
     fundido: num(p.fundido, 0, 3000, 300),
     capas,
@@ -88,9 +99,9 @@ function validar(p) {
     return { tipo: 'dados', notacion: p.notacion, etiqueta: typeof p.etiqueta === 'string' ? p.etiqueta.slice(0, 60) : '' };
   }
   if (p.tipo === 'cuentas') {
-    const lista = (Array.isArray(p.lista) ? p.lista : []).slice(0, 4).map(c => {
+    const lista = (Array.isArray(p.lista) ? p.lista : []).slice(0, 8).map(c => {
       const s = Math.trunc(Number(c && c.seg));
-      return { n: String((c && c.n) || '').slice(0, 60), seg: Number.isFinite(s) ? Math.max(0, Math.min(86400, s)) : 0, pausa: !!(c && c.pausa), fin: !!(c && c.fin) };
+      return { id: typeof (c && c.id) === 'string' && /^[a-z0-9]{1,24}$/i.test(c.id) ? c.id : '', n: String((c && c.n) || '').slice(0, 60), seg: Number.isFinite(s) ? Math.max(0, Math.min(86400, s)) : 0, pausa: !!(c && c.pausa), fin: !!(c && c.fin) };
     });
     return { tipo: 'cuentas', lista };
   }

@@ -56,10 +56,11 @@ test('iniciativa: la cuenta atrás es opcional y solo lleva etiqueta, segundos y
   assert.equal(validar({ tipo: 'iniciativa', lista: [], cuenta: 'x' }).cuenta, null);
 });
 
-test('cuentas: máximo cuatro, solo etiqueta, segundos, pausa y fin', () => {
-  const v = validar({ tipo: 'cuentas', lista: [{ n: 'Trampa', seg: 90.7, pausa: 1, fin: 0, x: 'secreto' }, { n: 'a'.repeat(200), seg: -5 }, null, { seg: 'x' }, { n: 'e' }] });
-  assert.equal(v.lista.length, 4);
-  assert.deepEqual(v.lista[0], { n: 'Trampa', seg: 90, pausa: true, fin: false });
+test('cuentas: máximo ocho, solo etiqueta, segundos, pausa y fin', () => {
+  const v = validar({ tipo: 'cuentas', lista: [{ n: 'Trampa', seg: 90.7, pausa: 1, fin: 0, x: 'secreto' }, { n: 'a'.repeat(200), seg: -5 }, null, { seg: 'x' }, { n: 'e' }, ...Array(6).fill({ n: 'z' })] });
+  assert.equal(v.lista.length, 8);
+  assert.deepEqual(v.lista[0], { id: '', n: 'Trampa', seg: 90, pausa: true, fin: false });
+  assert.equal(validar({ tipo: 'cuentas', lista: [{ id: 'ab12', n: 'x', seg: 5 }, { id: '<x>', n: 'y', seg: 5 }] }).lista.map(c => c.id).join('|'), 'ab12|');
   assert.equal(v.lista[1].n.length, 60);assert.equal(v.lista[1].seg, 0);
   assert.equal(validar({ tipo: 'cuentas', lista: [{ n: 'x', seg: 1e9 }] }).lista[0].seg, 86400);
   assert.deepEqual(validar({ tipo: 'cuentas' }), { tipo: 'cuentas', lista: [] });
@@ -117,4 +118,12 @@ test('escena: el peso total de imágenes tiene tope y una escena sin capas es v�
   assert.equal(validar({ tipo: 'escena', capas: Array.from({ length: 5 }, () => ({ tipo: 'imagen', src: grande })) }), null);
   assert.deepEqual(validar({ tipo: 'escena', capas: [] }).capas, []);
   assert.equal(validar({ tipo: 'escena', capas: 'no' }), null);
+});
+
+test('escena: fondo con degradado e imagen, y cuenta atrás propia de la capa', () => {
+  const e = validar({ tipo: 'escena', fondo: '#112233', fondo2: '#445566', ang: 999, fsrc: PNG, fajuste: 'contener', capas: [{ tipo: 'cuentas', x: 1, y: 1, w: 20, h: 20, cid: 'ab12', fin: 'quitar' }, { tipo: 'cuentas', cid: '<x>', fin: 'raro' }] });
+  assert.deepEqual([e.fondo, e.fondo2, e.ang, e.fsrc, e.fajuste], ['#112233', '#445566', 360, PNG, 'contener']);
+  assert.deepEqual([e.capas[0].cid, e.capas[0].fin, e.capas[1].cid, e.capas[1].fin], ['ab12', 'quitar', '', 'mantener']);
+  const n = validar({ tipo: 'escena', fondo2: 'rojo', fsrc: 'http://x/y.png', capas: [] });
+  assert.deepEqual([n.fondo2, n.fsrc, n.ang, n.fajuste], ['', '', 180, 'cubrir']);
 });

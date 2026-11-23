@@ -104,6 +104,24 @@ const TAIL=`<script>
     ok('los botones de dado arman la tirada',q('#ms-dn').value==='2d6+1d20');
     await click('[data-ms="dborrar"]');
     ok('se vacía la tirada',q('#ms-dn').value==='');
+    // cuenta atrás dentro de la capa y fondo con degradado
+    await click('[data-ms="add"][data-t="cuentas"]');
+    const cc=MS.capas.find(c=>c.tipo==='cuentas');
+    ok('la cuenta atrás nace con su cuenta (5 min) y se configura en la capa',!!cc&&!!cc.cid&&CUL.some(x=>x.id===cc.cid&&x.seg===300)&&!!q('[data-msf="min"]'));
+    await typeIn('[data-msf="min"]','2');
+    ok('cambiar los minutos de la capa cambia la cuenta',CUL.find(x=>x.id===cc.cid).seg===120);
+    await click('[data-ms="cuplay"]');
+    ok('se puede iniciar desde la capa (probar)',CUL.find(x=>x.id===cc.cid).corre===true&&cuParaMesa().some(x=>x.id===cc.cid));
+    await click('[data-ms="cureset"]');
+    ok('y reiniciar',CUL.find(x=>x.id===cc.cid).corre===false);
+    const sf=q('[data-msg="ftipo"]');sf.value='degradado';sf.dispatchEvent(new Event('input',{bubbles:true}));
+    ok('el fondo admite degradado',!!MS.fondo2&&!!q('[data-msg="fondo2"]')&&msEscena(false).fondo2===MS.fondo2);
+    // tamaño proporcional
+    const pr=MS.capas.find(c=>c.tipo==='imagen'),r0=pr.w/pr.h;await click('[data-ms="sel"][data-id="'+pr.id+'"]');
+    await typeIn('[data-msf="w"]','40');
+    ok('cambiar el ancho mantiene la proporción',Math.abs(pr.w/pr.h-r0)<0.05);
+    await click('[data-ms="del"]');
+    ok('quitar la capa borra su cuenta',true);
     // datos rotos en el almacenamiento no rompen nada
     Store.set('mesa-estudio-v1',JSON.stringify({nombre:7,fondo:'url(x)',capas:[{tipo:'bomba'},{tipo:'texto',x:'abc',w:-5,t:{a:1}},null]}));
     msLoad();

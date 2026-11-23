@@ -68,6 +68,7 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .capa .cc .nn{font-size:calc(100cqh/var(--n)*.16);color:var(--muted)}
 .capa .cc.pausa .t{color:var(--muted)}.capa .cc.fin{border-color:#d0453c}.capa .cc.fin .t{color:#ff6a5e}
 .capa .vacio{color:var(--muted);font-size:4cqh;margin:auto}
+.capa.cuentas.fuera{opacity:0!important;transition:opacity .6s;pointer-events:none}
 .capa.dados{border-radius:2.4cqh;box-shadow:inset 0 0 0 .9cqh #5b3a1e,inset 0 0 7cqh #000c;display:flex;align-items:center;justify-content:center}
 .capa.dados .dlabel{color:#ffffff55;font-size:5cqh;font-weight:700}
 /* tablero de la física de los dados: se coloca encima de la capa «dados»; los dados no pueden salir de su recuadro */
@@ -115,13 +116,26 @@ function pintaIni(c){
     f.append(el('span','flecha',e.actual?'▶':''),el('span','n',e.n));c.append(f);}
 }
 function pintaCuentas(c){
-  c.textContent='';const L=(cuData&&cuData.lista)||[];
+  c.textContent='';let L=(cuData&&cuData.lista)||[];
+  const cid=c.dataset&&c.dataset.cid;
+  if(cid){/* capa con su propia cuenta: enseña solo esa y, si así se pidió, se retira al llegar a cero */
+    L=L.filter(q=>q.id===cid);c.classList.toggle('fuera',!!(L[0]&&L[0].fin&&c.dataset.fin==='quitar'));}
   if(!L.length){c.style.setProperty('--n',2);c.append(el('div','vacio','Sin cuentas atrás'));return;}
   c.style.setProperty('--n',L.length);
   for(const q of L){const b=el('div','cc'+(q.pausa?' pausa':'')+(q.fin?' fin':''));b.append(el('div','nn',q.n),el('div','t',(q.fin?'':q.pausa?'⏸ ':'')+mmss(q.seg)));c.append(b);}
 }
+/* fondo de la escena: color liso o degradado, con una imagen opcional debajo de todo */
+function fondoCSS(L,p){
+  const caps=[];
+  if(p.fsrc)caps.push('url("'+p.fsrc+'")');
+  if(p.fondo2)caps.push('linear-gradient('+(p.ang==null?180:p.ang)+'deg,'+p.fondo+','+p.fondo2+')');
+  L.style.backgroundColor=p.fondo;
+  L.style.backgroundImage=caps.join(',')||'none';
+  L.style.backgroundSize=(p.fsrc?(p.fajuste==='contener'?'contain':'cover'):'')+(p.fsrc&&p.fondo2?',':'')+(p.fondo2?'100% 100%':'');
+  L.style.backgroundPosition='center';L.style.backgroundRepeat='no-repeat';
+}
 function construir(p){
-  const L=el('div','');L.id='lienzo';L.style.setProperty('--fondo',p.fondo);
+  const L=el('div','');L.id='lienzo';L.style.setProperty('--fondo',p.fondo);fondoCSS(L,p);
   for(const c of p.capas){
     if(!c.visible)continue;
     const d=el('div','capa '+c.tipo);d.dataset.id=c.id;
@@ -133,7 +147,7 @@ function construir(p){
       const t=el('div','',c.t);t.style.textAlign=c.alin==='izq'?'left':c.alin==='der'?'right':'center';d.append(t);}
     else if(c.tipo==='dados'){d.style.background=c.fondo;d.append(el('div','dlabel',REAL?'':'🎲 Bandeja de dados'));}
     else if(c.tipo==='iniciativa')pintaIni(d);
-    else if(c.tipo==='cuentas')pintaCuentas(d);
+    else if(c.tipo==='cuentas'){d.dataset.cid=c.cid||'';d.dataset.fin=c.fin||'';pintaCuentas(d);}
     L.append(d);
   }
   return L;
@@ -151,7 +165,7 @@ function dadosMotor(cfg){
 }
 function posicionaDados(){
   const h=$('#dhost'),capa=dadosCapa(),cfg=escena&&escena.capas.find(c=>c.tipo==='dados'&&c.visible);
-  if(!REAL||!capa||!cfg){h.style.display='none';if(DB&&!capa){try{DB.clear();}catch{}$('#dres').textContent='';}return;}
+  if(!capa||!cfg){h.style.display='none';if(DB&&!capa){try{DB.clear();}catch{}$('#dres').textContent='';}return;}
   const r=capa.getBoundingClientRect();
   h.style.display='block';h.style.left=r.left+'px';h.style.top=r.top+'px';h.style.width=r.width+'px';h.style.height=r.height+'px';h.style.setProperty('--hh',r.height+'px');
   h.style.opacity=cfg.op;
@@ -170,7 +184,7 @@ function troceaTirada(n){
   return {g,mod};
 }
 async function tirar(p){
-  if(!REAL||!dadosCapa())return;
+  if(!dadosCapa())return;
   const cfg=escena&&escena.capas.find(c=>c.tipo==='dados'&&c.visible);if(!cfg)return;
   let b;try{b=await dadosMotor(cfg);}catch(e){$('#dres').textContent='';const d=el('div','det','No se pudo cargar la bandeja de dados');$('#dres').append(d);return;}
   posicionaDados();
