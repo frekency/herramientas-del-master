@@ -44,6 +44,9 @@ def info_tabla(d, p, y0, y1):
     for fl in filas:
         f = E.fold(fl['et'])
         clave = next((k for k, _ in ROWS if k in f), None)
+        if clave is None or clave in out:       # el OCR perdió parte de la etiqueta: se deduce del valor
+            v = E.fold(fl['va'].replace('|', ' ')).strip()
+            clave = 'armas' if v.startswith('armas') and 'armas' not in out else 'armaduras' if v.startswith('armaduras') and 'armaduras' not in out else                 'herramientas' if v.startswith('herramientas') and 'herramientas' not in out else None
         if clave:
             out[clave] = re.sub(r'\s+', ' ', fl['va'].replace('|', ' ')).replace('- ', '').strip()
     return {nom: out[k] for k, nom in ROWS if out.get(k)}
