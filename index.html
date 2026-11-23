@@ -3147,7 +3147,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.92 <span>23 nov 2026</span></h3><ul>
-      <li><b>Tablas dentro de su objeto.</b> Una tabla de un módulo puede pertenecer a un objeto o a un rasgo (campo <code>rel</code>: <code>{"ty":"objetos","n":"Baraja de ilusiones"}</code>): sale incrustada en su ficha del compendio, con su botón de tirada, y en la lista de tablas indica «en …».</li>
+      <li><b>Tablas dentro de su objeto.</b> Una tabla de un módulo puede pertenecer a un objeto o a un rasgo (campo <code>rel</code>: <code>{"ty":"objetos","n":"Baraja de ilusiones"}</code>): sale incrustada en su ficha del compendio, con su botón de tirada, y y no se repite en la lista de tablas aleatorias.</li>
     </ul></li>
     <li><h3>v1.91 <span>23 nov 2026</span></h3><ul>
       <li><b>Tablas aleatorias en el Compendio.</b> Pestaña nueva con las tablas de los módulos (botón de tirada y filas agrupadas por rangos) y, como Homebrew, tus propias tablas de la herramienta Tablas.</li>
@@ -5696,7 +5696,7 @@ function refreshMods(){
   }
   try{imApply();}catch(e){}
   try{navRev();}catch(e){}
-  MODTB=activeMods().flatMap(md=>(md.tablas||[]).map((x,i)=>modTable(x,i,md)).filter(Boolean));
+  MODTB=activeMods().flatMap(md=>(md.tablas||[]).map((x,i)=>x&&x.rel&&x.rel.n?null:modTable(x,i,md)).filter(Boolean));   // las de un objeto o rasgo viven en su ficha
   if($('#types'))$('#types').innerHTML=[...new Set(allBest().map(m=>m.ty))].map(t=>`<option value="${esc(t)}">`).join('');
   if(typeof mergeSpells==='function')mergeSpells();
 }
@@ -6563,7 +6563,8 @@ function cmFilters(list){
 }
 function renderCompendio(){
   compLoad();
-  const all=compList(cmTab);cmFilters(all);
+  const all=compList(cmTab).filter(x=>cmTab!=='tablas'||!(x.rel&&x.rel.n));   // las tablas que son parte de un objeto o rasgo salen en su ficha, no aquí
+  cmFilters(all);
   const q=fold($('#cm-q').value),f1=$('#cm-f1').value,f2=$('#cm-f2').value,fu=$('#cm-fu').value;
   const res=all.filter(x=>(!q||fold(x.n).includes(q))&&(!fu||x._src===fu||(x._also||[]).includes(fu))
     &&(cmTab!=='objetos'||((!f1||(f1==='otro'?!OBJ_KIND[x.k]:x.k===f1))&&(!f2||rarKey(x.r)===f2)))

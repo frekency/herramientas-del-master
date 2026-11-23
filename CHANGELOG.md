@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.92.1] - 2026-11-23
+### Cambiado
+- Las tablas que pertenecen a un objeto o rasgo ya no salen en la lista de tablas aleatorias ni en la herramienta Tablas: solo en su ficha.
+
 ## [1.92.0] - 2026-11-23
 ### Añadido
 - Las tablas de un módulo pueden pertenecer a un objeto o rasgo (`rel`) y salen incrustadas, con tirada, en su ficha del compendio.
