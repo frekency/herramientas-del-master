@@ -47,6 +47,16 @@ app.whenReady().then(async () => {
     ok('el máster tiene el puente con la ventana de la mesa', await until(() => ev(master, 'typeof msEnviar==="function"&&!!window.__AppShell&&!!window.__AppShell.mesa&&document.readyState==="complete"')));
     await wait(1500);
 
+    // claves de Freesound y Jamendo: se guardan validadas en la carpeta de datos y con una clave falsa el servicio real la rechaza
+    const est0 = await ev(master, 'window.__AppShell.sonidosWeb.estado()');
+    ok('sin claves al principio', est0.freesound === false && est0.jamendo === false);
+    ok('una clave con caracteres raros se rechaza', (await ev(master, 'window.__AppShell.sonidosWeb.guardarClave("freesound","<b>mala clave</b>")')) === false);
+    ok('una clave válida se guarda', (await ev(master, 'window.__AppShell.sonidosWeb.guardarClave("freesound","CLAVEfalsa123456")')) === true && (await ev(master, 'window.__AppShell.sonidosWeb.estado()')).freesound === true);
+    ok('la clave queda en la carpeta de datos y no en la página', fs.readFileSync(path.join(tmp, 'claves-sonido.json'), 'utf8').includes('CLAVEfalsa123456') && !(await ev(master, 'JSON.stringify(Object.keys(window.__AppShell.sonidosWeb))+document.documentElement.outerHTML.includes("CLAVEfalsa123456")')).includes('true'));
+    const bus = await ev(master, 'window.__AppShell.sonidosWeb.buscar("freesound","lluvia",{soloCC0:true})');
+    ok('con una clave falsa, Freesound la rechaza (o no hay red): nunca da resultados', bus.ok === false && ['clave', 'red'].includes(bus.error));
+    await ev(master, 'window.__AppShell.sonidosWeb.guardarClave("freesound","")');
+    ok('se puede borrar la clave', (await ev(master, 'window.__AppShell.sonidosWeb.estado()')).freesound === false);
     // escena con mapa calibrado, fichas, iniciativa horizontal y bandeja de dados
     await ev(master, `(async()=>{
       location.hash='#mesa';await new Promise(r=>setTimeout(r,900));

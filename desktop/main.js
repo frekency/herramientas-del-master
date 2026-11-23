@@ -12,6 +12,7 @@ const actualizador = require('./updater');
 const APP_DIR = path.join(__dirname, 'app');
 const imagenes = require('./imagenes');
 const audios = require('./audios');
+const sonidosWeb = require('./sonidos-web');
 let almacen = null;
 
 // Protocolo propio: permite fetch() de los JSON y un origen estable
@@ -237,6 +238,20 @@ function registrarAudios() {
     return r.filePaths[0];
   });
 }
+// Búsqueda de sonidos en Freesound y Jamendo con la clave del propio usuario: la clave queda aquí (nunca en las escenas ni en la página)
+const cfgClaves = () => path.join(app.getPath('userData'), 'claves-sonido.json');
+function registrarSonidosWeb() {
+  const propio = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/');
+  ipcMain.handle('sonidos:estado', e => (propio(e) ? { freesound: sonidosWeb.tieneClave(cfgClaves(), 'freesound'), jamendo: sonidosWeb.tieneClave(cfgClaves(), 'jamendo') } : {}));
+  ipcMain.handle('sonidos:clave', (e, prov, valor) => {
+    if (!propio(e)) return false;
+    try { sonidosWeb.guardarClave(cfgClaves(), String(prov), valor); return true; } catch { return false; }
+  });
+  ipcMain.handle('sonidos:buscar', (e, prov, consulta, op) => {
+    if (!propio(e)) return { ok: false, error: 'origen' };
+    return sonidosWeb.buscar(String(prov), consulta, sonidosWeb.leerClaves(cfgClaves())[prov], { soloCC0: !op || op.soloCC0 !== false }, (u, o) => net.fetch(u, o));
+  });
+}
 const TIPOS_AUDIO = { '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.oga': 'audio/ogg', '.opus': 'audio/ogg', '.wav': 'audio/wav', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.flac': 'audio/flac' };
 // Sirve un audio con soporte de rangos (el reproductor salta al principio para repetir en bucle)
 function servirAudio(req, f) {
@@ -265,6 +280,7 @@ app.whenReady().then(() => {
   registrarCopias();
   registrarImagenes();
   registrarAudios();
+  registrarSonidosWeb();
 
   protocol.handle('app', async req => {
     const { pathname } = new URL(req.url);

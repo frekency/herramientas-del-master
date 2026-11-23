@@ -42,6 +42,12 @@ contextBridge.exposeInMainWorld('__AppShell', {
     elegir: () => ipcRenderer.invoke('audios:elegir'),
     lista: () => ipcRenderer.invoke('audios:lista'),
   },
+  // Búsqueda de sonidos en Freesound y Jamendo (la clave la guarda la app, la página solo la entrega una vez)
+  sonidosWeb: {
+    estado: () => ipcRenderer.invoke('sonidos:estado'),
+    guardarClave: (prov, valor) => ipcRenderer.invoke('sonidos:clave', String(prov), String(valor || '')),
+    buscar: (prov, consulta, op) => ipcRenderer.invoke('sonidos:buscar', String(prov), String(consulta || ''), { soloCC0: !op || op.soloCC0 !== false }),
+  },
   // Actualizaciones de la app (GitHub Releases)
   actualizar: {
     estado: () => ipcRenderer.invoke('update:estado'),

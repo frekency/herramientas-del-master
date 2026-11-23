@@ -2700,6 +2700,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-stage{position:relative;aspect-ratio:16/9;width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:4px;overflow:hidden;box-shadow:0 2px 10px #0004}
 .ms-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;background:#0b0a09}
 .ms-stage.mapasel iframe{pointer-events:auto}.ms-stage.mapasel .ms-ov{pointer-events:none}
+.ms-web{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.ms-web li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px;align-items:center}.ms-web .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ms-web small{grid-column:1/-1;color:var(--muted)}
 .ms-toks{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:5px}.ms-toks li{display:grid;grid-template-columns:minmax(0,1fr) 52px 52px minmax(0,108px) auto auto;gap:4px;align-items:center}
 .ms-toks input,.ms-toks select{min-width:0;width:100%;font-size:12px;padding:3px 4px}
 .ms-ov{position:absolute;inset:0;touch-action:none}
@@ -2976,7 +2977,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.102</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.103</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3175,6 +3176,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.103 <span>24 nov 2026</span></h3><ul>
+      <li><b>Buscar sonidos en Freesound y Jamendo</b> desde la capa de ambiente (origen «Enlace»). Hace falta tu propia clave gratuita de cada servicio: se pega una vez, se guarda solo en este equipo y la página nunca la vuelve a ver. En Freesound se puede limitar a CC0 (sin citar al autor). Cada resultado enseña autor, licencia y duración, se puede escuchar antes de elegirlo y, al usarlo, queda el crédito anotado en la capa.</li>
+    </ul></li>
     <li><h3>v1.102 <span>24 nov 2026</span></h3><ul>
       <li><b>Sonido de ambiente con tu propio audio:</b> en la capa de ambiente, además del sonido generado, puedes usar un enlace https (un mp3 o una radio en directo; hay atajos a tres radios ambientales de SomaFM, que vive de donaciones y no tiene publicidad) o un archivo de tu carpeta de sonidos, que eliges una vez y se queda en tu equipo. Se repite en bucle, respeta el volumen y se silencia con el telón.</li>
     </ul></li>
@@ -4835,7 +4839,7 @@ function mesaTelon(n){
 }
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 /* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
-const MS={vent:1,otros:{},nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',aspecto:'16:9',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
+const MS={web:{prov:'freesound',q:'',res:null,est:'',claves:{},solo0:true,cargando:false},webSuena:-1,vent:1,otros:{},nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',aspecto:'16:9',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
 const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},mapa:{x:0,y:0,w:100,h:100},ambiente:{x:0,y:0,w:100,h:100},cuentas:{x:72,y:76,w:25,h:19},dados:{x:60,y:30,w:38,h:62}};
 const msId=()=>'c'+Math.random().toString(36).slice(2,9);
 const msNum=(v,a,b,d)=>{const n=Number(v);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):d;};
@@ -4846,7 +4850,7 @@ function msNorm(c){
   if(c.tipo==='imagen'){o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='cubrir'?'cubrir':'contener';o.titulo=String(c.titulo||'').slice(0,200);o.marco=!!c.marco;}
   if(c.tipo==='texto'){o.t=String(c.t??'').slice(0,2000);o.tam=msNum(c.tam,1,60,6);o.color=msCol(c.color,'#f1ece0');o.fondo=msCol(c.fondo,'');o.alin=['izq','centro','der'].includes(c.alin)?c.alin:'centro';o.fuente=['sans','serif','manuscrita'].includes(c.fuente)?c.fuente:'sans';o.negrita=!!c.negrita;}
   if(c.tipo==='ambiente'){o.efecto=['niebla','lluvia','nieve','tormenta','noche','brasas'].includes(c.efecto)?c.efecto:'niebla';o.intensidad=msNum(c.intensidad,1,10,5);o.sonido=c.sonido===true;o.volumen=msNum(c.volumen,0,100,40);
-    o.fuente=['generado','url','archivo'].includes(c.fuente)?c.fuente:'generado';o.url=/^https:\/\/[^\s"'<>\\]{4,480}$/.test(c.url||'')?c.url:'';o.archivo=String(c.archivo||'').replace(/[\u0000-\u001f]/g,' ').slice(0,120);}
+    o.fuente=['generado','url','archivo'].includes(c.fuente)?c.fuente:'generado';o.url=/^https:\/\/[^\s"'<>\\]{4,480}$/.test(c.url||'')?c.url:'';o.archivo=String(c.archivo||'').replace(/[\u0000-\u001f]/g,' ').slice(0,120);o.credito=String(c.credito||'').replace(/[\u0000-\u001f]/g,' ').slice(0,200);}
   if(c.tipo==='iniciativa'){o.orient=c.orient==='h'?'h':'v';o.tokens=c.tokens!==false;}
   if(c.tipo==='mapa'){o.fondo=msCol(c.fondo,'#2b2f26');o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='contener'?'contener':'cubrir';o.cuad=c.cuad!==false;o.cuadColor=msCol(c.cuadColor,'#ffffff');o.cuadOp=msNum(c.cuadOp,0.05,1,0.3);
     o.celda=msNum(c.celda,0.5,20,2.5);o.pantalla=msNum(c.pantalla,15,600,122);o.offx=msNum(c.offx,0,1,0);o.offy=msNum(c.offy,0,1,0);
@@ -5174,7 +5178,37 @@ function msMarco(){
 }
 /* prueba del sonido en la vista previa (nunca en la ventana de los jugadores) */
 function ambPrueba(on){MS.ambOn=!!on;const f=$('#ms-prev');if(f&&f.contentWindow&&MS.listo)f.contentWindow.postMessage({tipo:'ambprueba',on:MS.ambOn},location.origin);}
-window.addEventListener('hashchange',()=>{if(MS.ambOn&&location.hash!=='#mesa'){ambPrueba(false);}});
+window.addEventListener('hashchange',()=>{if(MS.ambOn&&location.hash!=='#mesa'){ambPrueba(false);}if(location.hash!=='#mesa')msWebParar();});
+/* buscar sonidos en Freesound y Jamendo (con la clave del propio usuario, que guarda la app y no la página) */
+const MS_WEB_N={freesound:'Freesound',jamendo:'Jamendo'},MS_WEB_PEDIR={freesound:'https://freesound.org/apiv2/apply/',jamendo:'https://devportal.jamendo.com/'};
+async function msWebEstado(){
+  const S=window.__AppShell&&window.__AppShell.sonidosWeb;if(!S)return;
+  try{MS.web.claves=await S.estado()||{};}catch{MS.web.claves={};}
+  const c=msSelC();if(c&&c.tipo==='ambiente'&&c.fuente==='url')msInsp();
+}
+function msWebInsp(){
+  const S=window.__AppShell&&window.__AppShell.sonidosWeb;if(!S)return '';
+  const W=MS.web,N=MS_WEB_N[W.prov];
+  let h='<h3>'+esc(T('Buscar sonidos'))+'</h3><div class="ms-acts">'+Object.keys(MS_WEB_N).map(p=>'<button type="button" class="btn sm'+(W.prov===p?' primary':' ghost')+'" data-ms="webprov" data-p="'+p+'" aria-pressed="'+(W.prov===p)+'">'+MS_WEB_N[p]+'</button>').join('')+'</div>';
+  if(!W.claves[W.prov])return h+'<p class="hint">'+esc(T('Hace falta tu propia clave de'))+' '+N+' '+esc(T('(gratis). Pídela en su web y pégala aquí; se guarda solo en este equipo.'))+' <a class="noi18n" href="'+MS_WEB_PEDIR[W.prov]+'" target="_blank" rel="noopener noreferrer">'+esc(MS_WEB_PEDIR[W.prov].replace('https://',''))+'</a></p>'
+    +'<div class="ms-acts"><input type="password" data-web="clave" maxlength="80" autocomplete="off" spellcheck="false" aria-label="'+esc(T('Clave de')+' '+N)+'" placeholder="'+esc(T('Clave'))+'"><button type="button" class="btn sm" data-ms="webclave">'+esc(T('Guardar la clave'))+'</button></div>';
+  h+='<div class="ms-acts"><input type="search" data-web="q" maxlength="60" value="'+esc(W.q)+'" placeholder="'+esc(T('lluvia, bosque, taberna…'))+'" aria-label="'+esc(T('Buscar sonidos'))+'"><button type="button" class="btn sm primary" data-ms="websearch"'+(W.cargando?' disabled':'')+'>'+esc(W.cargando?T('Buscando…'):T('Buscar'))+'</button></div>';
+  if(W.prov==='freesound')h+='<label class="chk"><input type="checkbox" data-web="solo0"'+(W.solo0?' checked':'')+'> '+esc(T('Solo CC0 (no exige citar al autor)'))+'</label>';
+  if(W.est)h+='<p class="hint" role="status">'+esc(W.est)+'</p>';
+  if(W.res&&W.res.length)h+='<ul class="ms-web">'+W.res.map((r,i)=>'<li><span class="nm">'+esc(r.n)+'</span><button type="button" class="btn sm ghost" data-ms="webpre" data-i="'+i+'" aria-pressed="'+(MS.webSuena===i)+'" aria-label="'+esc(T('Escuchar'))+'">'+(MS.webSuena===i?'■':'▶')+'</button><button type="button" class="btn sm" data-ms="webusar" data-i="'+i+'">'+esc(T('Usar'))+'</button><small>'+esc([r.autor,r.licencia,r.dur?Math.floor(r.dur/60)+':'+String(r.dur%60).padStart(2,'0'):''].filter(Boolean).join(' · '))+'</small></li>').join('')+'</ul>';
+  return h+'<div class="ms-acts"><button type="button" class="btn sm ghost" data-ms="webclavebor">'+esc(T('Cambiar o borrar la clave'))+'</button></div>';
+}
+function msWebParar(){if(MS.webAud){try{MS.webAud.pause();}catch{}MS.webAud=null;}MS.webSuena=-1;}
+async function msWebBuscar(){
+  const S=window.__AppShell&&window.__AppShell.sonidosWeb,W=MS.web;if(!S||W.cargando)return;
+  if((W.q||'').trim().length<2){W.est=T('Escribe al menos dos letras');msInsp();return;}
+  msWebParar();W.cargando=true;W.est='';msInsp();
+  let r;try{r=await S.buscar(W.prov,W.q.trim(),{soloCC0:W.solo0});}catch{r={ok:false,error:'red'};}
+  W.cargando=false;
+  if(r&&r.ok){W.res=r.res;W.est=r.res.length?'':T('Sin resultados')+(W.prov==='freesound'&&W.solo0?'. '+T('Prueba sin «Solo CC0» (hay que citar al autor)'):'');}
+  else{W.res=null;W.est={clave:T('La clave no vale: cámbiala'),limite:T('Has llegado al límite de peticiones; espera un poco'),red:T('No hay conexión con el servicio'),consulta:T('Escribe al menos dos letras')}[r&&r.error]||T('El servicio no responde');}
+  msInsp();
+}
 /* origen del sonido de ambiente: enlace (radio en directo, mp3) o archivo de la carpeta de sonidos del usuario */
 const MS_RADIOS=[['Drone Zone',"https://ice1.somafm.com/dronezone-128-mp3"],['Dark Zone',"https://ice1.somafm.com/darkzone-128-mp3"],['Deep Space One',"https://ice1.somafm.com/deepspaceone-128-mp3"]];
 async function msAudiosCarga(){
@@ -5185,7 +5219,8 @@ async function msAudiosCarga(){
 function msAudioInsp(c){
   if(c.fuente==='url')return '<label class="f">'+esc(T('Enlace https del audio'))+'<input type="url" data-msf="url" maxlength="480" value="'+esc(c.url)+'" placeholder="https://…" spellcheck="false"></label>'
     +'<div class="ms-acts">'+MS_RADIOS.map(r=>'<button type="button" class="btn sm ghost noi18n" data-ms="audradio" data-u="'+esc(r[1])+'">♪ SomaFM '+esc(r[0])+'</button>').join('')+'</div>'
-    +'<p class="hint">'+esc(T('SomaFM es una radio ambiental sin publicidad que vive de donaciones de sus oyentes (somafm.com). Vale cualquier enlace https directo a un mp3, ogg o radio en directo que tengas derecho a usar. No sirven las páginas de YouTube, Spotify o similares: no son archivos de audio.'))+'</p>';
+    +'<p class="hint">'+esc(T('SomaFM es una radio ambiental sin publicidad que vive de donaciones de sus oyentes (somafm.com). Vale cualquier enlace https directo a un mp3, ogg o radio en directo que tengas derecho a usar. No sirven las páginas de YouTube, Spotify o similares: no son archivos de audio.'))+'</p>'
+    +(c.credito?'<p class="hint">'+esc(T('Crédito')+': '+c.credito)+'</p>':'')+msWebInsp();
   if(c.fuente==='archivo'){
     const L=MS.audList||[];
     return '<p class="hint">'+esc(MS.audCarpeta?T('Carpeta')+': '+MS.audCarpeta:T('Elige una carpeta con tus sonidos (mp3, ogg, wav, m4a, flac…). Se queda en tu equipo: no se sube a ningún sitio.'))+'</p>'
@@ -5208,7 +5243,7 @@ function msRender(){
   const app=msApp();
   $('#ms-web').hidden=app;$('#ms-app').hidden=!app;
   if(!app)return;
-  msLoad();msBarra();msLibHTML();msOv();msInsp();msMarco();
+  msLoad();msBarra();msLibHTML();msOv();msInsp();msMarco();msWebEstado();
   const f=$('#ms-prev');if(f&&!f.getAttribute('src')){MS.listo=false;f.setAttribute('src','mesa.html');}else msPrev();
 }
 function msAnade(tipo,extra){
@@ -5269,6 +5304,12 @@ function msAct(a,b){
   else if(a==='mpant'){if(c&&c.tipo==='mapa'&&b.value!=='otra'){c.pantalla=+b.value;msInsp();msCambio();}}
   else if(a==='mapick'){MS.pick=b.dataset.modo;toast(b.dataset.modo==='token'?T('Elige una imagen de la lista para la ficha'):T('Elige una imagen de la lista para el mapa'),4000);}
   else if(a==='ambprueba'){ambPrueba(!MS.ambOn);msInsp();}
+  else if(a==='webprov'){msWebParar();MS.web.prov=b.dataset.p;MS.web.res=null;MS.web.est='';msInsp();}
+  else if(a==='webclave'){const S=window.__AppShell.sonidosWeb,i=document.querySelector('[data-web="clave"]');S.guardarClave(MS.web.prov,i?i.value:'').then(ok=>{if(ok){MS.web.claves[MS.web.prov]=true;toast(T('Clave guardada en este equipo'));}else toast(T('La clave no es válida'),4000);msInsp();});}
+  else if(a==='webclavebor'){window.__AppShell.sonidosWeb.guardarClave(MS.web.prov,'').then(()=>{MS.web.claves[MS.web.prov]=false;MS.web.res=null;MS.web.est='';msWebParar();msInsp();toast(T('Clave borrada'));});}
+  else if(a==='websearch')msWebBuscar();
+  else if(a==='webpre'){const r=(MS.web.res||[])[+b.dataset.i];if(!r)return;const i=+b.dataset.i,mismo=MS.webSuena===i;msWebParar();if(!mismo){const au=new Audio(r.url);au.volume=.6;au.play().catch(()=>{});au.onended=()=>{MS.webSuena=-1;msInsp();};MS.webAud=au;MS.webSuena=i;}msInsp();}
+  else if(a==='webusar'&&c&&c.tipo==='ambiente'){const r=(MS.web.res||[])[+b.dataset.i];if(!r)return;msWebParar();c.fuente='url';c.url=r.url;c.credito=(r.n+' — '+(r.autor||'?')+(r.licencia?' ('+r.licencia+')':'')+' · '+MS_WEB_N[MS.web.prov]).slice(0,200);msInsp();msCambio();toast(T('Sonido elegido')+(r.licencia&&r.licencia!=='CC0'?'. '+T('Cita al autor si lo publicas'):''),5000);}
   else if(a==='audradio'&&c&&c.tipo==='ambiente'){c.url=b.dataset.u;msInsp();msCambio();if(MS.ambOn)ambPrueba(true);}
   else if(a==='audcarpeta'){window.__AppShell.audios.elegir().then(()=>msAudiosCarga());}
   else if(a==='audrecarga')msAudiosCarga();
@@ -5322,13 +5363,15 @@ function msAct(a,b){
 (function msInit(){
   const v=$('#view-mesa');if(!v)return;
   v.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();msEnviar(false);}});
-  v.addEventListener('keydown',e=>{if(e.target.id==='ms-dn'&&e.key==='Enter'){e.preventDefault();msTirar(!msVivo());}});
+  v.addEventListener('keydown',e=>{if(e.target.id==='ms-dn'&&e.key==='Enter'){e.preventDefault();msTirar(!msVivo());}
+    if(e.target.dataset&&e.target.dataset.web==='q'&&e.key==='Enter'){e.preventDefault();MS.web.q=e.target.value.slice(0,60);msWebBuscar();}});
   v.addEventListener('click',e=>{const b=e.target.closest('[data-ms]');if(b&&b.type!=='checkbox'&&b.tagName!=='SELECT')msAct(b.dataset.ms,b);});
   v.addEventListener('change',e=>{
     const t=e.target;
     if(t.dataset.msup!==undefined){msSubir(t.files[0]);t.value='';return;}
     if(t.dataset.ms==='confondo')return msAct('confondo',t);
     if(t.dataset.ms==='mpant')return msAct('mpant',t);
+    if(t.dataset.web==='solo0'){MS.web.solo0=t.checked;return;}
     if(t.dataset.msg==='live'){MS.live=t.checked;if(MS.live&&msVivo())msEnviar(true);return;}
     if(t.dataset.msf&&(t.tagName==='SELECT'||t.type==='checkbox')){msCampo(t);msOv();msInsp();msCambio();if(t.dataset.msf==='fuente'&&t.value==='archivo')msAudiosCarga();if(MS.ambOn&&['fuente','archivo'].includes(t.dataset.msf))ambPrueba(true);}
   });
@@ -5337,6 +5380,7 @@ function msAct(a,b){
     if(t.id==='mp-tt'){try{Store.set('mesa-telon-t',t.value);}catch{}const S=window.__AppShell;
       for(const n of (mesaEst.abiertas||[]))if(mesaVent(n).telon&&S&&S.mesa)S.mesa.enviar({tipo:'telon',activo:true,texto:t.value||T('Empezamos enseguida'),ventana:n});return;}
     if(t.dataset.mt){msTokCampo(t);return;}
+    if(t.dataset.web==='q'){MS.web.q=t.value.slice(0,60);return;}
     if(t.dataset.msq!==undefined){MS.q=t.value;msBiblio();return;}
     if(t.dataset.msg){const k=t.dataset.msg;if(k==='nombre')MS.nombre=t.value.slice(0,80);else if(k==='fondo')MS.fondo=msCol(t.value,'#0b0a09');else if(k==='fundido')MS.fundido=msNum(t.value,0,3000,400);else if(k==='fondo2')MS.fondo2=msCol(t.value,'#3a2a1a');else if(k==='ang')MS.ang=msNum(t.value,0,360,180);else if(k==='fnid'){MS.fnid=t.value;msBarra();}else if(k==='fajuste')MS.fajuste=t.value==='contener'?'contener':'cubrir';else if(k==='aspecto'){MS.aspecto=['16:9','auto','21:9','16:10','4:3'].includes(t.value)?t.value:'16:9';msMarco();}else if(k==='ftipo'){MS.fondo2=t.value==='degradado'?(MS.fondo2||'#3a2a1a'):'';msBarra();}else if(k==='prop')MS.prop=t.checked;if(k!=='live')msCambio();return;}
     if(t.dataset.msf&&t.tagName!=='SELECT'&&t.type!=='checkbox'){const k0=t.dataset.msf,c0=msSelC();if(MS.prop&&c0&&(k0==='w'||k0==='h')){const r=c0.w/c0.h,v=msNum(t.value,1,200,c0[k0]),o=k0==='w'?'h':'w',nv=Math.round((k0==='w'?v/r:v*r)*10)/10;c0[o]=Math.min(200,Math.max(1,nv));const oi=document.querySelector('[data-msf="'+o+'"]');if(oi)oi.value=c0[o];}

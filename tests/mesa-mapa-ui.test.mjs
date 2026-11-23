@@ -13,7 +13,7 @@ const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Appli
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
-window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg']}};
+window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg']},sonidosWeb:{estado:async()=>({freesound:false,jamendo:true}),guardarClave:async(p,v)=>{(window.__claves=window.__claves||[]).push(p+':'+v);return v===''||/^[A-Za-z0-9]{6,}$/.test(v);},buscar:async(p,q,o)=>{(window.__bus=window.__bus||[]).push([p,q,o.soloCC0]);return {ok:true,res:[{id:'1',n:'Lluvia',autor:'ana',licencia:'CC0',dur:61,url:'https://cdn.freesound.org/a.mp3',pagina:''}]};}}};
 localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
@@ -133,6 +133,27 @@ const TAIL=`<script>
     ok('con carpeta propia salen sus audios',am.fuente==='archivo'&&[...q('[data-msf="archivo"]').options].map(o=>o.value).join()===',a.mp3,b.ogg'&&q('#ms-insp').textContent.includes('C:/sonidos'));
     const sa=q('[data-msf="archivo"]');sa.value='b.ogg';sa.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
     ok('elegir un audio lo guarda y lo manda a la mesa',am.archivo==='b.ogg'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').archivo==='b.ogg');
+    // buscar sonidos en Freesound y Jamendo con la clave del usuario
+    const sw=q('[data-msf="fuente"]');sw.value='url';sw.dispatchEvent(new Event('change',{bubbles:true}));await wait(250);
+    ok('con enlace aparece el buscador con sus dos servicios',!!q('[data-ms="webprov"][data-p="freesound"]')&&!!q('[data-ms="webprov"][data-p="jamendo"]'));
+    ok('sin clave de Freesound pide la clave y no deja buscar',!!q('[data-web="clave"]')&&!q('[data-web="q"]')&&q('#ms-insp').textContent.includes('freesound.org'));
+    q('[data-web="clave"]').value='mala clave!';await click('[data-ms="webclave"]');await wait(100);
+    ok('una clave no válida se rechaza',!q('[data-web="q"]'));
+    q('[data-web="clave"]').value='ABCDEF123456';await click('[data-ms="webclave"]');await wait(150);
+    ok('al guardar la clave sale el buscador (la clave solo viaja al guardarla)',!!q('[data-web="q"]')&&window.__claves.includes('freesound:ABCDEF123456')&&!JSON.stringify(MS.capas).includes('ABCDEF'));
+    ok('Freesound ofrece solo CC0, activado',!!q('[data-web="solo0"]')&&q('[data-web="solo0"]').checked);
+    await typeIn('[data-web="q"]','lluvia');await click('[data-ms="websearch"]');await wait(250);
+    ok('la búsqueda llega al servicio con la opción CC0',window.__bus.length===1&&window.__bus[0].join('|')==='freesound|lluvia|true');
+    ok('salen los resultados con autor, licencia y duración',q('.ms-web li .nm').textContent==='Lluvia'&&q('.ms-web li small').textContent==='ana · CC0 · 1:01');
+    await click('[data-ms="webusar"][data-i="0"]');
+    ok('usar un resultado pone su enlace y guarda el crédito',am.fuente==='url'&&am.url==='https://cdn.freesound.org/a.mp3'&&am.credito==='Lluvia — ana (CC0) · Freesound'&&q('#ms-insp').textContent.includes('Crédito'));
+    ok('y llega a la escena con el audio',msEscena(false).capas.find(c=>c.tipo==='ambiente').url==='https://cdn.freesound.org/a.mp3');
+    await click('[data-ms="webprov"][data-p="jamendo"]');
+    ok('Jamendo ya tiene clave: sale el buscador sin la casilla CC0',!!q('[data-web="q"]')&&!q('[data-web="solo0"]'));
+    await typeIn('[data-web="q"]','bosque');q('[data-web="q"]').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));await wait(250);
+    ok('Intro también busca, en Jamendo',window.__bus.length===2&&window.__bus[1][0]==='jamendo'&&window.__bus[1][1]==='bosque');
+    await click('[data-ms="webclavebor"]');await wait(150);
+    ok('se puede borrar la clave',!q('[data-web="q"]')&&window.__claves.includes('jamendo:'));
     // una escena guardada de antes (sin estos campos) se sigue cargando
     Store.set('mesa-estudio-v1',JSON.stringify({fondo:'#102030',capas:[{tipo:'iniciativa',x:1,y:1,w:20,h:80}]}));msLoad();
     ok('las escenas antiguas se cargan con valores por defecto',MS.aspecto==='16:9'&&MS.capas[0].orient==='v'&&MS.capas[0].tokens===true);
@@ -166,6 +187,6 @@ testNav('estudio de la mesa: mapa de combate, fichas y criaturas ocultas',{skip:
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=46,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=58,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

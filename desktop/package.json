@@ -1,6 +1,6 @@
 {
   "name": "herramientas-del-master-desktop",
-  "version": "1.102.0",
+  "version": "1.103.0",
   "description": "Herramientas del Máster: app de escritorio para dirigir partidas de D&D 2024",
   "actualizaciones": {
     "provider": "github",
@@ -39,6 +39,7 @@
       "updater.js",
       "imagenes.js",
       "audios.js",
+      "sonidos-web.js",
       "package.json",
       "app/**/*",
       "build/icon.png"
