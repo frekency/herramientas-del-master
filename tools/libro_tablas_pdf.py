@@ -181,6 +181,12 @@ def tablas_pagina(pg, ultima):
         for g in grupos:
             if g['y1'] - g['y0'] < 20 or g['x1'] - g['x0'] < 100:
                 continue
+            # la continuación ocupa toda la columna de la página (izquierda o derecha), no solo los rectángulos que hayan salido
+            cen = (g['x0'] + g['x1']) / 2
+            bx0, bx1 = (48.0, 291.0) if cen < 306 else (320.0, 566.0)
+            if g['x0'] > bx0 + 10 or g['x1'] < bx1 - 40:
+                g['x0'], g['x1'] = bx0, bx1
+                g['rs'] = [r for r, c in fills if c == col and r.x0 >= bx0 - 3 and r.x1 <= bx1 + 3 and g['y0'] - 1 <= r.y0 <= g['y1'] + 1]
             thin = [r for r in g['rs'] if r.width <= THIN and r.height >= 7]
             centros = sorted({round((r.x0 + r.x1) / 2) for r in thin})
             div, ult = [], None
@@ -291,14 +297,22 @@ def main():
     out, ultima = [], None
     for p in range(a, b + 1):
         pg = d[p - 1]
-        for tb in tablas_pagina(pg, ultima):
-            if tb['cont']:
-                if ultima is not None:
-                    ultima['filas'] += tb['filas']
-                continue
+        pre = ultima
+        izq = None                    # última tabla de la columna izquierda de esta página
+        tbs = tablas_pagina(pg, ultima)
+        for tb in [t for t in tbs if not t['cont']]:
             ultima = {'die': tb['die'], 'cols': tb['cols'], 'cols_n': len(tb['cols']), 'filas': list(tb['filas']), 'p': p,
-                      'titulo': titulo_sobre(pg, tb['x0'], tb['x1'], tb['y0'])}
+                      'titulo': titulo_sobre(pg, tb['x0'], tb['x1'], tb['y0']), 'pos': [p, tb['x0'], tb['y0'], tb['x1']]}
             out.append(ultima)
+            if tb['x0'] < 300 and (izq is None or tb['y0'] > izq['pos'][2]):
+                izq = ultima
+        for tb in sorted([t for t in tbs if t['cont']], key=lambda t: t['x0'] >= 300):
+            if tb['x0'] < 300:
+                objetivo = pre
+            else:
+                objetivo = izq or pre
+            if objetivo is not None and objetivo['cols_n'] == len(tb['cols']):
+                objetivo['filas'] += tb['filas']
     # una tabla de la misma forma cuyo primer número no es 1 continúa a la anterior (mitades en paralelo)
     fus = []
     for tb in out:
@@ -323,7 +337,7 @@ def main():
             if k:
                 base += ' (%d)' % (k + 1)
         n = base
-        res.append({'n': n, 'cat': etiq, 'columnas': cols, 'modo': 'fila' if len(cols) > 1 else 'columna', 'pg': str(tb['p'] - off), 'pend': True,
+        res.append({'n': n, 'cat': etiq, 'columnas': cols, 'modo': 'fila' if len(cols) > 1 else 'columna', 'pg': str(tb['p'] - off), 'pend': True, '_pos': (tb['pos'] if not tb['titulo'] else None),
                     'dudas': ['tabla leída de un PDF: compruébala con el libro'] + du + ([] if tb['titulo'] else ['no se encontró el título: se le ha puesto uno provisional'])})
         print(tb['p'] - off, '| d%d |' % tb['die'], n[:60], '|', [c for c in cols], '|', len(du))
     # tablas partidas por salto de página: dos seguidas con el mismo dado y columnas cuyos huecos se complementan son una sola
@@ -346,7 +360,8 @@ def main():
     res = fin
     m = json.load(open(modulo, encoding='utf-8'))
     ya = {x['n'] for x in res}
-    m['tablas'] = [x for x in m.get('tablas', []) if x['n'] not in ya and x.get('cat') != etiq] + res
+    conservar = len(sys.argv) > 7 and sys.argv[7] == 'conservar'
+    m['tablas'] = [x for x in m.get('tablas', []) if x['n'] not in ya and (conservar or x.get('cat') != etiq)] + res
     json.dump(m, open(modulo, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(len(res), 'tablas ->', modulo)
 

@@ -51,7 +51,7 @@ def main():
                 if lo <= 2 and (cur is None or cur['ult'] >= 90 or lo == 1):
                     tt = [t for t in titulos if abs(t['x'] - r['x']) < 30 and t['y'] < r['y'] and r['y'] - t['y'] < 55]
                     tit = max(tt, key=lambda t: t['y'])['t'] if tt else ''
-                    cur = {'n': tit, 'pg': p - off, 'res': [''] * 100, 'ult': 0}
+                    cur = {'n': tit, 'pg': p - off, 'res': [''] * 100, 'ult': 0, 'pos': None if tit else [p, r['x'] - 6, r['y'] - 14, r['x'] + 112]}
                     tablas.append(cur)
                 if cur is None:
                     continue
@@ -69,7 +69,7 @@ def main():
             base = 'Nombres: %s (%d)' % (n, k)
             k += 1
         du = ['tabla leída de un PDF: compruébala con el libro'] + (['faltan resultados del dado (%d de 100): compruébala con el libro' % falta] if falta else []) + ([] if t['n'] else ['no se encontró el título: se le ha puesto uno provisional'])
-        res.append({'n': base, 'cat': 'Xanathar: Nombres', 'columnas': {'Nombre': t['res']}, 'modo': 'columna', 'pg': str(t['pg']), 'pend': True, 'dudas': du})
+        res.append({'n': base, 'cat': 'Xanathar: Nombres', 'columnas': {'Nombre': t['res']}, 'modo': 'columna', 'pg': str(t['pg']), 'pend': True, 'dudas': du, '_pos': t['pos']})
         print(t['pg'], '|', base, '| faltan', falta)
     m = json.load(open(modulo, encoding='utf-8'))
     ya = {x['n'] for x in res}

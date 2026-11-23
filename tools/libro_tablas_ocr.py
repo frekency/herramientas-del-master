@@ -40,8 +40,8 @@ def procesa(pag, ls, etiq, off):
     ds.sort(key=lambda a: (a[0]['x'] >= MITAD, a[0]['y']))
     for k, (h, (die, resto)) in enumerate(ds):
         hx, hy = h['x'], h['y']
-        lado = hx >= MITAD
-        lo, hi = (MITAD, 2000) if lado else (0, MITAD)
+        lo = hx - 30                                       # la tabla ocupa de su dado hasta la cabecera de la tabla de su derecha
+        hi = min([a[0]['x'] for a in ds if a[0]['x'] > hx + 100] + [5000]) - 12
         # cabeceras de las demás columnas: mismas alturas, a la derecha
         cab = [(hx + 60, resto)] if resto else []
         for l in ls:
@@ -53,7 +53,7 @@ def procesa(pag, ls, etiq, off):
         # una sola cabecera sin nombre: columna única a la derecha del número
         xs = [c[0] for c in cab]
         # siguientes tablas en la misma mitad limitan la región
-        sig = [a[0]['y'] for a in ds[k + 1:] if (a[0]['x'] >= MITAD) == lado and a[0]['y'] > hy + 20]
+        sig = [a[0]['y'] for a in ds if lo <= a[0]['x'] < hi and a[0]['y'] > hy + 20]
         ymax = min(sig) - 25 if sig else 99999
         L = sorted((l for l in ls if lo <= l['x'] < hi and hy + 12 < l['y'] < ymax), key=lambda l: (l['y'], l['x']))
         # la columna del número: trozos de línea cortos junto al dado, unidos por altura («01» + «�20», «21-» + «30»)
@@ -129,6 +129,7 @@ def procesa(pag, ls, etiq, off):
                 nm += ' '
             used.add(nm)
             cols[nm] = [re.sub(r'\s+', ' ', ' '.join(r['cel'].get(i, []))).strip() if r else '' for r in res]
+        tit = re.split(r'\s+(?:[1IL]?D\s?[\dLOI]+|ID[LO]+)', re.sub(r'\s+', ' ', tit), flags=re.I)[0].strip()      # el título en mayúsculas arrastra la cabecera «ID12 LÍDER»
         n = re.sub(r'\s+', ' ', tit).strip().rstrip(':.')
         if not n:
             n = 'Tabla d%d, p. %d' % (die, pag - off)
@@ -138,7 +139,7 @@ def procesa(pag, ls, etiq, off):
         if not tit:
             du.append('no se encontró el título: se le ha puesto uno provisional')
         out.append({'n': n.title() if n.isupper() else n, 'cat': etiq, 'columnas': cols, 'modo': 'fila' if len(cols) > 1 else 'columna',
-                    'pg': str(pag - off), 'pend': True, 'dudas': du, '_falta': falta, '_die': die})
+                    'pg': str(pag - off), 'pend': True, 'dudas': du, '_falta': falta, '_die': die, '_pos': None if tit else [pag, hx - 10, hy - 4, hx + 330]})
     return out
 
 
@@ -160,21 +161,26 @@ def main():
         return {i for i in range(len(c[0])) if any(col[i] for col in c)}
     fin = []
     for t in res:
-        pr = fin[-1] if fin else None
-        if pr and pr['_die'] == t['_die'] and len(pr['columnas']) == len(t['columnas']) and int(t['pg']) - int(pr['pg']) <= 1:
-            a, b = llenas(pr), llenas(t)
-            if a and b and not (a & b) and max(a) < min(b):
-                for (k1, v1), (k2, v2) in zip(pr['columnas'].items(), t['columnas'].items()):
-                    pr['columnas'][k1] = [x or y for x, y in zip(v1, v2)]
-                pr['_falta'] = sum(1 for i in range(pr['_die']) if i not in a | b)
-                pr['dudas'] = [d for d in pr['dudas'] if not d.startswith('faltan')] + (['faltan resultados del dado (%d de %d): compruébala con el libro' % (pr['_falta'], pr['_die'])] if pr['_falta'] else [])
-                if pr['n'].startswith('Tabla d') and not t['n'].startswith('Tabla d'):
-                    pr['n'] = t['n']
-                continue
-        fin.append(t)
+        unido = False
+        for pr in reversed(fin[-3:]):
+            if pr['_die'] == t['_die'] and len(pr['columnas']) == len(t['columnas']) and abs(int(t['pg']) - int(pr['pg'])) <= 1:
+                a, b = llenas(pr), llenas(t)
+                if a and b and not (a & b) and len(a | b) >= 0.7 * t['_die'] and (max(a) < min(b) or max(b) < min(a)):
+                    for (k1, v1), (k2, v2) in zip(pr['columnas'].items(), t['columnas'].items()):
+                        pr['columnas'][k1] = [x or y for x, y in zip(v1, v2)]
+                    pr['_falta'] = sum(1 for i in range(pr['_die']) if i not in a | b)
+                    pr['dudas'] = [d for d in pr['dudas'] if not d.startswith('faltan')] + (['faltan resultados del dado (%d de %d): compruébala con el libro' % (pr['_falta'], pr['_die'])] if pr['_falta'] else [])
+                    if pr['n'].startswith('Tabla d') and not t['n'].startswith('Tabla d'):
+                        pr['n'] = t['n']
+                    if t.get('_pos') is None:
+                        pr['_pos'] = None
+                    unido = True
+                    break
+        if not unido:
+            fin.append(t)
     res = []
     for t in fin:
-        if t['_falta'] > t['_die'] * 0.5:
+        if t['_falta'] > t['_die'] * 0.9:
             print('OMITIDA p.%s d%d (faltan %d): %s' % (t['pg'], t['_die'], t['_falta'], t['n'][:40]))
         else:
             res.append(t)
