@@ -31,7 +31,7 @@ def lineas_pag(d, p, pie=0.955):
                 continue
             if size < 7 or x0 > W - 12:        # ruido de los bordes
                 continue
-            out.append({'t': t.strip(), 'x0': x0, 'x1': x1, 'y': y0, 'size': size, 'col': 0 if x0 < W * 0.5 - 20 else 1, 'p': p})
+            out.append({'t': t.strip(), 'x0': x0, 'x1': x1, 'y': y0, 'y1': y1, 'size': size, 'col': 0 if x0 < W * 0.5 - 20 else 1, 'p': p})
     out.sort(key=lambda r: (r['col'], r['y']))
     # el OCR parte a veces una línea en trozos (junto a una ilustración): se vuelven a unir
     uni = []
