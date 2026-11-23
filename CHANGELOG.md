@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.99.2] - 2026-11-23
+### Corregido
+- Publicación: la v1.99.1 no llegó a subir los archivos de Windows y la app no podía comprobar actualizaciones. Mismo código, publicada de nuevo.
+
 ## [1.99.1] - 2026-11-23
 ### Cambiado
 - Estudio de la mesa: enviar abre la ventana con el telón bajado (texto en la barra); quitado el panel flotante y «Abrir la ventana»; botón «Cerrar mesa». Galería: títulos editables, título al subir, búsqueda por título y texto, arte de criaturas.
