@@ -34,3 +34,8 @@ drop trigger if exists proteger_modulo_usuario on public.modulos_usuario;
 create trigger proteger_modulo_usuario before insert or update on public.modulos_usuario
   for each row execute function public.proteger_modulo_usuario();
 notify pgrst, 'reload schema';
+
+-- Permisos de la tabla para quien ha iniciado sesión (sin esto: «permission denied for table»). La seguridad real la pone la política de arriba.
+grant select, insert, update, delete on public.modulos_usuario to authenticated;
+revoke all on public.modulos_usuario from anon;
+notify pgrst, 'reload schema';
