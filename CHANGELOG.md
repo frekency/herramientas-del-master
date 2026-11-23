@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.90.0] - 2026-11-23
+### Añadido
+- Los módulos pueden traer ilustraciones (campo `img`) en conjuros, especies, trasfondos, dotes, clases, subclases y objetos; se guardan aparte (IndexedDB) y se ven en la ficha del compendio.
+- Criaturas de otros manuales (espíritus, bestias invocadas, objetos animados…) con su token.
+
 ## [1.89.1] - 2026-11-23
 ### Cambiado
 - Las etiquetas de los manuales oficiales siguen las de 5etools: XPHB, XDMG, XMM, XGE y TCE (las antiguas se migran solas).
