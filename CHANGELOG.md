@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.95.0] - 2026-11-23
+### Cambiado
+- Web: los módulos se guardan en la cuenta (tabla `modulos_usuario`, ver `supabase/modulos_usuario.sql`) y no en el navegador; en el escritorio siguen en el disco.
+
 ## [1.94.0] - 2026-11-23
 ### Corregido
 - Web: los módulos grandes se guardan en IndexedDB y ya no sale «el navegador se ha quedado sin espacio» al importar los manuales completos.

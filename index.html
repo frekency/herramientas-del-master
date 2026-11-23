@@ -19,18 +19,16 @@
    sessionStorage, que se vacía al cerrar la pestaña, para sobrevivir a una recarga mientras se trabaja. La sesión de la cuenta
    (supabase-js) sí queda en localStorage para no tener que entrar cada vez. */
 const WEB_NUBE=typeof location!=='undefined'&&location.protocol==='https:'&&!window.__AppShell&&!window.claude&&!window.__StoreBackend;
-/* Lo grande (los módulos, varios MB) no cabe en sessionStorage (~5 MB): va a IndexedDB, con una copia en memoria para leerlo en síncrono. */
+/* En la web el navegador solo guarda lo esencial (sessionStorage: sesión y ajustes pequeños). Lo grande (los módulos, varios MB) vive en la
+   cuenta (tabla modulos_usuario) y aquí solo en memoria mientras la pestaña está abierta; se vuelve a bajar al entrar. */
 if(WEB_NUBE){
-  const BIG=new Map(),IDB=()=>new Promise((ok,ko)=>{try{const r=indexedDB.open('hdm-web-big',1);r.onupgradeneeded=()=>r.result.createObjectStore('k');r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);}catch(e){ko(e);}});
-  const idbPut=(k,v)=>IDB().then(d=>{d.transaction('k','readwrite').objectStore('k').put(v,k);}).catch(()=>{});
-  const idbDel=k=>IDB().then(d=>{d.transaction('k','readwrite').objectStore('k').delete(k);}).catch(()=>{});
-  window.__bigCargada=IDB().then(d=>new Promise(res=>{const q=d.transaction('k').objectStore('k').openCursor();q.onsuccess=()=>{const c=q.result;if(c){if(typeof c.value==='string'&&!BIG.has(c.key))BIG.set(c.key,c.value);c.continue();}else res();};q.onerror=()=>res();})).catch(()=>{});
+  const BIG=new Map();
   window.__StoreBackend={
     get:k=>BIG.has(k)?BIG.get(k):sessionStorage.getItem(k),
     set:(k,v)=>{
-      if(BIG.has(k)||v.length>300000){BIG.set(k,v);idbPut(k,v);try{sessionStorage.removeItem(k);}catch{}return;}
-      try{sessionStorage.setItem(k,v);}catch(e){BIG.set(k,v);idbPut(k,v);}},
-    remove:k=>{BIG.delete(k);idbDel(k);sessionStorage.removeItem(k);},
+      if(BIG.has(k)||v.length>300000){BIG.set(k,v);try{sessionStorage.removeItem(k);}catch{}return;}
+      try{sessionStorage.setItem(k,v);}catch(e){BIG.set(k,v);}},
+    remove:k=>{BIG.delete(k);sessionStorage.removeItem(k);},
     keys:()=>{const o=new Set(BIG.keys());for(let i=0;i<sessionStorage.length;i++)o.add(sessionStorage.key(i));return [...o];}};
 }
 if(WEB_NUBE)document.documentElement.classList.add('web-nube');
@@ -2959,7 +2957,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.94</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.95</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3158,6 +3156,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.95 <span>23 nov 2026</span></h3><ul>
+      <li><b>Web: los módulos viven en tu cuenta.</b> El navegador solo guarda lo esencial; tus manuales y homebrew se guardan en Supabase (tabla <code>modulos_usuario</code>, troceados, solo tuyos) y se bajan al entrar. Hay que ejecutar <code>supabase/modulos_usuario.sql</code> una vez. En la app de escritorio siguen en el disco.</li>
+    </ul></li>
     <li><h3>v1.94 <span>23 nov 2026</span></h3><ul>
       <li><b>La web ya admite los manuales completos.</b> Los módulos (varios MB) se guardan en IndexedDB en vez de sessionStorage, que se llenaba a los 5 MB y avisaba de «sin espacio». Al cerrar sesión se borran.</li>
     </ul></li>
@@ -5644,7 +5645,7 @@ function manSet(id,on){
 const modSlug=n=>'hb-'+fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const modAbbr=n=>String(n).split(/\s+/).filter(w=>w.length>2).map(w=>w[0].toUpperCase()).join('').slice(0,5)||String(n).slice(0,4);
 function saveMods(){
-  if(lsSet(MKEY,mods()))return true;
+  if(lsSet(MKEY,mods())){mdbSubirPronto();return true;}
   Dlg.si(T('No se han podido guardar los módulos: el navegador se ha quedado sin espacio. Lo que acabas de importar o revisar SOLO durará hasta que cierres esta ventana.')+'\n\n'+T('Libera espacio quitando módulos que no uses (Módulos → Quitar) y vuelve a intentarlo, o haz una copia de seguridad ahora.'),{aceptar:T('Entendido'),cancelar:T('Cerrar')});
   return false;
 }
@@ -5664,7 +5665,6 @@ async function tokGuardar(pend){
   try{const db=await tokDB();await new Promise((ok,ko)=>{const tx=db.transaction('t','readwrite'),st=tx.objectStore('t');for(const [k,v] of pend)st.put(v,k);tx.oncomplete=ok;tx.onerror=()=>ko(tx.error);tx.onabort=()=>ko(tx.error);});return true;}catch{return false;}
 }
 async function tokBoot(){
-  try{await window.__bigCargada;MODS=null;}catch{}   // web: los módulos grandes viven en IndexedDB y llegan aquí
   try{const db=await tokDB();await new Promise(res=>{const q=db.transaction('t').objectStore('t').openCursor();q.onsuccess=()=>{const c=q.result;if(c){TOKC.set(c.key,c.value);c.continue();}else res();};q.onerror=()=>res();});}catch{}
   // módulos ya guardados con las imágenes dentro: se pasan a IndexedDB y, solo si ha salido bien, se aligera el módulo
   const pend=tokExtraer(mods().list);
@@ -8762,6 +8762,7 @@ const APP_CONFIG=window.APP_CONFIG||{};
 const SB_URL=APP_CONFIG.supabaseUrl||'https://mjzolxysvxoauvaxuqcq.supabase.co',SB_KEY=APP_CONFIG.supabaseKey||'sb_publishable_CwYkw5WqYN5mkgW1zjuGsQ_qE0RyJXD';
 const SB_REF=(()=>{try{return new URL(SB_URL).hostname.split('.')[0];}catch(e){return '';}})();
 const SYNC_KEYS={tracker:KEY,bestiario:BKEY,grupo:PKEY,encuentros:EKEY,tablas:TKEY,modulos:MKEY,preferencias:PREFKEY,fichas:PJKEY},SYNC_META='combat-sync-v1';
+if(WEB_NUBE)delete SYNC_KEYS.modulos;   // en la web los módulos van por su cuenta (modulos_usuario), troceados
 const LICS=['CC-BY-4.0','CC-BY-SA-4.0','CC0','Todos los derechos reservados'];
 const canon=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(q=>[q,x[q]])):x);
 const hsh=s=>{let x=5381;for(let i=0;i<s.length;i++)x=(Math.imul(x,33)^s.charCodeAt(i))>>>0;return x.toString(36)+'.'+s.length;};
@@ -8829,7 +8830,7 @@ async function sbInit(){
     const u=session?.user||null,was=SB_USER?.id;SB_USER=u;document.documentElement.classList.toggle('con-sesion',!!u);if(u){try{Store.set('acceso-previo','1');}catch{}}
     if(ev==='PASSWORD_RECOVERY'||(INVITADO&&u&&ev==='SIGNED_IN')||acDebeCambiar()){setTimeout(()=>acOpen('newpass'),0);return;}
     if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(acBloqueado()){setTimeout(()=>{acOpen('in');introPlay();},0);}if(location.hash==='#modulos')renderMods();return;}
-    if(u.id!==was){SB_DM=null;dmCarga();setTimeout(acSignedIn,0);}   // fuera del callback, como pide supabase-js
+    if(u.id!==was){SB_DM=null;dmCarga();setTimeout(acSignedIn,0);if(WEB_NUBE){MDB.listo=false;setTimeout(mdbBajar,0);}}   // fuera del callback, como pide supabase-js
   });
   acEscritorio();
 }
@@ -8981,6 +8982,57 @@ async function mcBajar(cid){
   TOKC.set('modc|'+cid,lista);
   await tokGuardar([['modc|'+cid,lista]]);
   try{refreshMods();render();refreshCompView();}catch{}
+}
+/* ---------- módulos de la cuenta en la web (modulos_usuario) ----------
+   Una fila por módulo y por tipo (troceado a ~3 MB), más «cfg» con lo activado. Solo su dueño las lee o escribe. Solo en la web:
+   en la app de escritorio los módulos viven en el disco. Mientras no se haya bajado la cuenta no se sube nada (no se borra lo ajeno). */
+var MDB={listo:false,hash:{},t:null,avisado:false};
+const mdbSlug=id=>mcSlug(id).slice(0,24)+'-'+Math.abs(parseInt(mcHash(String(id)).split(':')[1])||0).toString(36);
+function mdbFilas(){
+  const m=mods(),f={cfg:{on:m.on||{},orden:m.list.map(x=>x.id)}};
+  for(const md of m.list){
+    const sl=mdbSlug(md.id),meta={},tipos=[];
+    for(const [k,v] of Object.entries(md)){if(Array.isArray(v))tipos.push(k);else meta[k]=v;}
+    f['m.'+sl+'.meta']={meta};
+    for(const t of tipos){
+      let parte=[],tam=0,i=0;
+      const vuelca=()=>{if(parte.length){f[`m.${sl}.${t}.${i++}`]={t,items:parte};parte=[];tam=0;}};
+      for(const x of md[t]){const n=JSON.stringify(x).length;if(tam+n>3000000)vuelca();parte.push(x);tam+=n;}
+      vuelca();
+    }
+  }
+  return f;
+}
+function mdbSubirPronto(){if(!WEB_NUBE||!MDB.listo)return;clearTimeout(MDB.t);MDB.t=setTimeout(()=>mdbSubir().catch(e=>toast(T('No se han podido guardar los módulos en tu cuenta')+': '+(e&&e.message||e),6000)),1500);}
+async function mdbSubir(){
+  if(!WEB_NUBE||!MDB.listo||!SB||!SB_USER)return;
+  const f=mdbFilas(),nuevo={};
+  for(const [k,v] of Object.entries(f)){
+    const h=mcHash(JSON.stringify(v));nuevo[k]=h;if(MDB.hash[k]===h)continue;
+    const {error}=await SB.from('modulos_usuario').upsert({clave:k,valor:v},{onConflict:'user_id,clave'});if(error)throw error;MDB.hash[k]=h;
+  }
+  const sobran=Object.keys(MDB.hash).filter(k=>!(k in nuevo));
+  if(sobran.length){const {error}=await SB.from('modulos_usuario').delete().in('clave',sobran);if(error)throw error;for(const k of sobran)delete MDB.hash[k];}
+}
+async function mdbBajar(){
+  if(!WEB_NUBE||!SB||!SB_USER)return;
+  try{
+    const {data,error}=await SB.from('modulos_usuario').select('clave,valor').limit(3000);if(error)throw error;
+    const hash={},por={},cfg=data.find(r=>r.clave==='cfg');
+    for(const r of data){hash[r.clave]=mcHash(JSON.stringify(r.valor));const p=r.clave.match(/^m\.([^.]+)\.(?:meta|([a-z]+)\.(\d+))$/);if(!p)continue;
+      const e=por[p[1]]||(por[p[1]]={meta:null,partes:[]});if(r.valor&&r.valor.meta)e.meta=r.valor.meta;else if(r.valor&&Array.isArray(r.valor.items))e.partes.push([r.valor.t,+p[3],r.valor.items]);}
+    const list=[];
+    for(const e of Object.values(por)){if(!e.meta||!e.meta.id)continue;const md={...e.meta};
+      for(const [t,i,items] of e.partes.sort((a,b)=>a[1]-b[1]))md[t]=(md[t]||[]).concat(items);list.push(md);}
+    const orden=cfg&&cfg.valor&&Array.isArray(cfg.valor.orden)?cfg.valor.orden:[];
+    list.sort((a,b)=>(orden.indexOf(a.id)+1||999)-(orden.indexOf(b.id)+1||999));
+    if(list.length||cfg){
+      Store.root.set(MKEY,JSON.stringify({on:(cfg&&cfg.valor&&cfg.valor.on)||{},list}));MODS=null;MDB.hash=hash;MDB.listo=true;
+      try{refreshMods();render();refreshCompView();if(location.hash==='#modulos')renderMods();}catch{}
+    }else{MDB.hash={};MDB.listo=true;if(mods().list.length)mdbSubirPronto();}   // cuenta vacía: lo que haya en esta pestaña es lo primero
+  }catch(e){
+    if(!MDB.avisado){MDB.avisado=true;toast(T('No se han podido bajar tus módulos de la cuenta. Falta ejecutar supabase/modulos_usuario.sql en Supabase o no hay conexión.')+' '+(e&&e.message||''),9000);}
+  }
 }
 function scEstado(m){SC.msg=m;const e=$('#camp-sc');if(e)e.textContent=m;scConfPinta();}
 async function scRun(manual){
@@ -9234,7 +9286,7 @@ async function acAct(act,b){
       if(state.creatures.length&&!(await Dlg.si(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?'),{aceptar:T('Sustituir')})))break;
       insertExamples();acClose();location.hash='#combate';toast(T('Datos de ejemplo añadidos: personajes, combate, encuentro y tablas.'),4200);break;}
     case 'acsync':await syncPush(true);break;
-    case 'acout':await syncPush();await SB.auth.signOut();if(WEB_NUBE){try{sessionStorage.clear();}catch{}try{indexedDB.deleteDatabase('hdm-web-big');indexedDB.deleteDatabase('hdm-tokens');}catch{}location.reload();break;}acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
+    case 'acout':await syncPush();await SB.auth.signOut();if(WEB_NUBE){try{sessionStorage.clear();}catch{}try{indexedDB.deleteDatabase('hdm-tokens');}catch{}location.reload();break;}acClose();toast('Sesión cerrada. Tus datos siguen en este navegador');break;
   }
 }
 /* ---------- datos personales con control de versiones ----------
