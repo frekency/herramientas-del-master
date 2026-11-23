@@ -19,15 +19,15 @@ const TAIL=`<script>
     await wait(1500);
     location.hash='#personajes';await wait(400);
     await click('[data-act="pjnew"]');
-    ok('se abre el asistente en el paso 1 con 6 pasos',!!q('.pjw')&&q('.pjw-pasos').children.length===6&&q('[aria-current="step"]').textContent.includes('Clase'));
+    ok('se abre el asistente en el paso 1 con 6 pasos',!!q('.pjw')&&q('.pjw-pasos').children.length===6&&q('[aria-current="step"]').textContent.includes('Clase')&&body().textContent.includes('Origen'));
     ok('no deja avanzar sin clase',sig().disabled);
     await click(op('cls','guerrero'));
     ok('el guerrero pide 2 habilidades y sigue bloqueado',!!q('.pjw-chips input[value="atletismo"]')&&sig().disabled);
     await chk('[data-pjw="sk"][value="atletismo"]',true);await chk('[data-pjw="sk"][value="percepcion"]',true);
     ok('con las 2 elegidas las demás se bloquean y se puede seguir',q('[data-pjw="sk"][value="historia"]').disabled&&!sig().disabled);
     await click('[data-w="sig"]');
-    ok('paso 2: las 9 especies del compendio',document.querySelectorAll('.pjw-op').length===9);
-    await click(op('esp','Humano'));await click('[data-w="sig"]');
+    ok('paso 2 Origen: las 9 especies y los 4 trasfondos en la misma pantalla',document.querySelectorAll('[data-w="esp"]').length===9&&document.querySelectorAll('[data-w="tf"]').length===4);
+    await click(op('esp','Humano'));
     await click(op('tf','Acólito'));
     ok('el trasfondo pide repartir los puntos y bloquea hasta hacerlo',!!q('[data-pjw="tfa"]')&&sig().disabled);
     await sel('[data-pjw="tfa"][data-i="0"]','sab');await sel('[data-pjw="tfa"][data-i="1"]','sab');
@@ -49,7 +49,10 @@ const TAIL=`<script>
     await chk('[data-pjw="met"][value="std"]',true);
     for(const [i,a] of orden.entries())await sel('[data-pjw="asig"][data-a="'+a+'"]',String(i));
     await click('[data-w="sig"]');
+    ok('paso 4 Alineamiento aparte',!!q('[data-pjw="alin"]')&&!q('#pjw-n'));
     await sel('[data-pjw="alin"]','Legal bueno');
+    await click('[data-w="sig"]');
+    ok('paso 5 Detalles con el nombre',!!q('#pjw-n')&&!q('[data-pjw="alin"]'));
     q('#pjw-n').value='Brenna';q('#pjw-n').dispatchEvent(new Event('input',{bubbles:true}));
     await click('[data-w="sig"]');
     ok('el resumen muestra el origen de cada cosa',body().textContent.includes('trasfondo Acólito')&&body().textContent.includes('clase Guerrero'));
@@ -88,6 +91,6 @@ testNav('el asistente crea un personaje paso a paso',{skip:!BROWSER&&'no hay Edg
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=21,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=23,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

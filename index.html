@@ -3180,7 +3180,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.104 <span>24 nov 2026</span></h3><ul>
-      <li><b>Creador de personajes por pasos</b> (primer borrador): Clase → Especie → Trasfondo → Características → Detalles → Resumen, con Siguiente y Atrás como en D&amp;D Beyond. Elige las habilidades de la clase, reparte los 3 puntos del trasfondo (+2/+1 o +1/+1/+1), asigna las características (conjunto estándar, 4d6 o compra de puntos) y al final ves de dónde sale cada cosa. La hoja nace con salvaciones, competencias, dote de origen, herramienta, velocidad y alineamiento, y el desglose queda en el registro.</li>
+      <li><b>Creador de personajes por pasos</b> (primer borrador), con los 5 pasos del Manual del Jugador: Clase → Origen (especie y trasfondo) → Características → Alineamiento → Detalles, más un Resumen final, con Siguiente y Atrás como en D&amp;D Beyond. Elige las habilidades de la clase, reparte los 3 puntos del trasfondo (+2/+1 o +1/+1/+1), asigna las características (conjunto estándar, 4d6 o compra de puntos) y al final ves de dónde sale cada cosa. La hoja nace con salvaciones, competencias, dote de origen, herramienta, velocidad y alineamiento, y el desglose queda en el registro.</li>
     </ul></li>
     <li><h3>v1.103 <span>24 nov 2026</span></h3><ul>
       <li><b>Buscar sonidos en Freesound y Jamendo</b> desde la capa de ambiente (origen «Enlace»). Hace falta tu propia clave gratuita de cada servicio: se pega una vez, se guarda solo en este equipo y la página nunca la vuelve a ver. En Freesound se puede limitar a CC0 (sin citar al autor). Cada resultado enseña autor, licencia y duración, se puede escuchar antes de elegirlo y, al usarlo, queda el crédito anotado en la capa.</li>
@@ -7862,7 +7862,7 @@ function pjRelHTML(f){
   return n&&n.copias.length?'<div class="pjbox pjrel"><div class="pjrow"><span class="pcsub">'+esc(T('Versiones en campañas'))+'</span>'+n.copias.map(pjChip).join('')+'</div></div>':'';
 }
 /* ---- asistente de creación de personaje (pasos del Manual del Jugador 2024): clase → origen (especie, trasfondo) → características → detalles ---- */
-const PJW_PASOS=['Clase','Especie','Trasfondo','Características','Detalles','Resumen'];
+const PJW_PASOS=['Clase','Origen','Características','Alineamiento','Detalles','Resumen'];
 const PJW_STD=[15,14,13,12,10,8],PJW_COSTE={8:0,9:1,10:2,11:3,12:4,13:5,14:7,15:9},PJW_PUNTOS=27;
 const PJW_NUM={una:1,uno:1,dos:2,tres:3,cuatro:4};
 const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
@@ -7896,16 +7896,15 @@ const pjwGastado=w=>Ficha.AB.reduce((s,a)=>s+PJW_COSTE[w.compra[a]],0);
 function pjwFinal(w){const b=pjwBase(w),n=pjwBono(w),o={};for(const a of Ficha.AB)o[a]=Math.min(20,(b[a]||0)+(n[a]||0));return o;}
 function pjwValido(w,p){
   if(p===0){const h=pjwHabClase(w.cls);return !!w.cls&&(!h.n||w.sk.length===h.n);}
-  if(p===1)return !!w.esp;
-  if(p===2){const tf=pjwComp('trasfondos',w.tf);if(!tf)return false;return w.tfm==='111'||(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
-  if(p===3){if(w.met==='compra')return pjwGastado(w)<=PJW_PUNTOS;const u=Ficha.AB.map(a=>w.asig[a]);return u.every(i=>i!==undefined&&i>=0)&&new Set(u).size===6;}
+  if(p===1){const tf=pjwComp('trasfondos',w.tf);if(!w.esp||!tf)return false;return w.tfm==='111'||!!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
+  if(p===2){if(w.met==='compra')return pjwGastado(w)<=PJW_PUNTOS;const u=Ficha.AB.map(a=>w.asig[a]);return u.every(i=>i!==undefined&&i>=0)&&new Set(u).size===6;}
   return true;
 }
 const pjwTarj=(act,val,sel,tit,sub)=>'<button type="button" class="pjw-op'+(sel?' on':'')+'" data-act="pjw" data-w="'+act+'" data-v="'+esc(val)+'" aria-pressed="'+!!sel+'"><b>'+esc(tit)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</button>';
 const pjwPlano=h=>String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 function pjwPaso(w){
   const cargando=!COMP_SRD;
-  if(cargando&&w.paso<3)return '<p class="hint" role="status">'+esc(T('Cargando el compendio…'))+'</p>';
+  if(cargando&&w.paso<2)return '<p class="hint" role="status">'+esc(T('Cargando el compendio…'))+'</p>';
   if(w.paso===0){
     const h=pjwHabClase(w.cls);
     let s='<p class="hint">'+esc(T('Paso 1 del Manual del Jugador: elige tu clase. Marca tu forma de jugar: el dado de golpe, las salvaciones y el lanzamiento de conjuros salen de ella.'))+'</p><div class="pjw-grid">'
@@ -7914,14 +7913,14 @@ function pjwPaso(w){
       +h.op.map(k=>'<label class="pjw-chip"><input type="checkbox" data-pjw="sk" value="'+k+'"'+(w.sk.includes(k)?' checked':'')+(!w.sk.includes(k)&&w.sk.length>=h.n?' disabled':'')+'> '+esc(T(Ficha.HAB_NOM[k]))+'</label>').join('')+'</div>';
     return s;
   }
-  if(w.paso===1){
+  const B1=()=>{
     const L=(COMP_SRD.especies||[]);const e=pjwComp('especies',w.esp);
-    return '<p class="hint">'+esc(T('Paso 2: tu origen. Primero la especie. Sus rasgos (visión, resistencias, conjuros…) se anotan en la hoja al terminar.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('esp',x.n,w.esp===x.n,x.n,String(x.vel||'')+' · '+String(x.tam||'').split(' (')[0])).join('')+'</div>'
+    return '<p class="hint">'+esc(T('Sus rasgos (visión, resistencias, conjuros…) se anotan en la hoja al terminar.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('esp',x.n,w.esp===x.n,x.n,String(x.vel||'')+' · '+String(x.tam||'').split(' (')[0])).join('')+'</div>'
       +(e?'<div class="pjw-det"><h4>'+esc(e.n)+'</h4>'+e.d+'</div>':'');
-  }
-  if(w.paso===2){
+  };
+  const B2=()=>{
     const L=(COMP_SRD.trasfondos||[]),tf=pjwComp('trasfondos',w.tf);
-    let s='<p class="hint">'+esc(T('Paso 2 (cont.): el trasfondo da una dote de origen, dos competencias en habilidades, una herramienta y 3 puntos de característica que repartes tú.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('tf',x.n,w.tf===x.n,x.n,x.dote)).join('')+'</div>';
+    let s='<p class="hint">'+esc(T('El trasfondo da una dote de origen, dos competencias en habilidades, una herramienta y 3 puntos de característica que repartes tú.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('tf',x.n,w.tf===x.n,x.n,x.dote)).join('')+'</div>';
     if(tf){
       const op=pjwOpcTf(tf);
       s+='<div class="pjw-det"><h4>'+esc(tf.n)+'</h4><p><b>'+esc(T('Dote'))+':</b> '+esc(tf.dote)+' · <b>'+esc(T('Habilidades'))+':</b> '+esc(tf.hab)+' · <b>'+esc(T('Herramienta'))+':</b> '+esc(tf.herr)+'</p>'
@@ -7933,8 +7932,9 @@ function pjwPaso(w){
       else s+='<p class="hint">'+op.map(a=>ABK[a]).join(', ')+' +1</p>';
     }
     return s;
-  }
-  if(w.paso===3){
+  };
+  if(w.paso===1)return '<p class="hint">'+esc(T('Paso 2 del Manual del Jugador: determina tu origen. Elige la especie y el trasfondo.'))+'</p><h3>'+esc(T('Especie'))+'</h3>'+B1()+'<h3>'+esc(T('Trasfondo'))+'</h3>'+B2();
+  if(w.paso===2){
     const fin=pjwFinal(w),b=pjwBase(w),n=pjwBono(w);
     let s='<p class="hint">'+esc(T('Paso 3: puntuaciones de característica. Asigna los valores y se suman los puntos del trasfondo (máximo 20).'))+'</p><div class="pjrow">'
       +[['std','Conjunto estándar'],['dados','Tirar 4d6'],['compra','Compra de puntos']].map(([k,l])=>'<label><input type="radio" name="pjw-met" data-pjw="met" value="'+k+'"'+(w.met===k?' checked':'')+'> '+esc(T(l))+'</label>').join('')
@@ -7950,8 +7950,9 @@ function pjwPaso(w){
         return '<tr><th scope="row">'+esc(ABK[a])+'</th><td>'+celda+'</td><td>'+(n[a]?'+'+n[a]:'')+'</td><td><b>'+(b[a]?fin[a]:'—')+'</b></td><td>'+(b[a]?(Math.floor((fin[a]-10)/2)>=0?'+':'')+Math.floor((fin[a]-10)/2):'')+'</td></tr>';}).join('')+'</tbody></table>';
     return s;
   }
-  if(w.paso===4)return '<p class="hint">'+esc(T('Paso 4: alineamiento y detalles. Todo es opcional y se puede cambiar luego en la hoja.'))+'</p><div class="pjrow"><label style="flex:1 1 220px">'+esc(T('Nombre'))+'<input id="pjw-n" data-pjw="nombre" maxlength="80" value="'+esc(w.nombre)+'" autocomplete="off"></label>'
-    +'<label>'+esc(T('Alineamiento'))+'<select data-pjw="alin">'+PJW_ALIN.map(x=>'<option value="'+esc(x)+'"'+(w.alin===x?' selected':'')+'>'+esc(x?T(x):'—')+'</option>').join('')+'</select></label></div>'
+  if(w.paso===3)return '<p class="hint">'+esc(T('Paso 4: elige tu alineamiento. Es opcional y se puede cambiar luego en la hoja.'))+'</p><div class="pjrow"><label>'+esc(T('Alineamiento'))+'<select data-pjw="alin">'+PJW_ALIN.map(x=>'<option value="'+esc(x)+'"'+(w.alin===x?' selected':'')+'>'+esc(x?T(x):'—')+'</option>').join('')+'</select></label></div>';
+  if(w.paso===4)return '<p class="hint">'+esc(T('Paso 5: rellena los detalles. Todo es opcional y se puede cambiar luego en la hoja.'))+'</p><div class="pjrow"><label style="flex:1 1 220px">'+esc(T('Nombre'))+'<input id="pjw-n" data-pjw="nombre" maxlength="80" value="'+esc(w.nombre)+'" autocomplete="off"></label>'
+    +'</div>'
     +'<div class="pjrow"><label>'+esc(T('Dónde'))+'<select data-pjw="donde"><option value="libre"'+(w.donde==='libre'?' selected':'')+'>'+esc(T('Mis personajes (libre)'))+'</option><option value="campana"'+(w.donde==='campana'?' selected':'')+'>'+esc(T('Esta campaña'))+'</option></select></label></div>';
   const R=pjwResumen(w);
   return '<p class="hint">'+esc(T('Así queda la hoja y de dónde sale cada cosa. Pulsa «Crear personaje» o vuelve atrás para cambiar algo.'))+'</p><h4>'+esc(w.nombre||T('Sin nombre'))+' · '+esc(T(CLSN[w.cls]))+' 1 · '+esc(w.esp)+' · '+esc(w.tf)+'</h4><ul class="pjw-orig">'+R.origen.map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>';

@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.104.1] - 2026-11-24
+### Cambiado
+- Creador de personajes: los pasos siguen los 5 del Manual del Jugador (Clase, Origen con especie y trasfondo juntos, Características, Alineamiento, Detalles) más el Resumen.
+
 ## [1.104.0] - 2026-11-24
 ### Añadido
 - Creador de personajes por pasos (Clase, Especie, Trasfondo, Características, Detalles, Resumen) con Siguiente/Atrás: habilidades de clase, puntos del trasfondo, conjunto estándar, 4d6 o compra de puntos, y desglose del origen de cada valor en el registro de la ficha. Sustituye al formulario único.
