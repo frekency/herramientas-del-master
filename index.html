@@ -1592,7 +1592,7 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .sptable .cp i.off{opacity:.25}
 .sptable .cp i.cost{border-color:var(--accent);color:var(--accent)}
 .sptable tr.spdet>td{white-space:normal;padding:0;background:var(--bg)}
-.sptable tr.spdet .vbody{max-width:900px}
+.sptable tr.spdet .vbody{max-width:none}
 .sptable tr:last-child td{border-bottom:0}
 .books{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
 .books>summary{cursor:pointer;padding:9px 14px;font-weight:700}
@@ -1739,6 +1739,9 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .golink{margin-left:6px;text-decoration:none;color:var(--muted);font-size:13px}
 .golink:hover{color:var(--accent)}
 .golinkp{margin:0 0 8px;font-size:14px}
+.golinkp a{display:inline-block;padding:3px 11px;border:1px solid var(--line,#8886);border-radius:999px;font-size:13px;text-decoration:none;color:var(--accent,inherit);white-space:nowrap}
+.golinkp a:hover,.golinkp a:focus-visible{background:var(--accent,#888);color:var(--bg,#fff)}
+.spdet .golinkp{float:right;margin:0 0 6px 12px}
 .crumbs{margin:2px 0 12px;font-size:14px}
 .ficha{max-width:920px}
 .ficha>.sb{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--surface)}
@@ -6999,7 +7002,7 @@ const slugOf=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fichaHref=(tab,n)=>`#compendio/${tab}/${slugOf(n)}`;
 const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="${T('Abrir la página de')} ${esc(n)}">↗</a>`;
 const goP=(tab,n)=>`<p class="golinkp"><a href="${fichaHref(tab,n)}">Abrir su página →</a></p>`;
-function addGoLink(r,tab,n){const d=r.nextElementSibling;if(n&&d?.classList.contains('spdet'))d.querySelector('td').insertAdjacentHTML('afterbegin',goP(tab,n));}
+function addGoLink(r,tab,n){const d=r.nextElementSibling;if(n&&d?.classList.contains('spdet'))(d.querySelector('.vbody')||d.querySelector('td')).insertAdjacentHTML('afterbegin',goP(tab,n));}
 function route(){
   const [a,b,c]=location.hash.slice(1).split('/').map(s=>{try{return decodeURIComponent(s);}catch{return s;}});
   if(a==='criaturas'||a==='conjuros')return {page:'compendio',tab:a,slug:b||''};
