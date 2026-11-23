@@ -5709,7 +5709,12 @@ function importModule(text,fileName,ref=''){
   setTimeout(()=>{if(guardado)toast(add.map(md=>`«${md.n}» añadido y activado (${modCounts(md)||'vacío'})`).join(' · '));},0);
   return add;
 }
-const modCounts=md=>MOD_TYPES.map(([k,one])=>{const n=k==='conjuros'?(md.conjuros||[]).length:(md[k]||[]).length;return n?`${n} ${n===1?one:k}`:'';}).filter(Boolean).join(' · ');
+const modCounts=md=>{const c=[];
+  for(const[k,one]of MOD_TYPES){
+    if(k==='rasgos'){const r=md.rasgos||[],sb=r.filter(x=>x&&x.tipo==='Subclase').length,op=r.filter(x=>x&&x.tipo==='Opción de clase').length,rs=r.length-sb-op;
+      if(sb)c.push(`${sb} ${sb===1?'subclase':'subclases'}`);if(rs)c.push(`${rs} ${rs===1?'rasgo':'rasgos'}`);if(op)c.push(`${op} ${op===1?'opción de clase':'opciones de clase'}`);continue;}
+    const n=(md[k]||[]).length;if(n)c.push(`${n} ${n===1?one:k}`);}
+  return c.join(' · ');};
 let PARTY=lsGet(PKEY), PRESETS=lsGet(EKEY), SPELLS={}, SPELL_LIST=[];
 PARTY=cleanList(PARTY,false);PRESETS=cleanList(PRESETS,false);
 for(const p of PARTY)p.tyl=pcSub(p);
@@ -6546,7 +6551,8 @@ function renderCompendio(){
 function cmBody(x,tab=cmTab){
   const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):tab==='reglas'&&(x._mine||x._camp)?'Regla homebrew':'';
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):tab==='rasgos'?[['Clase',x.cls],['Subclase',x.sub],['Nivel',x.nv]]:[];
-  const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')));
+  const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')))
+    +(tab==='clases'?(()=>{const l=compList('rasgos').filter(r=>r.tipo==='Subclase'&&fold(r.cls)===fold(x.n));return l.length?`<p><b>Subclases de manuales:</b> ${l.map(r=>esc(r.sub||r.base)+' <span class="tag">'+esc(r._src||'')+'</span>').join(', ')}</p>`:'';})():'');
   return `<div class="cmbody">${pendBar(tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${body}</div><p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }
 function toggleCompRow(r){
