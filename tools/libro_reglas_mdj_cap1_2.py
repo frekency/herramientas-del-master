@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Capítulos 1 («Cómo jugar») y 2 («Crear un personaje») del Manual del Jugador 2024 → «reglas» de un módulo de «Mi copia».
+"""Capítulos 1 («Cómo jugar»), 2 («Crear un personaje»), las reglas del 6 («Equipo») y la introducción del 7 («Conjuros») del Manual del Jugador 2024 → «reglas» de un módulo de «Mi copia».
 
 Solo uso personal: la salida va a datos/privado/ (fuera de git).
 Uso: python tools/libro_reglas_mdj_cap1_2.py <pdf> <modulo.json>
@@ -16,9 +16,12 @@ from libro_mdj import OFFSET
 PRINCIPALES = {1: ['jugador o dm', 'el ritmo de juego', 'dados', 'las seis caracteristicas', 'las pruebas con d20', 'ventaja y desventaja', 'competencia', 'acciones',
                    'interacciones sociales', 'ejemplo de interaccion social', 'exploracion', 'ejemplo de exploracion', 'combate', 'dano y curacion', 'estados',
                    'ejemplo de combate'],
+               3: ['armaduras', 'herramientas'],
+               4: ['monturas y vehiculos', 'servicios', 'objetos magicos', 'fabricar equipo'],
+               5: ['obtener conjuros', 'preparar conjuros', 'lanzar conjuros'],
                2: ['preparativos', 'paso', 'progresion de niveles', 'subir de nivel', 'multiclase', 'escalones del juego', 'comenzar en niveles', 'creacion de tu personaje', 'equipo inicial']}
-RANGOS = {1: (9, 34), 2: (35, 50)}
-TAG = {1: 'Cómo jugar', 2: 'Crear un personaje'}
+RANGOS = {1: (9, 34), 2: (35, 50), 3: (220, 221), 4: (231, 236), 5: (237, 240)}
+TAG = {1: 'Cómo jugar', 2: 'Crear un personaje', 3: 'Equipo', 4: 'Equipo', 5: 'Conjuros'}
 RUIDO = ('capitulo', 'cap ')
 
 
@@ -49,6 +52,7 @@ def main():
                     cur['x']['d'] += html          # ruido de título: se une como texto
                     continue
                 cur['x']['d'] += '<h4>%s</h4>' % (e['n'][:1].upper() + e['n'][1:]) + html
+    out = [x for x in out if len(re.sub('<[^>]+>', '', x['d'])) >= 100 or x['cat'].endswith(('personaje', 'jugar'))]   # fragmentos de tabla sin texto
     for x in out:
         if len(re.sub('<[^>]+>', '', x['d'])) < 60:
             x['dudas'].append('texto muy corto: puede faltar parte')
