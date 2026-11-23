@@ -113,31 +113,34 @@ def trasfondos(d):
     return out
 
 
+ESPECIES = ['Aasimar', 'Dracónido', 'Elfo', 'Enano', 'Gnomo', 'Goliat', 'Humano', 'Mediano', 'Orco', 'Tiefling']
+
+
 def especies(d):
-    out = []
+    """Las diez especies del Manual del Jugador 2024 (págs. 188-200): «ATRIBUTOS DE LOS X» hasta el título de la siguiente."""
     ls = []
-    for p in range(188, 190):
+    for p in range(188, 201):
         l, _ = E.lineas_pag(d, p); ls += l
-    i = next(k for k, r in enumerate(ls) if r['t'].upper().startswith('ATRIBUTOS DE LOS AASIMAR'))
-    j = next((k for k in range(i, len(ls)) if ls[k]['t'].upper().startswith('DRAC')), len(ls))
-    cuerpo = ls[i + 1:j]
-    plano = re.sub(r'\s+', ' ', ' '.join(r['t'] for r in cuerpo))
-    x = {'n': 'Aasimar', 'pg': str(ls[i]['p'] - OFFSET), 'pend': True}
-    m = re.search(r'Tipo de criatura:\s*(.*?)\s+Tama.o:\s*(.*?)\s+Velocidad:\s*(\S+(?:\s*m)?)\s*(.*)$', plano)
-    if m:
-        x['tipo'], x['tam'], x['vel'] = m.group(1), m.group(2), m.group(3)
-        rest = E.parrafos([{'t': t, 'x0': r0, 'x1': 0, 'p': 0, 'col': 0} for t, r0 in ((m.group(4), 0),)])
-        sub = [r for r in cuerpo if r['t'] and m.group(4)[:25] in r['t']]
-        rest = [m.group(4)]
-        # los atributos van en líneas sangradas: se recuperan con las líneas posteriores
-        k0 = next((k for k, r in enumerate(cuerpo) if 'Como aasimar' in r['t']), None)
-        if k0 is not None: rest = E.parrafos(cuerpo[k0:])
-    else:
-        rest = E.parrafos(cuerpo)
-    x['d'] = E.html(rest)
-    du = [] if x.get('tipo') and x.get('tam') and x.get('vel') else ['falta tipo, tamaño o velocidad']
-    if du: x['dudas'] = du
-    out.append(x)
+    out = []
+    for k, nom in enumerate(ESPECIES):
+        f = E.fold(nom)
+        i = next((q for q, r in enumerate(ls) if re.match(r'^atributos de l[oa]s ' + f[:4], E.fold(r['t']))), None)
+        if i is None:
+            continue
+        sig = E.fold(ESPECIES[k + 1]) if k + 1 < len(ESPECIES) else None
+        j = next((q for q in range(i + 1, len(ls)) if sig and ls[q]['size'] >= 24 and sig[:4] in E.fold(ls[q]['t'])), len(ls))
+        cuerpo = ls[i + 1:j]
+        plano = re.sub(r'\s+', ' ', ' '.join(r['t'] for r in cuerpo))
+        x = {'n': nom, 'pg': str(ls[i]['p'] - OFFSET), 'pend': True}
+        m = re.search(r'Tipo de criatura:\s*(.*?)\s+Tama.o:\s*(.*?)\s+Velocidad:\s*(\S+(?:\s*m)?)', plano)
+        if m:
+            x['tipo'], x['tam'], x['vel'] = m.group(1), m.group(2), m.group(3)
+        k0 = next((q for q, r in enumerate(cuerpo) if re.match(r'^Como (un |una )?\w+,', r['t'])), None)
+        x['d'] = E.html(E.parrafos(cuerpo[k0:] if k0 is not None else cuerpo))
+        du = [] if x.get('tipo') and x.get('tam') and x.get('vel') else ['falta tipo, tamaño o velocidad']
+        du.append('puede incluir tablas o subtipos (linajes) aplanados en texto: compruébalo')
+        x['dudas'] = du
+        out.append(x)
     return out
 
 
