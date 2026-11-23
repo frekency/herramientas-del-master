@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.98.2] - 2026-11-23
+### Corregido
+- «Tirar iniciativa PNJ» no tiraba las criaturas puestas en la banda de los jugadores; ahora tira a todas las que no son personajes y pregunta quién lleva la sorpresa (desventaja), ordenando al final.
+
 ## [1.98.1] - 2026-11-23
 ### Cambiado
 - Bandeja de dados: tablero transparente, ocupar toda la ventana, retirada automática de los dados y de la tirada escrita; rediseño de «Añadir a la escena».

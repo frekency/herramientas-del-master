@@ -3169,6 +3169,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.98 <span>23 nov 2026</span></h3><ul>
+      <li><b>v1.98.2 · Tirar iniciativa PNJ:</b> ahora tira la iniciativa de todas las criaturas que no son personajes de jugador (también las que estén en la banda de los jugadores) y pregunta quién lleva la sorpresa: nadie, los jugadores o una o varias bandas. Quien sufre la sorpresa tira con desventaja. Al terminar, el orden se ajusta solo.</li>
       <li><b>v1.98.1 · Bandeja de dados:</b> tablero transparente (los dados caen sobre la escena), botón «Ocupar toda la ventana», los dados se retiran solos tras unos segundos (configurable) y la tirada se vacía al tirar. «Añadir a la escena» se ve ahora ordenado, con iconos.</li>
       <li><b>Mesa: tamaño proporcional.</b> Al arrastrar una esquina o escribir el ancho o el alto, la capa mantiene su proporción (Mayús para cambiarla libremente; casilla para desactivarlo).</li>
       <li><b>Mesa: la cuenta atrás se configura en su capa.</b> Nombre, minutos, iniciar, pausar y reiniciar están en la propia capa, y puedes elegir que desaparezca de la mesa al llegar a 0.</li>
@@ -4431,6 +4432,30 @@ function start(){
   }
   arrancar();
 }
+/* Quién es «no jugador»: todo lo que no sea la ficha de un personaje (también las criaturas puestas por error en la banda de los jugadores) */
+const esPNJ=c=>!c.pcId&&(!isPC(c)||(!!c.tpl&&!/^pc:/.test(c.tpl))||!!c.fid);
+/* ¿Quién lleva la sorpresa? Nadie, los jugadores o una o varias bandas. Resuelve con la lista de ids de banda o null si se cancela. */
+function askSorpresa(){
+  return new Promise(res=>{
+    const d=document.createElement('dialog');d.className='ask';d.setAttribute('aria-labelledby','sor-t');
+    const f=document.createElement('form'),p=document.createElement('p');p.id='sor-t';p.className='askt';
+    p.textContent=T('Tirar la iniciativa de todas las criaturas (no jugadores). ¿Quién lleva la sorpresa? Quien la sufre tira con desventaja.');f.append(p);
+    const lista=document.createElement('div');lista.style.cssText='display:flex;flex-direction:column;gap:6px;margin:8px 0';
+    const nadie=document.createElement('label');nadie.className='chk';nadie.innerHTML='<input type="checkbox" checked data-nadie> '+esc(T('Nadie'));lista.append(nadie);
+    for(const fa of state.factions){const l=document.createElement('label');l.className='chk';l.innerHTML='<input type="checkbox" data-fid="'+esc(fa.id)+'"> <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+esc(fa.color)+'"></span> '+esc(fa.pc?T('Jugadores')+(fa.name&&fa.name!==T('Jugadores')?' ('+fa.name+')':''):fa.name);lista.append(l);}
+    f.append(lista);
+    lista.addEventListener('change',e=>{const t=e.target;if(t.dataset.nadie!==undefined){if(t.checked)lista.querySelectorAll('[data-fid]').forEach(c=>c.checked=false);else t.checked=true;}
+      else{const alg=[...lista.querySelectorAll('[data-fid]')].some(c=>c.checked);lista.querySelector('[data-nadie]').checked=!alg;}});
+    const row=document.createElement('div');row.className='inline askrow';
+    const no=document.createElement('button');no.type='button';no.className='btn ghost';no.textContent=T('Cancelar');
+    const si=document.createElement('button');si.type='submit';si.className='btn primary';si.textContent=T('Tirar y ordenar');
+    row.append(no,si);f.append(row);d.append(f);
+    let hecho=false;const fin=v=>{if(hecho)return;hecho=true;res(v?[...lista.querySelectorAll('[data-fid]')].filter(c=>c.checked).map(c=>c.dataset.fid):null);try{d.close();}catch{}d.remove();};
+    no.addEventListener('click',()=>fin(false));f.addEventListener('submit',e=>{e.preventDefault();fin(true);});
+    d.addEventListener('cancel',()=>fin(false));d.addEventListener('close',()=>fin(false));
+    document.body.append(d);try{d.showModal();}catch{fin(false);}
+  });
+}
 function arrancar(){
   if(!state.order.length){toast('Añade criaturas antes de empezar');return;}
   commit(()=>{state.summary=null;
@@ -5539,7 +5564,18 @@ document.addEventListener('click',e=>{
     case 'dup':commit(()=>{const base=c.name.replace(/ \d+$/,'');const n=structuredClone(c);n.id=uid();n.name=`${base} ${nextName(base)}`;const m=cTpl(c);n.hp=n.maxHp=m?hpFrom(m):c.maxHp;n.conds=[];n.temp=0;n.used={};n.uses={};addCreature(n);log(`Entra ${n.name}`);});break;
     case 'del':commit(()=>{const i=state.order.indexOf(c.id);const curId=state.order[state.turnIdx];state.creatures=state.creatures.filter(x=>x!==c);state.order.splice(i,1);
       if(state.active){if(curId===c.id)state.turnIdx=i>=state.order.length?0:i;else state.turnIdx=state.order.indexOf(curId);}log(`${c.name} sale del combate`);},T('Quitar del combate'));toast(`${c.name} ${T('sale del combate')}`,6000,true);break;
-    case 'rollnpc':commit(()=>{let k=0;const mode=state.iniMode||'tirada',porTipo=new Map();for(const x of state.creatures)if(!isPC(x)){let r;if(mode==='fija')r=10;else if(mode==='grupo'){const key=x.tpl||x.name.replace(/ d+$/,'');if(!porTipo.has(key))porTipo.set(key,d20());r=porTipo.get(key);}else r=d20();x.init=r+(x.initBonus||0);k++;}log(`Iniciativa ${mode==='fija'?'fija':mode==='grupo'?'por tipo':'tirada'} para ${k} PNJ`);sortInto(state);});break;
+    case 'rollnpc':askSorpresa().then(ids=>{if(!ids)return;commit(()=>{
+      let k=0,s=0;const mode=state.iniMode||'tirada',porTipo=new Map(),sor=new Set(ids);
+      for(const x of state.creatures)if(esPNJ(x)){
+        const des=sor.has(x.factionId);let r;
+        if(mode==='fija')r=des?5:10;
+        else{const key=(x.tpl||x.name.replace(/ \d+$/,''))+'|'+(des?'d':'n'),tira=()=>des?Math.min(d20(),d20()):d20();
+          if(mode==='grupo'){if(!porTipo.has(key))porTipo.set(key,tira());r=porTipo.get(key);}else r=tira();}
+        x.init=r+(x.initBonus||0);k++;if(des)s++;}
+      const nom=ids.map(id=>fac(id).name).join(', ');
+      log(`Iniciativa ${mode==='fija'?'fija':mode==='grupo'?'por tipo':'tirada'} para ${k} PNJ`+(ids.length?` · sorpresa: ${nom}${s?` (${s} PNJ con desventaja)`:''}`:' · sin sorpresa'));
+      if(ids.some(id=>fac(id).pc))toast(T('Los jugadores han sido sorprendidos: tiran su iniciativa con desventaja'),6000);
+      sortInto(state);});});break;
     case 'sort':commit(()=>{sortInto(state);},T('Ordenar'));break;
     case 'end':commit(()=>{state.summary=mkSummary();state.active=false;state.turnIdx=0;log(`Fin del combate tras ${state.round} rondas`);},T('Terminar combate'));toast(T('Combate terminado'),6000,true);break;
     case 'newenc':commit(()=>{state.summary=null;state.creatures=state.creatures.filter(isPC);state.creatures.forEach(c=>delete c.hph);state.active=false;state.round=1;state.total=0;state.turnIdx=0;state.log=[];state.example=false;state.lastRoll=null;sortInto(state);},T('Nuevo encuentro'));toast(T('Listo para el siguiente encuentro'),6000,true);break;
