@@ -10,6 +10,8 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 - Herramientas de extracción de libros propios (conjuros, dotes, trasfondos, especies y subclases) que generan módulos privados con todo pendiente de revisar.
 
 ### Corregido
+- Un módulo añadido en la web con la app de escritorio abierta ya no se pierde: si dos dispositivos cambian los módulos a la vez, se unen solos en lugar de pedir que elijas una versión.
+- Lo que ya está en el SRD (dotes, trasfondos, subclases…) puede venir también en un módulo: el SRD manda y el módulo solo añade su etiqueta; lo ya revisado sí gana.
 - Los conjuros importados en un módulo conservan la marca «pendiente de revisar» y sus dudas.
 
 ## [1.88.0] - 2026-11-22

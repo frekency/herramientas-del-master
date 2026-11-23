@@ -3145,6 +3145,8 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.89 <span>22 nov 2026</span></h3><ul>
       <li><b>Módulos: rasgos de clase y subclases.</b> Un módulo puede traer rasgos de clase y de subclase (con su clase, subclase y nivel) y aparecen en la pestaña «Rasgos de clase» del compendio y en la Revisión.</li>
+      <li><b>Módulos que no se pierden entre dispositivos.</b> Si añades un módulo en la web con la app de escritorio abierta, al sincronizar se unen los dos cambios en vez de quedarse con uno solo.</li>
+      <li><b>Mismo nombre en el SRD y en un módulo.</b> El SRD no se pisa: el módulo solo añade su etiqueta (en Fuente) mientras esté pendiente de revisar; si ya lo has revisado, gana tu versión.</li>
       <li><b>Conjuros pendientes de revisar.</b> Los conjuros de un módulo conservan la marca «pendiente de revisar» y sus dudas, así que ya entran en la sección Revisión como el resto.</li>
     </ul></li>
     <li><h3>v1.88 <span>22 nov 2026</span></h3><ul>
@@ -6493,7 +6495,10 @@ function compList(tab,todas){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
   const camp=tab==='reglas'&&!todas?hbcLoad().map(x=>({n:String(x.n),cat:String(x.cat||'Homebrew'),tag:String(x.tag||''),d:String(x.d).slice(0,20000),ref:x.ref!==false,_src:'Homebrew de la campaña',_full:'Homebrew de la campaña',_camp:true,_html:false})):[];
   const mod=activeMods().filter(modVeJug).sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mid:md.id,_mine:!!md.mine,_html:false})));   // un módulo nunca se pinta como HTML, aunque traiga _html
-  const by=new Map();for(const x of [...srd,...mod,...camp])by.set(fold(x.n),x);
+  // mismo nombre en varias fuentes: gana lo revisado (o lo propio); lo pendiente no pisa al SRD ni a lo anterior y solo le añade su etiqueta
+  const by=new Map();for(const x of [...srd,...mod,...camp]){const k=fold(x.n),e=by.get(k);
+    if(!e||x._camp||!x.pend){if(e&&e._src!==x._src)x._also=[...new Set([...(x._also||[]),...(e._also||[]),e._src])].filter(a=>a!==x._src);by.set(k,x);}
+    else if(e._src!==x._src)e._also=[...new Set([...(e._also||[]),x._src])];}
   return [...by.values()].filter(x=>!(esJug()&&tab==='objetos'&&x.k==='magico')).filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
 }
 const cmTxt=v=>esc(String(v??''));
@@ -6516,14 +6521,14 @@ function cmFilters(list){
   if(cmTab==='rasgos'){f1.hidden=f2.hidden=false;
     keep(f1,'<option value="">Cualquier clase</option>'+[...new Set(list.map(x=>x.cls).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG)).map(c=>`<option>${esc(c)}</option>`).join(''));
     keep(f2,'<option value="">Cualquier tipo</option>'+[...new Set(list.map(x=>x.tipo).filter(Boolean))].map(c=>`<option>${esc(c)}</option>`).join(''));}
-  const srcs=[...new Set(list.map(x=>x._src))];
+  const srcs=[...new Set(list.flatMap(x=>[x._src,...(x._also||[])]))];
   keep(fu,'<option value="">Todas las fuentes</option>'+srcs.map(s=>`<option>${esc(s)}</option>`).join(''));
 }
 function renderCompendio(){
   compLoad();
   const all=compList(cmTab);cmFilters(all);
   const q=fold($('#cm-q').value),f1=$('#cm-f1').value,f2=$('#cm-f2').value,fu=$('#cm-fu').value;
-  const res=all.filter(x=>(!q||fold(x.n).includes(q))&&(!fu||x._src===fu)
+  const res=all.filter(x=>(!q||fold(x.n).includes(q))&&(!fu||x._src===fu||(x._also||[]).includes(fu))
     &&(cmTab!=='objetos'||((!f1||(f1==='otro'?!OBJ_KIND[x.k]:x.k===f1))&&(!f2||rarKey(x.r)===f2)))
     &&(!['dotes','reglas'].includes(cmTab)||!f1||x.cat===f1)
     &&(cmTab!=='rasgos'||((!f1||x.cls===f1)&&(!f2||x.tipo===f2))));
@@ -6531,7 +6536,7 @@ function renderCompendio(){
   $('#cm-count').textContent=`${res.length} ${res.length===1?tb[2]:tb[3]}`;
   const cols=CM_COLS[cmTab];$('#cm-new').hidden=!IT_NEW[cmTab];$('#cm-new').textContent=IT_NEW[cmTab]||'';$('#cm-new').dataset.ty=cmTab;
   if(!all.length){$('#cm-list').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando el compendio del SRD…</div>':`<div class="empty">No hay ${tb[3]} en tus módulos activos. Activa el SRD 5.2.1 u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>.</div>`;return;}
-  $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc(x._src)}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
+  $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc([x._src,...(x._also||[])].join(' · '))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 function cmBody(x,tab=cmTab){
   const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):tab==='reglas'&&(x._mine||x._camp)?'Regla homebrew':'';
@@ -9124,6 +9129,29 @@ function spValorSeguro(k,valor){
     for(const m of loc.list){const i=out.list.findIndex(x=>x&&x.id===m.id);if(i<0)out.list.push(m);else if(modPeso(m)>modPeso(out.list[i]))out.list[i]=m;}
     return out;}catch{return valor;}
 }
+/* Dos dispositivos cambiaron los módulos a la vez (p. ej. uno añadido en la web con el escritorio abierto): no hay nada que elegir, se unen.
+   Cada módulo se queda con el más completo y, dentro de uno, gana lo revisado y no se pierde lo que solo tiene uno de los dos. */
+function spUnirModulos(a,b){
+  const A=a&&Array.isArray(a.list)?a:{list:[],on:{}},B=b&&Array.isArray(b.list)?b:{list:[],on:{}};
+  const out={...A,...B,on:{...(A.on||{}),...(B.on||{})},list:[]};
+  const ids=[...new Set([...A.list,...B.list].map(m=>m&&m.id).filter(Boolean))];
+  for(const id of ids){
+    const x=A.list.find(m=>m&&m.id===id),y=B.list.find(m=>m&&m.id===id);
+    if(!x||!y){out.list.push(x||y);continue;}
+    const [pesado,otro]=modPeso(y)>=modPeso(x)?[y,x]:[x,y];
+    out.list.push({...otro,...modFusionar(otro,pesado)});
+  }
+  return out;
+}
+function spAutoModulos(){
+  const ab=SP.l.abiertos.find(x=>x.clave==='modulos'),it=SP.l.items.modulos;if(!ab||!it)return false;
+  const m=spUnirModulos(ab.remoto.valor,it.valor),r=Sincro.resolver(SP.l,'modulos','mio',Date.now());if(!r.ok)return false;
+  SP.l=r.l;SP.l.items.modulos.valor=m;SP.l.items.modulos.mod=Date.now();
+  try{Store.root.set(MKEY,JSON.stringify(m));MODS=null;lastRaw.modulos=lsRaw(MKEY);}catch{return false;}
+  try{refreshMods();if(location.hash==='#modulos')renderMods();}catch{}
+  toast(T('Módulos unidos: se habían cambiado en dos dispositivos a la vez y no se ha perdido nada'),6000);
+  return true;
+}
 function spSnapshot(){const m={};for(const [cl,k] of Object.entries(SYNC_KEYS)){const raw=lsRaw(k);if(raw==null)continue;try{m[cl]=JSON.parse(raw);}catch{}}return m;}
 async function spEscribir(u){
   const fila={valor:u.valor,dispositivo:spDisp()};
@@ -9159,11 +9187,12 @@ async function spRun(modo){
       if(modo!=='login')remoto=Object.fromEntries(Object.entries(remoto).filter(([k])=>{const it=SP.l.items[k];return it&&(it.dirty||SP.l.abiertos.some(a=>a.clave===k));}));
       const f=Sincro.fusionar(SP.l,remoto,Date.now(),{manual:true,incremental:modo!=='login'});
       SP.l=f.l;
+      let auto=false;if(f.abiertos.includes('modulos')&&spAutoModulos())auto=true;
       if(modo==='login')for(const k of f.bajados){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(spValorSeguro(k,SP.l.items[k].valor)));if(!cambiadas.includes(k))cambiadas.push(k);}catch{}}
       let rechazo=false;
       for(const u of f.subir){const w=await spEscribir(u);if(w.ok){SP.l=Sincro.confirmar(SP.l,{clave:u.clave,version:w.version});SP.disp[u.clave]=spDisp();}else rechazo=true;}
       spSave();
-      if(!rechazo)break;
+      if(!rechazo&&!auto)break;
     }
     spSave();
     const nAb=SP.l.abiertos.length;

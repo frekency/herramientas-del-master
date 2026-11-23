@@ -150,12 +150,12 @@ def main():
     df, esp = dotes(d, f5)
     srd = _srd()
     ya = lambda k: {E.fold(x['n']) for x in srd.get(k, [])}
-    base['dotes'] = [x for x in df if E.fold(x['n']) not in ya('dotes')]
+    base['dotes'] = df          # también lo que ya está en el SRD: al importar, el SRD manda y el módulo solo añade su etiqueta
     tb = trasfondos(d)
-    base['trasfondos'] = [x for x in tb if E.fold(x['n']) not in ya('trasfondos')]
-    base['especies'] = [x for x in especies(d) if E.fold(x['n']) not in ya('especies')]
+    base['trasfondos'] = tb
+    base['especies'] = especies(d)
     ya_sub = {E.fold(t) for c in srd.get('clases', []) for t in c.get('sub', [])}
-    sc = [x for x in normaliza_subclases(subclases(d)) if E.fold(x['sub']) not in ya_sub]
+    sc = normaliza_subclases(subclases(d))
     base['rasgos'] = sc
     print('subclases nuevas', len({(x['cls'], x['sub']) for x in sc}), '· rasgos', len(sc))
     print('trasfondos', [x['n'] for x in tb], '-> nuevos', len(base['trasfondos']), '· especies', [x['n'] for x in base['especies']])

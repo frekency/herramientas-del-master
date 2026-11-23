@@ -66,7 +66,7 @@ def ocr_recortes(d, lst, vocab):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-CLASE_POR = [('senor de las bestias', None), ('creacion', 'Bardo'), ('elocuencia', 'Bardo'), ('bestia', 'Bárbaro'), ('magia salvaje', 'Bárbaro'), ('genio', 'Brujo'), ('insondable', 'Brujo'),
+CLASE_POR = [('senor de las bestias', 'Explorador'), ('creacion', 'Bardo'), ('elocuencia', 'Bardo'), ('bestia', 'Bárbaro'), ('magia salvaje', 'Bárbaro'), ('genio', 'Brujo'), ('insondable', 'Brujo'),
              ('paz', 'Clérigo'), ('crepusculo', 'Clérigo'), ('orden', 'Clérigo'), ('esporas', 'Druida'), ('estrellas', 'Druida'), ('fuego salvaje', 'Druida'),
              ('enjambre', 'Explorador'), ('vagabundo', 'Explorador'), ('runico', 'Guerrero'), ('psionico', 'Guerrero'), ('mecanica', 'Hechicero'), ('aberrante', 'Hechicero'),
              ('hoja', 'Mago'), ('escribas', 'Mago'), ('misericordia', 'Monje'), ('astral', 'Monje'), ('gloria', 'Paladín'), ('vigilantes', 'Paladín'),
