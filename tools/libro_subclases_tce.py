@@ -13,7 +13,7 @@ import libro_entradas as E
 import libro_subclases_xt as X
 
 RX = re.compile(r'^Rasgo (?:de la |del |de los |de las |de )(.+?) de nivel (\d{1,2})\b', re.I)
-CLASES_ES = {'barbaro', 'bardo', 'brujo', 'clerigo', 'druida', 'explorador', 'guerrero', 'hechicero', 'mago', 'monje', 'paladin', 'picaro', 'artificiero'}
+CLASES_ES = {'barbaro', 'bardo', 'brujo', 'clerigo', 'druida', 'explorador', 'guerrero', 'hechicero', 'mago', 'monje', 'paladin', 'picaro', 'artificiero', 'artifice'}
 PAGOFF = int(os.environ.get('PAGOFF', '2'))
 
 
@@ -66,7 +66,7 @@ def ocr_recortes(d, lst, vocab):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-CLASE_POR = [('senor de las bestias', 'Explorador'), ('creacion', 'Bardo'), ('elocuencia', 'Bardo'), ('bestia', 'Bárbaro'), ('magia salvaje', 'Bárbaro'), ('genio', 'Brujo'), ('insondable', 'Brujo'),
+CLASE_POR = [('alquimista', 'Artífice'), ('armero', 'Artífice'), ('artillero', 'Artífice'), ('herrero de batalla', 'Artífice'), ('senor de las bestias', 'Explorador'), ('creacion', 'Bardo'), ('elocuencia', 'Bardo'), ('bestia', 'Bárbaro'), ('magia salvaje', 'Bárbaro'), ('genio', 'Brujo'), ('insondable', 'Brujo'),
              ('paz', 'Clérigo'), ('crepusculo', 'Clérigo'), ('orden', 'Clérigo'), ('esporas', 'Druida'), ('estrellas', 'Druida'), ('fuego salvaje', 'Druida'),
              ('enjambre', 'Explorador'), ('vagabundo', 'Explorador'), ('runico', 'Guerrero'), ('psionico', 'Guerrero'), ('mecanica', 'Hechicero'), ('aberrante', 'Hechicero'),
              ('hoja', 'Mago'), ('escribas', 'Mago'), ('misericordia', 'Monje'), ('astral', 'Monje'), ('gloria', 'Paladín'), ('vigilantes', 'Paladín'),
@@ -100,6 +100,9 @@ def main():
     H = [h for h in H if X.titulo_ocr(h['t'])]
     items = [r for r in L if not r.get('img')] + H
     items.sort(key=lambda r: (r['p'], r['col'], r['y']))
+    if os.environ.get('HASTA'):      # «pagina:y»: se descarta lo que viene después (p. ej. el inicio de otra sección)
+        hp, hy = os.environ['HASTA'].split(':')
+        items = [r for r in items if (r['p'], r['y']) < (int(hp), float(hy))]
     marcas = []      # (índice, subclase, nivel)
     for k, r in enumerate(items):
         if r.get('hid'):
