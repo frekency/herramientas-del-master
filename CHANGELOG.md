@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.95.5] - 2026-11-23
+### Cambiado
+- Compendio: «Abrir su página», «Dar a…» y «Clonar y editar» son botones pequeños arriba a la derecha de la ficha, sin ocupar líneas.
+
 ## [1.95.4] - 2026-11-23
 ### Cambiado
 - Compendio: la ficha desplegada usa todo el ancho y «Abrir su página» pasa a ser un botón dentro de la ficha, arriba a la derecha.

@@ -1513,6 +1513,11 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .gvbar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:0 0 10px}
 .gvbar label.f{width:auto}
 .spdet .gvbar{margin-top:4px}
+/* en la ficha desplegada los tres accesos (abrir su página, dar a un personaje, clonar) son botones pequeños arriba a la derecha */
+.spdet .vbody>.gvbar,.spdet .vbody>.golinkp{float:right;margin:0 0 6px 8px;gap:6px;align-items:center;flex-wrap:nowrap}
+.spdet .gvbar .btn{padding:3px 10px;font-size:13px;min-height:0;line-height:1.4;white-space:nowrap}
+.spdet .gvbar label.f{display:flex;flex-direction:row;align-items:center;gap:6px;font-size:13px;margin:0}
+.spdet .gvbar select{padding:2px 6px;font-size:13px;min-height:0;width:auto;max-width:150px}
 .blist .bk{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .egrid .w2{grid-column:span 2}
@@ -5190,7 +5195,7 @@ function giveBar(ty,n){
   if(ty==='clases')return `<div class="gvbar"><button type="button" class="btn primary" data-act="gvnewpc" data-n="${esc(n)}">Crear personaje de nivel 1</button></div>`;
   const [lbl,btn]={conjuros:['Añadir a los conjuros de','Añadir'],objetos:['Dar a','Dar'],dotes:['Dar la dote a','Dar'],especies:['Aplicar a','Aplicar especie'],trasfondos:['Aplicar a','Aplicar trasfondo']}[ty]||[];
   if(!lbl)return '';
-  if(!PARTY.length)return `<p class="hint gvbar">Crea un personaje en <a href="#jugadores">${ic('shield')} Jugadores</a> para dárselo.</p>`;
+  if(!PARTY.length)return `<div class="gvbar gvmini"><a class="btn" href="#jugadores" title="${esc(T('Crea un personaje en Jugadores para dárselo'))}">${esc(T(lbl.replace(/^Añadir a los conjuros de$/,'Añadir a')))}…</a></div>`;
   return `<div class="gvbar"><label class="f">${lbl}<select class="gvpc">${PARTY.map(p=>`<option value="${p.id}">${esc(p.n)}</option>`).join('')}</select></label><button type="button" class="btn primary" data-act="gvgive" data-ty="${ty}" data-n="${esc(n)}">${btn}</button></div>`;
 }
 const ENT={'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#x27;':"'",'&#39;':"'"};
