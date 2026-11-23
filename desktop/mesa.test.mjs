@@ -46,6 +46,20 @@ test('ambiente: efecto, intensidad y sonido acotados; el sonido es opcional y nu
   for (const ef of ['niebla', 'lluvia', 'nieve', 'tormenta', 'noche', 'brasas']) assert.equal(validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', efecto: ef }] }).capas[0].efecto, ef);
 });
 
+test('ambiente: el sonido solo admite generado, enlaces https o archivos de audio de la carpeta del usuario', () => {
+  const f = o => validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', sonido: true, ...o }] }).capas[0];
+  assert.deepEqual([f({}).fuente, f({}).audio], ['generado', '']);
+  const r = f({ fuente: 'url', url: 'https://ice1.somafm.com/dronezone-128-mp3' });
+  assert.deepEqual([r.fuente, r.audio], ['url', 'https://ice1.somafm.com/dronezone-128-mp3']);
+  for (const u of ['http://x.com/a.mp3', 'javascript:alert(1)', 'file:///c:/secreto.mp3', 'https://a b.com/x', 'https://x', 'data:audio/mp3;base64,AAAA', 'https://x.com/"onerror=1', 'https://' + 'a'.repeat(500) + '.com'])
+    assert.deepEqual([f({ fuente: 'url', url: u }).fuente, f({ fuente: 'url', url: u }).audio], ['generado', ''], u);
+  const a = f({ fuente: 'archivo', archivo: 'Lluvia fuerte (1).mp3' });
+  assert.deepEqual([a.fuente, a.audio], ['archivo', 'app://local/__audios/Lluvia%20fuerte%20(1).mp3']);
+  for (const n of ['../a.mp3', 'sub/a.mp3', 'a\\b.mp3', '.oculto.mp3', 'a.exe', 'a.mp3.exe', '', 5, null])
+    assert.equal(f({ fuente: 'archivo', archivo: n }).fuente, 'generado', String(n));
+  assert.equal(f({ fuente: 'raro', url: 'https://x.com/a.mp3' }).audio, '');
+});
+
 test('mapa de combate: cuadrícula acotada, fichas validadas y las ocultas no llegan nunca', () => {
   const e = validar({ tipo: 'escena', aspecto: 'auto', capas: [{ tipo: 'mapa', id: 'm', x: 0, y: 0, w: 100, h: 100, celda: 99, pantalla: 5, cuadOp: 9, fondo: 'verde',
     tokens: [{ id: 'a', x: 3, y: 4, tam: 2, n: 'Orco', color: '#d0453c', src: PNG, hp: 50 },

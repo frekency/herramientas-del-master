@@ -36,6 +36,12 @@ contextBridge.exposeInMainWorld('__AppShell', {
     carpeta: () => ipcRenderer.invoke('imagenes:carpeta'),
     elegir: () => ipcRenderer.invoke('imagenes:elegir'),
   },
+  // Carpeta de sonidos del usuario (sonido de ambiente de la mesa)
+  audios: {
+    carpeta: () => ipcRenderer.invoke('audios:carpeta'),
+    elegir: () => ipcRenderer.invoke('audios:elegir'),
+    lista: () => ipcRenderer.invoke('audios:lista'),
+  },
   // Actualizaciones de la app (GitHub Releases)
   actualizar: {
     estado: () => ipcRenderer.invoke('update:estado'),

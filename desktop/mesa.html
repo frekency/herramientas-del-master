@@ -205,17 +205,22 @@ function ambCrea(ef,inten){
     tim.push(setInterval(()=>{const t=ctx.currentTime,s=ctx.createBufferSource();s.buffer=ambNoise(ctx,1);const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=rnd(1500,4000);const g=ctx.createGain();g.gain.setValueAtTime(rnd(.15,.5)*k,t);g.gain.exponentialRampToValueAtTime(.001,t+rnd(.02,.07));s.connect(f);f.connect(g);g.connect(AMB.gain);s.start(t);s.stop(t+.1);},180));}
   return {fin,tim};
 }
-function ambParar(){const c=AMB.cur;if(!c)return;for(const t of c.tim){clearTimeout(t);clearInterval(t);}for(const n of c.fin){try{n.stop();}catch{}}AMB.cur=null;AMB.key='';}
+function ambParar(){const c=AMB.cur;if(!c)return;for(const t of c.tim){clearTimeout(t);clearInterval(t);}for(const n of c.fin){try{n.stop();}catch{}}
+  if(c.el){try{c.el.pause();c.el.removeAttribute('src');c.el.load();}catch{}}AMB.cur=null;AMB.key='';}
 /* se llama cada vez que cambia la escena o el telón: arranca, cambia o para el sonido según la capa de ambiente con sonido */
 function ambActualiza(){
   const cfg=escena&&escena.capas.find(c=>c.tipo==='ambiente'&&c.visible&&c.sonido);
   if(!cfg||(!REAL&&!AMB.prueba)){ambParar();return;}
+  const tapado=$('#telon').classList.contains('on');   // con el telón bajado, silencio
+  if(cfg.audio){   /* enlace o archivo propio: se reproduce en bucle con un elemento de audio */
+    const key='audio|'+cfg.audio;
+    if(key!==AMB.key){ambParar();AMB.key=key;const a=new Audio();a.loop=true;a.preload='auto';a.src=cfg.audio;AMB.cur={fin:[],tim:[],el:a};a.play().catch(()=>{});}
+    AMB.cur.el.volume=tapado?0:Math.min(1,cfg.volumen/100);return;}
   const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
   if(!AMB.ctx){AMB.ctx=new C();AMB.gain=AMB.ctx.createGain();AMB.gain.gain.value=0;AMB.gain.connect(AMB.ctx.destination);}
   try{AMB.ctx.resume();}catch{}
   const key=cfg.efecto+'|'+cfg.intensidad;
   if(key!==AMB.key){ambParar();AMB.key=key;AMB.cur=ambCrea(cfg.efecto,cfg.intensidad);}
-  const tapado=$('#telon').classList.contains('on');   // con el telón bajado, silencio
   AMB.gain.gain.setTargetAtTime(tapado?0:cfg.volumen/100*.7,AMB.ctx.currentTime,.25);
 }
 /* mapa de combate: color base o imagen, cuadrícula con casillas del tamaño real elegido y fichas colocadas en casillas */

@@ -102,6 +102,24 @@ app.whenReady().then(async () => {
     await ev(master, 'mesaTelon(1)');
     ok('y al subirlo vuelve a sonar', await until(() => ev(w1, 'AMB.gain.gain.value>0.1'), 8000));
     ok('la lluvia se ve en la ventana', await ev(w1, 'document.querySelectorAll(".capa.ambiente.lluvia .p").length>50'));
+    // sonido desde la carpeta de sonidos del usuario, servido por app://local/__audios/ (con rangos y en bucle)
+    const wav = Buffer.alloc(44 + 4000, 128); wav.write('RIFF', 0); wav.writeUInt32LE(36 + 4000, 4); wav.write('WAVEfmt ', 8); wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
+    wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(8000, 28); wav.writeUInt16LE(1, 32); wav.writeUInt16LE(8, 34); wav.write('data', 36); wav.writeUInt32LE(4000, 40);   // medio segundo de silencio
+    const sonidos = path.join(tmp, 'sonidos'); fs.mkdirSync(sonidos); fs.writeFileSync(path.join(sonidos, 'tono.wav'), wav); fs.writeFileSync(path.join(sonidos, 'notas.txt'), 'no es audio');
+    fs.writeFileSync(path.join(tmp, 'audios.json'), JSON.stringify({ carpeta: sonidos }));
+    ok('el máster ve la lista de su carpeta de sonidos (solo audios)', JSON.stringify(await ev(master, 'window.__AppShell.audios.lista()')) === '["tono.wav"]');
+    await ev(master, `(async()=>{const c=MS.capas.find(c=>c.tipo==='ambiente');c.fuente='archivo';c.archivo='tono.wav';msEnviar(true);return true;})()`);
+    ok('la ventana reproduce el archivo de la carpeta', await until(() => ev(w1, 'AMB.key==="audio|app://local/__audios/tono.wav"&&AMB.cur.el.readyState>=3&&!AMB.cur.el.paused')));
+    ok('el archivo se repite en bucle', await until(() => ev(w1, `(()=>{const e=AMB.cur.el;window.__t=window.__t||[];window.__t.push(e.currentTime);return window.__t.some((v,i)=>i&&v<window.__t[i-1]);})()`), 12000));
+    const rg = await ev(w1, `fetch('app://local/__audios/tono.wav',{headers:{Range:'bytes=0-9'}}).then(async r=>[r.status,(await r.arrayBuffer()).byteLength,r.headers.get('content-range')])`);
+    ok('el servidor de sonidos admite rangos', rg[0] === 206 && rg[1] === 10 && rg[2] === 'bytes 0-9/4044');
+    const rr = await ev(w1, `Promise.all(['app://local/__audios/notas.txt','app://local/__audios/..%2Fmain.js','app://local/__audios/no-existe.mp3'].map(u=>fetch(u).then(r=>r.status).catch(()=>-1)))`);
+    ok('no sirve lo que no es audio, lo que se sale ni lo que no existe', rr.every(s => s === 404));
+    ok('el volumen del archivo es el de la capa', Math.abs(await ev(w1, 'AMB.cur.el.volume') - 0.6) < 0.01);
+    await ev(master, 'mesaTelon(1)');
+    ok('el telón silencia el archivo', await until(() => ev(w1, 'AMB.cur.el.volume===0')));
+    await ev(master, 'mesaTelon(1)');
+    ok('y al subirlo vuelve', await until(() => ev(w1, 'AMB.cur.el.volume>0.5')));
     // segunda ventana con su propia escena
     await ev(master, `(async()=>{msVentana(2);MS.capas=[];msAnade('texto',{t:'Solo para la ventana 2'});MS.aspecto='16:9';MS.fundido=0;msEnviar(false);return true;})()`);
     ok('se abre una segunda ventana', await until(() => ventanas().length === 2));

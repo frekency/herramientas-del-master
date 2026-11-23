@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.102.0] - 2026-11-24
+### Añadido
+- Ambiente: el sonido puede venir de un enlace https (mp3 o radio en directo; atajos a SomaFM) o de una carpeta de sonidos del usuario servida por app://local/__audios/ (con rangos y bucle). Solo audios, un nivel, sin salirse de la carpeta.
+
 ## [1.101.1] - 2026-11-23
 ### Añadido
 - Capa de ambiente: enlace a Tabletop Audio (no se incrusta: su web no lo permite).

@@ -13,7 +13,7 @@ const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Appli
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
-window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}}};
+window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg']}};
 localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
@@ -119,6 +119,20 @@ const TAIL=`<script>
     ok('se puede probar el sonido en la vista previa',MS.ambOn===true&&/Parar/.test(q('[data-ms="ambprueba"]').textContent));
     await click('[data-ms="sel"][data-id="'+ic.id+'"]');
     ok('al salir de la capa la prueba se para sola',MS.ambOn===false);
+    // origen del sonido: generado, enlace o carpeta propia
+    await click('[data-ms="sel"][data-id="'+am.id+'"]');
+    const sf=q('[data-msf="fuente"]');
+    ok('el sonido tiene tres orígenes y el generado es el de siempre',!!sf&&am.fuente==='generado'&&[...sf.options].map(o=>o.value).join()==='generado,url,archivo');
+    sf.value='url';sf.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
+    ok('con enlace aparece el campo y las radios de SomaFM',am.fuente==='url'&&!!q('[data-msf="url"]')&&q('[data-ms="audradio"]'));
+    await typeIn('[data-msf="url"]','http://no-seguro.com/a.mp3');
+    ok('un enlace http no vale',am.url===''&&msEscena(false).capas.find(c=>c.tipo==='ambiente').fuente==='url');
+    await click('[data-ms="audradio"]');
+    ok('una radio de la lista rellena el enlace',am.url.startsWith('https://ice1.somafm.com/')&&q('[data-msf="url"]').value===am.url);
+    sf.value='archivo';q('[data-msf="fuente"]').value='archivo';q('[data-msf="fuente"]').dispatchEvent(new Event('change',{bubbles:true}));await wait(300);
+    ok('con carpeta propia salen sus audios',am.fuente==='archivo'&&[...q('[data-msf="archivo"]').options].map(o=>o.value).join()===',a.mp3,b.ogg'&&q('#ms-insp').textContent.includes('C:/sonidos'));
+    const sa=q('[data-msf="archivo"]');sa.value='b.ogg';sa.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
+    ok('elegir un audio lo guarda y lo manda a la mesa',am.archivo==='b.ogg'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').archivo==='b.ogg');
     // una escena guardada de antes (sin estos campos) se sigue cargando
     Store.set('mesa-estudio-v1',JSON.stringify({fondo:'#102030',capas:[{tipo:'iniciativa',x:1,y:1,w:20,h:80}]}));msLoad();
     ok('las escenas antiguas se cargan con valores por defecto',MS.aspecto==='16:9'&&MS.capas[0].orient==='v'&&MS.capas[0].tokens===true);
@@ -152,6 +166,6 @@ testNav('estudio de la mesa: mapa de combate, fichas y criaturas ocultas',{skip:
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=40,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=46,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

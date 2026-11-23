@@ -101,6 +101,13 @@ const PRUEBA = `<script>
     ok('todos los efectos tienen su sonido',AMB.key==='brasas|5');
     window.__cb({...base,capas:[]});await wait(300);
     ok('al quitar la capa el sonido se para',!AMB.cur&&AMB.key==='');
+    const ambA=(au,v)=>({...base,capas:[{tipo:'ambiente',id:'a',x:0,y:0,w:100,h:100,visible:true,op:1,efecto:'lluvia',intensidad:5,sonido:true,volumen:v||40,fuente:'url',audio:au}]});
+    window.__cb(ambA('/s.wav',50));await wait(400);
+    ok('con un enlace o archivo suena un reproductor en bucle y no el generado',AMB.key==='audio|/s.wav'&&AMB.cur.el.loop===true&&AMB.cur.fin.length===0&&Math.abs(AMB.cur.el.volume-0.5)<0.01);
+    window.__cb({tipo:'telon',activo:true,texto:'x'});await wait(300);ok('con el telón bajado el audio se silencia',AMB.cur.el.volume===0);
+    window.__cb({tipo:'telon',activo:false,texto:''});await wait(300);ok('y vuelve al subirlo',Math.abs(AMB.cur.el.volume-0.5)<0.01);
+    window.__cb(ambA('/s.wav',20));await wait(300);ok('cambiar el volumen no reinicia el audio',AMB.key==='audio|/s.wav'&&Math.abs(AMB.cur.el.volume-0.2)<0.01);
+    window.__cb({...base,capas:[]});await wait(300);ok('al quitar la capa el reproductor se libera',!AMB.cur&&!AMB.key);
     // «mostrar el orden» desde el combate abre una escena con su capa
     window.__cb({tipo:'limpiar'});await wait(200);
     window.__cb({tipo:'iniciativa',abrir:true,activo:true,ronda:1,lista,cuenta:null});
@@ -118,6 +125,7 @@ test('mesa: mapa de combate calibrado, proporciones y orden de iniciativa con to
   const srv = http.createServer((q, r) => {
     const u = new URL(q.url, 'http://x').pathname;
     if (u === '/mesa.html') { r.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return r.end(PAGINA.replace('</body>', PRUEBA + '</body>')); }
+    if (u === '/s.wav') { const d = Buffer.alloc(44 + 800, 128); d.write('RIFF', 0); d.writeUInt32LE(36 + 800, 4); d.write('WAVEfmt ', 8); d.writeUInt32LE(16, 16); d.writeUInt16LE(1, 20); d.writeUInt16LE(1, 22); d.writeUInt32LE(8000, 24); d.writeUInt32LE(8000, 28); d.writeUInt16LE(1, 32); d.writeUInt16LE(8, 34); d.write('data', 36); d.writeUInt32LE(800, 40); r.writeHead(200, { 'content-type': 'audio/wav' }); return r.end(d); }
     if (u === '/res' && q.method === 'POST') { let b = ''; q.on('data', d => b += d); q.on('end', () => { r.end('ok'); srv.emit('res', b); }); return; }
     r.writeHead(404); r.end();
   });
@@ -132,7 +140,7 @@ test('mesa: mapa de combate calibrado, proporciones y orden de iniciativa con to
     const R = JSON.parse(res);
     assert.deepEqual(R.err, [], 'errores de JavaScript');
     assert.deepEqual(R.c.filter(c => !c[1]).map(c => c[0]), [], 'comprobaciones que fallan');
-    assert.ok(R.c.length >= 33, 'el flujo se quedó a medias (' + R.c.length + ')');
+    assert.ok(R.c.length >= 38, 'el flujo se quedó a medias (' + R.c.length + ')');
   } finally {
     try { proc && proc.kill(); } catch { /* ya cerrado */ }
     srv.close();

@@ -1,5 +1,7 @@
 const { app, BrowserWindow, protocol, net, shell, Menu, ipcMain, dialog } = require('electron');
 const path = require('node:path');
+const fs = require('node:fs');
+const { Readable } = require('node:stream');
 const { pathToFileURL } = require('node:url');
 const { abrir } = require('./store');
 const { validar } = require('./mesa');
@@ -9,6 +11,7 @@ const actualizador = require('./updater');
 
 const APP_DIR = path.join(__dirname, 'app');
 const imagenes = require('./imagenes');
+const audios = require('./audios');
 let almacen = null;
 
 // Protocolo propio: permite fetch() de los JSON y un origen estable
@@ -220,6 +223,40 @@ function registrarImagenes() {
 }
 const cfgImagenes = () => path.join(app.getPath('userData'), 'imagenes.json');
 
+// Carpeta de sonidos del usuario: se elige con el diálogo del sistema; la página solo recibe la lista de nombres y los archivos se sirven por app://local/__audios/
+const cfgAudios = () => path.join(app.getPath('userData'), 'audios.json');
+function registrarAudios() {
+  const propio = e => e.senderFrame && e.senderFrame.url.startsWith('app://local/');
+  ipcMain.handle('audios:carpeta', e => (propio(e) ? audios.leerConfig(cfgAudios()).carpeta || '' : ''));
+  ipcMain.handle('audios:lista', e => (propio(e) ? audios.listar(audios.leerConfig(cfgAudios()).carpeta) : []));
+  ipcMain.handle('audios:elegir', async e => {
+    if (!propio(e)) return '';
+    const r = await dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), { properties: ['openDirectory'] });
+    if (r.canceled || !r.filePaths[0]) return '';
+    audios.guardarConfig(cfgAudios(), { carpeta: r.filePaths[0] });
+    return r.filePaths[0];
+  });
+}
+const TIPOS_AUDIO = { '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.oga': 'audio/ogg', '.opus': 'audio/ogg', '.wav': 'audio/wav', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.flac': 'audio/flac' };
+// Sirve un audio con soporte de rangos (el reproductor salta al principio para repetir en bucle)
+function servirAudio(req, f) {
+  let st;
+  try { st = fs.statSync(f); } catch { return new Response('No encontrado', { status: 404 }); }
+  if (!st.isFile()) return new Response('No encontrado', { status: 404 });
+  let ini = 0, fin = st.size - 1, estado = 200;
+  const r = /^bytes=(\d*)-(\d*)$/.exec(req.headers.get('range') || '');
+  if (r && (r[1] !== '' || r[2] !== '')) {
+    if (r[1] === '') { ini = Math.max(0, st.size - Number(r[2])); }
+    else { ini = Number(r[1]); if (r[2] !== '') fin = Math.min(fin, Number(r[2])); }
+    if (ini > fin || ini >= st.size) return new Response(null, { status: 416, headers: { 'content-range': 'bytes */' + st.size } });
+    estado = 206;
+  }
+  const h = { 'content-type': TIPOS_AUDIO[path.extname(f).toLowerCase()] || 'application/octet-stream', 'accept-ranges': 'bytes', 'content-length': String(fin - ini + 1) };
+  if (estado === 206) h['content-range'] = `bytes ${ini}-${fin}/${st.size}`;
+  if (st.size === 0) return new Response(null, { status: 200, headers: { 'content-type': h['content-type'] } });
+  return new Response(Readable.toWeb(fs.createReadStream(f, { start: ini, end: fin })), { status: estado, headers: h });
+}
+
 app.whenReady().then(() => {
   almacen = abrir(path.join(app.getPath('userData'), 'campanas.db'));
   try { almacen.copiaDeSeguridad(path.join(app.getPath('userData'), 'copias')); } catch (e) { console.error('copia de seguridad:', e.message); }
@@ -227,9 +264,14 @@ app.whenReady().then(() => {
   registrarMesa();
   registrarCopias();
   registrarImagenes();
+  registrarAudios();
 
   protocol.handle('app', async req => {
     const { pathname } = new URL(req.url);
+    if (pathname.startsWith(audios.PREFIJO)) {
+      const f = audios.rutaAudio(audios.leerConfig(cfgAudios()).carpeta, pathname);
+      return f ? servirAudio(req, f) : new Response('No encontrado', { status: 404 });
+    }
     if (pathname.startsWith(imagenes.PREFIJO)) {
       const f = imagenes.rutaImagen(imagenes.leerConfig(cfgImagenes()).carpeta, pathname);
       return f ? net.fetch(pathToFileURL(f).toString()) : new Response('No encontrado', { status: 404 });
