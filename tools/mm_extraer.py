@@ -352,7 +352,7 @@ def main():
         c = construye(ficha, campos, tabla, entradas, dudas, celdas)
         criaturas.append(c)
         if c.get('dudas'): dudosas += 1
-    out = {'modulo': 'Manual de Monstruos 2024', 'ab': 'MM2024', 'version': '2024', 'criaturas': criaturas}
+    out = {'modulo': 'Manual de Monstruos 2024', 'ab': 'XMM', 'version': '2024', 'criaturas': criaturas}
     with open(salida, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print(f'{len(criaturas)} criaturas, {dudosas} con dudas -> {salida}  (temporales en {tmp})')

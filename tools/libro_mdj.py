@@ -162,7 +162,7 @@ def main():
     base['rasgos'] = sc
     print('subclases nuevas', len({(x['cls'], x['sub']) for x in sc}), '· rasgos', len(sc))
     print('trasfondos', [x['n'] for x in tb], '-> nuevos', len(base['trasfondos']), '· especies', [x['n'] for x in base['especies']])
-    base.setdefault('libro', 'Manual del Jugador 2024'); base.setdefault('abrev', 'MdJ')
+    base.setdefault('libro', 'Manual del Jugador 2024'); base.setdefault('abrev', 'XPHB')
     json.dump(base, open(salida, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     cnt = {}
     for x in df: cnt[x['cat']] = cnt.get(x['cat'], 0) + 1

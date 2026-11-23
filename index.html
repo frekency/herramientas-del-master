@@ -3099,7 +3099,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
           <tr><td><code>ct</code> · <code>rg</code> · <code>comp</code> · <code>dur</code></td><td>Tiempo de lanzamiento, alcance, componentes y duración (texto). Si <code>comp</code> lleva paréntesis, la M sale en dorado (material con coste)</td></tr>
           <tr><td><code>conc</code> · <code>rit</code></td><td>Concentración y ritual: <code>true</code> o <code>false</code></td></tr>
           <tr><td><code>d</code></td><td>Descripción. Los dados (<code>8d6</code>) y las CD se convierten en botones de tirada</td></tr>
-          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página (<code>249</code>, se muestra «MdJ p. 249»)</td></tr>
+          <tr><td><code>fl</code> · <code>use</code> · <code>pg</code></td><td>Frase corta, uso (<code>"TdS DES"</code>, <code>"Ataque"</code>) y página (<code>249</code>, se muestra «XPHB p. 249»)</td></tr>
         </tbody></table>
         <pre class="fmtex" id="bk-example">{
   "modulo": "Bestiario de las Marismas",
@@ -3201,11 +3201,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     </ul></li>
     <li><h3>v1.75 <span>22 nov 2026</span></h3><ul>
       <li>Si una criatura de un manual ya está en el SRD, <b>se queda la ficha del SRD</b> (no se pisa) y solo recibe la etiqueta del manual. La ficha del módulo se descarta. Los encuentros que la usaban siguen funcionando.</li>
-      <li>El Manual de Monstruos se etiqueta <b>MM2024</b>.</li>
+      <li>El Manual de Monstruos se etiqueta <b>XMM</b>.</li>
     </ul></li>
     <li><h3>v1.74 <span>22 nov 2026</span></h3><ul>
       <li>Las criaturas de un manual que ya están en el SRD se dan por revisadas: salen con las dos etiquetas y sin «Pendiente de revisar».</li>
-      <li>La etiqueta del manual en el bestiario usa la abreviatura del módulo (por ejemplo <b>MM2024</b>) en vez del nombre entero.</li>
+      <li>La etiqueta del manual en el bestiario usa la abreviatura del módulo (por ejemplo <b>XMM</b>) en vez del nombre entero.</li>
     </ul></li>
     <li><h3>v1.73 <span>22 nov 2026</span></h3><ul>
       <li><b>Modo seguro</b>: botón en el menú que oculta PG, CA, estadísticas y acciones de las criaturas (ficha, bestiario y combate; los enemigos solo muestran Ileso, Maltrecho o Caído). Para enseñar la pantalla a los jugadores. Siempre activo para quien entra como jugador.</li>
@@ -3220,7 +3220,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     </ul></li>
     <li><h3>v1.70 <span>22 nov 2026</span></h3><ul>
       <li><b>Revisión de lo importado</b>: sección nueva que muestra al azar unos cuantos elementos «Pendientes de revisar» de los manuales (criaturas, objetos, dotes, conjuros…) para compararlos con tu libro y marcarlos como revisados. También se revisan donde se usan: en un encuentro, en el bestiario o en el compendio.</li>
-      <li><b>Etiquetas de fuente</b>: el bestiario muestra un badge con el manual de cada criatura (SRD, MM2024…) y, si un manual recoge una criatura del SRD, queda una sola ficha con los dos badges.</li>
+      <li><b>Etiquetas de fuente</b>: el bestiario muestra un badge con el manual de cada criatura (SRD, XMM…) y, si un manual recoge una criatura del SRD, queda una sola ficha con los dos badges.</li>
       <li><b>Token e imagen de ambientación</b> en NPC y criaturas propias.</li>
     </ul></li>
     <li><h3>v1.69 <span>22 nov 2026</span></h3><ul>
@@ -3425,7 +3425,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <li>Rellenar una columna pegando una lista, Intro para bajar de fila, duplicar tablas, tiradas ×5 y ×10 y tablas de ejemplo. Las tablas entran en la copia de seguridad.</li></ul></li>
     <li><h3>v1.15 <span>3 nov 2026</span></h3><ul>
       <li>Los libros quedan <b>registrados con su nombre</b> («Manual del Jugador 2024»): el panel 📚 los lista con sus conjuros y se pueden quitar uno a uno. Puedes tener varios a la vez.</li>
-      <li>El JSON lleva <code>libro</code> y <code>abrev</code>; la columna Fuente muestra «MdJ p. 249» y la ficha el nombre completo. El filtro de fuente permite elegir cada libro.</li>
+      <li>El JSON lleva <code>libro</code> y <code>abrev</code>; la columna Fuente muestra «XPHB p. 249» y la ficha el nombre completo. El filtro de fuente permite elegir cada libro.</li>
       <li>Lo que ya tuvieras cargado se migra solo al nuevo registro.</li></ul></li>
     <li><h3>v1.14 <span>3 nov 2026</span></h3><ul>
       <li>📚 Libros opcionales explica el formato del JSON con una tabla de campos y un ejemplo que se puede copiar.</li>
@@ -5567,11 +5567,11 @@ const OFFICIAL_FREE=[
   {id:'srd521',n:'SRD 5.2.1',ab:'SRD',year:'2024',lic:'CC-BY-4.0',desc:'Documento de referencia oficial de D&D 2024 en español: criaturas, conjuros, objetos mágicos y equipo, dotes, clases, especies y trasfondos.'},
   {id:'srd51',n:'SRD 5.1',ab:'SRD51',year:'2014',lic:'CC-BY-4.0',desc:'Las reglas de 2014.',soon:true}];
 const OFFICIAL_BYO=[
-  {id:'mdj',n:'Manual del Jugador 2024',ab:'MdJ',k:'manual del jugador'},
-  {id:'gdm',n:'Guía del Máster 2024',ab:'GdM',k:'guia del master'},
-  {id:'mdm',n:'Manual de Monstruos 2024',ab:'MM2024',k:'manual de monstruos'},
-  {id:'gxt',n:'Guía de Xanathar para todo',ab:'GXT',k:'xanathar'},
-  {id:'ctt',n:'Caldero de Tasha para todo',ab:'CTT',k:'tasha'}];
+  {id:'mdj',n:'Manual del Jugador 2024',ab:'XPHB',k:'manual del jugador'},
+  {id:'gdm',n:'Guía del Máster 2024',ab:'XDMG',k:'guia del master'},
+  {id:'mdm',n:'Manual de Monstruos 2024',ab:'XMM',k:'manual de monstruos'},
+  {id:'gxt',n:'Guía de Xanathar para todo',ab:'XGE',k:'xanathar'},
+  {id:'ctt',n:'Caldero de Tasha para todo',ab:'TCE',k:'tasha'}];
 let MODS=null,MODCR=[],MODTB=[];
 function loadMods(){
   let m=lsGet(MKEY);if(m&&m.on&&typeof m.on==='object'&&Array.isArray(m.list)){m.list=cleanMods(m.list);return m;}
@@ -5656,7 +5656,7 @@ function modTable(x,i,md){
 const tableToMod=tb=>({n:tb.n,formato:tb.fmt,modo:tb.mode==='row'?'fila':'columna',columnas:Object.fromEntries(tb.cols.map(c=>[c.n,(tb.cells[c.id]||[]).slice(0,tb.rows)]))});
 function refreshMods(){
   SRD=modOn('srd521')?SRD_ALL:[];
-  for(const md of mods().list)if(md.id==='mdm'&&md.ab==='MdM')md.ab='MM2024';   // abreviatura antigua
+  for(const md of mods().list){const o=OFFICIAL_BYO.find(x=>x.id===md.id);if(o&&md.ab!==o.ab)md.ab=o.ab;}   // abreviaturas antiguas (MdM, MM2024, GXT…) a las de 5etools
   MODCR=activeMods().flatMap(md=>(md.criaturas||[]).filter(c=>c&&c.n).map(c=>({...c,id:undefined,tok:c.tok||TOKC.get(tokKey(md,c)),src:md.n,_mk:'mod:'+md.id+':'+(c.en||c.n)})));
   {const mia=new Set(MY.map(x=>fold(x.n)));MODCR=MODCR.filter(c=>!mia.has(fold(c.n)));
    // si la criatura ya está en el SRD manda la ficha del SRD (no se pisa): el manual solo añade su etiqueta
@@ -5743,8 +5743,8 @@ function spellsFromCSV(text){
 // Un conjuro de un libro sustituye al del SRD con el mismo nombre (en español o en inglés).
 const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 let SRD_SPELLS=[];
-// Libros registrados: [{n:'Manual del Jugador 2024',ab:'MdJ',spells:[…]}], guardados solo en este navegador.
-const KNOWN_BOOKS=[['manual del jugador','MdJ'],['guia del master','GdM'],['manual de monstruos','MM2024'],['xanathar','GXT'],['tasha','CTT']];
+// Libros registrados: [{n:'Manual del Jugador 2024',ab:'XPHB',spells:[…]}], guardados solo en este navegador.
+const KNOWN_BOOKS=[['manual del jugador','XPHB'],['guia del master','XDMG'],['manual de monstruos','XMM'],['xanathar','XGE'],['tasha','TCE']];
 const bookAbbr=n=>(KNOWN_BOOKS.find(([k])=>fold(n).includes(k))||[])[1]||n;
 const ABBR_BOOK={mdj:'Manual del Jugador 2024',gdm:'Guía del Máster 2024',mdm:'Manual de Monstruos 2024'};
 const pgNum=pg=>(String(pg??'').match(/\d+/)||[''])[0];
@@ -6835,7 +6835,7 @@ function renderHome(){
 function crSrc(m){return m.src??(m.id?'':'SRD 5.2.1');}
 const badge=(t,c='')=>`<span class="badge ${c}">${esc(t)}</span>`;
 /* Etiquetas de fuente: el SRD, el manual del módulo, el SRD también si el manual lo recoge, y «Pendiente de revisar» en lo importado sin revisar. */
-/* Etiqueta del manual: la abreviatura del módulo (MM2024) y no el nombre entero */
+/* Etiqueta del manual: la abreviatura del módulo (XMM) y no el nombre entero */
 function crSrcAb(m){const s=crSrc(m);if(s&&m._mk&&String(m._mk).startsWith('mod:')){const md=mods().list.find(x=>x.id===String(m._mk).split(':')[1]);if(md&&md.ab)return md.ab;}return s==='SRD 5.2.1'?'SRD':s;}
 function crBadges(m){const s=crSrc(m);return (s?badge(crSrcAb(m),s==='SRD 5.2.1'?'srd':''):'')+(m._also||[]).map(a=>badge(a,a==='SRD'?'srd':'')).join('')+(m.pend?badge('Pendiente de revisar','pend'):'');}
 let VC_RES=[];

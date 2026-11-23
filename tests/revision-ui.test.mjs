@@ -19,7 +19,7 @@ const TAIL=`<script>
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
   try{
     await wait(1200);
-    mods().list.push({id:"mm",n:"Manual de Monstruos 2024",ab:"MM2024",on:true,criaturas:[{n:"Gnomo de prueba",sz:"Small",ty:"Humanoid",cr:"1",ac:12,hp:10,ab:[8,12,10,10,10,10],sv:[-1,1,0,0,0,0],pend:true,dudas:["PG no cuadra"]},{n:"Orco sano",sz:"Medium",ty:"Humanoid",cr:"1",ac:13,hp:15,ab:[16,12,16,7,11,10],sv:[3,1,3,-2,0,0]}],objetos:[{n:"Cuerda mágica",k:"magico",d:"Una cuerda.",pend:true}]});
+    mods().list.push({id:"mm",n:"Manual de Monstruos 2024",ab:"XMM",on:true,criaturas:[{n:"Gnomo de prueba",sz:"Small",ty:"Humanoid",cr:"1",ac:12,hp:10,ab:[8,12,10,10,10,10],sv:[-1,1,0,0,0,0],pend:true,dudas:["PG no cuadra"]},{n:"Orco sano",sz:"Medium",ty:"Humanoid",cr:"1",ac:13,hp:15,ab:[16,12,16,7,11,10],sv:[3,1,3,-2,0,0]}],objetos:[{n:"Cuerda mágica",k:"magico",d:"Una cuerda.",pend:true}]});
     saveMods();refreshMods();
     ok("hay 2 pendientes",pendAll().length===2);
     {const o=document.getElementById("rv-o");o.value="az";o.dispatchEvent(new Event("change",{bubbles:true}));await wait(200);
@@ -38,7 +38,7 @@ const TAIL=`<script>
     ok("marcar revisado lo quita de la lista",pendAll().length===1&&!mods().list[0].objetos[0].pend);
     ok("la lista se actualiza",document.querySelectorAll("#rv-list .hbcard").length===1);
     location.hash="#criaturas";await wait(500);
-    ok("el bestiario muestra el badge del manual",document.body.textContent.includes("MM2024")||document.body.textContent.includes("Manual de Monstruos 2024"));
+    ok("el bestiario muestra el badge del manual",document.body.textContent.includes("XMM")||document.body.textContent.includes("Manual de Monstruos 2024"));
     mods().list.push({id:"ot",n:"Otro manual",ab:"OT",on:true,criaturas:[{n:"Orco sano",sz:"Medium",ty:"Humanoid",cr:"1",ac:99,hp:99,ab:[10,10,10,10,10,10],pend:true}]});saveMods();refreshMods();
     const orcos=MODCR.filter(c=>c.n==="Orco sano");
     ok("una ficha ya revisada no la pisa otro manual",orcos.length===1&&orcos[0].hp===15&&(orcos[0]._also||[]).includes("OT"));

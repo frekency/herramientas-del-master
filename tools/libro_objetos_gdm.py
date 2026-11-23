@@ -66,7 +66,7 @@ def main():
         if len(html) < 60: du.append('texto muy corto: puede faltar parte')
         if not ra: du.append('no se pudo separar la rareza: compruébala')
         out.append({'n': nom, 't': t, 'r': ra, 's': s, 'k': 'magico', 'd': html, 'pg': str(flujo[k]['p'] - OFFSET), 'pend': True, 'dudas': du})
-    m = {'modulo': 'Guía del Dungeon Master 2024', 'abrev': 'GdM', 'version': '2024', 'objetos': out}
+    m = {'modulo': 'Guía del Dungeon Master 2024', 'abrev': 'XDMG', 'version': '2024', 'objetos': out}
     json.dump(m, open(sys.argv[2], 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(len(out), 'objetos')
     for o in out[:25] + out[-8:]: print(' ', o['pg'], o['n'], '|', o['t'], '|', o['r'], '|', o['s'][:25], '|', len(o['d']))
