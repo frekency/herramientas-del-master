@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.96.0] - 2026-11-23
+### Añadido
+- Compendio: pestaña «Subclases» (con los rasgos de cada una por nivel) y pestaña «Tablas aleatorias» en la barra, que existía pero no se enseñaba.
+- Tablas de dados del SRD dentro de un objeto: botón de tirada que da la fila del rango.
+### Corregido
+- Al pulsar el dado de la cabecera de una tabla del SRD se cerraba la ficha.
+- Las filas con el mismo resultado seguidas se juntan en rangos también en tablas de varias columnas.
+
 ## [1.95.5] - 2026-11-23
 ### Cambiado
 - Compendio: «Abrir su página», «Dar a…» y «Clonar y editar» son botones pequeños arriba a la derecha de la ficha, sin ocupar líneas.
