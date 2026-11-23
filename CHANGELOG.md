@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.101.1] - 2026-11-23
+### Añadido
+- Capa de ambiente: enlace a Tabletop Audio (no se incrusta: su web no lo permite).
+
 ## [1.101.0] - 2026-11-23
 ### Añadido
 - Mesa: capa «Ambiente» (niebla, lluvia, nieve, tormenta, noche, brasas) con intensidad y sonido de ambiente opcional generado con Web Audio, silenciado con el telón bajado.

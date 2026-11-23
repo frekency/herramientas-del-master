@@ -3176,6 +3176,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.101 <span>23 nov 2026</span></h3><ul>
+      <li><b>v1.101.1:</b> la capa de ambiente enlaza a Tabletop Audio (grabaciones reales para rol) para usarlo en el navegador junto al sonido generado.</li>
       <li><b>Capa de ambiente</b> para la mesa: niebla, lluvia, nieve, tormenta (lluvia, rayos y truenos), noche (oscurece) y brasas, con intensidad regulable. Va encima de la escena y no recibe clics.</li>
       <li><b>Sonido de ambiente opcional:</b> se activa en la propia capa, con volumen y botón «Probar el sonido aquí» en la vista previa. Se genera en la ventana, sin archivos, y se silencia con el telón bajado.</li>
     </ul></li>
@@ -5112,7 +5113,9 @@ function msInsp(){
       +ck('sonido',T('Con sonido de ambiente (opcional)'))
       +(c.sonido?'<label class="f">'+esc(T('Volumen'))+'<input type="range" data-msf="volumen" data-t="n" min="0" max="100" step="5" value="'+c.volumen+'"></label>'
         +'<div class="ms-acts"><button type="button" class="btn sm" data-ms="ambprueba" aria-pressed="'+!!MS.ambOn+'">'+esc(MS.ambOn?T('Parar la prueba'):T('Probar el sonido aquí'))+'</button></div>'
-        +'<p class="hint">'+esc(T('Se genera en la propia ventana, sin archivos. Se silencia con el telón bajado.'))+'</p>':'');
+        +'<p class="hint">'+esc(T('Se genera en la propia ventana, sin archivos. Se silencia con el telón bajado.'))+'</p>':'')
+      +'<div class="ms-acts"><a class="btn sm noi18n" href="https://tabletopaudio.com/" target="_blank" rel="noopener noreferrer">♪ Tabletop Audio</a></div>'
+      +'<p class="hint">'+esc(T('¿Prefieres grabaciones reales? Abre Tabletop Audio (ambientes pensados para rol, gratis) en el navegador y déjalo sonando por los altavoces. Desactiva aquí el sonido para que no se mezclen. No se puede incrustar en la mesa ni se silencia con el telón.'))+'</p>';
     if(c.tipo==='dados')p+='<p class="hint">'+esc(T('Aquí caen los dados, con física real: no pueden salirse del recuadro. Tira desde «Tirar en la bandeja».'))+'</p>'
       +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con tablero (si no, los dados caen sobre la escena)'))+'</label>'
       +'<div class="ms-geo">'+(c.fondo?'<label class="f">'+esc(T('Tablero'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label>':'')+'<label class="f">'+esc(T('Dados'))+'<input type="color" data-msf="color" value="'+esc(c.color)+'"></label></div>'

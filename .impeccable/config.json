@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "desktop/mesa.html"
+        ],
+        "createdAt": "2026-11-23T22:49:48.997Z",
+        "reason": "Claude: los degradados radiales de mesa.html son los efectos de la capa de ambiente (bancos de niebla, viñeta de noche, chispas de brasas), no un brillo decorativo de fondo; el usuario pidió esa capa"
+      }
+    ]
+  }
+}
