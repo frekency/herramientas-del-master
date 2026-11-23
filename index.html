@@ -3157,6 +3157,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.95 <span>23 nov 2026</span></h3><ul>
+      <li>Los módulos cuya descripción viene en HTML (p. ej. leídos de un manual) ya no enseñan las etiquetas: se pasan a texto con negritas y párrafos.</li>
       <li><b>Nuevo jugador: elige el grupo.</b> Si hay más de un grupo de jugadores, el formulario deja elegir en cuál aparece (por defecto, el actual).</li>
       <li><b>Web: los módulos viven en tu cuenta.</b> El navegador solo guarda lo esencial; tus manuales y homebrew se guardan en Supabase (tabla <code>modulos_usuario</code>, troceados, solo tuyos) y se bajan al entrar. Hay que ejecutar <code>supabase/modulos_usuario.sql</code> una vez. En la app de escritorio siguen en el disco.</li>
     </ul></li>
@@ -6563,7 +6564,7 @@ function compList(tab,todas){
 }
 const cmTxt=v=>esc(String(v??''));
 const CM_COLS={
-  objetos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tipo',x=>cmTxt(x.t||OBJ_KIND[x.k]||'')],['Rareza',x=>{const f=fold(x.r),k=/muy rar|very rare/.test(f)?'vr':/infrecuente|uncommon/.test(f)?'u':/legendar/.test(f)?'l':/artefact|artifact/.test(f)?'a':/rar|rare/.test(f)?'r':/comun|common/.test(f)?'c':'';return k?'<span class="rar rar-'+k+'">'+cmTxt(x.r)+'</span>':cmTxt(x.r||'');}],['Sint.',x=>x.s?'<span class="yes" title="Requiere sintonización">✓</span>':'<span class="no" aria-label="No">–</span>','c'],['Precio',x=>cmTxt(x.precio||'')]],
+  objetos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tipo',x=>cmTxt(x.t||OBJ_KIND[x.k]||'')],['Rareza',x=>{const f=fold(x.r),k=/muy rar|very rare/.test(f)?'vr':/infrecuente|uncommon/.test(f)?'u':/legendar/.test(f)?'l':/artefact|artifact/.test(f)?'a':/\brar|\brare/.test(f)?'r':/comun|common/.test(f)?'c':'';return k?'<span class="rar rar-'+k+'">'+cmTxt(x.r)+'</span>':cmTxt(x.r||'');}],['Sint.',x=>x.s?'<span class="yes" title="Requiere sintonización">✓</span>':'<span class="no" aria-label="No">–</span>','c'],['Precio',x=>cmTxt(x.precio||'')]],
   dotes:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Requisitos',x=>cmTxt(x.req||'—')]],
   clases:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Dado de golpe',x=>cmTxt((x.info?.['Dado de puntos de golpe']||x.dado||'').replace(/ (por nivel|per ).*/i,''))],['Característica principal',x=>cmTxt(x.info?.['Característica principal']||x.principal||'')],['Salvaciones',x=>cmTxt(x.info?.['Competencias en tiradas de salvación']||x.salvaciones||'')],['Subclases',x=>cmTxt((x.sub||[]).join(', '))]],
   rasgos:[['Nombre',x=>cmTxt(x.base||x.n)+goA(cmTab,x.n)],['Clase',x=>cmTxt(x.cls+(x.sub?': '+x.sub:''))],['Nivel',x=>cmTxt(x.nv??'—')],['Tipo',x=>cmTxt(x.tipo||'')]],
@@ -6623,7 +6624,7 @@ function cmBody(x,tab=cmTab){
   if(tab==='tablas')return cmTbBody(x);
   const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):tab==='reglas'&&(x._mine||x._camp)?'Regla homebrew':'';
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):tab==='rasgos'?[['Clase',x.cls],['Subclase',x.sub],['Nivel',x.nv]]:[];
-  const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')))
+  const body=ruleLinks(x._html?richHTML(x.d):rich(/^\s*<(p|ul|h\d|table)\b/.test(String(x.d||''))?htmlTxt(x.d,true):String(x.d||'')))   // un módulo nunca se pinta como HTML: si el manual vino en HTML se pasa a texto con negritas
     +(tab==='clases'?(()=>{const l=compList('rasgos').filter(r=>r.tipo==='Subclase'&&fold(r.cls)===fold(x.n));return l.length?`<p><b>Subclases de manuales:</b> ${l.map(r=>esc(r.sub||r.base)+' <span class="tag">'+esc(r._src||'')+'</span>').join(', ')}</p>`:'';})():'');
   return `<div class="cmbody">${pendBar(tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${x.img&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)?`<img class="cmimg" src="${x.img}" alt="" loading="lazy">`:''}${body}</div>${relTablas(tab,x)}<p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }

@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.95.2] - 2026-11-23
+### Corregido
+- Compendio: las descripciones de módulos en HTML se enseñaban con las etiquetas visibles; ahora salen como texto con negritas y párrafos.
+
 ## [1.95.1] - 2026-11-23
 ### Añadido
 - Nuevo jugador: selector de grupo cuando hay varios grupos de jugadores.
