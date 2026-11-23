@@ -5097,10 +5097,11 @@ function detHTML(c,m){
 let bSel=null;
 // Tipos del buscador: las criaturas usan su clave del bestiario; el resto, «tipo:nombre»
 const BTY=[['todo','Todo'],['criaturas','Criaturas','claw'],['conjuros','Conjuros','sparkle'],['objetos','Objetos','bag'],['dotes','Dotes','star'],['clases','Clases','shield'],['rasgos','Rasgos de clase','bolt'],['especies','Especies','people'],['trasfondos','Trasfondos','scroll'],['reglas','Reglas','book']];
-const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Dote',clases:'Clase',rasgos:'Rasgo',especies:'Especie',trasfondos:'Trasfondo',reglas:'Regla'};
+const TY_ONE={criaturas:'Criatura',conjuros:'Conjuro',objetos:'Objeto',dotes:'Dote',clases:'Clase',rasgos:'Rasgo',especies:'Especie',trasfondos:'Trasfondo',reglas:'Regla',tablas:'Tabla aleatoria'};
 let bTy=(()=>{try{return Store.get('b-ty')||'todo';}catch{return 'todo';}})();
 const bTyOf=k=>{const p=String(k||'').split(':')[0];return TY_ONE[p]&&p!=='criaturas'?p:'criaturas';};
 function cmSub(tab,x){
+  if(tab==='tablas')return [x.cat,'d'+cmTb(x).rows,x._camp&&'Homebrew',x._src&&x._src!=='SRD 5.2.1'&&!x._camp&&x._src].filter(Boolean).join(' · ');
   const s=tab==='objetos'?[x.t||OBJ_KIND[x.k],x.r,x.precio]:tab==='dotes'?[x.cat&&'Dote '+(fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()),x.req]:tab==='clases'?[(x.info?.['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,''),x.info?.['Característica principal']]:tab==='reglas'?[x.cat,(x._mine||x._camp)&&'Homebrew']:tab==='rasgos'?[x.cls+(x.sub?': '+x.sub:''),x.nv?'nivel '+x.nv:'opción']:tab==='especies'?[String(x.tam||'').replace(/\s*\(.*?\)/g,''),x.vel]:[x.dote];
   return [...s,x._src!=='SRD 5.2.1'&&x._src].filter(Boolean).join(' · ');
 }
@@ -6365,14 +6366,15 @@ document.addEventListener('change',e=>{
   toast(T(el.checked?'Manual aplicado a esta campaña':'Manual quitado de esta campaña'));
 });
 /* ---------- revisión de lo importado ---------- */
-const PEND_TYPES=MOD_TYPES.map(t=>t[0]).filter(k=>k!=='tablas');
-const PEND_TIT={criaturas:'Criaturas',conjuros:'Conjuros',objetos:'Objetos',clases:'Clases',rasgos:'Rasgos de clase',especies:'Especies',dotes:'Dotes',trasfondos:'Trasfondos',reglas:'Reglas'};
+const PEND_TYPES=MOD_TYPES.map(t=>t[0]);
+const PEND_TIT={criaturas:'Criaturas',conjuros:'Conjuros',objetos:'Objetos',clases:'Clases',rasgos:'Rasgos de clase',especies:'Especies',dotes:'Dotes',trasfondos:'Trasfondos',reglas:'Reglas',tablas:'Tablas aleatorias'};
 /* una criatura del manual que ya está en el SRD se da por revisada */
 const enSrd=x=>SRD_ALL.some(s=>fold(s.n)===fold(x.n)||(s.en&&x.en&&fold(s.en)===fold(x.en)))||mods().list.some(md=>(md.criaturas||[]).some(y=>y!==x&&!y.pend&&(fold(y.n)===fold(x.n)||(y.en&&x.en&&fold(y.en)===fold(x.en)))));
 function pendAll(){
   const own=new Set(),mine=myMod(false);
   if(mine)for(const k of PEND_TYPES)for(const x of mine[k]||[])own.add(k+':'+fold(x.n));
   for(const x of MY)own.add('criaturas:'+fold(x.n));
+  for(const t of TABLES)own.add('tablas:'+fold(t.n));   // una tabla corregida (copia propia) ya no está pendiente
   const out=[];
   for(const md of mods().list){if(md.mine)continue;for(const k of PEND_TYPES)for(const x of md[k]||[])if(x&&x.pend&&x.n&&!own.has(k+':'+fold(x.n))&&!(k==='criaturas'&&enSrd(x)))out.push({ty:k,md,x});}
   return out;
@@ -6418,7 +6420,7 @@ function revCard(p){
   if(ty==='criaturas'){const m=MODCR.find(c=>c._mk==='mod:'+md.id+':'+(x.en||x.n))||{...x,src:md.n,_mk:'mod:'+md.id+':'+(x.en||x.n)};body=sbHTML(m,null);}
   else if(ty==='conjuros')body='<div class="sb">'+spellBody({...x,book:md.n,ab:md.ab,_mid:md.id})+'</div>';
   else body='<div class="sb">'+cmBody({...x,n:String(x.n),_mid:md.id,_full:md.n+(pgNum(x.pg)?', p. '+pgNum(x.pg):''),_html:false},ty)+'</div>';
-  const fix=ty==='criaturas'?'<button type="button" class="btn" data-act="rvfix" data-mid="'+esc(md.id)+'" data-n="'+esc(x.n)+'">Corregir</button>':'<button type="button" class="btn" data-act="itclone" data-ty="'+ty+'" data-n="'+esc(x.n)+'">Corregir</button>';
+  const fix=ty==='criaturas'?'<button type="button" class="btn" data-act="rvfix" data-mid="'+esc(md.id)+'" data-n="'+esc(x.n)+'">Corregir</button>':ty==='tablas'?'<button type="button" class="btn" data-act="cmtbclone" data-mid="'+esc(md.id)+'" data-n="'+esc(x.n)+'">Corregir (copia propia)</button>':'<button type="button" class="btn" data-act="itclone" data-ty="'+ty+'" data-n="'+esc(x.n)+'">Corregir</button>';
   return '<details class="hbcard" open><summary><b>'+esc(x.n)+'</b> <span class="badge">'+esc(PEND_TIT[ty]||ty)+'</span> <span class="badge srd">'+esc(md.ab||md.n)+'</span>'+(x.pg?'<span class="pcsub">p. '+esc(String(x.pg))+'</span>':'')+'</summary><div class="hbbody">'+body+'<div class="gvbar">'+fix+'</div></div></details>';
 }
 function renderRev(){
@@ -6467,7 +6469,7 @@ function mdAct(act,b){
 // Como en conjuros, una entrada de un módulo sustituye a la del SRD con el mismo nombre.
 let COMP_SRD=null,compLoading=false,CM_RES=[];
 let cmTab='objetos';
-const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote','dotes'],['clases','Clases','clase','clases'],['rasgos','Rasgos de clase','rasgo','rasgos'],['especies','Especies','especie','especies'],['trasfondos','Trasfondos','trasfondo','trasfondos'],['reglas','Reglas','regla','reglas']];
+const CM_TABS=[['objetos','Objetos','objeto','objetos'],['dotes','Dotes','dote','dotes'],['clases','Clases','clase','clases'],['rasgos','Rasgos de clase','rasgo','rasgos'],['especies','Especies','especie','especies'],['trasfondos','Trasfondos','trasfondo','trasfondos'],['reglas','Reglas','regla','reglas'],['tablas','Tablas aleatorias','tabla aleatoria','tablas aleatorias']];
 const OBJ_KIND={magico:'Objetos mágicos',arma:'Armas',armadura:'Armaduras',herramienta:'Herramientas',equipo:'Equipo de aventurero'};
 // Las fichas de clase del SRD en inglés traen los campos con su nombre en inglés: se copian a los nombres que usa la página.
 const CLS_INFO={'Hit Point Die':'Dado de puntos de golpe','Primary Ability':'Característica principal','Saving Throw Proficiencies':'Competencias en tiradas de salvación',
@@ -6517,10 +6519,11 @@ function hbSet(n,on){
 function compList(tab,todas){
   const srd=modOn('srd521')&&COMP_SRD?(COMP_SRD[tab]||[]).map(x=>({...x,_src:'SRD 5.2.1',_full:`SRD 5.2.1${x.pg?`, p. ${x.pg}`:''}`,_html:true})):[];
   const camp=tab==='reglas'&&!todas?hbcLoad().map(x=>({n:String(x.n),cat:String(x.cat||'Homebrew'),tag:String(x.tag||''),d:String(x.d).slice(0,20000),ref:x.ref!==false,_src:'Homebrew de la campaña',_full:'Homebrew de la campaña',_camp:true,_html:false})):[];
+  const hbt=tab==='tablas'&&!todas?TABLES.map(tb=>({n:tb.n,cat:'Homebrew',_src:'Homebrew',_full:'Homebrew (tus tablas)',_camp:true,_hbt:tb,_html:false})):[];
   const mod=activeMods().filter(modVeJug).sort((a,b)=>!!a.mine-!!b.mine).flatMap(md=>(md[tab]||[]).filter(x=>x&&x.n).map(x=>({...x,n:String(x.n),_src:md.ab||md.n,_full:`${md.n}${pgNum(x.pg)?`, p. ${pgNum(x.pg)}`:''}`,_book:md.n,_mid:md.id,_mine:!!md.mine,_html:false,img:IMG_TYPES.includes(tab)?(x.img||TOKC.get(imgKey(md,tab,x))):undefined})));   // un módulo nunca se pinta como HTML, aunque traiga _html
   // mismo nombre en varias fuentes: gana lo revisado (o lo propio); lo pendiente no pisa al SRD ni a lo anterior y solo le añade su etiqueta
   const imgDe=new Map();for(const x of mod)if(x.img&&!imgDe.has(fold(x.n)))imgDe.set(fold(x.n),x.img);   // la ilustración de un módulo no se pierde si manda la ficha del SRD
-  const by=new Map();for(const x of [...srd,...mod,...camp]){const k=fold(x.n),e=by.get(k);
+  const by=new Map();for(const x of [...srd,...mod,...camp,...hbt]){const k=fold(x.n),e=by.get(k);
     if(!e||x._camp||!x.pend){if(e&&e._src!==x._src)x._also=[...new Set([...(x._also||[]),...(e._also||[]),e._src])].filter(a=>a!==x._src);by.set(k,x);}
     else if(e._src!==x._src)e._also=[...new Set([...(e._also||[]),x._src])];}
   return [...by.values()].map(x=>x.img||!imgDe.has(fold(x.n))?x:{...x,img:imgDe.get(fold(x.n))}).filter(x=>!(esJug()&&tab==='objetos'&&x.k==='magico')).filter(x=>tab!=='reglas'||todas||!x._mine||(Store.campaigns.rol()!=='jugador'&&hbOn(x.n))).sort(tab==='rasgos'?(a,b)=>a.cls.localeCompare(b.cls,'es')||(a.sub?1:0)-(b.sub?1:0)||(a.nv??99)-(b.nv??99)||a.n.localeCompare(b.n,'es'):(a,b)=>a.n.localeCompare(b.n,'es'));
@@ -6533,6 +6536,7 @@ const CM_COLS={
   rasgos:[['Nombre',x=>cmTxt(x.base||x.n)+goA(cmTab,x.n)],['Clase',x=>cmTxt(x.cls+(x.sub?': '+x.sub:''))],['Nivel',x=>cmTxt(x.nv??'—')],['Tipo',x=>cmTxt(x.tipo||'')]],
   especies:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Tamaño',x=>cmTxt(String(x.tam||'').replace(/\s*\(.*?\)/g,''))],['Velocidad',x=>cmTxt(x.vel||'')]],
   trasfondos:[['Nombre',x=>cmTxt(x.n)+goA(cmTab,x.n)],['Características',x=>cmTxt(x.car||'')],['Dote',x=>cmTxt(x.dote||'')],['Habilidades',x=>cmTxt(x.hab||'')]],
+  tablas:[['Nombre',x=>cmTxt(x.n)+(x._camp?' <span class="hbtag">Homebrew</span>':'')+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Dado',x=>'d'+cmTb(x).rows],['Columnas',x=>cmTb(x).cols.map(c=>cmTxt(c.n)).join(', ')]],
   reglas:[['Nombre',x=>cmTxt(x.n)+(x._mine||x._camp?' <span class="hbtag">Homebrew</span>':'')+goA(cmTab,x.n)],['Categoría',x=>cmTxt(x.cat||'')],['Resumen',x=>cmTxt(ruleSum(x))]]
 };
 function cmFilters(list){
@@ -6541,7 +6545,7 @@ function cmFilters(list){
   if(cmTab==='objetos'){f1.hidden=f2.hidden=false;
     keep(f1,'<option value="">Cualquier categoría</option>'+Object.entries(OBJ_KIND).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')+'<option value="otro">Otros</option>');
     keep(f2,'<option value="">Cualquier rareza</option>'+[...RARITY,'variable'].map(k=>`<option value="${k}">${k[0].toUpperCase()+k.slice(1)}</option>`).join(''));}
-  if(cmTab==='dotes'||cmTab==='reglas'){f1.hidden=false;const cats=[...new Set(list.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG));keep(f1,'<option value="">Cualquier categoría</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join(''));}
+  if(cmTab==='dotes'||cmTab==='reglas'||cmTab==='tablas'){f1.hidden=false;const cats=[...new Set(list.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG));keep(f1,'<option value="">Cualquier categoría</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join(''));}
   if(cmTab==='rasgos'){f1.hidden=f2.hidden=false;
     keep(f1,'<option value="">Cualquier clase</option>'+[...new Set(list.map(x=>x.cls).filter(Boolean))].sort((a,b)=>a.localeCompare(b,LANG)).map(c=>`<option>${esc(c)}</option>`).join(''));
     keep(f2,'<option value="">Cualquier tipo</option>'+[...new Set(list.map(x=>x.tipo).filter(Boolean))].map(c=>`<option>${esc(c)}</option>`).join(''));}
@@ -6555,7 +6559,7 @@ function renderCompendio(){
   const q=fold($('#cm-q').value),f1=$('#cm-f1').value,f2=$('#cm-f2').value,fu=$('#cm-fu').value;
   const res=all.filter(x=>(!q||fold(x.n).includes(q))&&(!fu||x._src===fu||(x._also||[]).includes(fu))
     &&(cmTab!=='objetos'||((!f1||(f1==='otro'?!OBJ_KIND[x.k]:x.k===f1))&&(!f2||rarKey(x.r)===f2)))
-    &&(!['dotes','reglas'].includes(cmTab)||!f1||x.cat===f1)
+    &&(!['dotes','reglas','tablas'].includes(cmTab)||!f1||x.cat===f1)
     &&(cmTab!=='rasgos'||((!f1||x.cls===f1)&&(!f2||x.tipo===f2))));
   CM_RES=res;const tb=CM_TABS.find(x=>x[0]===cmTab);
   $('#cm-count').textContent=`${res.length} ${res.length===1?tb[2]:tb[3]}`;
@@ -6563,7 +6567,20 @@ function renderCompendio(){
   if(!all.length){$('#cm-list').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando el compendio del SRD…</div>':`<div class="empty">No hay ${tb[3]} en tus módulos activos. Activa el SRD 5.2.1 u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>.</div>`;return;}
   $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc([x._src,...(x._also||[])].join(' · '))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
+// Tabla aleatoria de un módulo o propia: se convierte una sola vez a la forma de la herramienta Tablas
+const cmTb=x=>x._hbt||(x._tbc||(x._tbc=modTable(x,0,null)||tbMake(String(x.n),1,['Resultado'])));
+function cmTbBody(x){
+  const tb=cmTb(x),filas=[];
+  for(let r=0;r<tb.rows;r++){const cs=tb.cols.map(c=>(tb.cells[c.id]||[])[r]||''),k=cs.join(''),u=filas[filas.length-1];
+    if(u&&u.k===k&&tb.cols.length===1)u.h=r+1;else filas.push({k,cs,d:r+1,h:r+1});}   // varias filas seguidas iguales (rangos del libro) se juntan: 01-02
+  const rg=f=>f.d===f.h?String(f.d):`${f.d}–${f.h}`;
+  return `<div class="cmbody">${x.pend?pendBar('tablas',x):''}<div class="inline"><button type="button" class="btn primary" data-act="cmtbroll" data-n="${esc(x.n)}">${ic('d20')} Tirar d${tb.rows}</button><span class="tbout cmtbres" aria-live="polite"></span></div>
+    ${tb.fmt?`<p class="hint" style="display:block;margin:6px 0 0">Formato: <code>${esc(tb.fmt)}</code></p>`:''}
+    <div class="sptwrap"><table class="sptable tbro"><thead><tr><th class="num">d${tb.rows}</th>${tb.cols.map(c=>`<th>${esc(c.n)}</th>`).join('')}</tr></thead><tbody>${filas.map(f=>`<tr><td class="num">${rg(f)}</td>${f.cs.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    ${x._camp?'<p class="hint" style="display:block">Tabla propia (homebrew). Se edita en <a href="#tablas">Tablas</a>.</p>':''}</div>`;
+}
 function cmBody(x,tab=cmTab){
+  if(tab==='tablas')return cmTbBody(x);
   const head=tab==='objetos'&&x.k==='magico'?[x.t,x.r].filter(Boolean).join(', ')+(x.s?` (${x.s})`:''):tab==='dotes'?(x.cat?`Dote ${fold(x.cat)==='origen'?'de origen':x.cat.toLowerCase()}`:'')+(x.req?` (requisitos: ${x.req})`:''):tab==='reglas'&&(x._mine||x._camp)?'Regla homebrew':'';
   const facts=tab==='especies'?[['Tipo de criatura',x.tipo],['Tamaño',x.tam],['Velocidad',x.vel]]:tab==='clases'?Object.entries(x.info||{}):tab==='rasgos'?[['Clase',x.cls],['Subclase',x.sub],['Nivel',x.nv]]:[];
   const body=ruleLinks(x._html?richHTML(x.d):rich(String(x.d||'')))
@@ -6592,6 +6609,10 @@ function extraAct(act,b,c,e){
   if(act.startsWith('it')){itAct(act,b);return;}
   const pcOf=()=>PARTY.find(x=>x.id===b.dataset.id);
   switch(act){
+    case 'cmtbroll':{const x=compList('tablas').find(t=>t.n===b.dataset.n);if(!x)break;const r=tbRoll(cmTb(x)),o=b.parentElement.querySelector('.cmtbres');if(o)o.textContent=r.text||'(vacío)';break;}
+    case 'cmtbclone':{const md=mods().list.find(m=>m.id===b.dataset.mid),x=md&&(md.tablas||[]).find(t=>String(t.n)===b.dataset.n);if(!x)break;
+      const tb=modTable(x,0,null);if(!tb)break;tb.id=uid();delete tb._mod;TABLES.push(tb);saveTables();tbSel=tb.id;
+      toast(T('Copia propia creada en Tablas: corrígela allí y la del libro dejará de salir pendiente'));try{renderRev();}catch{}try{refreshCompView();}catch{}break;}
     case 'openparty':location.hash='jugadores';break;
     case 'cfgtoggle':$('#cfgbtn').click();break;
     case 'lwhide':try{Store.set('combat-localwarn-off','1');}catch(e){}renderAcct();break;
