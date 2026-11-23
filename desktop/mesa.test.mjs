@@ -20,9 +20,36 @@ test('iniciativa: solo nombre, turno, caído y color; nada más pasa', () => {
     { n: 'Lyra', actual: true, color: '#3d7bd9', hp: 12, ac: 15, notas: 'secreto' },
     { n: 'Goblin', caido: 1, color: 'red' }, { n: '' }, null, 'x'] });
   assert.deepEqual(v, { tipo: 'iniciativa', abrir: true, activo: true, ronda: 3, cuenta: null, lista: [
-    { n: 'Lyra', actual: true, caido: false, color: '#3d7bd9' },
-    { n: 'Goblin', actual: false, caido: true, color: '#888888' }] });
+    { n: 'Lyra', actual: true, caido: false, color: '#3d7bd9', tok: '', oculto: false },
+    { n: 'Goblin', actual: false, caido: true, color: '#888888', tok: '', oculto: false }] });
   assert.ok(!JSON.stringify(v).includes('secreto'));
+});
+
+const PNG = 'data:image/png;base64,iVBORw0KGgo=';
+test('iniciativa: una criatura oculta sale como «Enemigo oculto», sin nombre, token ni estado', () => {
+  const v = validar({ tipo: 'iniciativa', lista: [
+    { n: 'Dragón rojo antiguo', oculto: true, caido: true, color: '#d0453c', tok: PNG, hp: 546, ac: 22, debilidades: ['frío'] },
+    { n: 'Lyra', tok: PNG, color: '#3d7bd9' }] });
+  assert.deepEqual(v.lista[0], { n: 'Enemigo oculto', actual: false, caido: false, color: '#888888', tok: '', oculto: true });
+  assert.equal(v.lista[1].tok, PNG);
+  const s = JSON.stringify(v);
+  for (const x of ['Dragón', '546', 'debilidades', 'frío']) assert.ok(!s.includes(x), x);
+  assert.equal(validar({ tipo: 'iniciativa', lista: [{ n: 'A', tok: 'data:text/html;base64,AAAA' }] }).lista[0].tok, '', 'solo imágenes data:');
+});
+
+test('mapa de combate: cuadrícula acotada, fichas validadas y las ocultas no llegan nunca', () => {
+  const e = validar({ tipo: 'escena', aspecto: 'auto', capas: [{ tipo: 'mapa', id: 'm', x: 0, y: 0, w: 100, h: 100, celda: 99, pantalla: 5, cuadOp: 9, fondo: 'verde',
+    tokens: [{ id: 'a', x: 3, y: 4, tam: 2, n: 'Orco', color: '#d0453c', src: PNG, hp: 50 },
+      { id: 'b', x: 1, y: 1, n: 'Asesino oculto', oculto: true, src: PNG }, null, { id: 'c', x: 9999, tam: 99, src: 'http://x/y.png' }] }] });
+  const m = e.capas[0];
+  assert.equal(e.aspecto, 'auto');
+  assert.deepEqual([m.celda, m.pantalla, m.cuadOp, m.fondo], [20, 15, 1, '#2b2f26']);
+  assert.deepEqual(m.tokens.map(t => t.id), ['a', 'c'], 'la ficha oculta se descarta');
+  assert.deepEqual([m.tokens[1].x, m.tokens[1].tam, m.tokens[1].src], [400, 8, '']);
+  assert.ok(!JSON.stringify(e).includes('Asesino') && !JSON.stringify(e).includes('hp'));
+  assert.equal(validar({ tipo: 'escena', aspecto: 'raro', capas: [] }).aspecto, '16:9');
+  const i = validar({ tipo: 'escena', capas: [{ tipo: 'iniciativa', orient: 'h', tokens: false }, { tipo: 'iniciativa', orient: 'x' }] }).capas;
+  assert.deepEqual([i[0].orient, i[0].tokens, i[1].orient, i[1].tokens], ['h', false, 'v', true]);
 });
 
 test('iniciativa: tope de filas y ronda acotada', () => {
@@ -68,7 +95,6 @@ test('cuentas: máximo ocho, solo etiqueta, segundos, pausa y fin', () => {
 });
 
 // ---- escenas ----
-const PNG = 'data:image/png;base64,iVBORw0KGgo=';
 test('escena: capas válidas con posición y tamaño acotados', () => {
   const v = validar({ tipo: 'escena', nombre: 'Taberna', fondo: '#112233', capas: [
     { id: 'a', tipo: 'imagen', src: PNG, x: 10, y: 20, w: 50, h: 60, ajuste: 'cubrir', titulo: 'Mapa' },

@@ -26,7 +26,7 @@ const TAIL=`<script>
     ok('la página registra su receptor',typeof __cb==='function');
     __cb({tipo:'iniciativa',abrir:false,activo:true,ronda:2,lista:[{n:'Lyra',actual:true,caido:false,color:'#3b82f6'},{n:'Goblin 1',actual:false,caido:false,color:'#d0453c'}],cuenta:null});
     await wait(100);
-    ok('la iniciativa sola sigue la vista de siempre',q('#ini').style.display==='flex'&&!q('#lienzo'));
+    ok('la iniciativa sin capa en pantalla no se enseña',q('#ini').style.display!=='flex'&&!q('#lienzo'));
     __cb({tipo:'escena',nombre:'Taberna',fondo:'#102030',fundido:0,capas:[
       {tipo:'imagen',id:'a',x:5,y:10,w:60,h:80,visible:true,op:1,src:PNG,ajuste:'contener',titulo:'Mapa',marco:true},
       {tipo:'texto',id:'b',x:5,y:2,w:60,h:8,visible:true,op:1,t:'La taberna',tam:5,color:'#ffffff',fondo:'',alin:'centro',fuente:'serif',negrita:true},
@@ -48,8 +48,8 @@ const TAIL=`<script>
     ok('sin capa de cuentas, la esquina vuelve',await until(()=>q('.capa[data-id="z"]')&&getComputedStyle(q('#cuentas')).display!=='none'));
     ok('al cambiar de escena solo queda un lienzo',await until(()=>document.querySelectorAll('#lienzo').length===1));
     __cb({tipo:'iniciativa',abrir:true,activo:true,ronda:1,lista:[{n:'Lyra',actual:true,caido:false,color:'#3b82f6'}],cuenta:null});
-    await wait(100);
-    ok('«mostrar el orden» sustituye a la escena',q('#ini').style.display==='flex'&&!q('#lienzo'));
+    await until(()=>q('.capa.iniciativa'));
+    ok('«mostrar el orden» sustituye a la escena por una con su capa de iniciativa',!!q('.capa.iniciativa .fl')&&document.querySelectorAll('#lienzo').length===1&&q('#ini').style.display!=='flex');
     __cb({tipo:'escena',nombre:'Otra vez',fondo:'#000000',fundido:0,capas:[]});
     await until(()=>q('#lienzo'));
     __cb({tipo:'limpiar'});

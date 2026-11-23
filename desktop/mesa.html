@@ -40,7 +40,7 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 #aviso{position:fixed;right:14px;bottom:10px;color:var(--muted);font-size:13px}
 /* escenas: lienzo 16:9 con capas colocadas en % (la misma página sirve de vista previa dentro del estudio) */
 #esc{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--fondo,#0b0a09)}
-#lienzo{position:relative;aspect-ratio:16/9;width:min(100vw,calc(100vh*16/9));container-type:size;overflow:hidden;background:var(--fondo,#0b0a09)}
+#lienzo{--ar:1.7778;position:relative;aspect-ratio:var(--ar);width:min(100vw,calc(100vh*var(--ar)));container-type:size;overflow:hidden;background:var(--fondo,#0b0a09)}
 .capa{position:absolute;box-sizing:border-box}
 .capa.imagen img{width:100%;height:100%;display:block}
 .capa.imagen.marco{padding:.8cqh .8cqh 3cqh;background:#fffdf6;box-shadow:0 .6cqh 3cqh #000a}
@@ -55,6 +55,27 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .capa.texto.manuscrita>div{font-family:"Segoe Script","Bradley Hand","Comic Sans MS",cursive}
 .capa.negrita>div{font-weight:800}
 .capa.iniciativa,.capa.cuentas{container-type:size;overflow:hidden;display:flex;flex-direction:column;gap:1cqh}
+/* orden de iniciativa en horizontal: tarjetas con token en fila */
+.capa.iniciativa.h .ih{flex:none;font-size:calc(100cqh*.13)}
+.capa .hl{flex:1;min-height:0;display:flex;gap:1.4cqw;overflow:hidden;scroll-behavior:smooth;align-items:stretch}
+.capa .hc{flex:none;height:100%;aspect-ratio:.7;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3cqh;padding:5cqh 1cqw 3cqh;box-sizing:border-box;background:var(--row);border-bottom:1.2cqh solid var(--c,#888);border-radius:1.6cqh;min-width:0}
+.capa .hc.actual{background:color-mix(in srgb,var(--ac) 22%,var(--row));outline:.7cqh solid var(--ac);outline-offset:-.7cqh}
+.capa .hc.caido{opacity:.45}
+.capa .hc .tk{width:78%;aspect-ratio:1;flex:none}
+.capa .hc .nm{width:100%;text-align:center;font-weight:700;font-size:calc(100cqh*.085);line-height:1.1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:break-word}
+.capa .tk{border-radius:50%;background:#2a241c center/cover no-repeat;border:.5cqh solid var(--c,#888);display:grid;place-items:center;font-weight:800;color:#fff;box-shadow:0 .3cqh 1cqh #0009;box-sizing:border-box}
+.capa .fl .tk{height:78%;aspect-ratio:1;flex:none;font-size:.7em}
+.capa .tk.oculto,.capa .hc.oculto .tk{background:#1b1814;border-style:dashed;color:#aaa}
+.capa .fl.oculto .n,.capa .hc.oculto .nm{font-style:italic;color:var(--muted)}
+/* mapa de combate: cuadrícula calibrada a centímetros de la pantalla; las fichas van sobre ella */
+.capa.mapa{overflow:hidden}
+.capa.mapa .mg{position:absolute;inset:0;pointer-events:none}
+.capa.mapa .mtok{position:absolute;border-radius:50%;background:#2a241c center/cover no-repeat;border:max(2px,.25cqw) solid var(--c,#888);box-sizing:border-box;box-shadow:0 .3cqw .9cqw #000a;display:grid;place-items:center;color:#fff;font-weight:800}
+.capa.mapa .mtok b{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:.15em;white-space:nowrap;font-size:calc(var(--cel)*.26);font-weight:700;color:#fff;text-shadow:0 0 .5em #000,0 0 .15em #000;pointer-events:none;max-width:calc(var(--cel)*4);overflow:hidden;text-overflow:ellipsis}
+.capa.mapa .mtok.oc{opacity:.45;border-style:dashed}
+body.previa .capa.mapa .mtok{cursor:grab;touch-action:none}body.previa .capa.mapa .mtok.arr{cursor:grabbing;z-index:5}
+#lienzo.auto{aspect-ratio:auto;width:100vw;height:100vh}
+
 .capa .ih{display:flex;align-items:baseline;gap:2cqw;font-size:calc(100cqh/(var(--n) + 2)*.46);font-weight:700;color:var(--ac)}
 .capa .ih small{color:var(--muted);font-weight:600;font-size:.6em}
 .capa .ih .cu2{margin-left:auto;font-variant-numeric:tabular-nums}
@@ -111,9 +132,25 @@ function ver(v){document.body.classList.toggle('solo',v==='#nada');for(const s o
 /* ---- escenas ---- */
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;};
 const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function tokIni(e,cls){/* ficha redonda: la imagen del token o, si no hay, las iniciales; una criatura oculta es solo un «?» */
+  const t=el('span','tk'+(cls||'')+(e.oculto?' oculto':''));t.style.setProperty('--c',e.color);
+  if(e.oculto)t.textContent='?';
+  else if(e.tok)t.style.backgroundImage='url("'+e.tok+'")';
+  else t.textContent=(e.n.split(/\s+/).filter(w=>/^[\p{Lu}\d]/u.test(w)).map(w=>w[0]).join('').slice(0,2)||e.n.slice(0,1)).toUpperCase();
+  return t;}
 function pintaIni(c){
-  c.textContent='';const d=iniData;
+  c.textContent='';const d=iniData,hor=c.dataset.orient==='h',conTok=c.dataset.tokens!=='0';
+  c.classList.toggle('h',hor);
   if(!d||!d.lista.length){c.style.setProperty('--n',3);c.append(el('div','vacio','Sin combate'));return;}
+  if(hor){
+    const h=el('div','ih');h.append(el('span','',d.activo?'Ronda '+d.ronda:'Iniciativa'));
+    if(d.cuenta){const q=el('span','cu2',(d.cuenta.pausa?'⏸ ':'')+mmss(d.cuenta.seg));q.prepend(el('small','',d.cuenta.n+' '));h.append(q);}
+    const R=el('div','hl');
+    for(const e of d.lista){const f=el('div','hc'+(e.actual?' actual':'')+(e.caido?' caido':'')+(e.oculto?' oculto':''));f.style.setProperty('--c',e.color);
+      f.append(tokIni(e),el('div','nm',e.n));R.append(f);}
+    c.append(h,R);
+    const a=R.querySelector('.actual');if(a)R.scrollLeft=a.offsetLeft-(R.clientWidth-a.offsetWidth)/2;
+    return;}
   let L=d.lista;const MAX=10;
   if(L.length>MAX){const i=Math.max(0,L.findIndex(e=>e.actual));const a=Math.min(Math.max(0,i-3),L.length-MAX);L=L.slice(a,a+MAX);}
   c.style.setProperty('--n',Math.max(L.length,6));/* mínimo 6 para que con pocos combatientes no se agrande */
@@ -121,7 +158,38 @@ function pintaIni(c){
   if(d.cuenta){const q=el('span','cu2',(d.cuenta.pausa?'⏸ ':'')+mmss(d.cuenta.seg));q.prepend(el('small','',d.cuenta.n+' '));h.append(q);}
   c.append(h);
   for(const e of L){const f=el('div','fl'+(e.actual?' actual':'')+(e.caido?' caido':''));f.style.setProperty('--c',e.color);
-    f.append(el('span','flecha',e.actual?'▶':''),el('span','n',e.n));c.append(f);}
+    if(conTok)f.append(el('span','flecha',e.actual?'▶':''),tokIni(e),el('span','n',e.n));else f.append(el('span','flecha',e.actual?'▶':''),el('span','n',e.n));
+    if(e.oculto)f.classList.add('oculto');c.append(f);}
+}
+/* mapa de combate: color base o imagen, cuadrícula con casillas del tamaño real elegido y fichas colocadas en casillas */
+function pintaMapa(d,c){
+  const cel=(c.celda/c.pantalla*100)+'cqw';
+  d.style.setProperty('--cel',cel);d.style.background=c.fondo;
+  if(c.src){d.style.backgroundImage='url("'+c.src+'")';d.style.backgroundSize=c.ajuste==='contener'?'contain':'cover';d.style.backgroundPosition='center';d.style.backgroundRepeat='no-repeat';}
+  if(c.cuad){const g=el('div','mg'),col='color-mix(in srgb,'+c.cuadColor+' '+Math.round(c.cuadOp*100)+'%,transparent)';
+    g.style.backgroundImage='linear-gradient(to right,'+col+' 0,'+col+' max(1px,.12cqw),transparent max(1px,.12cqw)),linear-gradient(to bottom,'+col+' 0,'+col+' max(1px,.12cqw),transparent max(1px,.12cqw))';
+    g.style.backgroundSize='var(--cel) var(--cel)';g.style.backgroundPosition='calc(var(--cel)*'+c.offx+') calc(var(--cel)*'+c.offy+')';d.append(g);}
+  for(const t of c.tokens||[]){
+    const k=el('div','mtok'+(t.oculto?' oc':''));k.dataset.id=t.id;k.style.setProperty('--c',t.color);
+    k.style.left='calc(var(--cel)*'+t.x+')';k.style.top='calc(var(--cel)*'+t.y+')';k.style.width=k.style.height='calc(var(--cel)*'+t.tam+')';
+    if(t.src)k.style.backgroundImage='url("'+t.src+'")';else k.textContent=(t.n||'?').slice(0,2).toUpperCase();
+    if(t.n)k.append(el('b','',t.n));
+    if(!REAL)arrastraToken(k,d,c,t);
+    d.append(k);}
+}
+/* solo en la vista previa del estudio: el máster arrastra las fichas y el estudio guarda la nueva casilla */
+function arrastraToken(k,capa,c,t){
+  k.addEventListener('pointerdown',ev=>{
+    ev.preventDefault();k.setPointerCapture(ev.pointerId);k.classList.add('arr');
+    const kr=k.getBoundingClientRect(),cel=kr.width/t.tam,dx=ev.clientX-kr.left,dy=ev.clientY-kr.top;
+    let nx=t.x,ny=t.y;
+    const mueve=e=>{const r=capa.getBoundingClientRect();let x=(e.clientX-dx-r.left)/cel,y=(e.clientY-dy-r.top)/cel;
+      if(!e.shiftKey){x=Math.round(x);y=Math.round(y);}else{x=Math.round(x*10)/10;y=Math.round(y*10)/10;}
+      nx=x;ny=y;k.style.left='calc(var(--cel)*'+x+')';k.style.top='calc(var(--cel)*'+y+')';};
+    const fin=e=>{k.releasePointerCapture(ev.pointerId);k.removeEventListener('pointermove',mueve);k.removeEventListener('pointerup',fin);k.removeEventListener('pointercancel',fin);k.classList.remove('arr');
+      if(nx!==t.x||ny!==t.y)parent.postMessage({mesaToken:{capa:c.id,id:t.id,x:nx,y:ny}},location.origin);};
+    k.addEventListener('pointermove',mueve);k.addEventListener('pointerup',fin);k.addEventListener('pointercancel',fin);
+  });
 }
 function pintaCuentas(c){
   c.textContent='';let L=(cuData&&cuData.lista)||[];
@@ -144,6 +212,7 @@ function fondoCSS(L,p){
 }
 function construir(p){
   const L=el('div','');L.id='lienzo';L.style.setProperty('--fondo',p.fondo);fondoCSS(L,p);
+  if(p.aspecto==='auto')L.classList.add('auto');else L.style.setProperty('--ar',{'21:9':21/9,'16:10':1.6,'4:3':4/3}[p.aspecto]||16/9);
   for(const c of p.capas){
     if(!c.visible)continue;
     const d=el('div','capa '+c.tipo);d.dataset.id=c.id;
@@ -154,7 +223,8 @@ function construir(p){
       d.style.setProperty('--tam',c.tam);d.style.color=c.color;if(c.fondo)d.style.background=c.fondo;
       const t=el('div','',c.t);t.style.textAlign=c.alin==='izq'?'left':c.alin==='der'?'right':'center';d.append(t);}
     else if(c.tipo==='dados'){if(c.fondo)d.style.background=c.fondo;else d.classList.add('libre');d.append(el('div','dlabel',REAL?'':'🎲 Bandeja de dados'));}
-    else if(c.tipo==='iniciativa')pintaIni(d);
+    else if(c.tipo==='iniciativa'){d.dataset.orient=c.orient||'v';d.dataset.tokens=c.tokens===false?'0':'1';pintaIni(d);}
+    else if(c.tipo==='mapa')pintaMapa(d,c);
     else if(c.tipo==='cuentas'){d.dataset.cid=c.cid||'';d.dataset.fin=c.fin||'';pintaCuentas(d);}
     L.append(d);
   }
@@ -231,7 +301,7 @@ async function ponerEscena(p){
   E.append(nuevo);
   if(ms){nuevo.getBoundingClientRect();nuevo.style.opacity=1;}
   if(viejo){viejo.id='';setTimeout(()=>viejo.remove(),ms+60);}
-  actualizaOverlay();posicionaDados();
+  actualizaVivas();posicionaDados();   /* los datos del combate pueden haber llegado mientras se preparaba la escena */
 }
 function quitaEscena(){escena=null;escTok++;const v=$('#lienzo');if(v)v.remove();posicionaDados();}
 function actualizaVivas(){
@@ -267,6 +337,8 @@ function mostrar(p){
   if(p.tipo==='iniciativa'){
     iniData=p;
     if(modo==='escena'&&!p.abrir){actualizaVivas();return;}
+    if(!p.abrir)return;   /* sin una capa de iniciativa en pantalla no se enseña nada */
+    mostrar({tipo:'escena',nombre:'',fondo:'#0b0a09',fundido:300,aspecto:'16:9',capas:[{tipo:'iniciativa',id:'ini',x:3,y:4,w:94,h:92,visible:true,op:1,orient:'v',tokens:true}]});return;
     modo='legacy';quitaEscena();actualizaOverlay();
     const c=$('#ini .cuenta');
     if(p.cuenta){const s=p.cuenta.seg,m=String(Math.floor(s/60)).padStart(2,'0'),x=String(s%60).padStart(2,'0');

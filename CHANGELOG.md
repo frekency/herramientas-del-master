@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.100.0] - 2026-11-23
+### Añadido
+- Mesa: capa «Mapa de combate» (color o imagen, cuadrícula calibrada en cm reales de la pantalla, fichas en casillas que se arrastran; fichas del combate y de la galería).
+- Mesa: orden de iniciativa en horizontal con tokens; solo se enseña si la escena lleva la capa.
+- Combate: «Ocultar a los jugadores»; la mesa muestra «Enemigo oculto» y nunca recibe PG, CA ni debilidades.
+- Mesa: proporción de la pantalla por escena (16:9, 21:9, 16:10, 4:3, toda la ventana).
+- Prueba de extremo a extremo con la app real de Electron (desktop/e2e-mesa.cjs).
+
 ## [1.99.2] - 2026-11-23
 ### Corregido
 - Publicación: la v1.99.1 no llegó a subir los archivos de Windows y la app no podía comprobar actualizaciones. Mismo código, publicada de nuevo.
