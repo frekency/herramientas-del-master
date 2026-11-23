@@ -27,7 +27,7 @@ def main():
     pdf, modulo = sys.argv[1], sys.argv[2]
     d = pymupdf.open(pdf)
     L = []
-    for p in range(PI, PF + 1):
+    for p in list(range(63, 75)) + list(range(PI, PF + 1)):
         if SALTA[0] <= p <= SALTA[1]:
             continue
         ls, n = E.lineas_pag(d, p)
@@ -67,7 +67,7 @@ def main():
                 ent.append(cur)
             elif lv == 3:
                 h3 = tit
-                if h2.lower().startswith(('competencias con', 'tiempo de inactividad', 'trampas', 'diseñar trampas', 'disenar trampas')) or tit.lower().startswith(('trampas complejas', 'diseñar trampas complejas', 'ejemplos de trampas', 'ejemplo de trampas')):
+                if h2.lower().startswith(('esta es tu vida', 'competencias con', 'tiempo de inactividad', 'trampas', 'diseñar trampas', 'disenar trampas')) or tit.lower().startswith(('trampas complejas', 'diseñar trampas complejas', 'ejemplos de trampas', 'ejemplo de trampas')):
                     cur = {'n': tit, 'cat': h2, 'p': r['p'], 'cuerpo': []}
                     ent.append(cur)
                 elif cur is not None:
@@ -82,7 +82,7 @@ def main():
         if cur is not None and r['size'] >= 7.5 and r['size'] < 80:
             cur['cuerpo'].append(('l', r))
     nums = {}
-    for p in range(PI, PF + 1):
+    for p in list(range(63, 75)) + list(range(PI, PF + 1)):
         _, n = E.lineas_pag(d, p)
         nums[p] = n
     out = []
@@ -109,7 +109,7 @@ def main():
         if re.search(r'\b(d100|d20|d12|d10|d8|d6|d4)\s+\S', txt) and re.search(r'\n|\s\d{1,2}\s', txt):
             du.append('puede contener tablas: su texto puede salir desordenado')
         c0 = e['cat'].lower()
-        grupo = 'Herramientas' if 'herramientas' in c0 and 'competencias' in c0 else 'Trampas' if 'trampas' in c0 else 'Tiempo de inactividad' if 'inactividad' in c0 else 'Encuentros' if 'encuentros' in c0 else 'Magia' if 'conjuros' in c0 else 'Objetos mágicos' if 'objetos' in c0 else 'Reglas varias'
+        grupo = 'Herramientas' if 'herramientas' in c0 and 'competencias' in c0 else 'Trampas' if 'trampas' in c0 else 'Tiempo de inactividad' if 'inactividad' in c0 else 'Encuentros' if 'encuentros' in c0 else 'Magia' if 'conjuros' in c0 else 'Esta es tu vida' if 'vida' in c0 else 'Objetos mágicos' if 'objetos' in c0 else 'Reglas varias'
         out.append({'n': e['n'], 'cat': 'Xanathar: ' + grupo, 'tag': e['cat'].split(':')[0].strip(), 'd': html, 'pg': str(pg), 'pend': True, 'dudas': du})
     m = json.load(open(modulo, encoding='utf-8'))
     ya = {x['n'] for x in out}
