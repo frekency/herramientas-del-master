@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.94.0] - 2026-11-23
+### Corregido
+- Web: los módulos grandes se guardan en IndexedDB y ya no sale «el navegador se ha quedado sin espacio» al importar los manuales completos.
+
 ## [1.93.0] - 2026-11-23
 ### Añadido
 - Los módulos activos en la cuenta y en la campaña del máster se comparten con los jugadores de la campaña (compendio, conjuros y creador de fichas), sin criaturas, tablas ni objetos mágicos. Al desactivarlos, dejan de verse.
