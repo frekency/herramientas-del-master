@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.91.0] - 2026-11-23
+### Añadido
+- Compendio: pestaña «Tablas aleatorias» con las tablas de los módulos (tirada y filas por rangos) y tus tablas propias como Homebrew.
+- Las tablas de un módulo entran en la Revisión; «Corregir» crea una copia propia en Tablas.
+
 ## [1.90.0] - 2026-11-23
 ### Añadido
 - Los módulos pueden traer ilustraciones (campo `img`) en conjuros, especies, trasfondos, dotes, clases, subclases y objetos; se guardan aparte (IndexedDB) y se ven en la ficha del compendio.
