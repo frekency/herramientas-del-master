@@ -2682,6 +2682,8 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-lib,.ms-insp{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg));max-height:calc(100dvh - 190px);overflow:auto}
 .ms-lib h3,.ms-insp h3{margin:4px 0 0;font:600 12px/1.2 var(--f-body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,inherit)}
 .ms-add{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ms-add .btn{justify-content:flex-start;text-align:left}
+.ms-dados{display:flex;gap:6px}.ms-dados input{flex:1;min-width:0}
+.ms-add .ms-dn{grid-column:1/-1}
 .ms-docs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .ms-docs button{display:grid;grid-template-columns:44px 1fr;column-gap:8px;align-items:center;width:100%;padding:4px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--fg);text-align:left;cursor:pointer}
 .ms-docs button:hover,.ms-docs button:focus-visible{border-color:var(--line);background:color-mix(in srgb,var(--accent) 8%,transparent)}
@@ -2965,7 +2967,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.96</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.97</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3164,6 +3166,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.97 <span>23 nov 2026</span></h3><ul>
+      <li><b>Bandeja de dados en la mesa.</b> Nueva capa para las escenas de la ventana de mesa: un recuadro donde caen dados 3D con física real (los dados no pueden salir de él) y se enseña el resultado. Se tira desde el estudio de la mesa («Tirar en la bandeja»: 2d6+3, 1d20+1d4…, d4 a d100) y el resultado también te llega al panel. Tablero, color y tamaño de los dados se ajustan. Solo en la app de escritorio; usa dice-box (MIT).</li>
+    </ul></li>
     <li><h3>v1.96 <span>23 nov 2026</span></h3><ul>
       <li><b>Subclases en el Compendio.</b> Pestaña propia «Subclases» (filtro por clase): cada una enseña su texto y los rasgos que da por nivel. Ya no se mezclan con los rasgos de clase.</li>
       <li><b>Tablas aleatorias</b> ya tiene su pestaña en la barra del Compendio (existía pero no salía).</li>
@@ -4728,7 +4733,7 @@ var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false};
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 /* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
 const MS={nombre:'',fondo:'#0b0a09',fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
-const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},cuentas:{x:72,y:76,w:25,h:19}};
+const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},cuentas:{x:72,y:76,w:25,h:19},dados:{x:60,y:30,w:38,h:62}};
 const msId=()=>'c'+Math.random().toString(36).slice(2,9);
 const msNum=(v,a,b,d)=>{const n=Number(v);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):d;};
 const msCol=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:d;
@@ -4737,6 +4742,7 @@ function msNorm(c){
   const d=MS_DEF[c.tipo],o={tipo:c.tipo,id:/^[\w-]{1,40}$/.test(c.id||'')?c.id:msId(),x:msNum(c.x,-50,150,d.x),y:msNum(c.y,-50,150,d.y),w:msNum(c.w,1,200,d.w),h:msNum(c.h,1,200,d.h),visible:c.visible!==false,op:msNum(c.op,0,1,1)};
   if(c.tipo==='imagen'){o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='cubrir'?'cubrir':'contener';o.titulo=String(c.titulo||'').slice(0,200);o.marco=!!c.marco;}
   if(c.tipo==='texto'){o.t=String(c.t??'').slice(0,2000);o.tam=msNum(c.tam,1,60,6);o.color=msCol(c.color,'#f1ece0');o.fondo=msCol(c.fondo,'');o.alin=['izq','centro','der'].includes(c.alin)?c.alin:'centro';o.fuente=['sans','serif','manuscrita'].includes(c.fuente)?c.fuente:'sans';o.negrita=!!c.negrita;}
+  if(c.tipo==='dados'){o.fondo=msCol(c.fondo,'#1d3a2b');o.color=msCol(c.color,'#b3262d');o.escala=msNum(c.escala,2,12,8);}
   return o;
 }
 function msNormEsc(e){
@@ -4764,6 +4770,7 @@ function msEj(){return [
 const msNom=c=>{
   if(c.tipo==='imagen'){const it=c.nid&&cpGet(c.nid);return c.titulo||(it?cpName(it):T('Zona de imágenes'));}
   if(c.tipo==='texto')return (c.t||'').replace(/\s+/g,' ').trim().slice(0,28)||T('Texto');
+  if(c.tipo==='dados')return T('Bandeja de dados');
   return c.tipo==='iniciativa'?T('Orden de iniciativa'):T('Cuentas atrás');
 };
 const msCartas=new Map();
@@ -4856,7 +4863,12 @@ function msLibHTML(){
    +'<button type="button" class="btn sm" data-ms="add" data-t="imagen">'+ic('image')+' '+esc(T('Zona de imágenes'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="texto">'+esc(T('Texto'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="iniciativa">'+esc(T('Orden de iniciativa'))+'</button>'
-   +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+esc(T('Cuentas atrás'))+'</button></div>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+esc(T('Cuentas atrás'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="dados">'+ic('d20')+' '+esc(T('Bandeja de dados'))+'</button></div>'
+   +'<h3>'+esc(T('Tirar en la bandeja'))+'</h3><div class="ms-dados"><input type="text" id="ms-dn" maxlength="60" value="'+esc(MS.dn||'1d20')+'" aria-label="'+esc(T('Tirada, por ejemplo 2d6+3'))+'" placeholder="2d6+3" autocomplete="off" spellcheck="false">'
+   +'<button type="button" class="btn sm primary" data-ms="tirar">'+ic('d20')+' '+esc(T('Tirar'))+'</button></div>'
+   +'<div class="ms-add">'+['4','6','8','10','12','20','100'].map(d=>'<button type="button" class="btn sm ghost" data-ms="dadd" data-d="'+d+'" title="'+esc(T('Añadir un dado')+' d'+d)+'">d'+d+'</button>').join('')+'<button type="button" class="btn sm ghost" data-ms="dborrar" title="'+esc(T('Vaciar la tirada'))+'">✕</button></div>'
+   +'<p class="hint" id="ms-dres">'+esc(T('Los dados se tiran en la bandeja de la mesa: la escena enviada debe tener una.'))+'</p>'
    +'<h3>'+esc(T('Imágenes y documentos'))+'</h3><label class="btn sm">'+ic('image')+' '+esc(T('Subir una imagen'))+'<input type="file" accept="image/*" data-msup hidden></label><p class="hint">'+esc(T('Pulsa una para ponerla en la zona elegida; si no hay zona elegida, se crea una nueva.'))+'</p>'
    +'<input type="search" data-msq placeholder="'+esc(T('Buscar…'))+'" aria-label="'+esc(T('Buscar imágenes'))+'" value="'+esc(MS.q)+'"><ul class="ms-docs" id="ms-docs"></ul>';
   msBiblio();
@@ -4880,7 +4892,7 @@ function msGeo(c){
   if(c.id===MS.sel)for(const k of ['x','y','w','h']){const i=document.querySelector('#ms-insp [data-msf="'+k+'"]');if(i&&document.activeElement!==i)i.value=Math.round(c[k]*10)/10;}
 }
 function msInsp(){
-  const L=[...MS.capas].reverse().map(c=>'<li class="'+(c.id===MS.sel?'on':'')+(c.visible?'':' off')+'"><button type="button" class="nm" data-ms="sel" data-id="'+esc(c.id)+'"><span class="tt">'+esc(c.tipo==='imagen'?T('Imagen'):c.tipo==='texto'?T('Texto'):c.tipo==='iniciativa'?T('Iniciativa'):T('Cuentas'))+'</span> '+esc(msNom(c))+'</button>'
+  const L=[...MS.capas].reverse().map(c=>'<li class="'+(c.id===MS.sel?'on':'')+(c.visible?'':' off')+'"><button type="button" class="nm" data-ms="sel" data-id="'+esc(c.id)+'"><span class="tt">'+esc(c.tipo==='imagen'?T('Imagen'):c.tipo==='texto'?T('Texto'):c.tipo==='iniciativa'?T('Iniciativa'):c.tipo==='dados'?T('Dados'):T('Cuentas'))+'</span> '+esc(msNom(c))+'</button>'
     +'<button type="button" class="ib" data-ms="vis" data-id="'+esc(c.id)+'" aria-pressed="'+c.visible+'" aria-label="'+esc(T('Mostrar u ocultar'))+'" title="'+esc(T('Mostrar u ocultar'))+'">'+ic('eye')+'</button>'
     +'<button type="button" class="ib" data-ms="subir" data-id="'+esc(c.id)+'" aria-label="'+esc(T('Subir una capa'))+'" title="'+esc(T('Subir una capa'))+'">▲</button>'
     +'<button type="button" class="ib" data-ms="bajar" data-id="'+esc(c.id)+'" aria-label="'+esc(T('Bajar una capa'))+'" title="'+esc(T('Bajar una capa'))+'">▼</button></li>').join('');
@@ -4901,6 +4913,9 @@ function msInsp(){
       +ck('negrita',T('Negrita'))
       +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con fondo de color'))+'</label>'+(c.fondo?'<label class="f">'+esc(T('Color del fondo'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label>':'');
     if(c.tipo==='iniciativa')p+='<p class="hint">'+esc(T('Muestra el orden del combate en curso, sin PG ni CA.'))+'</p>';
+    if(c.tipo==='dados')p+='<p class="hint">'+esc(T('Aquí caen los dados, con física real: no pueden salirse del recuadro. Tira desde «Tirar en la bandeja».'))+'</p>'
+      +'<div class="ms-geo"><label class="f">'+esc(T('Tablero'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label><label class="f">'+esc(T('Dados'))+'<input type="color" data-msf="color" value="'+esc(c.color)+'"></label></div>'
+      +n('escala',T('Tamaño de los dados'),2,12);
     if(c.tipo==='cuentas')p+='<p class="hint">'+esc(T('Muestra las cuentas atrás marcadas para la mesa.'))+'</p>';
     p+='<div class="ms-acts"><button type="button" class="btn sm" data-ms="centrar">'+esc(T('Centrar'))+'</button><button type="button" class="btn sm" data-ms="llenar">'+esc(T('Pantalla completa'))+'</button>'
       +'<button type="button" class="btn sm" data-ms="dup">'+esc(T('Duplicar'))+'</button><button type="button" class="btn sm danger" data-ms="del">'+esc(T('Quitar de la escena'))+'</button></div>';
@@ -4931,6 +4946,22 @@ function msPonerImagen(id){
   c.nid=id;if(!c.titulo)c.titulo='';
   msOv();msInsp();msCambio();
 }
+/* Tirada en la bandeja de dados de la mesa (solo escritorio): la física se calcula en la ventana de los jugadores y el resultado vuelve aquí */
+function msTirar(){
+  const S=window.__AppShell;if(!S||!S.mesa)return;
+  const i=$('#ms-dn'),n=String(i.value||'').replace(/\s+/g,'').toLowerCase(),D='\\d{1,2}d(?:4|6|8|10|12|20|100)';MS.dn=i.value;
+  if(!new RegExp('^'+D+'(?:[+-](?:'+D+'|\\d{1,3}))*$').test(n)||(n.match(/\d{1,2}d/g)||[]).reduce((t,x)=>t+parseInt(x,10),0)>20){toast(T('Escribe una tirada como 2d6+3 (dados d4, d6, d8, d10, d12, d20 o d100; hasta 20 dados)'),5000);return;}
+  if(!msVivo()||!MS.capas.some(c=>c.visible&&c.tipo==='dados')){toast(T('Envía a la mesa una escena con una bandeja de dados para poder tirar'),5000);return;}
+  S.mesa.enviar({tipo:'dados',notacion:n});
+  const r=$('#ms-dres');if(r)r.textContent=T('Tirando…');
+}
+function mesaResultado(r){
+  if(!r||!Number.isFinite(r.total))return;
+  const det=(r.dados||[]).map((v,k)=>v<0?'− '+(-v):(k?'+ ':'')+v).join(' ')+(r.mod?(r.mod<0?' − ':' + ')+Math.abs(r.mod):'');
+  const txt=r.notacion+' = '+r.total+(det?' ('+det+')':'');
+  const e=$('#ms-dres');if(e)e.textContent=txt;
+  toast(T('Dados')+': '+txt,5000);
+}
 function msAct(a,b){
   const c=msSelC(),id=b.dataset.id;
   if(a==='enviar')msEnviar(false);
@@ -4939,6 +4970,10 @@ function msAct(a,b){
   else if(a==='cerrarwin'){window.__AppShell.mesa.cerrar();mesaIni=false;mesaEscIni=false;mesaEst.que='nada';mesaEst.congelado=false;msEstado();}
   else if(a==='popover'){const p=mesaPanelEl();p.hidden=!p.hidden;if(!p.hidden)mesaPanelRender();}
   else if(a==='add')msAnade(b.dataset.t,b.dataset.t==='texto'?{t:T('Escribe aquí el texto')}:undefined);
+  else if(a==='tirar')msTirar();
+  else if(a==='dadd'){const i=$('#ms-dn'),d=b.dataset.d,t=String(i.value||'').replace(/\s+/g,'').toLowerCase(),r=new RegExp('(^|[+-])(\\d{1,2})d'+d+'(?![0-9])');
+    i.value=!t?'1d'+d:r.test(t)?t.replace(r,(m,pre,q)=>pre+Math.min(20,+q+1)+'d'+d):t+'+1d'+d;MS.dn=i.value;}
+  else if(a==='dborrar'){$('#ms-dn').value='';MS.dn='';$('#ms-dn').focus();}
   else if(a==='img')msPonerImagen(id);
   else if(a==='sel')msSelecciona(id);
   else if(a==='vis'){const x=msCapa(id);if(x){x.visible=!x.visible;if(!x.visible&&MS.sel===x.id)MS.sel=null;msOv();msInsp();msCambio();}}
@@ -4975,6 +5010,7 @@ function msAct(a,b){
 (function msInit(){
   const v=$('#view-mesa');if(!v)return;
   v.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();msEnviar(false);}});
+  v.addEventListener('keydown',e=>{if(e.target.id==='ms-dn'&&e.key==='Enter'){e.preventDefault();msTirar();}});
   v.addEventListener('click',e=>{const b=e.target.closest('[data-ms]');if(b&&b.type!=='checkbox')msAct(b.dataset.ms,b);});
   v.addEventListener('change',e=>{
     const t=e.target;
@@ -8738,6 +8774,7 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   const R=document.documentElement,S=window.__AppShell;
   /* ventana de mesa (lo que ven los jugadores): acceso en la barra lateral y botón de orden en el combate */
   if(S.mesa){
+    if(S.mesa.onResultado)S.mesa.onResultado(mesaResultado);
     if(S.mesa.onEstado)S.mesa.onEstado(v=>{mesaEst.abierta=v;if(v)setTimeout(cuentasMesa,600);if(!v){mesaIni=false;mesaEst.que='nada';mesaEst.congelado=false;}mesaPanelRender();});
     const nav=document.querySelector('.bar .nav'),g=nav&&nav.querySelector('[data-act="openparty"]');
     if(nav&&g){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.act='mesaini';b.title=T('Mostrar el orden de iniciativa en la ventana de mesa');b.innerHTML=ic('eye')+' <span class="bl">'+T('Mesa')+'</span>';nav.insertBefore(b,g);}

@@ -21,6 +21,8 @@ for (const f of readdirSync(root, { withFileTypes: true })) {
 }
 cpSync(join(root, 'datos'), join(out, 'datos'), { recursive: true, filter: s => !s.replace(/\\/g, '/').includes('/datos/privado') });
 cpSync(join(here, 'mesa.html'), join(out, 'mesa.html'));
+// Dados 3D de la mesa (dice-box, MIT): librería y su tema, sin descargar nada al ejecutar
+cpSync(join(root, 'vendor'), join(out, 'vendor'), { recursive: true });
 
 // Sincroniza la versión con el fichero VERSION de la web
 const v = readFileSync(join(root, 'VERSION'), 'utf8').trim();

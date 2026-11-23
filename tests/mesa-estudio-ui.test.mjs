@@ -94,6 +94,16 @@ const TAIL=`<script>
     // ejemplos
     q('#ms-pl').value='e:1';await click('[data-ms="plcargar"]');await click('dialog.ask button.primary');await wait(200);
     ok('un ejemplo sustituye la escena: imagen y orden de iniciativa',MS.capas.length===2&&MS.capas[1].tipo==='iniciativa');
+    // bandeja de dados
+    await click('[data-ms="add"][data-t="dados"]');
+    const bd=MS.capas.find(c=>c.tipo==='dados');
+    ok('la bandeja de dados se añade con su tablero y su tamaño',!!bd&&bd.fondo==='#1d3a2b'&&bd.color==='#b3262d'&&bd.escala===8);
+    await typeIn('[data-msf="escala"]','99');
+    ok('el tamaño de los dados se acota',MS.capas.find(c=>c.tipo==='dados').escala===12);
+    q('#ms-dn').value='';await click('[data-ms="dadd"][data-d="6"]');await click('[data-ms="dadd"][data-d="6"]');await click('[data-ms="dadd"][data-d="20"]');
+    ok('los botones de dado arman la tirada',q('#ms-dn').value==='2d6+1d20');
+    await click('[data-ms="dborrar"]');
+    ok('se vacía la tirada',q('#ms-dn').value==='');
     // datos rotos en el almacenamiento no rompen nada
     Store.set('mesa-estudio-v1',JSON.stringify({nombre:7,fondo:'url(x)',capas:[{tipo:'bomba'},{tipo:'texto',x:'abc',w:-5,t:{a:1}},null]}));
     msLoad();

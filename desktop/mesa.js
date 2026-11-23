@@ -5,7 +5,14 @@ const COLOR = /^#[0-9a-f]{3,8}$/i;
 const MAX_IMG = 6_000_000;
 
 // ---- escenas: capas con posición y tamaño relativos (en %) sobre un lienzo 16:9 ----
-const CAPAS = ['imagen', 'texto', 'iniciativa', 'cuentas'];
+const CAPAS = ['imagen', 'texto', 'iniciativa', 'cuentas', 'dados'];
+// Tirada: «2d6+3», «1d20», «1d20+1d4+2». Solo d4, d6, d8, d10, d12, d20 y d100, hasta 20 dados.
+const DADO = '(?:\\d{1,2}d(?:4|6|8|10|12|20|100))';
+const NOTACION = new RegExp('^' + DADO + '(?:[+-](?:' + DADO + '|\\d{1,3}))*$');
+function notacionValida(n) {
+  if (typeof n !== 'string' || n.length > 60 || !NOTACION.test(n)) return false;
+  return (n.match(/\d{1,2}d/g) || []).reduce((t, x) => t + parseInt(x, 10), 0) <= 20;
+}
 const FUENTES = ['sans', 'serif', 'manuscrita'];
 const AJUSTES = ['contener', 'cubrir'];
 const ALIN = ['izq', 'centro', 'der'];
@@ -24,6 +31,12 @@ function validarCapa(c, i) {
     visible: c.visible !== false,
     op: num(c.op, 0, 1, 1),
   };
+  if (c.tipo === 'dados') {
+    o.fondo = typeof c.fondo === 'string' && COLOR.test(c.fondo) ? c.fondo : '#1d3a2b';
+    o.color = typeof c.color === 'string' && COLOR.test(c.color) ? c.color : '#b3262d';
+    o.escala = num(c.escala, 2, 12, 8);
+    return o;
+  }
   if (c.tipo === 'imagen') {
     if (typeof c.src !== 'string' || c.src.length > MAX_IMG || !IMG.test(c.src)) return null;
     o.src = c.src;
@@ -70,6 +83,10 @@ function validar(p) {
     if (typeof p.src !== 'string' || p.src.length > MAX_IMG || !IMG.test(p.src)) return null;
     return { tipo: 'imagen', src: p.src, titulo: typeof p.titulo === 'string' ? p.titulo.slice(0, 200) : '' };
   }
+  if (p.tipo === 'dados') {
+    if (!notacionValida(p.notacion)) return null;
+    return { tipo: 'dados', notacion: p.notacion, etiqueta: typeof p.etiqueta === 'string' ? p.etiqueta.slice(0, 60) : '' };
+  }
   if (p.tipo === 'cuentas') {
     const lista = (Array.isArray(p.lista) ? p.lista : []).slice(0, 4).map(c => {
       const s = Math.trunc(Number(c && c.seg));
@@ -101,4 +118,4 @@ function validar(p) {
   return null;
 }
 
-module.exports = { validar };
+module.exports = { validar, notacionValida };

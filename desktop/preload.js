@@ -56,5 +56,6 @@ contextBridge.exposeInMainWorld('__AppShell', {
     cerrar: () => ipcRenderer.send('mesa:cerrar'),
     enviar: x => ipcRenderer.send('mesa:enviar', x),
     onEstado: cb => ipcRenderer.on('mesa:estado', (_e, v) => cb(!!v)),
+    onResultado: cb => ipcRenderer.on('mesa:resultado', (_e, r) => cb(r)),
   },
 });

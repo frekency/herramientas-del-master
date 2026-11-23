@@ -86,6 +86,11 @@ function registrarMesa() {
     if (!delMaster(e)) return;
     const v = validar(p);
     if (!v) return;
+    if (v.tipo === 'dados') {
+      // una tirada es un hecho puntual: no sustituye lo que se está viendo ni se recuerda al reabrir la ventana
+      if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+      return;
+    }
     if (v.tipo === 'cuentas') {
       // las cuentas atrás van aparte: se superponen a lo que haya y no lo sustituyen
       ultimoCuentas = v;
@@ -100,6 +105,12 @@ function registrarMesa() {
     // el orden de iniciativa solo abre la ventana la primera vez que el máster lo pide; después se limita a actualizarla
     if (!abierta && (v.tipo === 'imagen' || v.tipo === 'escena' || (v.tipo === 'iniciativa' && v.abrir))) abrirMesa();
     if (mesa && !mesa.isDestroyed() && mesaLista) mesa.webContents.send('mesa:mostrar', v);
+  });
+  // el resultado de la tirada vuelve al máster: solo cifras y una etiqueta corta
+  ipcMain.on('mesa:resultado', (e, r) => {
+    if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents || !master || master.isDestroyed()) return;
+    if (!r || typeof r !== 'object' || !Number.isFinite(r.total) || !Array.isArray(r.dados)) return;
+    master.webContents.send('mesa:resultado', { notacion: String(r.notacion || '').slice(0, 60), total: Math.trunc(r.total), dados: r.dados.slice(0, 20).map(Number).filter(Number.isFinite), mod: Number.isFinite(r.mod) ? Math.trunc(r.mod) : 0 });
   });
   ipcMain.on('mesa:listo', e => {
     if (!mesa || mesa.isDestroyed() || e.sender !== mesa.webContents) return;
@@ -169,7 +180,7 @@ app.whenReady().then(() => {
   registrarCopias();
   registrarImagenes();
 
-  protocol.handle('app', req => {
+  protocol.handle('app', async req => {
     const { pathname } = new URL(req.url);
     if (pathname.startsWith(imagenes.PREFIJO)) {
       const f = imagenes.rutaImagen(imagenes.leerConfig(cfgImagenes()).carpeta, pathname);
@@ -178,7 +189,10 @@ app.whenReady().then(() => {
     const rel = decodeURIComponent(pathname === '/' ? '/index.html' : pathname);
     const file = path.normalize(path.join(APP_DIR, rel));
     if (!file.startsWith(APP_DIR + path.sep)) return new Response('Prohibido', { status: 403 });
-    return net.fetch(pathToFileURL(file).toString());
+    const resp = await net.fetch(pathToFileURL(file).toString());
+    // los módulos de JavaScript y el WebAssembly (dados 3D de la mesa) exigen su tipo: así no dependen del sistema
+    const tipo = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json' }[path.extname(file).toLowerCase()];
+    return tipo ? new Response(resp.body, { status: resp.status, headers: { 'content-type': tipo } }) : resp;
   });
 
   if (process.platform !== 'darwin') Menu.setApplicationMenu(null);

@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('__Mesa', {
   onMostrar: cb => ipcRenderer.on('mesa:mostrar', (_e, p) => cb(p)),
   listo: () => ipcRenderer.send('mesa:listo'),
   pantallaCompleta: () => ipcRenderer.send('mesa:pantalla'),
+  resultado: r => ipcRenderer.send('mesa:resultado', r),
 });

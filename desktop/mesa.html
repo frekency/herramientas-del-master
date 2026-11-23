@@ -68,6 +68,15 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .capa .cc .nn{font-size:calc(100cqh/var(--n)*.16);color:var(--muted)}
 .capa .cc.pausa .t{color:var(--muted)}.capa .cc.fin{border-color:#d0453c}.capa .cc.fin .t{color:#ff6a5e}
 .capa .vacio{color:var(--muted);font-size:4cqh;margin:auto}
+.capa.dados{border-radius:2.4cqh;box-shadow:inset 0 0 0 .9cqh #5b3a1e,inset 0 0 7cqh #000c;display:flex;align-items:center;justify-content:center}
+.capa.dados .dlabel{color:#ffffff55;font-size:5cqh;font-weight:700}
+/* tablero de la física de los dados: se coloca encima de la capa «dados»; los dados no pueden salir de su recuadro */
+#dhost{position:fixed;display:none;z-index:4;pointer-events:none;overflow:hidden;border-radius:1.2vmin}
+#dhost canvas{width:100%;height:100%;display:block}
+#dres{position:absolute;left:0;right:0;top:0;padding:1.2vmin 1vmin;text-align:center;text-shadow:0 .2vmin 1vmin #000,0 0 .6vmin #000;pointer-events:none;z-index:2}
+#dres .tot{font-size:calc(var(--hh,300px)*.2);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+#dres .det{font-size:calc(var(--hh,300px)*.06);font-weight:600;color:#f1ece0;margin-top:.4em}
+#dres .eti{font-size:calc(var(--hh,300px)*.05);color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
 body.previa{cursor:default}body.previa #aviso{display:none!important}
 
 </style>
@@ -78,6 +87,7 @@ body.previa{cursor:default}body.previa #aviso{display:none!important}
 <div id="ini"><header><h1>Iniciativa</h1><span class="ronda"></span><span class="cuenta" hidden></span></header><div id="lista"></div></div>
 <div id="avi"><h1></h1><p></p></div>
 <div id="esc"></div>
+<div id="dhost"><div id="dres" aria-live="polite"></div></div>
 <div id="cuentas" aria-live="polite"></div>
 <div id="aviso">F11 o doble clic: pantalla completa</div>
 <script>
@@ -86,6 +96,7 @@ const P=window.__Mesa||(()=>{/* dentro del estudio la propia página hace de vis
   const o=location.origin;document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('previa'));
   return {onMostrar:cb=>addEventListener('message',e=>{if(e.source===parent&&e.origin===o&&e.data&&typeof e.data==='object')cb(e.data);}),listo:()=>parent.postMessage({mesaListo:1},o),pantallaCompleta(){}};})();
 let modo='legacy',escena=null,iniData=null,cuData=null;
+const REAL=!!window.__Mesa;   // solo la ventana de la mesa tira de verdad; el marco de vista previa del estudio solo enseña dónde estará la bandeja
 function ver(v){document.body.classList.toggle('solo',v==='#nada');for(const s of vistas)$(s).style.display=s===v?(s==='#esc'||s==='#ini'||s==='#img'||s==='#avi'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
 
 /* ---- escenas ---- */
@@ -120,12 +131,67 @@ function construir(p){
     else if(c.tipo==='texto'){d.classList.add(c.alin==='izq'?'izq':c.alin==='der'?'der':'cen',c.fuente);if(c.negrita)d.classList.add('negrita');
       d.style.setProperty('--tam',c.tam);d.style.color=c.color;if(c.fondo)d.style.background=c.fondo;
       const t=el('div','',c.t);t.style.textAlign=c.alin==='izq'?'left':c.alin==='der'?'right':'center';d.append(t);}
+    else if(c.tipo==='dados'){d.style.background=c.fondo;d.append(el('div','dlabel',REAL?'':'🎲 Bandeja de dados'));}
     else if(c.tipo==='iniciativa')pintaIni(d);
     else if(c.tipo==='cuentas')pintaCuentas(d);
     L.append(d);
   }
   return L;
 }
+/* ---- bandeja de dados: física real con dice-box (MIT, vendor/dice-box) ---- */
+let DB=null,DBp=null,dbTam='',dbCfg='',dbPend=null;
+function dadosCapa(){const c=$('#lienzo');return c?c.querySelector('.capa.dados'):null;}
+function dadosMotor(cfg){
+  if(!DBp)DBp=(async()=>{
+    const {default:DiceBox}=await import('./vendor/dice-box/dice-box.es.min.js');
+    const b=new DiceBox({container:'#dhost',assetPath:'/vendor/dice-box/assets/',scale:cfg.escala,theme:'default',themeColor:cfg.color,offscreen:true,throwForce:6,spinForce:4,gravity:2});
+    b.onRollComplete=r=>dadosResultado(r);
+    await b.init();DB=b;return b;})().catch(e=>{DBp=null;throw e;});
+  return DBp;
+}
+function posicionaDados(){
+  const h=$('#dhost'),capa=dadosCapa(),cfg=escena&&escena.capas.find(c=>c.tipo==='dados'&&c.visible);
+  if(!REAL||!capa||!cfg){h.style.display='none';if(DB&&!capa){try{DB.clear();}catch{}$('#dres').textContent='';}return;}
+  const r=capa.getBoundingClientRect();
+  h.style.display='block';h.style.left=r.left+'px';h.style.top=r.top+'px';h.style.width=r.width+'px';h.style.height=r.height+'px';h.style.setProperty('--hh',r.height+'px');
+  h.style.opacity=cfg.op;
+  const k=Math.round(r.width)+'x'+Math.round(r.height);
+  if(k!==dbTam){dbTam=k;if(DB)dispatchEvent(new Event('resize'));}
+  const c2=cfg.escala+'|'+cfg.color;
+  if(DB&&c2!==dbCfg){dbCfg=c2;try{DB.updateConfig({scale:cfg.escala,themeColor:cfg.color});}catch{}}
+}
+/* «2d6+3» → grupos de dados con su signo y un modificador suelto */
+function troceaTirada(n){
+  const g=[];let mod=0;
+  for(const m of n.matchAll(/([+-]?)(\d+)(d(\d+))?/g)){
+    const sg=m[1]==='-'?-1:1;
+    if(m[3])g.push({sg,qty:+m[2],sides:+m[4],not:m[2]+'d'+m[4]});else mod+=sg*+m[2];
+  }
+  return {g,mod};
+}
+async function tirar(p){
+  if(!REAL||!dadosCapa())return;
+  const cfg=escena&&escena.capas.find(c=>c.tipo==='dados'&&c.visible);if(!cfg)return;
+  let b;try{b=await dadosMotor(cfg);}catch(e){$('#dres').textContent='';const d=el('div','det','No se pudo cargar la bandeja de dados');$('#dres').append(d);return;}
+  posicionaDados();
+  const t=troceaTirada(p.notacion);
+  dbPend={p,t};
+  $('#dres').textContent='';
+  try{b.clear();}catch{}
+  b.roll(t.g.map(x=>x.not));
+}
+function dadosResultado(r){
+  const pe=dbPend;if(!pe||!Array.isArray(r))return;dbPend=null;
+  const valores=[];let total=pe.t.mod;
+  pe.t.g.forEach((g,i)=>{const gr=r[i]||{rolls:[]};const v=gr.rolls.map(x=>+x.value);valores.push(...v.map(x=>g.sg*x));total+=g.sg*v.reduce((a,b)=>a+b,0);});
+  const R=$('#dres');R.textContent='';
+  if(pe.p.etiqueta)R.append(el('div','eti',pe.p.etiqueta));
+  R.append(el('div','tot',String(total)));
+  const det=valores.map((v,i)=>v<0?'− '+(-v):(i?'+ ':'')+v).join(' ')+(pe.t.mod?(pe.t.mod<0?' − ':' + ')+Math.abs(pe.t.mod):'');
+  R.append(el('div','det',pe.p.notacion+' · '+det));
+  if(P.resultado)P.resultado({notacion:pe.p.notacion,total,dados:valores,mod:pe.t.mod});
+}
+addEventListener('resize',posicionaDados);
 let escTok=0;
 async function ponerEscena(p){
   const tok=++escTok,E=$('#esc'),nuevo=construir(p);
@@ -139,9 +205,9 @@ async function ponerEscena(p){
   E.append(nuevo);
   if(ms){nuevo.getBoundingClientRect();nuevo.style.opacity=1;}
   if(viejo){viejo.id='';setTimeout(()=>viejo.remove(),ms+60);}
-  actualizaOverlay();
+  actualizaOverlay();posicionaDados();
 }
-function quitaEscena(){escena=null;escTok++;const v=$('#lienzo');if(v)v.remove();}
+function quitaEscena(){escena=null;escTok++;const v=$('#lienzo');if(v)v.remove();posicionaDados();}
 function actualizaVivas(){
   const c=$('#lienzo');
   if(c){c.querySelectorAll('.capa.iniciativa').forEach(pintaIni);c.querySelectorAll('.capa.cuentas').forEach(pintaCuentas);}
@@ -153,6 +219,7 @@ function actualizaOverlay(){
 }
 function mostrar(p){
   if(!p)return;
+  if(p.tipo==='dados'){tirar(p);return;}
   if(p.tipo==='escena'){modo='escena';escena=p;ver('#esc');ponerEscena(p);return;}
   if(p.tipo==='cuentas'){
     cuData=p;

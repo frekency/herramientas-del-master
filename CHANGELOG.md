@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.97.0] - 2026-11-23
+### Añadido
+- Mesa: capa «Bandeja de dados». Los dados (d4 a d100) se tiran en 3D con física real dentro del recuadro de la capa y se muestra el resultado; el máster tira desde el estudio (`2d6+3`, `1d20+1d4`…) y el resultado vuelve a su panel. Usa dice-box 1.1.4 (MIT), incluido en `vendor/dice-box/`. Solo escritorio.
+
 ## [1.96.0] - 2026-11-23
 ### Añadido
 - Compendio: pestaña «Subclases» (con los rasgos de cada una por nivel) y pestaña «Tablas aleatorias» en la barra, que existía pero no se enseñaba.
