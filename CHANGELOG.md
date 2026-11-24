@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.117.1] - 2026-11-24
+### Corregido
+- Crear la cuenta de un jugador fallaba con «esa campaña no es tuya» cuando el enlace de la campaña guardado en el dispositivo apuntaba a un id que no existe en la cuenta. Ahora se comprueba antes: se enlaza a tu campaña de la nube con el mismo nombre (o se crea una) y, si la campaña es de otra cuenta, el mensaje lo explica.
+
 ## [1.117.0] - 2026-11-24
 ### Cambiado
 - Sincronización: la cuenta manda. Ya no hay conflictos que resolver a mano: si algo cambia en dos sitios gana lo más reciente y la otra versión queda como copia recuperable. Sin conexión se sigue trabajando en local y, al volver la red, todo sube solo. Se sincroniza cada 10 s con la app abierta.

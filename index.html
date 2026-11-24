@@ -3283,6 +3283,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.117 <span>24 nov 2026</span></h3><ul>
+      <li><b>Crear cuentas de jugador (1.117.1).</b> Si el enlace de la campaña en este dispositivo estaba desfasado, ya no falla con «no es tuya»: se enlaza a tu campaña de la nube.</li>
       <li><b>Sincronización sin conflictos manuales.</b> La cuenta manda: si algo cambia en dos sitios gana lo más reciente y la otra versión queda como copia recuperable. Sin conexión se trabaja en local y al volver la red sube todo solo. Se acabó el aviso que reaparecía.</li>
       <li><b>Referencia rápida</b> vuelve a verse con ese nombre en Compendio.</li>
     </ul></li>
@@ -9735,6 +9736,17 @@ const acDebeCambiar=()=>!!(SB_USER&&SB_USER.user_metadata&&SB_USER.user_metadata
 /* El DM da de alta a un jugador sin cuenta (función de Supabase «crear-jugador», que solo acepta a un DM). Devuelve {usuario,password}. */
 async function jugCrearCuenta(usuario,campanaRid,email){
   if(!SB||!SB_USER)throw new Error(T('Entra con tu cuenta'));
+  if(campanaRid){   // la campaña vinculada tiene que existir en la cuenta y ser de quien está conectado; si no, se explica o se revincula en vez de fallar con «no es suya»
+    const {data:cm}=await SB.from('campanas').select('id,master_id').eq('id',campanaRid).maybeSingle();
+    if(!cm){   // el id guardado ya no existe en la cuenta (se borró o se recreó): se vuelve a vincular esta campaña a la cuenta actual
+      const C=Store.campaigns,lid=C.active(),nom=C.activeName();C.setRemote(lid,null);SC.l=Sincro.vacio();SC.since=null;
+      const {data:mias}=await SB.from('campanas').select('id,nombre').eq('master_id',SB_USER.id);
+      const igual=(mias||[]).find(x=>String(x.nombre).replace(/·+$/,'')===String(nom).trim());   // si ya hay una campaña suya con ese nombre, se enlaza a ella en vez de crear otra
+      if(igual){C.setRemote(lid,igual.id);scSave();}else await scVincular(lid);
+      campanaRid=C.remote(lid);if(!campanaRid)throw new Error(T('No se ha podido vincular la campaña con la cuenta'));
+      toast(T('La campaña ya no existía en la cuenta: se ha vuelto a vincular'),5000);
+    }else if(cm.master_id!==SB_USER.id)throw new Error(T('Esta campaña pertenece a otra cuenta. Entra con la cuenta que la creó o crea una campaña nueva desde esta'));
+  }
   const {data,error}=await SB.functions.invoke('crear-jugador',{body:{usuario,campana_id:campanaRid||undefined,email:email||undefined}});
   if(error){let m=error.message;try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch{}throw new Error(m);}
   return data;
