@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.105.0] - 2026-11-24
+### Añadido
+- Cuenta: pestaña «Claves de APIs» (Freesound y Jamendo), guardadas solo en el equipo; el buscador de la capa de ambiente remite a ella.
+- Iniciativa horizontal con el aspecto del raíl de fichas de la Pantalla del máster; al elegirla, la capa se coloca como franja arriba o abajo.
+### Corregido
+- Mesa: mover una ficha del mapa ya no hace parpadear la escena (sin fundido entre versiones de la misma escena; imágenes de fichas decodificadas antes de mostrarlas).
+
 ## [1.104.1] - 2026-11-24
 ### Cambiado
 - Creador de personajes: los pasos siguen los 5 del Manual del Jugador (Clase, Origen con especie y trasfondo juntos, Características, Alineamiento, Detalles) más el Resumen.

@@ -13,7 +13,7 @@ const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Appli
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
-window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg']},sonidosWeb:{estado:async()=>({freesound:false,jamendo:true}),guardarClave:async(p,v)=>{(window.__claves=window.__claves||[]).push(p+':'+v);return v===''||/^[A-Za-z0-9]{6,}$/.test(v);},buscar:async(p,q,o)=>{(window.__bus=window.__bus||[]).push([p,q,o.soloCC0]);return {ok:true,res:[{id:'1',n:'Lluvia',autor:'ana',licencia:'CC0',dur:61,url:'https://cdn.freesound.org/a.mp3',pagina:''}]};}}};
+window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg']},sonidosWeb:{estado:async()=>({...(window.__cl=window.__cl||{freesound:false,jamendo:true})}),guardarClave:async(p,v)=>{(window.__claves=window.__claves||[]).push(p+':'+v);const ok=v===''||/^[A-Za-z0-9]{6,}$/.test(v);if(ok)(window.__cl=window.__cl||{})[p]=v!=='';return ok;},buscar:async(p,q,o)=>{(window.__bus=window.__bus||[]).push([p,q,o.soloCC0]);return {ok:true,res:[{id:'1',n:'Lluvia',autor:'ana',licencia:'CC0',dur:61,url:'https://cdn.freesound.org/a.mp3',pagina:''}]};}}};
 localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
@@ -136,11 +136,17 @@ const TAIL=`<script>
     // buscar sonidos en Freesound y Jamendo con la clave del usuario
     const sw=q('[data-msf="fuente"]');sw.value='url';sw.dispatchEvent(new Event('change',{bubbles:true}));await wait(250);
     ok('con enlace aparece el buscador con sus dos servicios',!!q('[data-ms="webprov"][data-p="freesound"]')&&!!q('[data-ms="webprov"][data-p="jamendo"]'));
-    ok('sin clave de Freesound pide la clave y no deja buscar',!!q('[data-web="clave"]')&&!q('[data-web="q"]')&&q('#ms-insp').textContent.includes('freesound.org'));
-    q('[data-web="clave"]').value='mala clave!';await click('[data-ms="webclave"]');await wait(100);
-    ok('una clave no válida se rechaza',!q('[data-web="q"]'));
-    q('[data-web="clave"]').value='ABCDEF123456';await click('[data-ms="webclave"]');await wait(150);
-    ok('al guardar la clave sale el buscador (la clave solo viaja al guardarla)',!!q('[data-web="q"]')&&window.__claves.includes('freesound:ABCDEF123456')&&!JSON.stringify(MS.capas).includes('ABCDEF'));
+    ok('sin clave de Freesound el buscador remite a Cuenta → APIs',!!q('[data-act="msapis"]')&&!q('[data-web="q"]')&&!q('[data-web="clave"]'));
+    AC_LOCAL=true;   // en la prueba no hay sesión; la app real exige entrar antes
+    await click('[data-act="msapis"]');await wait(200);
+    ok('se abre Cuenta en la pestaña de claves de APIs',!document.getElementById('acctmodal').hidden&&q('[data-pane="apis"]').hidden===false&&!!q('[data-apik="freesound"]')&&!!q('[data-apik="jamendo"]'));
+    ok('Jamendo aparece con clave y Freesound sin ella',q('#ac-apis-body').textContent.includes('Sin clave')&&!!q('[data-act="acapidel"][data-p="jamendo"]'));
+    q('[data-apik="freesound"]').value='mala clave!';await click('[data-act="acapisave"][data-p="freesound"]');await wait(150);
+    ok('una clave no válida se rechaza',!window.__cl.freesound&&document.getElementById('ac-msg').textContent.length>0);
+    q('[data-apik="freesound"]').value='ABCDEF123456';await click('[data-act="acapisave"][data-p="freesound"]');await wait(200);
+    ok('la clave válida queda guardada',window.__cl.freesound===true&&!!q('[data-act="acapidel"][data-p="freesound"]'));
+    acClose();await wait(150);
+    ok('con la clave guardada sale el buscador (la clave solo viaja al guardarla)',!!q('[data-web="q"]')&&window.__claves.includes('freesound:ABCDEF123456')&&!JSON.stringify(MS.capas).includes('ABCDEF'));
     ok('Freesound ofrece solo CC0, activado',!!q('[data-web="solo0"]')&&q('[data-web="solo0"]').checked);
     await typeIn('[data-web="q"]','lluvia');await click('[data-ms="websearch"]');await wait(250);
     ok('la búsqueda llega al servicio con la opción CC0',window.__bus.length===1&&window.__bus[0].join('|')==='freesound|lluvia|true');
@@ -152,15 +158,15 @@ const TAIL=`<script>
     ok('Jamendo ya tiene clave: sale el buscador sin la casilla CC0',!!q('[data-web="q"]')&&!q('[data-web="solo0"]'));
     await typeIn('[data-web="q"]','bosque');q('[data-web="q"]').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));await wait(250);
     ok('Intro también busca, en Jamendo',window.__bus.length===2&&window.__bus[1][0]==='jamendo'&&window.__bus[1][1]==='bosque');
-    await click('[data-ms="webclavebor"]');await wait(150);
-    ok('se puede borrar la clave',!q('[data-web="q"]')&&window.__claves.includes('jamendo:'));
+    await click('[data-act="msapis"]');await wait(200);await click('[data-act="acapidel"][data-p="jamendo"]');await wait(200);acClose();await wait(150);
+    ok('se puede borrar la clave desde Cuenta',!q('[data-web="q"]')&&window.__claves.includes('jamendo:')&&window.__cl.jamendo===false);
     // una escena guardada de antes (sin estos campos) se sigue cargando
     Store.set('mesa-estudio-v1',JSON.stringify({fondo:'#102030',capas:[{tipo:'iniciativa',x:1,y:1,w:20,h:80}]}));msLoad();
     ok('las escenas antiguas se cargan con valores por defecto',MS.aspecto==='16:9'&&MS.capas[0].orient==='v'&&MS.capas[0].tokens===true);
     Store.set('mesa-estudio-v1',JSON.stringify({capas:[{tipo:'mapa',celda:'x',pantalla:-4,tokens:[null,{x:'a',tam:99,n:{a:1}},{id:'t',cid:'<b>'}]}]}));msLoad();
     const mm=MS.capas[0];
     ok('un mapa corrupto se sanea',mm.celda===2.5&&mm.pantalla===15&&mm.tokens.length===2&&mm.tokens[0].tam===8&&typeof mm.tokens[0].n==='string'&&mm.tokens[1].cid==='');
-  }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,300));}
+  }catch(e){(window.__err=window.__err||[]).push('flujo tras «'+R.c.filter(c=>!c[1]).map(c=>c[0]).join('|')+'»«'+(R.c.length?R.c[R.c.length-1][0]:'-')+'»: '+e+' '+String(e.stack).slice(0,300));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
 })();
@@ -187,6 +193,6 @@ testNav('estudio de la mesa: mapa de combate, fichas y criaturas ocultas',{skip:
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=58,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=62,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

@@ -2703,6 +2703,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-stage{position:relative;aspect-ratio:16/9;width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:4px;overflow:hidden;box-shadow:0 2px 10px #0004}
 .ms-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;background:#0b0a09}
 .ms-stage.mapasel iframe{pointer-events:auto}.ms-stage.mapasel .ms-ov{pointer-events:none}
+.acapi{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:8px}.acapi h4{margin:0}.acapi .inline{display:flex;gap:6px;flex-wrap:wrap}.acapi input{flex:1 1 180px}
 .ms-web{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.ms-web li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px;align-items:center}.ms-web .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ms-web small{grid-column:1/-1;color:var(--muted)}
 .ms-toks{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:5px}.ms-toks li{display:grid;grid-template-columns:minmax(0,1fr) 52px 52px minmax(0,108px) auto auto;gap:4px;align-items:center}
 .ms-toks input,.ms-toks select{min-width:0;width:100%;font-size:12px;padding:3px 4px}
@@ -2980,7 +2981,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.104</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.105</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3179,6 +3180,11 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.105 <span>24 nov 2026</span></h3><ul>
+      <li><b>Claves de APIs en Tu cuenta:</b> una pestaña «Claves de APIs» guarda las de Freesound y Jamendo en un solo sitio (solo en este equipo). El buscador de sonidos de la capa de ambiente te lleva allí si falta la clave.</li>
+      <li><b>Mapa sin parpadeo:</b> al mover una ficha la mesa ya no hace el fundido entre escenas, solo cambia lo que se mueve.</li>
+      <li><b>Iniciativa horizontal como raíl de fichas</b> (el estilo de la Pantalla del máster): dial de ronda, fichas redondas con el color de bando y la del turno levantada. Al elegirla, la capa se coloca como franja arriba (o abajo) con la proporción correcta.</li>
+    </ul></li>
     <li><h3>v1.104 <span>24 nov 2026</span></h3><ul>
       <li><b>Creador de personajes por pasos</b> (primer borrador), con los 5 pasos del Manual del Jugador: Clase → Origen (especie y trasfondo) → Características → Alineamiento → Detalles, más un Resumen final, con Siguiente y Atrás como en D&amp;D Beyond. Elige las habilidades de la clase, reparte los 3 puntos del trasfondo (+2/+1 o +1/+1/+1), asigna las características (conjunto estándar, 4d6 o compra de puntos) y al final ves de dónde sale cada cosa. La hoja nace con salvaciones, competencias, dote de origen, herramienta, velocidad y alineamiento, y el desglose queda en el registro.</li>
     </ul></li>
@@ -3946,12 +3952,17 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
         <label class="f">Nombre de usuario<input id="ac-nm-user" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_.\-]{3,24}" title="De 3 a 24 letras, números, punto, guion o guion bajo"></label>
         <button class="btn primary">Guardar</button>
       </form>
+      <div class="acpane" data-pane="apis" hidden>
+        <p style="margin:0">Claves de servicios externos. Se guardan solo en este equipo (app de escritorio), no viajan con tu cuenta ni con las escenas.</p>
+        <div id="ac-apis-body" class="acapis"></div>
+        <div class="inline"><button type="button" class="btn ghost sm" data-act="acapisback">← Volver</button></div>
+      </div>
       <div class="acpane" data-pane="me" hidden>
         <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub" id="ac-via"></span></p>
         <p class="pcsub" id="ac-sync" style="margin:0"></p>
         <div class="scconf" id="sp-vc"></div>
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
-        <div class="inline"><button type="button" class="btn" data-act="pfopen"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn" data-act="acgo" data-to="newpass">Cambiar contraseña</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
+        <div class="inline"><button type="button" class="btn" data-act="acapis" id="ac-apis-btn" hidden>Claves de APIs</button><button type="button" class="btn" data-act="pfopen"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn" data-act="acgo" data-to="newpass">Cambiar contraseña</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
       <div class="acsrd"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg></span><span><b id="ac-srdv">SRD 5.2.1</b> · <span>Activo siempre</span><br><span class="pcsub" id="ac-srdl"></span></span></div>
       <div class="acex">
@@ -5119,7 +5130,8 @@ function msInsp(){
       +ck('negrita',T('Negrita'))
       +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con fondo de color'))+'</label>'+(c.fondo?'<label class="f">'+esc(T('Color del fondo'))+'<input type="color" data-msf="fondo" value="'+esc(c.fondo)+'"></label>':'');
     if(c.tipo==='iniciativa')p+='<p class="hint">'+esc(T('Muestra el orden del combate en curso. Nunca enseña PG, CA ni debilidades, y una criatura oculta sale como «Enemigo oculto».'))+'</p>'
-      +sl('orient',T('Disposición'),[['v',T('Vertical (lista)')],['h',T('Horizontal (tarjetas con token)')]])+ck('tokens',T('Mostrar los tokens'));
+      +sl('orient',T('Disposición'),[['v',T('Vertical (lista)')],['h',T('Horizontal (raíl de fichas)')]])+ck('tokens',T('Mostrar los tokens'))
+      +(c.orient==='h'?'<div class="ms-acts"><button type="button" class="btn sm" data-ms="inipos" data-v="arriba">'+esc(T('Franja arriba'))+'</button><button type="button" class="btn sm" data-ms="inipos" data-v="abajo">'+esc(T('Franja abajo'))+'</button></div>':'');
     if(c.tipo==='mapa')p+=msMapaInsp(c,n,sl,ck);
     if(c.tipo==='ambiente')p+='<p class="hint">'+esc(T('Efecto que cae sobre la escena, por encima de las capas de debajo. Ponlo a pantalla completa o solo en una zona.'))+'</p>'
       +sl('efecto',T('Efecto'),[['niebla',T('Niebla')],['lluvia',T('Lluvia')],['nieve',T('Nieve')],['tormenta',T('Tormenta (lluvia, rayos y truenos)')],['noche',T('Noche (oscurece)')],['brasas',T('Brasas')]])
@@ -5196,13 +5208,13 @@ function msWebInsp(){
   const S=window.__AppShell&&window.__AppShell.sonidosWeb;if(!S)return '';
   const W=MS.web,N=MS_WEB_N[W.prov];
   let h='<h3>'+esc(T('Buscar sonidos'))+'</h3><div class="ms-acts">'+Object.keys(MS_WEB_N).map(p=>'<button type="button" class="btn sm'+(W.prov===p?' primary':' ghost')+'" data-ms="webprov" data-p="'+p+'" aria-pressed="'+(W.prov===p)+'">'+MS_WEB_N[p]+'</button>').join('')+'</div>';
-  if(!W.claves[W.prov])return h+'<p class="hint">'+esc(T('Hace falta tu propia clave de'))+' '+N+' '+esc(T('(gratis). Pídela en su web y pégala aquí; se guarda solo en este equipo.'))+' <a class="noi18n" href="'+MS_WEB_PEDIR[W.prov]+'" target="_blank" rel="noopener noreferrer">'+esc(MS_WEB_PEDIR[W.prov].replace('https://',''))+'</a></p>'
-    +'<div class="ms-acts"><input type="password" data-web="clave" maxlength="80" autocomplete="off" spellcheck="false" aria-label="'+esc(T('Clave de')+' '+N)+'" placeholder="'+esc(T('Clave'))+'"><button type="button" class="btn sm" data-ms="webclave">'+esc(T('Guardar la clave'))+'</button></div>';
+  if(!W.claves[W.prov])return h+'<p class="hint">'+esc(T('Hace falta tu propia clave de'))+' '+N+' '+esc(T('(gratis). Pídela en su web y pégala en Cuenta → APIs; se guarda solo en este equipo.'))+' <a class="noi18n" href="'+MS_WEB_PEDIR[W.prov]+'" target="_blank" rel="noopener noreferrer">'+esc(MS_WEB_PEDIR[W.prov].replace('https://',''))+'</a></p>'
+    +'<div class="ms-acts"><button type="button" class="btn sm primary" data-act="msapis">'+esc(T('Poner la clave en Cuenta → APIs'))+'</button></div>';
   h+='<div class="ms-acts"><input type="search" data-web="q" maxlength="60" value="'+esc(W.q)+'" placeholder="'+esc(T('lluvia, bosque, taberna…'))+'" aria-label="'+esc(T('Buscar sonidos'))+'"><button type="button" class="btn sm primary" data-ms="websearch"'+(W.cargando?' disabled':'')+'>'+esc(W.cargando?T('Buscando…'):T('Buscar'))+'</button></div>';
   if(W.prov==='freesound')h+='<label class="chk"><input type="checkbox" data-web="solo0"'+(W.solo0?' checked':'')+'> '+esc(T('Solo CC0 (no exige citar al autor)'))+'</label>';
   if(W.est)h+='<p class="hint" role="status">'+esc(W.est)+'</p>';
   if(W.res&&W.res.length)h+='<ul class="ms-web">'+W.res.map((r,i)=>'<li><span class="nm">'+esc(r.n)+'</span><button type="button" class="btn sm ghost" data-ms="webpre" data-i="'+i+'" aria-pressed="'+(MS.webSuena===i)+'" aria-label="'+esc(T('Escuchar'))+'">'+(MS.webSuena===i?'■':'▶')+'</button><button type="button" class="btn sm" data-ms="webusar" data-i="'+i+'">'+esc(T('Usar'))+'</button><small>'+esc([r.autor,r.licencia,r.dur?Math.floor(r.dur/60)+':'+String(r.dur%60).padStart(2,'0'):''].filter(Boolean).join(' · '))+'</small></li>').join('')+'</ul>';
-  return h+'<div class="ms-acts"><button type="button" class="btn sm ghost" data-ms="webclavebor">'+esc(T('Cambiar o borrar la clave'))+'</button></div>';
+  return h+'<div class="ms-acts"><button type="button" class="btn sm ghost" data-act="msapis">'+esc(T('Cambiar o borrar la clave'))+'</button></div>';
 }
 function msWebParar(){if(MS.webAud){try{MS.webAud.pause();}catch{}MS.webAud=null;}MS.webSuena=-1;}
 async function msWebBuscar(){
@@ -5310,9 +5322,8 @@ function msAct(a,b){
   else if(a==='mpant'){if(c&&c.tipo==='mapa'&&b.value!=='otra'){c.pantalla=+b.value;msInsp();msCambio();}}
   else if(a==='mapick'){MS.pick=b.dataset.modo;toast(b.dataset.modo==='token'?T('Elige una imagen de la lista para la ficha'):T('Elige una imagen de la lista para el mapa'),4000);}
   else if(a==='ambprueba'){ambPrueba(!MS.ambOn);msInsp();}
+  else if(a==='inipos'&&c&&c.tipo==='iniciativa'&&MS_INI_H[b.dataset.v]){Object.assign(c,MS_INI_H[b.dataset.v]);msInsp();msCambio();}
   else if(a==='webprov'){msWebParar();MS.web.prov=b.dataset.p;MS.web.res=null;MS.web.est='';msInsp();}
-  else if(a==='webclave'){const S=window.__AppShell.sonidosWeb,i=document.querySelector('[data-web="clave"]');S.guardarClave(MS.web.prov,i?i.value:'').then(ok=>{if(ok){MS.web.claves[MS.web.prov]=true;toast(T('Clave guardada en este equipo'));}else toast(T('La clave no es válida'),4000);msInsp();});}
-  else if(a==='webclavebor'){window.__AppShell.sonidosWeb.guardarClave(MS.web.prov,'').then(()=>{MS.web.claves[MS.web.prov]=false;MS.web.res=null;MS.web.est='';msWebParar();msInsp();toast(T('Clave borrada'));});}
   else if(a==='websearch')msWebBuscar();
   else if(a==='webpre'){const r=(MS.web.res||[])[+b.dataset.i];if(!r)return;const i=+b.dataset.i,mismo=MS.webSuena===i;msWebParar();if(!mismo){const au=new Audio(r.url);au.volume=.6;au.play().catch(()=>{});au.onended=()=>{MS.webSuena=-1;msInsp();};MS.webAud=au;MS.webSuena=i;}msInsp();}
   else if(a==='webusar'&&c&&c.tipo==='ambiente'){const r=(MS.web.res||[])[+b.dataset.i];if(!r)return;msWebParar();c.fuente='url';c.url=r.url;c.credito=(r.n+' — '+(r.autor||'?')+(r.licencia?' ('+r.licencia+')':'')+' · '+MS_WEB_N[MS.web.prov]).slice(0,200);msInsp();msCambio();toast(T('Sonido elegido')+(r.licencia&&r.licencia!=='CC0'?'. '+T('Cita al autor si lo publicas'):''),5000);}
@@ -5439,8 +5450,12 @@ function msAct(a,b){
 function msCampo(t){
   const c=msSelC();if(!c)return null;const k=t.dataset.msf;
   const v=t.dataset.t==='n'?(t.value!==''&&Number.isFinite(+t.value)?+t.value:c[k]):t.type==='checkbox'?t.checked:t.value;
-  const n=msNorm({...c,[k]:v});if(!n)return c;c[k]=n[k];return c;
+  const n=msNorm({...c,[k]:v});if(!n)return c;c[k]=n[k];
+  if(c.tipo==='iniciativa'&&k==='orient')Object.assign(c,c.orient==='h'?MS_INI_H.arriba:MS_INI_V);   // cada disposición nace con su proporción
+  return c;
 }
+/* la iniciativa horizontal es una franja baja y ancha; la vertical, una columna */
+const MS_INI_H={arriba:{x:2,y:2,w:96,h:20},abajo:{x:2,y:78,w:96,h:20}},MS_INI_V={x:3,y:4,w:28,h:92};
 var mesaEscIni=false;
 const mesaEscIniOn=()=>mesaEscIni&&mesaEst.que==='escena';
 let lastTurnKey=null;
@@ -7152,6 +7167,7 @@ function extraAct(act,b,c,e){
     case 'eprm':epDraft.rows.splice(+b.dataset.i,1);epRenderDet();break;
     case 'epgen':epGenerar();break;
     case 'pjw':pjwAct(b);break;
+    case 'msapis':acOpen('apis');break;
     case 'pjnew':PJW=null;pjEdit='new';pjSel=null;if(location.hash!=='#personajes')location.hash='personajes';pjRender();break;
     case 'pjcancel':pjEdit=null;PJW=null;pjRender();break;
     case 'pjimport':pjModo='importar';pjModal(T('Importar personaje'),pjImportHTML());break;
@@ -9373,12 +9389,33 @@ function acMsg(t,ok){const m=$('#ac-msg');m.textContent=t||'';m.classList.toggle
 function acPane(p){
   acMsg('');for(const el of document.querySelectorAll('#acctmodal [data-pane]'))el.hidden=el.dataset.pane!==p;
   {const v=$('#ac-np-volver');if(v)v.hidden=acDebeCambiar();}   // con contraseña provisional no hay vuelta atrás: hay que cambiarla
-  $('#ac-h').textContent=T({in:'Entrar',signup:'Crear una cuenta',reset:'Contraseña olvidada',newpass:'Contraseña nueva',name:'Tu nombre de usuario',me:'Tu cuenta'}[p]);
+  $('#ac-h').textContent=T({in:'Entrar',signup:'Crear una cuenta',reset:'Contraseña olvidada',newpass:'Contraseña nueva',name:'Tu nombre de usuario',me:'Tu cuenta',apis:'Claves de APIs'}[p]);
+  if(p==='apis')acApisPintar();
   const f=document.querySelector(`#acctmodal [data-pane="${p}"] input`);if(f)setTimeout(()=>f.focus(),30);
   renderAcct();
 }
+/* ---- claves de APIs de sonido (Cuenta → APIs): las guarda la app de escritorio, nunca la página ---- */
+function acApisHTML(){
+  const S=window.__AppShell&&window.__AppShell.sonidosWeb;
+  if(!S)return '<p class="hint" style="display:block">'+esc(T('Las claves solo se guardan en la app de escritorio.'))+'</p>';
+  return Object.keys(MS_WEB_N).map(p=>{
+    const hay=!!MS.web.claves[p];
+    return '<div class="acapi"><h4>'+esc(MS_WEB_N[p])+' <span class="pcsub">'+esc(p==='freesound'?T('sonidos sueltos (lluvia, taberna…)'):T('música con licencia CC'))+'</span></h4>'
+      +'<p class="pcsub" role="status" style="margin:0">'+(hay?'✓ '+esc(T('Clave guardada')):esc(T('Sin clave')))+' · <a class="noi18n" href="'+MS_WEB_PEDIR[p]+'" target="_blank" rel="noopener noreferrer">'+esc(T('Conseguir una clave'))+'</a></p>'
+      +'<div class="inline"><input type="password" data-apik="'+p+'" maxlength="80" autocomplete="off" spellcheck="false" aria-label="'+esc(T('Clave de')+' '+MS_WEB_N[p])+'" placeholder="'+esc(hay?'••••••••':T('Pega aquí la clave'))+'">'
+      +'<button type="button" class="btn sm" data-act="acapisave" data-p="'+p+'">'+esc(T('Guardar'))+'</button>'
+      +(hay?'<button type="button" class="btn sm danger" data-act="acapidel" data-p="'+p+'">'+esc(T('Borrar'))+'</button>':'')+'</div></div>';
+  }).join('');
+}
+async function acApisPintar(){await msWebEstado();const c=$('#ac-apis-body');if(c)c.innerHTML=acApisHTML();}
+async function acApiGuardar(p,valor){
+  const S=window.__AppShell&&window.__AppShell.sonidosWeb;if(!S||!MS_WEB_N[p])return;
+  const ok=await S.guardarClave(p,valor);
+  acMsg(ok?(valor?T('Clave guardada en este equipo'):T('Clave borrada')):T('La clave no es válida'));
+  await acApisPintar();
+}
 function acOpen(p){$('#acctmodal').hidden=false;syncModalOpen();acPane(p||(SB_USER?'me':'in'));acLocalVis();
-  $('#ac-srdv').textContent=OFFICIAL_FREE.find(o=>o.id==='srd521')?.n||'SRD';$('#ac-srdl').textContent=`${T('Datos en')} ${LANGS[DATA_LANG]}`;
+  {const b=$('#ac-apis-btn');if(b)b.hidden=!(window.__AppShell&&window.__AppShell.sonidosWeb);}$('#ac-srdv').textContent=OFFICIAL_FREE.find(o=>o.id==='srd521')?.n||'SRD';$('#ac-srdl').textContent=`${T('Datos en')} ${LANGS[DATA_LANG]}`;
   $('#ac-exdel').disabled=!hasExamples();}
 /* El acceso se pide la primera vez en cada equipo (después la sesión queda guardada). Sin conexión solo se ofrece la copia local
    si en este equipo ya se entró alguna vez; si no, hace falta internet y una cuenta para empezar. */
@@ -9881,6 +9918,10 @@ async function acAct(act,b){
     case 'aclocal':if(acPrevio()){AC_LOCAL=true;acClose();toast(T('Trabajando con la copia local'));}break;
     case 'acclose':acClose();break;
     case 'acgo':acPane(b.dataset.to);break;
+    case 'acapis':acPane('apis');break;
+    case 'acapisback':acPane(SB_USER?'me':'in');break;
+    case 'acapisave':{const i=document.querySelector('[data-apik="'+b.dataset.p+'"]');acApiGuardar(b.dataset.p,i?i.value:'');break;}
+    case 'acapidel':acApiGuardar(b.dataset.p,'');break;
     case 'acexdel':{if(!hasExamples())break;removeExamples();$('#ac-exdel').disabled=true;toast(T('Datos de ejemplo eliminados. Lo tuyo se queda como estaba.'));break;}
     case 'acexample':{
       if(state.creatures.length&&!(await Dlg.si(T('El combate actual se sustituirá por el de ejemplo. ¿Seguir?'),{aceptar:T('Sustituir')})))break;
