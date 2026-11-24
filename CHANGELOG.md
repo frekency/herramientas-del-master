@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.116.2] - 2026-11-24
+### Corregido
+- Portada: en la app de escritorio las cuatro columnas se desbordaban y cortaban los títulos. Ahora son cuatro tarjetas grandes en cuadrícula 2×2, con «¿Qué hacemos hoy?» y la campaña activa arriba, y accesos rápidos compactos al pie de cada tarjeta.
+
 ## [1.116.1] - 2026-11-24
 ### Corregido
 - En el móvil y en la app instalada no había forma de abrir Campañas (cambiar de campaña y resolver conflictos de sincronización): ahora hay un botón con la campaña activa en la portada y una tarjeta «Campañas» en Utilidades, con aviso «⚠ N conflictos por resolver».

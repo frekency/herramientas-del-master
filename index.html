@@ -2934,25 +2934,25 @@ html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}
 .pagenav .navpill:hover{background:var(--bad,#c0392b);color:#fff;filter:brightness(1.1)}
 .pagenav .navpill[hidden]{display:none}
 #view-inicio .hero{display:none}
-.bqs4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:14px;margin:6px 0 14px;min-height:calc(100vh - 230px);min-height:calc(100dvh - 230px)}
-@media (max-width:900px){.bqs4{grid-template-columns:repeat(2,minmax(0,1fr));min-height:calc(100dvh - 260px)}}
+.bqs4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:16px;margin:6px 0 14px;min-height:0}
 .bq{display:flex;flex-direction:column;gap:10px;min-height:150px;padding:clamp(12px,1.8vw,22px);border:1px solid var(--line);border-radius:var(--r,12px);background:var(--surface);color:var(--fg);position:relative}
 .bq:hover,.bq:focus-within{border-color:var(--accent)}
-.bqh{display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center;color:inherit;text-decoration:none}
+.bqh{display:grid;grid-template-columns:1fr;row-gap:2px;align-items:start;color:inherit;text-decoration:none}
 .bqh:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:6px}
-.bqh .ic{grid-row:1;width:clamp(30px,3.4vw,44px);height:clamp(30px,3.4vw,44px);color:var(--accent)}
+.bqh .ic{width:clamp(32px,3.6vw,48px);height:clamp(32px,3.6vw,48px);color:var(--accent);margin-bottom:clamp(2px,1vh,10px)}
 .bqn{font-family:var(--f-display);font-weight:700;font-size:clamp(18px,2.2vw,28px);text-transform:uppercase;letter-spacing:.02em}
 .bqs,.bqd{grid-column:1/-1}
 .bqs{color:var(--accent);font-size:clamp(13px,1.2vw,15px);font-weight:600;margin-top:8px}
 .bqd{color:var(--muted);font-size:clamp(13px,1.1vw,14px)}
-.bql{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0}
-.bqc{display:flex;align-items:center;flex:1 1 0;min-height:44px;max-height:96px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--fg) 4%,var(--surface));color:var(--fg);text-decoration:none;font:inherit;font-weight:600;text-align:left;cursor:pointer}
+.bql{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:8px}
+.bqc{display:inline-flex;align-items:center;flex:0 0 auto;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--fg) 4%,var(--surface));color:var(--fg);text-decoration:none;font:inherit;font-weight:600;text-align:left;cursor:pointer}
 .bqc:hover,.bqc:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
 .bqc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .campbtn{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font:inherit;font-size:14px;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .campbtn:hover,.campbtn:focus-visible{border-color:var(--accent);color:var(--fg)}
 .campbtn.alerta{border-color:var(--bad,#c0392b);color:var(--bad,#c0392b);font-weight:700}
-.campchiprow{display:flex;margin:6px 0 10px}
+.campchiprow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:6px 0 12px}
+.campchiprow h2{margin:0;font-family:var(--f-display);font-size:clamp(22px,2.6vw,32px)}
 .campchip{display:inline-flex;align-items:center;gap:8px;min-height:44px;max-width:100%;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);font:inherit;cursor:pointer}
 .campchip .cl{color:var(--muted);font-size:13px}
 .campchip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2988,6 +2988,10 @@ html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}
   .bqs4{grid-template-columns:1fr;grid-auto-rows:auto;min-height:0;gap:10px}
   .bq{min-height:0;gap:8px}
   .bq .bqd{display:none}
+  .bqh{grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
+  .bqh .ic{grid-row:1;margin:0}
+  .bql{margin-top:0}
+  .campchiprow h2{font-size:22px}
   .bql{display:grid;grid-template-columns:1fr 1fr;flex:none}
   .bqc{max-height:none;min-height:48px;padding:0 12px;font-size:15px}
   .bqc:last-child:nth-child(odd){grid-column:1/-1}
@@ -3084,7 +3088,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="hoy" id="hs-hoy" hidden></div>
   <div class="hoy" id="hs-cambios" hidden></div>
-  <div class="campchiprow"><button type="button" class="campchip" data-act="campopen"><span class="cl">Campaña</span> <b class="noi18n" id="hs-campname"></b> <span class="cw" id="hs-campwarn" hidden></span> <span aria-hidden="true">▾</span></button></div>
+  <div class="campchiprow"><h2>¿Qué hacemos hoy?</h2><button type="button" class="campchip" data-act="campopen"><span class="cl">Campaña</span> <b class="noi18n" id="hs-campname"></b> <span class="cw" id="hs-campwarn" hidden></span> <span aria-hidden="true">▾</span></button></div>
   <nav class="bqs4" aria-label="Secciones principales">
     <div class="bq" data-blk="campana"><a class="bqh" href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg><span class="bqn">Campaña</span><span class="bqs" id="hs-t-camp"></span><span class="bqd">Notas, encuentros, combate y ventana de mesa.</span></a><div class="bql" id="bql-camp"><a class="bqc" href="#combate">Combate</a><a class="bqc" href="#mesa">Ventana de mesa</a><a class="bqc" href="#campana/sesion">Sesiones</a><a class="bqc" href="#campana/encuentros">Encuentros</a></div></div>
     <div class="bq" data-blk="personajes"><a class="bqh" href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg><span class="bqn">Personajes</span><span class="bqs" id="hs-t-pj"></span><span class="bqd">Fichas, creador de personajes y jugadores.</span></a><div class="bql" id="bql-pj"></div></div>
@@ -3279,6 +3283,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.116 <span>24 nov 2026</span></h3><ul>
+      <li><b>Portada en cuadrícula 2×2 (1.116.2).</b> Cuatro tarjetas grandes con «¿Qué hacemos hoy?» y la campaña activa arriba; accesos rápidos compactos al pie. Se acabó el desbordamiento en la app de escritorio.</li>
       <li><b>Campañas y conflictos en el móvil (1.116.1).</b> Botón con la campaña activa en la portada y tarjeta «Campañas» en Utilidades, con el aviso de conflictos por resolver. Sin zoom de iOS al escribir. Barras del móvil más compactas.</li>
       <li><b>Instalable como app (PWA).</b> Con icono propio, a pantalla completa sin la barra del navegador y con apertura sin conexión de lo ya visitado. En el iPhone: Compartir, «Añadir a pantalla de inicio». Siempre se pide primero a la red, así las versiones nuevas llegan solas.</li>
     </ul></li>
