@@ -111,10 +111,12 @@ const TAIL=`<script>
     ok('el ambiente nace a pantalla completa, sin imagen ni sonido',am.w===100&&am.h===100&&am.visual===''&&am.sonido===false&&!q('[data-ms="ambprueba"]'));
     ok('ya no hay efectos de código ni intensidad',!q('[data-msf="efecto"]')&&!q('[data-msf="intensidad"]')&&!('efecto' in am));
     ok('la imagen o vídeo tiene tres orígenes: ninguno, enlace y carpeta',[...q('[data-msf="visual"]').options].map(o=>o.value).join()===',url,archivo');
+    ok('sin imagen ni vídeo no sale la mezcla',!q('[data-msf="mezcla"]'));
     await ch('[data-msf="visual"]','url');
     await typeIn('[data-msf="vurl"]','http://malo.com/a.mp4');
     ok('un enlace http no vale para el vídeo',am.vurl==='');
     await typeIn('[data-msf="vurl"]','https://cdn.ejemplo.com/lluvia.mp4');
+    ok('con imagen o vídeo sale la mezcla (normal por defecto) y «pantalla» llega a la escena',am.mezcla==='normal'&&(await ch('[data-msf="mezcla"]','pantalla'),am.mezcla==='pantalla'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').mezcla==='pantalla'));
     ok('un enlace https llega a la escena que se envía',am.vurl==='https://cdn.ejemplo.com/lluvia.mp4'&&(c=>c.visual==='url'&&c.vurl===am.vurl)(msEscena(false).capas.find(c=>c.tipo==='ambiente')));
     await ch('[data-msf="visual"]','archivo');await wait(250);
     ok('con carpeta propia salen sus vídeos e imágenes (no los audios)',[...q('[data-msf="varchivo"]').options].map(o=>o.value).join()===',lluvia.mp4,niebla.gif'&&q('#ms-insp').textContent.includes('C:/sonidos'));

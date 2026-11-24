@@ -175,7 +175,7 @@ function pintaIni(c){
 /* ambiente: vídeo o imagen animada en bucle (sin sonido propio) y, aparte, un sonido en bucle de un enlace o de la carpeta del usuario */
 const VID=new Map();   // el mismo vídeo se reutiliza al repintar la escena, para que no se reinicie al mover una ficha
 function pintaAmbiente(d,c){
-  d.textContent='';
+  d.textContent='';d.style.mixBlendMode=c.mezcla==='pantalla'?'screen':'';
   if(!c.vsrc)return;
   if(c.vtipo==='imagen'){const i=new Image();i.className='vm';i.alt='';i.src=c.vsrc;d.append(i);return;}
   let v=VID.get(c.vsrc);

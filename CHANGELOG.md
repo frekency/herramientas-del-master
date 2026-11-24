@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.111.0] - 2026-11-24
+### Añadido
+- Capa de ambiente: selector de mezcla (normal o pantalla) validado en la ventana de mesa; prueba opcional con webm transparente en la app real (`WEBM_ALFA`).
+
 ## [1.110.0] - 2026-11-24
 ### Añadido
 - Creador de personajes: motor de rasgos con elecciones pendientes (clase y especie), con Druida (Orden primigenia) y Elfo (linaje, aptitud mágica, Sentidos agudos) como primeros casos; sus efectos y rasgos pasan a la hoja.

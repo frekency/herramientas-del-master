@@ -47,6 +47,11 @@ test('ambiente: sin vídeo ni sonido por defecto; el volumen se acota y un sonid
   assert.notEqual(c[1].fuente, 'generado');
 });
 
+test('ambiente: la mezcla solo puede ser normal o pantalla', () => {
+  const f = o => validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', ...o }] }).capas[0].mezcla;
+  assert.deepEqual([f({}), f({ mezcla: 'pantalla' }), f({ mezcla: 'difference' }), f({ mezcla: 5 })], ['normal', 'pantalla', 'normal', 'normal']);
+});
+
 test('ambiente: el sonido solo admite enlaces https o archivos de audio de la carpeta del usuario', () => {
   const f = o => validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', sonido: true, ...o }] }).capas[0];
   assert.deepEqual([f({}).fuente, f({}).audio], ['', '']);

@@ -54,6 +54,7 @@ function validarCapa(c, i) {
     o.visual = vu ? 'url' : va ? 'archivo' : '';
     o.vsrc = vu ? c.vurl : va ? 'app://local/__audios/' + encodeURIComponent(c.varchivo) : '';
     o.vtipo = ES_IMAGEN.test(o.vsrc) ? 'imagen' : 'video';
+    o.mezcla = c.mezcla === 'pantalla' ? 'pantalla' : 'normal';   // «pantalla» aclara lo que hay debajo: ideal para luces, luciérnagas y rayos de sol
     const url = c.fuente === 'url' && typeof c.url === 'string' && URL_AUDIO.test(c.url);
     const arch = c.fuente === 'archivo' && sano(c.archivo) && ARCHIVO_AUDIO.test(c.archivo);
     o.fuente = url ? 'url' : arch ? 'archivo' : '';

@@ -110,8 +110,9 @@ app.whenReady().then(async () => {
     fs.writeFileSync(path.join(sonidos, 'niebla.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
     fs.writeFileSync(path.join(tmp, 'audios.json'), JSON.stringify({ carpeta: sonidos }));
     ok('el máster ve la lista de su carpeta (audios e imágenes, no otros archivos)', JSON.stringify(await ev(master, 'window.__AppShell.audios.lista()')) === '["niebla.png","tono.wav"]');
-    await ev(master, `(async()=>{msVentana(1);msAnade('ambiente',{visual:'archivo',varchivo:'niebla.png',sonido:true,volumen:60,fuente:'archivo',archivo:'tono.wav'});msEnviar(true);return true;})()`);
+    await ev(master, `(async()=>{msVentana(1);msAnade('ambiente',{visual:'archivo',varchivo:'niebla.png',mezcla:'pantalla',sonido:true,volumen:60,fuente:'archivo',archivo:'tono.wav'});msEnviar(true);return true;})()`);
     ok('la imagen de la carpeta se ve en la ventana real', await until(() => ev(w1, '(()=>{const i=document.querySelector(".capa.ambiente img.vm");return !!i&&i.complete&&i.naturalWidth>0;})()')));
+    ok('la mezcla «pantalla» llega a la ventana real', await ev(w1, 'getComputedStyle(document.querySelector(".capa.ambiente")).mixBlendMode==="screen"'));
     ok('la capa de ambiente no recibe clics y ya no hay efectos de código', await ev(w1, 'getComputedStyle(document.querySelector(".capa.ambiente")).pointerEvents==="none"&&!document.querySelector(".capa.ambiente .p")'));
     ok('la ventana reproduce el archivo de la carpeta', await until(() => ev(w1, 'AMB.key==="audio|app://local/__audios/tono.wav"&&AMB.cur.el.readyState>=3&&!AMB.cur.el.paused')));
     ok('el archivo se repite en bucle', await until(() => ev(w1, `(()=>{const e=AMB.cur.el;window.__t=window.__t||[];window.__t.push(e.currentTime);return window.__t.some((v,i)=>i&&v<window.__t[i-1]);})()`), 12000));
@@ -124,6 +125,16 @@ app.whenReady().then(async () => {
     ok('el telón silencia el archivo', await until(() => ev(w1, 'AMB.cur.el.volume===0')));
     await ev(master, 'mesaTelon(1)');
     ok('y al subirlo vuelve', await until(() => ev(w1, 'AMB.cur.el.volume>0.5')));
+    if (process.env.WEBM_ALFA && fs.existsSync(process.env.WEBM_ALFA)) {   // opcional: un webm VP9 con transparencia real (no va en el repositorio por su licencia)
+      fs.copyFileSync(process.env.WEBM_ALFA, path.join(sonidos, 'alfa.webm'));
+      await ev(master, `(async()=>{MS.capas=[];msAnade('ambiente',{visual:'archivo',varchivo:'alfa.webm',sonido:false});msEnviar(true);return true;})()`);
+      ok('el webm con transparencia se reproduce en la ventana real', await until(() => ev(w1, '(()=>{const v=document.querySelector(".capa.ambiente video.vm");return !!v&&v.readyState>=3&&!v.paused&&v.videoWidth===1280;})()')));
+      await wait(600);
+      const bmp = (await w1.webContents.capturePage()).toBitmap(); let fondo = 0, trazo = 0, total = 0;   // BGRA: el fondo de la escena es #0b0a09; la lluvia, algo más clara
+      for (let i = 0; i < bmp.length; i += 4) { total++; if (bmp[i + 2] === 11 && bmp[i + 1] === 10 && bmp[i] === 9) fondo++; else trazo++; }
+      console.log('# vídeo sobre la escena: fondo visible', fondo, 'trazos claros', trazo, 'de', total);
+      ok('el vídeo conserva la transparencia (se sigue viendo la escena y hay algo pintado encima)', fondo > total * 0.5 && trazo > 100);
+    }
     // segunda ventana con su propia escena
     await ev(master, `(async()=>{msVentana(2);MS.capas=[];msAnade('texto',{t:'Solo para la ventana 2'});MS.aspecto='16:9';MS.fundido=0;msEnviar(false);return true;})()`);
     ok('se abre una segunda ventana', await until(() => ventanas().length === 2));
