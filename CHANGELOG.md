@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.108.0] - 2026-11-24
+### Cambiado
+- Creador de personajes: 5 pasos (Clase, Origen, Características, Detalles, Resumen). Detalles reúne nombre, alineamiento, personalidad, ideales, vínculos, defectos e historia; el Resumen va en bloques y el desglose del origen queda plegado.
+
 ## [1.107.0] - 2026-11-24
 ### Añadido
 - Creador de personajes: cuarto método de características, la tabla «Conjunto estándar por clase» del Manual del Jugador, con opción de ajustarla a mano.

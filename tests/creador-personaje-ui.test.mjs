@@ -19,7 +19,7 @@ const TAIL=`<script>
     await wait(1500);
     location.hash='#personajes';await wait(400);
     await click('[data-act="pjnew"]');
-    ok('se abre el asistente en el paso 1 con 6 pasos',!!q('.pjw')&&q('.pjw-pasos').children.length===6&&q('[aria-current="step"]').textContent.includes('Clase')&&body().textContent.includes('Origen'));
+    ok('se abre el asistente en el paso 1 con 5 pasos',!!q('.pjw')&&q('.pjw-pasos').children.length===5&&q('[aria-current="step"]').textContent.includes('Clase')&&body().textContent.includes('Origen'));
     ok('no deja avanzar sin clase',sig().disabled);
     await click(op('cls','guerrero'));
     ok('el guerrero pide 2 habilidades y sigue bloqueado',!!q('.pjw-chips input[value="atletismo"]')&&sig().disabled);
@@ -63,19 +63,19 @@ const TAIL=`<script>
     await chk('[data-pjw="met"][value="std"]',true);
     for(const [i,a] of orden.entries())await sel('[data-pjw="asig"][data-a="'+a+'"]',String(i));
     await click('[data-w="sig"]');
-    ok('paso 4 Alineamiento aparte',!!q('[data-pjw="alin"]')&&!q('#pjw-n'));
+    ok('paso 4 Detalles: nombre, alineamiento, personalidad, ideales, vínculos, defectos e historia juntos',!!q('#pjw-n')&&!!q('[data-pjw="alin"]')&&['personalidad','ideales','vinculos','defectos','historia'].every(k=>!!q('textarea[data-pjw="'+k+'"]')));
+    ok('los pasos son 5 y el último de datos es Detalles',q('.pjw-pasos').children.length===5);
     await sel('[data-pjw="alin"]','Legal bueno');
-    await click('[data-w="sig"]');
-    ok('paso 5 Detalles con el nombre',!!q('#pjw-n')&&!q('[data-pjw="alin"]'));
     q('#pjw-n').value='Brenna';q('#pjw-n').dispatchEvent(new Event('input',{bubbles:true}));
+    for(const [k,v] of [['personalidad','Directa y leal'],['ideales','Honor'],['vinculos','Mi hermana'],['defectos','Terca'],['historia','Soldado retirado']]){const e=q('textarea[data-pjw="'+k+'"]');e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));}
     await click('[data-w="sig"]');
-    ok('el resumen muestra el origen de cada cosa',body().textContent.includes('trasfondo Acólito')&&body().textContent.includes('clase Guerrero'));
+    ok('el resumen va en bloques (habilidades, dotes, equipo…) y guarda el desglose aparte',document.querySelectorAll('.pjw-res section').length>=6&&body().textContent.includes('Dotes y mejoras')&&body().textContent.includes('Legal bueno')&&body().textContent.includes('trasfondo Acólito'));
     await click('[data-w="sig"]');
     const f=PJ[PJ.length-1];
     ok('la ficha creada lleva nombre, clase, especie y trasfondo',!!f&&f.nombre==='Brenna'&&f.niveles[0].c==='guerrero'&&f.especie==='Humano'&&f.trasfondo==='Acólito');
     ok('características: reparto + trasfondo',f.car.fue===15&&f.car.con===14&&f.car.des===13&&f.car.sab===14&&f.car.car===11&&f.car.int===8);
     ok('competencias de clase y trasfondo',f.habil.atletismo===1&&f.habil.percepcion===1&&f.habil.perspicacia===1&&f.habil.religion===1);
-    ok('salvaciones del guerrero, dote y alineamiento',f.salvac.join()==='fue,con'&&f.dotes.length===1&&f.dotes[0].includes('Iniciado en la magia')&&f.pers.alineamiento==='Legal bueno');
+    ok('salvaciones del guerrero, dote y alineamiento',f.salvac.join()==='fue,con'&&f.dotes.length===1&&f.dotes[0].includes('Iniciado en la magia')&&f.pers.alineamiento==='Legal bueno'&&f.pers.ideales==='Honor'&&f.pers.vinculos==='Mi hermana'&&f.pers.defectos==='Terca'&&f.pers.historia==='Soldado retirado'&&f.pers.personalidad==='Directa y leal');
     ok('el registro guarda el desglose',f.registro.length>=8&&f.registro.some(r=>r.d.includes('trasfondo Acólito')));
     ok('se abre la hoja del personaje',location.hash==='#personajes/'+f.id);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
