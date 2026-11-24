@@ -252,7 +252,8 @@ function registrarSonidosWeb() {
     return sonidosWeb.buscar(String(prov), consulta, sonidosWeb.leerClaves(cfgClaves())[prov], { soloCC0: !op || op.soloCC0 !== false }, (u, o) => net.fetch(u, o));
   });
 }
-const TIPOS_AUDIO = { '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.oga': 'audio/ogg', '.opus': 'audio/ogg', '.wav': 'audio/wav', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.flac': 'audio/flac' };
+const TIPOS_AUDIO = { '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.oga': 'audio/ogg', '.opus': 'audio/ogg', '.wav': 'audio/wav', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.flac': 'audio/flac',
+  '.mp4': 'video/mp4', '.m4v': 'video/mp4', '.webm': 'video/webm', '.ogv': 'video/ogg', '.gif': 'image/gif', '.webp': 'image/webp', '.png': 'image/png', '.apng': 'image/apng', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.avif': 'image/avif' };
 // Sirve un audio con soporte de rangos (el reproductor salta al principio para repetir en bucle)
 function servirAudio(req, f) {
   let st;

@@ -6,10 +6,11 @@ const MAX_IMG = 6_000_000;
 
 // ---- escenas: capas con posición y tamaño relativos (en %) sobre un lienzo 16:9 ----
 const CAPAS = ['imagen', 'texto', 'iniciativa', 'cuentas', 'dados', 'mapa', 'ambiente'];
-const EFECTOS = ['niebla', 'lluvia', 'nieve', 'tormenta', 'noche', 'brasas'];
-// sonido de ambiente: generado en la ventana, un enlace https (mp3 o radio en directo) o un archivo de la carpeta de sonidos del usuario
+// ambiente: vídeo o imagen animada en bucle y, aparte, un sonido; ambos de un enlace https o de la carpeta de ambientes del usuario
 const URL_AUDIO = /^https:\/\/[^\s"'<>\\]{4,480}$/;
 const ARCHIVO_AUDIO = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}\.(?:mp3|ogg|oga|opus|wav|m4a|aac|flac)$/i;
+const ARCHIVO_VISUAL = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}\.(?:mp4|webm|ogv|m4v|gif|webp|png|jpe?g|apng|avif)$/i;
+const ES_IMAGEN = /\.(?:gif|webp|png|jpe?g|avif|apng)(?:[?#].*)?$/i;
 const ASPECTOS = ['16:9', 'auto', '21:9', '16:10', '4:3'];
 const MAX_TOK = 200_000;   // un token de criatura o de jugador (imagen pequeña)
 const MAX_TOKENS_MAPA = 60;
@@ -46,15 +47,19 @@ function validarCapa(c, i) {
     return o;
   }
   if (c.tipo === 'ambiente') {
-    // ambiente: efecto visual encima de la escena (niebla, lluvia, nieve, tormenta, noche, brasas) con sonido opcional generado en la propia ventana
-    o.efecto = EFECTOS.includes(c.efecto) ? c.efecto : 'niebla';
-    o.intensidad = num(c.intensidad, 1, 10, 5);
-    o.sonido = c.sonido === true;
-    o.volumen = num(c.volumen, 0, 100, 40);
+    // ambiente: vídeo o imagen animada en bucle encima de la escena (sin sonido propio) y un sonido opcional en bucle
+    const sano = n => typeof n === 'string' && !n.startsWith('.') && !n.includes('..');
+    const vu = c.visual === 'url' && typeof c.vurl === 'string' && URL_AUDIO.test(c.vurl);
+    const va = c.visual === 'archivo' && sano(c.varchivo) && ARCHIVO_VISUAL.test(c.varchivo);
+    o.visual = vu ? 'url' : va ? 'archivo' : '';
+    o.vsrc = vu ? c.vurl : va ? 'app://local/__audios/' + encodeURIComponent(c.varchivo) : '';
+    o.vtipo = ES_IMAGEN.test(o.vsrc) ? 'imagen' : 'video';
     const url = c.fuente === 'url' && typeof c.url === 'string' && URL_AUDIO.test(c.url);
-    const arch = c.fuente === 'archivo' && typeof c.archivo === 'string' && ARCHIVO_AUDIO.test(c.archivo) && !c.archivo.startsWith('.') && !c.archivo.includes('..');
-    o.fuente = url ? 'url' : arch ? 'archivo' : 'generado';
+    const arch = c.fuente === 'archivo' && sano(c.archivo) && ARCHIVO_AUDIO.test(c.archivo);
+    o.fuente = url ? 'url' : arch ? 'archivo' : '';
     o.audio = url ? c.url : arch ? 'app://local/__audios/' + encodeURIComponent(c.archivo) : '';
+    o.sonido = c.sonido === true && !!o.audio;
+    o.volumen = num(c.volumen, 0, 100, 40);
     return o;
   }
   if (c.tipo === 'iniciativa') {

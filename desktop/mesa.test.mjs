@@ -37,27 +37,43 @@ test('iniciativa: una criatura oculta sale como «Enemigo oculto», sin nombre, 
   assert.equal(validar({ tipo: 'iniciativa', lista: [{ n: 'A', tok: 'data:text/html;base64,AAAA' }] }).lista[0].tok, '', 'solo imágenes data:');
 });
 
-test('ambiente: efecto, intensidad y sonido acotados; el sonido es opcional y nunca llega activo por defecto', () => {
-  const c = validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', efecto: 'lluvia', intensidad: 99, volumen: -5 }, { tipo: 'ambiente', efecto: '<script>', sonido: 'si' },
-    { tipo: 'ambiente', efecto: 'tormenta', sonido: true, volumen: 70, intensidad: 0 }] }).capas;
-  assert.deepEqual([c[0].efecto, c[0].intensidad, c[0].volumen, c[0].sonido], ['lluvia', 10, 0, false]);
-  assert.deepEqual([c[1].efecto, c[1].sonido], ['niebla', false]);
-  assert.deepEqual([c[2].efecto, c[2].sonido, c[2].volumen, c[2].intensidad], ['tormenta', true, 70, 1]);
-  for (const ef of ['niebla', 'lluvia', 'nieve', 'tormenta', 'noche', 'brasas']) assert.equal(validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', efecto: ef }] }).capas[0].efecto, ef);
+test('ambiente: sin vídeo ni sonido por defecto; el volumen se acota y un sonido sin audio no llega activo', () => {
+  const c = validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', volumen: -5 }, { tipo: 'ambiente', sonido: 'si', efecto: 'lluvia' }, { tipo: 'ambiente', sonido: true, volumen: 700 }] }).capas;
+  assert.deepEqual([c[0].visual, c[0].vsrc, c[0].sonido, c[0].volumen, c[0].audio], ['', '', false, 0, '']);
+  assert.equal(c[1].sonido, false);
+  assert.equal(c[2].sonido, false, 'pedir sonido sin tener audio no deja nada sonando');
+  assert.equal(c[2].volumen, 100);
+  for (const k of ['efecto', 'intensidad']) assert.ok(!(k in c[1]), 'los efectos de código ya no existen: ' + k);
+  assert.notEqual(c[1].fuente, 'generado');
 });
 
-test('ambiente: el sonido solo admite generado, enlaces https o archivos de audio de la carpeta del usuario', () => {
+test('ambiente: el sonido solo admite enlaces https o archivos de audio de la carpeta del usuario', () => {
   const f = o => validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', sonido: true, ...o }] }).capas[0];
-  assert.deepEqual([f({}).fuente, f({}).audio], ['generado', '']);
+  assert.deepEqual([f({}).fuente, f({}).audio], ['', '']);
   const r = f({ fuente: 'url', url: 'https://ice1.somafm.com/dronezone-128-mp3' });
-  assert.deepEqual([r.fuente, r.audio], ['url', 'https://ice1.somafm.com/dronezone-128-mp3']);
+  assert.deepEqual([r.fuente, r.audio, r.sonido], ['url', 'https://ice1.somafm.com/dronezone-128-mp3', true]);
   for (const u of ['http://x.com/a.mp3', 'javascript:alert(1)', 'file:///c:/secreto.mp3', 'https://a b.com/x', 'https://x', 'data:audio/mp3;base64,AAAA', 'https://x.com/"onerror=1', 'https://' + 'a'.repeat(500) + '.com'])
-    assert.deepEqual([f({ fuente: 'url', url: u }).fuente, f({ fuente: 'url', url: u }).audio], ['generado', ''], u);
+    assert.deepEqual([f({ fuente: 'url', url: u }).fuente, f({ fuente: 'url', url: u }).audio], ['', ''], u);
   const a = f({ fuente: 'archivo', archivo: 'Lluvia fuerte (1).mp3' });
   assert.deepEqual([a.fuente, a.audio], ['archivo', 'app://local/__audios/Lluvia%20fuerte%20(1).mp3']);
-  for (const n of ['../a.mp3', 'sub/a.mp3', 'a\\b.mp3', '.oculto.mp3', 'a.exe', 'a.mp3.exe', '', 5, null])
-    assert.equal(f({ fuente: 'archivo', archivo: n }).fuente, 'generado', String(n));
+  for (const n of ['../a.mp3', 'sub/a.mp3', 'a\\b.mp3', '.oculto.mp3', 'a.exe', 'a.mp3.exe', 'a.mp4', '', 5, null])
+    assert.equal(f({ fuente: 'archivo', archivo: n }).fuente, '', String(n));
   assert.equal(f({ fuente: 'raro', url: 'https://x.com/a.mp3' }).audio, '');
+});
+
+test('ambiente: el vídeo o la imagen animada solo admiten enlaces https o archivos de vídeo e imagen de la carpeta', () => {
+  const f = o => validar({ tipo: 'escena', capas: [{ tipo: 'ambiente', ...o }] }).capas[0];
+  const v = f({ visual: 'url', vurl: 'https://cdn.ejemplo.com/lluvia.mp4?x=1' });
+  assert.deepEqual([v.visual, v.vsrc, v.vtipo], ['url', 'https://cdn.ejemplo.com/lluvia.mp4?x=1', 'video']);
+  assert.equal(f({ visual: 'url', vurl: 'https://cdn.ejemplo.com/nieve.gif' }).vtipo, 'imagen');
+  assert.equal(f({ visual: 'url', vurl: 'https://cdn.ejemplo.com/niebla.webp?v=2' }).vtipo, 'imagen');
+  for (const u of ['http://x.com/a.mp4', 'javascript:alert(1)', 'file:///c:/a.mp4', 'data:video/mp4;base64,AAAA', 'https://x', 'https://a b.com/x.mp4'])
+    assert.deepEqual([f({ visual: 'url', vurl: u }).visual, f({ visual: 'url', vurl: u }).vsrc], ['', ''], u);
+  const a = f({ visual: 'archivo', varchivo: 'Niebla densa.webm' });
+  assert.deepEqual([a.visual, a.vsrc, a.vtipo], ['archivo', 'app://local/__audios/Niebla%20densa.webm', 'video']);
+  assert.equal(f({ visual: 'archivo', varchivo: 'brasas.gif' }).vtipo, 'imagen');
+  for (const n of ['../a.mp4', 'sub/a.mp4', 'a\\b.mp4', '.oculto.mp4', 'a.exe', 'a.mp4.exe', 'a.mp3', '', 5, null])
+    assert.equal(f({ visual: 'archivo', varchivo: n }).visual, '', String(n));
 });
 
 test('mapa de combate: cuadrícula acotada, fichas validadas y las ocultas no llegan nunca', () => {

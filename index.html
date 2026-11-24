@@ -2704,6 +2704,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .ms-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;background:#0b0a09}
 .ms-stage.mapasel iframe{pointer-events:auto}.ms-stage.mapasel .ms-ov{pointer-events:none}
 .acapi{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:8px}.acapi h4{margin:0}.acapi .inline{display:flex;gap:6px;flex-wrap:wrap}.acapi input{flex:1 1 180px}
+.ms-amb{list-style:none;margin:0;padding:0;display:grid;gap:4px}.ms-amb li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px;align-items:center}.ms-amb .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ms-web{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.ms-web li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px;align-items:center}.ms-web .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ms-web small{grid-column:1/-1;color:var(--muted)}
 .ms-toks{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:5px}.ms-toks li{display:grid;grid-template-columns:minmax(0,1fr) 52px 52px minmax(0,108px) auto auto;gap:4px;align-items:center}
 .ms-toks input,.ms-toks select{min-width:0;width:100%;font-size:12px;padding:3px 4px}
@@ -2981,7 +2982,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.105</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.106</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3180,6 +3181,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.106 <span>24 nov 2026</span></h3><ul>
+      <li><b>Ambiente con imágenes y vídeos de verdad:</b> la capa de ambiente deja de dibujar lluvia, nieve o niebla con código y de generar sonidos. Ahora pone un vídeo o una imagen animada (mp4, webm, gif, webp…) en bucle y sin sonido, desde un enlace https o desde tu carpeta de ambientes, con la opacidad de la capa; y un sonido aparte (enlace, archivo o búsqueda en Freesound/Jamendo).</li>
+      <li><b>Ambientes guardados:</b> cada ambiente (imagen o vídeo, sonido y volumen) se guarda con su nombre y se reutiliza en cualquier escena con «Usar». Solo se guardan enlaces y nombres de archivo.</li>
+    </ul></li>
     <li><h3>v1.105 <span>24 nov 2026</span></h3><ul>
       <li><b>Claves de APIs en Tu cuenta:</b> una pestaña «Claves de APIs» guarda las de Freesound y Jamendo en un solo sitio (solo en este equipo). El buscador de sonidos de la capa de ambiente te lleva allí si falta la clave.</li>
       <li><b>Mapa sin parpadeo:</b> al mover una ficha la mesa ya no hace el fundido entre escenas, solo cambia lo que se mueve.</li>
@@ -4856,7 +4861,7 @@ function mesaTelon(n){
 }
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 /* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
-const MS={web:{prov:'freesound',q:'',res:null,est:'',claves:{},solo0:true,cargando:false},webSuena:-1,vent:1,otros:{},nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',aspecto:'16:9',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
+const MS={amb:[],web:{prov:'freesound',q:'',res:null,est:'',claves:{},solo0:true,cargando:false},webSuena:-1,vent:1,otros:{},nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',aspecto:'16:9',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
 const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},mapa:{x:0,y:0,w:100,h:100},ambiente:{x:0,y:0,w:100,h:100},cuentas:{x:72,y:76,w:25,h:19},dados:{x:60,y:30,w:38,h:62}};
 const msId=()=>'c'+Math.random().toString(36).slice(2,9);
 const msNum=(v,a,b,d)=>{const n=Number(v);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):d;};
@@ -4866,8 +4871,10 @@ function msNorm(c){
   const d=MS_DEF[c.tipo],o={tipo:c.tipo,id:/^[\w-]{1,40}$/.test(c.id||'')?c.id:msId(),x:msNum(c.x,-50,150,d.x),y:msNum(c.y,-50,150,d.y),w:msNum(c.w,1,200,d.w),h:msNum(c.h,1,200,d.h),visible:c.visible!==false,op:msNum(c.op,0,1,1)};
   if(c.tipo==='imagen'){o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='cubrir'?'cubrir':'contener';o.titulo=String(c.titulo||'').slice(0,200);o.marco=!!c.marco;}
   if(c.tipo==='texto'){o.t=String(c.t??'').slice(0,2000);o.tam=msNum(c.tam,1,60,6);o.color=msCol(c.color,'#f1ece0');o.fondo=msCol(c.fondo,'');o.alin=['izq','centro','der'].includes(c.alin)?c.alin:'centro';o.fuente=['sans','serif','manuscrita'].includes(c.fuente)?c.fuente:'sans';o.negrita=!!c.negrita;}
-  if(c.tipo==='ambiente'){o.efecto=['niebla','lluvia','nieve','tormenta','noche','brasas'].includes(c.efecto)?c.efecto:'niebla';o.intensidad=msNum(c.intensidad,1,10,5);o.sonido=c.sonido===true;o.volumen=msNum(c.volumen,0,100,40);
-    o.fuente=['generado','url','archivo'].includes(c.fuente)?c.fuente:'generado';o.url=/^https:\/\/[^\s"'<>\\]{4,480}$/.test(c.url||'')?c.url:'';o.archivo=String(c.archivo||'').replace(/[\u0000-\u001f]/g,' ').slice(0,120);o.credito=String(c.credito||'').replace(/[\u0000-\u001f]/g,' ').slice(0,200);}
+  if(c.tipo==='ambiente'){const nm=s=>String(s||'').replace(/[\u0000-\u001f]/g,' ').slice(0,120),https=s=>/^https:\/\/[^\s"'<>\\]{4,480}$/.test(s||'')?s:'';
+    o.visual=['url','archivo'].includes(c.visual)?c.visual:'';o.vurl=https(c.vurl);o.varchivo=nm(c.varchivo);   // vídeo o imagen animada en bucle
+    o.sonido=c.sonido===true;o.volumen=msNum(c.volumen,0,100,40);
+    o.fuente=c.fuente==='archivo'?'archivo':'url';o.url=https(c.url);o.archivo=nm(c.archivo);o.credito=String(c.credito||'').replace(/[\u0000-\u001f]/g,' ').slice(0,200);}
   if(c.tipo==='iniciativa'){o.orient=c.orient==='h'?'h':'v';o.tokens=c.tokens!==false;}
   if(c.tipo==='mapa'){o.fondo=msCol(c.fondo,'#2b2f26');o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='contener'?'contener':'cubrir';o.cuad=c.cuad!==false;o.cuadColor=msCol(c.cuadColor,'#ffffff');o.cuadOp=msNum(c.cuadOp,0.05,1,0.3);
     o.celda=msNum(c.celda,0.5,20,2.5);o.pantalla=msNum(c.pantalla,15,600,122);o.offx=msNum(c.offx,0,1,0);o.offy=msNum(c.offy,0,1,0);
@@ -4911,7 +4918,7 @@ const msNom=c=>{
   if(c.tipo==='texto')return (c.t||'').replace(/\s+/g,' ').trim().slice(0,28)||T('Texto');
   if(c.tipo==='dados')return T('Bandeja de dados');
   if(c.tipo==='mapa')return T('Mapa de combate');
-  if(c.tipo==='ambiente')return {niebla:T('Niebla'),lluvia:T('Lluvia'),nieve:T('Nieve'),tormenta:T('Tormenta'),noche:T('Noche'),brasas:T('Brasas')}[c.efecto]||T('Ambiente');
+  if(c.tipo==='ambiente')return T('Ambiente');
   if(c.tipo==='cuentas')return c.nombre||T('Cuentas atrás');
   return c.tipo==='iniciativa'?T('Orden de iniciativa'):T('Cuentas atrás');
 };
@@ -5079,7 +5086,7 @@ function msLibHTML(){
    +'<button type="button" class="btn sm" data-ms="add" data-t="iniciativa">'+ic('sword')+' '+esc(T('Orden de iniciativa'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+ic('hourglass')+' '+esc(T('Cuentas atrás'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="mapa">'+ic('map')+' '+esc(T('Mapa de combate'))+'</button>'
-   +'<button type="button" class="btn sm" data-ms="add" data-t="ambiente">'+ic('wind')+' '+esc(T('Ambiente (niebla, lluvia…)'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="ambiente">'+ic('wind')+' '+esc(T('Ambiente (vídeo y sonido)'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="dados">'+ic('d20')+' '+esc(T('Bandeja de dados'))+'</button></div>'
    +'<h3>'+esc(T('Tirar en la bandeja'))+'</h3><div class="ms-dados"><input type="text" id="ms-dn" maxlength="60" value="'+esc(MS.dn||'1d20')+'" aria-label="'+esc(T('Tirada, por ejemplo 2d6+3'))+'" placeholder="2d6+3" autocomplete="off" spellcheck="false">'
    +'<button type="button" class="btn sm" data-ms="probar" title="'+esc(T('Tira aquí, en la vista previa, sin enviar nada a la mesa'))+'">'+esc(T('Probar'))+'</button><button type="button" class="btn sm primary" data-ms="tirar" title="'+esc(T('Tira en la ventana de la mesa'))+'">'+ic('d20')+' '+esc(T('Tirar'))+'</button></div>'
@@ -5133,15 +5140,18 @@ function msInsp(){
       +sl('orient',T('Disposición'),[['v',T('Vertical (lista)')],['h',T('Horizontal (raíl de fichas)')]])+ck('tokens',T('Mostrar los tokens'))
       +(c.orient==='h'?'<div class="ms-acts"><button type="button" class="btn sm" data-ms="inipos" data-v="arriba">'+esc(T('Franja arriba'))+'</button><button type="button" class="btn sm" data-ms="inipos" data-v="abajo">'+esc(T('Franja abajo'))+'</button></div>':'');
     if(c.tipo==='mapa')p+=msMapaInsp(c,n,sl,ck);
-    if(c.tipo==='ambiente')p+='<p class="hint">'+esc(T('Efecto que cae sobre la escena, por encima de las capas de debajo. Ponlo a pantalla completa o solo en una zona.'))+'</p>'
-      +sl('efecto',T('Efecto'),[['niebla',T('Niebla')],['lluvia',T('Lluvia')],['nieve',T('Nieve')],['tormenta',T('Tormenta (lluvia, rayos y truenos)')],['noche',T('Noche (oscurece)')],['brasas',T('Brasas')]])
-      +'<label class="f">'+esc(T('Intensidad'))+'<input type="range" data-msf="intensidad" data-t="n" min="1" max="10" step="1" value="'+c.intensidad+'"></label>'
+    if(c.tipo==='ambiente')p+='<p class="hint">'+esc(T('Un vídeo o una imagen animada en bucle sobre la escena y, aparte, un sonido. Ponlo a pantalla completa o solo en una zona, y guarda cada ambiente cuando lo tengas a tu gusto.'))+'</p>'
+      +msAmbLibHTML(c)
+      +'<h3>'+esc(T('Imagen o vídeo'))+'</h3>'
+      +sl('visual',T('Origen'),[['',T('Ninguno')],['url',T('Enlace https (mp4, webm, gif, webp…)')]].concat(window.__AppShell&&window.__AppShell.audios?[['archivo',T('Mi carpeta de ambientes')]]:[]))
+      +msVisualInsp(c)
+      +'<h3>'+esc(T('Sonido'))+'</h3>'
       +ck('sonido',T('Con sonido de ambiente (opcional)'))
       +(c.sonido?'<label class="f">'+esc(T('Volumen'))+'<input type="range" data-msf="volumen" data-t="n" min="0" max="100" step="5" value="'+c.volumen+'"></label>'
-        +sl('fuente',T('Origen del sonido'),[['generado',T('Generado (sin archivos)')],['url',T('Enlace: mp3 o radio en directo')]].concat(window.__AppShell&&window.__AppShell.audios?[['archivo',T('Mi carpeta de sonidos')]]:[]))
+        +sl('fuente',T('Origen del sonido'),[['url',T('Enlace: mp3 o radio en directo')]].concat(window.__AppShell&&window.__AppShell.audios?[['archivo',T('Mi carpeta de ambientes')]]:[]))
         +msAudioInsp(c)
         +'<div class="ms-acts"><button type="button" class="btn sm" data-ms="ambprueba" aria-pressed="'+!!MS.ambOn+'">'+esc(MS.ambOn?T('Parar la prueba'):T('Probar el sonido aquí'))+'</button></div>'
-        +'<p class="hint">'+esc(T('Se genera en la propia ventana, sin archivos. Se silencia con el telón bajado.'))+'</p>':'')
+        +'<p class="hint">'+esc(T('Se silencia con el telón bajado.'))+'</p>':'')
       +'<div class="ms-acts"><a class="btn sm noi18n" href="https://tabletopaudio.com/" target="_blank" rel="noopener noreferrer">♪ Tabletop Audio</a></div>'
       +'<p class="hint">'+esc(T('¿Prefieres grabaciones reales? Abre Tabletop Audio (ambientes pensados para rol, gratis) en el navegador y déjalo sonando por los altavoces. Desactiva aquí el sonido para que no se mezclen. No se puede incrustar en la mesa ni se silencia con el telón.'))+'</p>';
     if(c.tipo==='dados')p+='<p class="hint">'+esc(T('Aquí caen los dados, con física real: no pueden salirse del recuadro. Tira desde «Tirar en la bandeja».'))+'</p>'
@@ -5234,15 +5244,38 @@ async function msAudiosCarga(){
   try{MS.audCarpeta=await A.carpeta();MS.audList=MS.audCarpeta?await A.lista():[];}catch{MS.audList=[];}
   const c=msSelC();if(c&&c.tipo==='ambiente')msInsp();
 }
+/* biblioteca de ambientes: cada uno guarda su vídeo o imagen, su sonido y su volumen (solo enlaces y nombres de archivo; nada de contenido) */
+const AMB_KEY='mesa-ambientes-v1',AMB_CAMPOS=['visual','vurl','varchivo','sonido','volumen','fuente','url','archivo','credito'];
+function ambLibCarga(){try{const l=JSON.parse(Store.get(AMB_KEY)||'[]');MS.amb=(Array.isArray(l)?l:[]).filter(x=>x&&typeof x.id==='string'&&typeof x.n==='string').slice(0,100).map(x=>({id:x.id.slice(0,20),n:x.n.slice(0,60),...msNorm({tipo:'ambiente',...x})}));}catch{MS.amb=[];}}
+function ambLibGuarda(){try{Store.set(AMB_KEY,JSON.stringify(MS.amb.map(a=>({id:a.id,n:a.n,...Object.fromEntries(AMB_CAMPOS.map(k=>[k,a[k]]))}))));}catch{toast(T('No se pudo guardar'));}}
+function msAmbLibHTML(c){
+  const L=MS.amb||[];
+  return '<h3>'+esc(T('Ambientes guardados'))+'</h3>'
+    +(L.length?'<ul class="ms-amb">'+L.map(a=>'<li><span class="nm">'+esc(a.n)+'</span><button type="button" class="btn sm" data-ms="ambusa" data-id="'+esc(a.id)+'">'+esc(T('Usar'))+'</button><button type="button" class="btn sm ghost danger" data-ms="ambborra" data-id="'+esc(a.id)+'" aria-label="'+esc(T('Borrar')+' '+a.n)+'">✕</button></li>').join('')+'</ul>'
+      :'<p class="hint">'+esc(T('Aún no hay ninguno. Prepara uno abajo y guárdalo con un nombre.'))+'</p>')
+    +'<div class="ms-acts"><input type="text" id="ms-amb-n" maxlength="60" placeholder="'+esc(T('Nombre (Lluvia, Taberna…)'))+'" aria-label="'+esc(T('Nombre del ambiente'))+'"><button type="button" class="btn sm primary" data-ms="ambguarda">'+esc(T('Guardar este ambiente'))+'</button></div>';
+}
+const MS_EXT_AUD=/\.(?:mp3|ogg|oga|opus|wav|m4a|aac|flac)$/i;
+function msVisualInsp(c){
+  if(c.visual==='url')return '<label class="f">'+esc(T('Enlace https del vídeo o la imagen'))+'<input type="url" data-msf="vurl" maxlength="480" value="'+esc(c.vurl)+'" placeholder="https://…" spellcheck="false"></label>'
+    +'<p class="hint">'+esc(T('Un archivo directo (mp4, webm, gif, webp…) que tengas derecho a usar. Se repite en bucle y sin sonido; la opacidad de la capa lo deja más o menos transparente.'))+'</p>';
+  if(c.visual==='archivo'){
+    const L=(MS.audList||[]).filter(n=>!MS_EXT_AUD.test(n));
+    return '<p class="hint">'+esc(MS.audCarpeta?T('Carpeta')+': '+MS.audCarpeta:T('Elige una carpeta con tus ambientes (mp4, webm, gif, webp, mp3…). Se queda en tu equipo: no se sube a ningún sitio.'))+'</p>'
+      +'<div class="ms-acts"><button type="button" class="btn sm" data-ms="audcarpeta">'+esc(MS.audCarpeta?T('Cambiar la carpeta'):T('Elegir la carpeta de ambientes'))+'</button>'+(MS.audCarpeta?'<button type="button" class="btn sm ghost" data-ms="audrecarga">'+esc(T('Releer'))+'</button>':'')+'</div>'
+      +(MS.audCarpeta?'<label class="f">'+esc(T('Vídeo o imagen'))+'<select data-msf="varchivo"><option value="">'+esc(L.length?T('— elige uno —'):T('La carpeta no tiene vídeos ni imágenes'))+'</option>'+L.map(n=>'<option value="'+esc(n)+'"'+(n===c.varchivo?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></label>':'');
+  }
+  return '';
+}
 function msAudioInsp(c){
   if(c.fuente==='url')return '<label class="f">'+esc(T('Enlace https del audio'))+'<input type="url" data-msf="url" maxlength="480" value="'+esc(c.url)+'" placeholder="https://…" spellcheck="false"></label>'
     +'<div class="ms-acts">'+MS_RADIOS.map(r=>'<button type="button" class="btn sm ghost noi18n" data-ms="audradio" data-u="'+esc(r[1])+'">♪ SomaFM '+esc(r[0])+'</button>').join('')+'</div>'
     +'<p class="hint">'+esc(T('SomaFM es una radio ambiental sin publicidad que vive de donaciones de sus oyentes (somafm.com). Vale cualquier enlace https directo a un mp3, ogg o radio en directo que tengas derecho a usar. No sirven las páginas de YouTube, Spotify o similares: no son archivos de audio.'))+'</p>'
     +(c.credito?'<p class="hint">'+esc(T('Crédito')+': '+c.credito)+'</p>':'')+msWebInsp();
   if(c.fuente==='archivo'){
-    const L=MS.audList||[];
-    return '<p class="hint">'+esc(MS.audCarpeta?T('Carpeta')+': '+MS.audCarpeta:T('Elige una carpeta con tus sonidos (mp3, ogg, wav, m4a, flac…). Se queda en tu equipo: no se sube a ningún sitio.'))+'</p>'
-      +'<div class="ms-acts"><button type="button" class="btn sm" data-ms="audcarpeta">'+esc(MS.audCarpeta?T('Cambiar la carpeta'):T('Elegir la carpeta de sonidos'))+'</button>'+(MS.audCarpeta?'<button type="button" class="btn sm ghost" data-ms="audrecarga">'+esc(T('Releer'))+'</button>':'')+'</div>'
+    const L=(MS.audList||[]).filter(n=>MS_EXT_AUD.test(n));
+    return '<p class="hint">'+esc(MS.audCarpeta?T('Carpeta')+': '+MS.audCarpeta:T('Elige una carpeta con tus ambientes (mp3, ogg, wav, m4a, flac…). Se queda en tu equipo: no se sube a ningún sitio.'))+'</p>'
+      +'<div class="ms-acts"><button type="button" class="btn sm" data-ms="audcarpeta">'+esc(MS.audCarpeta?T('Cambiar la carpeta'):T('Elegir la carpeta de ambientes'))+'</button>'+(MS.audCarpeta?'<button type="button" class="btn sm ghost" data-ms="audrecarga">'+esc(T('Releer'))+'</button>':'')+'</div>'
       +(MS.audCarpeta?'<label class="f">'+esc(T('Sonido'))+'<select data-msf="archivo"><option value="">'+esc(L.length?T('— elige uno —'):T('La carpeta no tiene audios'))+'</option>'+L.map(n=>'<option value="'+esc(n)+'"'+(n===c.archivo?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></label>':'');
   }
   return '';
@@ -5261,7 +5294,7 @@ function msRender(){
   const app=msApp();
   $('#ms-web').hidden=app;$('#ms-app').hidden=!app;
   if(!app)return;
-  msLoad();msBarra();msLibHTML();msOv();msInsp();msMarco();msWebEstado();
+  msLoad();ambLibCarga();msBarra();msLibHTML();msOv();msInsp();msMarco();msWebEstado();
   const f=$('#ms-prev');if(f&&!f.getAttribute('src')){MS.listo=false;f.setAttribute('src','mesa.html');}else msPrev();
 }
 function msAnade(tipo,extra){
@@ -5321,6 +5354,15 @@ function msAct(a,b){
   else if(a==='imgtitulo')msTituloImg(b.dataset.id);
   else if(a==='mpant'){if(c&&c.tipo==='mapa'&&b.value!=='otra'){c.pantalla=+b.value;msInsp();msCambio();}}
   else if(a==='mapick'){MS.pick=b.dataset.modo;toast(b.dataset.modo==='token'?T('Elige una imagen de la lista para la ficha'):T('Elige una imagen de la lista para el mapa'),4000);}
+  else if(a==='ambguarda'&&c&&c.tipo==='ambiente'){
+    const i=document.getElementById('ms-amb-n'),n=((i&&i.value)||'').trim().slice(0,60);
+    if(!n){toast(T('Ponle un nombre al ambiente'));return;}
+    if(!c.vsrc&&!c.visual&&!c.sonido){toast(T('El ambiente está vacío: elige una imagen, un vídeo o un sonido'));return;}
+    const p={id:'a'+Date.now().toString(36),n,...Object.fromEntries(AMB_CAMPOS.map(k=>[k,c[k]]))},e=MS.amb.findIndex(x=>fold(x.n)===fold(n));
+    if(e>=0){p.id=MS.amb[e].id;MS.amb[e]=p;}else if(MS.amb.length<100)MS.amb.push(p);
+    ambLibGuarda();msInsp();toast(T('Ambiente guardado')+': '+n);}
+  else if(a==='ambusa'&&c&&c.tipo==='ambiente'){const p=(MS.amb||[]).find(x=>x.id===b.dataset.id);if(!p)return;Object.assign(c,msNorm({...c,...Object.fromEntries(AMB_CAMPOS.map(k=>[k,p[k]]))}));msInsp();msCambio();if(MS.ambOn)ambPrueba(true);}
+  else if(a==='ambborra'){MS.amb=(MS.amb||[]).filter(x=>x.id!==b.dataset.id);ambLibGuarda();msInsp();}
   else if(a==='ambprueba'){ambPrueba(!MS.ambOn);msInsp();}
   else if(a==='inipos'&&c&&c.tipo==='iniciativa'&&MS_INI_H[b.dataset.v]){Object.assign(c,MS_INI_H[b.dataset.v]);msInsp();msCambio();}
   else if(a==='webprov'){msWebParar();MS.web.prov=b.dataset.p;MS.web.res=null;MS.web.est='';msInsp();}
@@ -5390,7 +5432,7 @@ function msAct(a,b){
     if(t.dataset.ms==='mpant')return msAct('mpant',t);
     if(t.dataset.web==='solo0'){MS.web.solo0=t.checked;return;}
     if(t.dataset.msg==='live'){MS.live=t.checked;if(MS.live&&msVivo())msEnviar(true);return;}
-    if(t.dataset.msf&&(t.tagName==='SELECT'||t.type==='checkbox')){msCampo(t);msOv();msInsp();msCambio();if(t.dataset.msf==='fuente'&&t.value==='archivo')msAudiosCarga();if(MS.ambOn&&['fuente','archivo'].includes(t.dataset.msf))ambPrueba(true);}
+    if(t.dataset.msf&&(t.tagName==='SELECT'||t.type==='checkbox')){msCampo(t);msOv();msInsp();msCambio();if(['fuente','visual'].includes(t.dataset.msf)&&t.value==='archivo')msAudiosCarga();if(MS.ambOn&&['fuente','archivo'].includes(t.dataset.msf))ambPrueba(true);}
   });
   v.addEventListener('input',e=>{
     const t=e.target;

@@ -1,10 +1,10 @@
 'use strict';
-// Carpeta de sonidos del usuario (uso personal): app://local/__audios/<archivo>. Solo se sirven archivos de audio de esa carpeta, sin subcarpetas.
+// Carpeta de ambientes del usuario (uso personal): app://local/__audios/<archivo>. Solo se sirven audios, vídeos e imágenes de esa carpeta, sin subcarpetas.
 const path = require('path');
 const fs = require('fs');
 
 const PREFIJO = '/__audios/';
-const NOMBRE = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}\.(?:mp3|ogg|oga|opus|wav|m4a|aac|flac)$/i;
+const NOMBRE = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}\.(?:mp3|ogg|oga|opus|wav|m4a|aac|flac|mp4|webm|ogv|m4v|gif|webp|png|jpe?g|apng|avif)$/i;
 
 // Ruta real del archivo pedido o null si no es una petición válida (un solo nivel, nombre y extensión de audio, sin salirse de la carpeta)
 function rutaAudio(carpeta, pathname) {
@@ -16,7 +16,7 @@ function rutaAudio(carpeta, pathname) {
   return f.startsWith(base + path.sep) ? f : null;
 }
 
-// Nombres de los archivos de audio de la carpeta (hasta 500, ordenados)
+// Nombres de los archivos de audio, vídeo e imagen de la carpeta (hasta 500, ordenados)
 function listar(carpeta) {
   if (!carpeta) return [];
   try {

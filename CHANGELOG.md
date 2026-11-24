@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.106.0] - 2026-11-24
+### Cambiado
+- Ambiente: se retiran los efectos hechos con código (niebla, lluvia, nieve, tormenta, noche, brasas) y los sonidos generados. La capa muestra un vídeo o imagen animada en bucle (enlace https o carpeta de ambientes del usuario) y un sonido aparte (enlace, archivo o búsqueda). La carpeta ahora admite también vídeos e imágenes.
+### Añadido
+- Biblioteca de ambientes guardados (clave `mesa-ambientes-v1`): nombre, imagen o vídeo, sonido y volumen, reutilizables en cualquier escena.
+
 ## [1.105.0] - 2026-11-24
 ### Añadido
 - Cuenta: pestaña «Claves de APIs» (Freesound y Jamendo), guardadas solo en el equipo; el buscador de la capa de ambiente remite a ella.

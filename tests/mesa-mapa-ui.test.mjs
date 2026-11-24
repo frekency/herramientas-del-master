@@ -13,7 +13,7 @@ const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Appli
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
-window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg']},sonidosWeb:{estado:async()=>({...(window.__cl=window.__cl||{freesound:false,jamendo:true})}),guardarClave:async(p,v)=>{(window.__claves=window.__claves||[]).push(p+':'+v);const ok=v===''||/^[A-Za-z0-9]{6,}$/.test(v);if(ok)(window.__cl=window.__cl||{})[p]=v!=='';return ok;},buscar:async(p,q,o)=>{(window.__bus=window.__bus||[]).push([p,q,o.soloCC0]);return {ok:true,res:[{id:'1',n:'Lluvia',autor:'ana',licencia:'CC0',dur:61,url:'https://cdn.freesound.org/a.mp3',pagina:''}]};}}};
+window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}},audios:{carpeta:async()=>'C:/sonidos',elegir:async()=>'C:/sonidos',lista:async()=>['a.mp3','b.ogg','lluvia.mp4','niebla.gif']},sonidosWeb:{estado:async()=>({...(window.__cl=window.__cl||{freesound:false,jamendo:true})}),guardarClave:async(p,v)=>{(window.__claves=window.__claves||[]).push(p+':'+v);const ok=v===''||/^[A-Za-z0-9]{6,}$/.test(v);if(ok)(window.__cl=window.__cl||{})[p]=v!=='';return ok;},buscar:async(p,q,o)=>{(window.__bus=window.__bus||[]).push([p,q,o.soloCC0]);return {ok:true,res:[{id:'1',n:'Lluvia',autor:'ana',licencia:'CC0',dur:61,url:'https://cdn.freesound.org/a.mp3',pagina:''}]};}}};
 localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
@@ -104,14 +104,22 @@ const TAIL=`<script>
     ok('se puede poner en horizontal',ic.orient==='h'&&msEscena(false).capas.find(c=>c.tipo==='iniciativa').orient==='h');
     const ct=q('[data-msf="tokens"]');ct.checked=false;ct.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
     ok('y quitar los tokens',ic.tokens===false);
-    // capa de ambiente con sonido opcional
+    // capa de ambiente: imagen o vídeo en bucle + sonido aparte (sin efectos hechos con código)
     await click('[data-ms="add"][data-t="ambiente"]');
     const am=MS.capas.find(c=>c.tipo==='ambiente');
-    ok('el ambiente nace a pantalla completa, niebla, sin sonido',am.w===100&&am.h===100&&am.efecto==='niebla'&&am.sonido===false&&!q('[data-ms="ambprueba"]'));
-    const se=q('[data-msf="efecto"]');se.value='tormenta';se.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
-    ok('se elige el efecto',am.efecto==='tormenta'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').efecto==='tormenta');
-    await typeIn('[data-msf="intensidad"]','99');
-    ok('la intensidad se acota',am.intensidad===10);
+    const ch=async(s,v)=>{const e=q(s);e.value=v;e.dispatchEvent(new Event('change',{bubbles:true}));await wait(150);};
+    ok('el ambiente nace a pantalla completa, sin imagen ni sonido',am.w===100&&am.h===100&&am.visual===''&&am.sonido===false&&!q('[data-ms="ambprueba"]'));
+    ok('ya no hay efectos de código ni intensidad',!q('[data-msf="efecto"]')&&!q('[data-msf="intensidad"]')&&!('efecto' in am));
+    ok('la imagen o vídeo tiene tres orígenes: ninguno, enlace y carpeta',[...q('[data-msf="visual"]').options].map(o=>o.value).join()===',url,archivo');
+    await ch('[data-msf="visual"]','url');
+    await typeIn('[data-msf="vurl"]','http://malo.com/a.mp4');
+    ok('un enlace http no vale para el vídeo',am.vurl==='');
+    await typeIn('[data-msf="vurl"]','https://cdn.ejemplo.com/lluvia.mp4');
+    ok('un enlace https llega a la escena que se envía',am.vurl==='https://cdn.ejemplo.com/lluvia.mp4'&&(c=>c.visual==='url'&&c.vurl===am.vurl)(msEscena(false).capas.find(c=>c.tipo==='ambiente')));
+    await ch('[data-msf="visual"]','archivo');await wait(250);
+    ok('con carpeta propia salen sus vídeos e imágenes (no los audios)',[...q('[data-msf="varchivo"]').options].map(o=>o.value).join()===',lluvia.mp4,niebla.gif'&&q('#ms-insp').textContent.includes('C:/sonidos'));
+    await ch('[data-msf="varchivo"]','niebla.gif');
+    ok('elegir un archivo lo guarda y lo manda a la mesa',am.varchivo==='niebla.gif'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').varchivo==='niebla.gif');
     const cs=q('[data-msf="sonido"]');cs.checked=true;cs.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
     ok('el sonido es opcional: al activarlo salen volumen y prueba',am.sonido===true&&!!q('[data-msf="volumen"]')&&!!q('[data-ms="ambprueba"]'));
     ok('y llega a la escena que se envía',(c=>c.sonido===true&&c.volumen===40)(msEscena(false).capas.find(c=>c.tipo==='ambiente')));
@@ -119,20 +127,36 @@ const TAIL=`<script>
     ok('se puede probar el sonido en la vista previa',MS.ambOn===true&&/Parar/.test(q('[data-ms="ambprueba"]').textContent));
     await click('[data-ms="sel"][data-id="'+ic.id+'"]');
     ok('al salir de la capa la prueba se para sola',MS.ambOn===false);
-    // origen del sonido: generado, enlace o carpeta propia
+    // origen del sonido: enlace o carpeta propia (ya no existe el generado)
     await click('[data-ms="sel"][data-id="'+am.id+'"]');
     const sf=q('[data-msf="fuente"]');
-    ok('el sonido tiene tres orígenes y el generado es el de siempre',!!sf&&am.fuente==='generado'&&[...sf.options].map(o=>o.value).join()==='generado,url,archivo');
-    sf.value='url';sf.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
-    ok('con enlace aparece el campo y las radios de SomaFM',am.fuente==='url'&&!!q('[data-msf="url"]')&&q('[data-ms="audradio"]'));
+    ok('el sonido tiene dos orígenes y ninguno es generado',!!sf&&am.fuente==='url'&&[...sf.options].map(o=>o.value).join()==='url,archivo');
+    ok('con enlace salen el campo, las radios de SomaFM y el buscador',!!q('[data-msf="url"]')&&!!q('[data-ms="audradio"]')&&!!q('[data-ms="webprov"][data-p="freesound"]'));
     await typeIn('[data-msf="url"]','http://no-seguro.com/a.mp3');
-    ok('un enlace http no vale',am.url===''&&msEscena(false).capas.find(c=>c.tipo==='ambiente').fuente==='url');
+    ok('un enlace http no vale para el sonido',am.url==='');
     await click('[data-ms="audradio"]');
     ok('una radio de la lista rellena el enlace',am.url.startsWith('https://ice1.somafm.com/')&&q('[data-msf="url"]').value===am.url);
-    sf.value='archivo';q('[data-msf="fuente"]').value='archivo';q('[data-msf="fuente"]').dispatchEvent(new Event('change',{bubbles:true}));await wait(300);
-    ok('con carpeta propia salen sus audios',am.fuente==='archivo'&&[...q('[data-msf="archivo"]').options].map(o=>o.value).join()===',a.mp3,b.ogg'&&q('#ms-insp').textContent.includes('C:/sonidos'));
-    const sa=q('[data-msf="archivo"]');sa.value='b.ogg';sa.dispatchEvent(new Event('change',{bubbles:true}));await wait(100);
+    await ch('[data-msf="fuente"]','archivo');await wait(250);
+    ok('con carpeta propia salen sus audios (no los vídeos)',am.fuente==='archivo'&&[...q('[data-msf="archivo"]').options].map(o=>o.value).join()===',a.mp3,b.ogg');
+    await ch('[data-msf="archivo"]','b.ogg');
     ok('elegir un audio lo guarda y lo manda a la mesa',am.archivo==='b.ogg'&&msEscena(false).capas.find(c=>c.tipo==='ambiente').archivo==='b.ogg');
+    // biblioteca de ambientes: guardar, reutilizar, borrar y que sobreviva a recargar
+    ok('la biblioteca empieza vacía',MS.amb.length===0&&q('#ms-insp').textContent.includes('Aún no hay ninguno'));
+    await click('[data-ms="ambguarda"]');
+    ok('sin nombre no guarda nada',MS.amb.length===0);
+    q('#ms-amb-n').value='Lluvia fuerte';await click('[data-ms="ambguarda"]');
+    ok('se guarda con su nombre y aparece en la lista',MS.amb.length===1&&MS.amb[0].n==='Lluvia fuerte'&&q('.ms-amb .nm').textContent==='Lluvia fuerte');
+    ok('guarda enlaces y nombres de archivo, nada más',(s=>s.includes('niebla.gif')&&s.includes('b.ogg')&&!s.includes('data:'))(Store.get('mesa-ambientes-v1')));
+    await ch('[data-msf="visual"]','');await ch('[data-msf="sonido"]','');
+    am.sonido=false;am.visual='';msInsp();
+    await click('[data-ms="ambusa"][data-id="'+MS.amb[0].id+'"]');
+    ok('«Usar» recupera la imagen, el sonido y el volumen en la capa',am.visual==='archivo'&&am.varchivo==='niebla.gif'&&am.sonido===true&&am.archivo==='b.ogg'&&am.volumen===40);
+    q('#ms-amb-n').value='lluvia FUERTE';await click('[data-ms="ambguarda"]');
+    ok('guardar con el mismo nombre lo sustituye',MS.amb.length===1);
+    ambLibCarga();
+    ok('al recargar la biblioteca sigue ahí',MS.amb.length===1&&MS.amb[0].varchivo==='niebla.gif');
+    await click('[data-ms="ambborra"][data-id="'+MS.amb[0].id+'"]');
+    ok('se puede borrar',MS.amb.length===0&&Store.get('mesa-ambientes-v1')==='[]');
     // buscar sonidos en Freesound y Jamendo con la clave del usuario
     const sw=q('[data-msf="fuente"]');sw.value='url';sw.dispatchEvent(new Event('change',{bubbles:true}));await wait(250);
     ok('con enlace aparece el buscador con sus dos servicios',!!q('[data-ms="webprov"][data-p="freesound"]')&&!!q('[data-ms="webprov"][data-p="jamendo"]'));

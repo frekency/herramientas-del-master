@@ -103,22 +103,16 @@ app.whenReady().then(async () => {
     ok('el resultado vuelve al estudio del máster', await until(() => ev(master, '/2d6\\+3 = \\d+/.test((document.getElementById("ms-dres")||{}).textContent||"")'), 10000));
     ok('hay un lienzo WebGL de dados dentro del recuadro', await ev(w1, '!!document.querySelector("#dhost canvas")&&document.getElementById("dhost").getBoundingClientRect().width>0'));
 
-    // sonido de ambiente de verdad: la ventana lo arranca sola (sin clic), y el telón lo silencia
-    await ev(master, `(async()=>{msVentana(1);msAnade('ambiente',{efecto:'lluvia',intensidad:5,sonido:true,volumen:60});msEnviar(true);return true;})()`);
-    ok('el ambiente con sonido arranca solo en la ventana real', await until(() => ev(w1, 'AMB.key==="lluvia|5"&&!!AMB.ctx&&AMB.ctx.state==="running"')));
-    ok('suena (volumen del ambiente)', await until(() => ev(w1, 'AMB.gain.gain.value>0.1'), 8000));
-    await ev(master, 'mesaTelon(1)');
-    ok('con el telón bajado se silencia', await until(() => ev(w1, 'AMB.gain.gain.value<0.02'), 8000));
-    await ev(master, 'mesaTelon(1)');
-    ok('y al subirlo vuelve a sonar', await until(() => ev(w1, 'AMB.gain.gain.value>0.1'), 8000));
-    ok('la lluvia se ve en la ventana', await ev(w1, 'document.querySelectorAll(".capa.ambiente.lluvia .p").length>50'));
-    // sonido desde la carpeta de sonidos del usuario, servido por app://local/__audios/ (con rangos y en bucle)
+    // ambiente desde la carpeta del usuario, servido por app://local/__audios/ (imagen o vídeo y sonido, con rangos y en bucle)
     const wav = Buffer.alloc(44 + 4000, 128); wav.write('RIFF', 0); wav.writeUInt32LE(36 + 4000, 4); wav.write('WAVEfmt ', 8); wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
     wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(8000, 28); wav.writeUInt16LE(1, 32); wav.writeUInt16LE(8, 34); wav.write('data', 36); wav.writeUInt32LE(4000, 40);   // medio segundo de silencio
     const sonidos = path.join(tmp, 'sonidos'); fs.mkdirSync(sonidos); fs.writeFileSync(path.join(sonidos, 'tono.wav'), wav); fs.writeFileSync(path.join(sonidos, 'notas.txt'), 'no es audio');
+    fs.writeFileSync(path.join(sonidos, 'niebla.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
     fs.writeFileSync(path.join(tmp, 'audios.json'), JSON.stringify({ carpeta: sonidos }));
-    ok('el máster ve la lista de su carpeta de sonidos (solo audios)', JSON.stringify(await ev(master, 'window.__AppShell.audios.lista()')) === '["tono.wav"]');
-    await ev(master, `(async()=>{const c=MS.capas.find(c=>c.tipo==='ambiente');c.fuente='archivo';c.archivo='tono.wav';msEnviar(true);return true;})()`);
+    ok('el máster ve la lista de su carpeta (audios e imágenes, no otros archivos)', JSON.stringify(await ev(master, 'window.__AppShell.audios.lista()')) === '["niebla.png","tono.wav"]');
+    await ev(master, `(async()=>{msVentana(1);msAnade('ambiente',{visual:'archivo',varchivo:'niebla.png',sonido:true,volumen:60,fuente:'archivo',archivo:'tono.wav'});msEnviar(true);return true;})()`);
+    ok('la imagen de la carpeta se ve en la ventana real', await until(() => ev(w1, '(()=>{const i=document.querySelector(".capa.ambiente img.vm");return !!i&&i.complete&&i.naturalWidth>0;})()')));
+    ok('la capa de ambiente no recibe clics y ya no hay efectos de código', await ev(w1, 'getComputedStyle(document.querySelector(".capa.ambiente")).pointerEvents==="none"&&!document.querySelector(".capa.ambiente .p")'));
     ok('la ventana reproduce el archivo de la carpeta', await until(() => ev(w1, 'AMB.key==="audio|app://local/__audios/tono.wav"&&AMB.cur.el.readyState>=3&&!AMB.cur.el.paused')));
     ok('el archivo se repite en bucle', await until(() => ev(w1, `(()=>{const e=AMB.cur.el;window.__t=window.__t||[];window.__t.push(e.currentTime);return window.__t.some((v,i)=>i&&v<window.__t[i-1]);})()`), 12000));
     const rg = await ev(w1, `fetch('app://local/__audios/tono.wav',{headers:{Range:'bytes=0-9'}}).then(async r=>[r.status,(await r.arrayBuffer()).byteLength,r.headers.get('content-range')])`);

@@ -80,30 +80,23 @@ const PRUEBA = `<script>
     window.__cb({...base,capas:[{tipo:'iniciativa',id:'i',x:0,y:0,w:30,h:100,visible:true,op:1,orient:'v',tokens:false}]});
     await wait(300);
     ok('sin tokens la lista es la de siempre',!q('.capa.iniciativa .fl .tk'));
-    // ambiente: efectos visuales y sonido opcional
-    const amb=(ef,i,s)=>({...base,capas:[{tipo:'ambiente',id:'a',x:0,y:0,w:100,h:100,visible:true,op:1,efecto:ef,intensidad:i,sonido:!!s,volumen:40}]});
-    window.__cb(amb('lluvia',5));await until(()=>q('.capa.ambiente'));
-    ok('la lluvia pinta sus gotas',document.querySelectorAll('.capa.ambiente.lluvia .p').length===25+5*18);
-    ok('sin pedir sonido no hay audio',!AMB.cur&&!AMB.ctx);
-    ok('el efecto no recibe clics',getComputedStyle(q('.capa.ambiente')).pointerEvents==='none');
-    window.__cb(amb('tormenta',10));await wait(300);
-    ok('la tormenta añade rayo y más lluvia',!!q('.capa.ambiente .rayo')&&document.querySelectorAll('.capa.ambiente .p').length===25+10*18);
-    window.__cb(amb('niebla',3));await wait(300);ok('la niebla son bancos que se mueven',document.querySelectorAll('.capa.ambiente .b').length===5);
-    window.__cb(amb('nieve',4));await wait(300);ok('la nieve pinta copos',document.querySelectorAll('.capa.ambiente.nieve .p').length===15+4*10);
-    window.__cb(amb('brasas',4));await wait(300);ok('las brasas pintan chispas',document.querySelectorAll('.capa.ambiente.brasas .p').length===10+4*6);
-    window.__cb(amb('noche',8));await wait(300);ok('la noche oscurece la escena',getComputedStyle(q('.capa.ambiente.noche')).backgroundImage.includes('rgb'));
-    window.__cb(amb('lluvia',5,true));await wait(400);
-    ok('con sonido pedido arranca el ambiente de la lluvia',AMB.key==='lluvia|5'&&!!AMB.cur&&!!AMB.ctx);
-    window.__cb(amb('tormenta',5,true));await wait(300);ok('cambiar de efecto cambia el sonido',AMB.key==='tormenta|5'&&AMB.cur.fin.length>=2);
-    window.__cb({tipo:'telon',activo:true,texto:'x'});await wait(300);ok('con el telón bajado el sonido sigue preparado (en silencio)',AMB.key==='tormenta|5');
-    window.__cb({tipo:'telon',activo:false,texto:''});
-    for(const ef of ['niebla','nieve','noche','brasas']){window.__cb(amb(ef,5,true));await wait(200);if(AMB.key!==ef+'|5')ok('suena '+ef,false);}
-    ok('todos los efectos tienen su sonido',AMB.key==='brasas|5');
+    // ambiente: vídeo o imagen animada en bucle y sonido aparte
+    const amb=(o)=>({...base,capas:[{tipo:'ambiente',id:'a',x:0,y:0,w:100,h:100,visible:true,op:.6,visual:'',vsrc:'',vtipo:'video',sonido:false,volumen:40,audio:'',...o}]});
+    window.__cb(amb({}));await until(()=>q('.capa.ambiente'));
+    ok('sin vídeo ni imagen la capa no pinta nada',q('.capa.ambiente').children.length===0&&!AMB.cur);
+    ok('la capa no recibe clics',getComputedStyle(q('.capa.ambiente')).pointerEvents==='none');
+    window.__cb(amb({visual:'archivo',vsrc:PNG,vtipo:'imagen'}));await wait(300);
+    ok('una imagen animada llena la capa',!!q('.capa.ambiente img.vm')&&q('.capa.ambiente img.vm').getAttribute('src')===PNG);
+    window.__cb(amb({visual:'url',vsrc:'/v.webm',vtipo:'video'}));await wait(300);
+    const v1=q('.capa.ambiente video.vm');
+    ok('un vídeo va en bucle, sin sonido propio y a pantalla completa',!!v1&&v1.loop===true&&v1.muted===true&&v1.autoplay===true&&v1.getBoundingClientRect().width>innerWidth*.9);
+    window.__cb(amb({visual:'url',vsrc:'/v.webm',vtipo:'video',op:.3}));await wait(300);
+    ok('repintar la escena reutiliza el mismo vídeo (no se reinicia al mover una ficha)',q('.capa.ambiente video.vm')===v1);
     window.__cb({...base,capas:[]});await wait(300);
-    ok('al quitar la capa el sonido se para',!AMB.cur&&AMB.key==='');
-    const ambA=(au,v)=>({...base,capas:[{tipo:'ambiente',id:'a',x:0,y:0,w:100,h:100,visible:true,op:1,efecto:'lluvia',intensidad:5,sonido:true,volumen:v||40,fuente:'url',audio:au}]});
+    ok('al quitar la escena se sueltan los vídeos',VID.size===0);
+    const ambA=(au,v)=>({...base,capas:[{tipo:'ambiente',id:'a',x:0,y:0,w:100,h:100,visible:true,op:1,sonido:true,volumen:v||40,fuente:'url',audio:au}]});
     window.__cb(ambA('/s.wav',50));await wait(400);
-    ok('con un enlace o archivo suena un reproductor en bucle y no el generado',AMB.key==='audio|/s.wav'&&AMB.cur.el.loop===true&&AMB.cur.fin.length===0&&Math.abs(AMB.cur.el.volume-0.5)<0.01);
+    ok('con un enlace o archivo suena un reproductor en bucle',AMB.key==='audio|/s.wav'&&AMB.cur.el.loop===true&&Math.abs(AMB.cur.el.volume-0.5)<0.01);
     window.__cb({tipo:'telon',activo:true,texto:'x'});await wait(300);ok('con el telón bajado el audio se silencia',AMB.cur.el.volume===0);
     window.__cb({tipo:'telon',activo:false,texto:''});await wait(300);ok('y vuelve al subirlo',Math.abs(AMB.cur.el.volume-0.5)<0.01);
     window.__cb(ambA('/s.wav',20));await wait(300);ok('cambiar el volumen no reinicia el audio',AMB.key==='audio|/s.wav'&&Math.abs(AMB.cur.el.volume-0.2)<0.01);
@@ -140,7 +133,7 @@ test('mesa: mapa de combate calibrado, proporciones y orden de iniciativa con to
     const R = JSON.parse(res);
     assert.deepEqual(R.err, [], 'errores de JavaScript');
     assert.deepEqual(R.c.filter(c => !c[1]).map(c => c[0]), [], 'comprobaciones que fallan');
-    assert.ok(R.c.length >= 38, 'el flujo se quedó a medias (' + R.c.length + ')');
+    assert.ok(R.c.length >= 32, 'el flujo se quedó a medias (' + R.c.length + ')');
   } finally {
     try { proc && proc.kill(); } catch { /* ya cerrado */ }
     srv.close();
