@@ -187,3 +187,17 @@ test('sección del máster: solo en campaña, solo el DM, y nunca se exporta',()
   assert.doesNotMatch(F.exportar(f,{formato:'json',registro:true}),/bruja/);assert.doesNotMatch(F.exportar(f,{formato:'md'}),/bruja/);
   assert.equal(F.dmQuitar(f,f.dm[0].id,jug).error,'solo_dm');assert.equal(F.dmQuitar(f,f.dm[0].id,dm).f.dm.length,1);assert.equal(F.dmQuitar(f,'zz',dm).error,'no_existe');
 });
+
+test('inventario: objeto del compendio con sintonía, usos y munición',()=>{
+  let f=base();
+  let r=F.invAnadir(f,{n:'Anillo de estrellas fugaces',sint:true,uso:6});assert.ok(r.ok);f=r.f;
+  const a=f.inventario[0];assert.equal(a.sint,true);assert.equal(a.uso,6);assert.equal(a.ug,0);
+  f=F.invUsar(f,a.id,1).f;f=F.invUsar(f,a.id,2).f;assert.equal(f.inventario[0].ug,3);
+  f=F.invUsar(f,a.id,-1).f;assert.equal(f.inventario[0].ug,2);
+  f=F.invRecargar(f,a.id).f;assert.equal(f.inventario[0].ug,0);
+  for(let i=0;i<6;i++)f=F.invUsar(f,a.id,1).f;
+  assert.equal(F.invUsar(f,a.id,1).ok,false);   // agotado
+  r=F.invAnadir(f,{n:'Flechas',q:20,mun:true});f=r.f;const m=f.inventario.find(i=>i.n==='Flechas');
+  f=F.invUsar(f,m.id,3).f;assert.equal(f.inventario.find(i=>i.n==='Flechas').q,17);
+  f=F.invUsar(f,m.id,99).f;assert.equal(f.inventario.find(i=>i.n==='Flechas').q,0);   // se queda a 0, no desaparece
+});

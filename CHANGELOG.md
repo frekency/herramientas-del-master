@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.118.0] - 2026-11-25
+### Añadido
+- **Reloj de campaña con el calendario de Harptos** (Reinos Olvidados): fecha de inicio de la campaña, hora del día, estación, descanso corto (+1 h), descanso largo (+8 h), horas o días de viaje y de exploración, y aviso de cuándo se puede hacer el siguiente descanso largo (24 h). Al finalizar una sesión se indican los días que han pasado en el juego. Sortea el clima del día según la estación. Los jugadores ven el reloj; solo el máster lo mueve.
+- **Diario del personaje**: capítulos propios de cada personaje de campaña, que solo ven su jugador y el máster. Nace con el trasfondo y el lugar de origen. Pendiente de aplicar `supabase/diario-personaje.sql` para que el jugador lo sincronice.
+- **Lugar de origen** en el creador de personajes y en la hoja.
+- **Inventario desde el compendio**: añade objetos del compendio a la ficha, con marca de sintonizable, usos (cargas) que se gastan y se recargan, y munición que se gasta de uno en uno.
+
 ## [1.117.2] - 2026-11-24
 ### Corregido
 - Un jugador que entraba en un dispositivo donde ya estaba el máster veía la campaña como máster (criaturas, módulos, combate) y vacía. El rol (máster o jugador) ahora lo manda la cuenta en cada campaña, y si cambia, la app se recarga una vez.

@@ -389,7 +389,7 @@ const HABIL=[['acrobacias','des'],['animales','sab'],['arcanos','int'],['atletis
   ['juego','des'],['medicina','sab'],['naturaleza','int'],['percepcion','sab'],['perspicacia','sab'],['persuasion','car'],['religion','int'],['sigilo','des'],['supervivencia','sab']];
 const HAB_AB=Object.fromEntries(HABIL);
 const HAB_NOM={acrobacias:'Acrobacias',animales:'Trato con animales',arcanos:'Arcanos',atletismo:'Atletismo',engano:'Engaño',historia:'Historia',interpretacion:'Interpretación',intimidacion:'Intimidación',investigacion:'Investigación',juego:'Juego de manos',medicina:'Medicina',naturaleza:'Naturaleza',percepcion:'Percepción',perspicacia:'Perspicacia',persuasion:'Persuasión',religion:'Religión',sigilo:'Sigilo',supervivencia:'Supervivencia'};
-const PERS=['alineamiento','edad','altura','peso','ojos','piel','pelo','aspecto','personalidad','ideales','vinculos','defectos','historia'];   // texto libre
+const PERS=['alineamiento','lugar','edad','altura','peso','ojos','piel','pelo','aspecto','personalidad','ideales','vinculos','defectos','historia'];   // texto libre
 const PERS_CORTO=['alineamiento','edad','altura','peso','ojos','piel','pelo'];
 const OTRAS=['idiomas','armas','armaduras','herramientas'];   // listas libres
 const DEFS=['estados','res','inm','vul'];                     // estados activos, resistencias, inmunidades, vulnerabilidades
@@ -435,7 +435,7 @@ function norm(x){
   f.registro=(Array.isArray(x.registro)?x.registro:[]).slice(-200).filter(r=>r&&typeof r==='object').map(r=>({t:int(r.t,0,9e15),a:txt(r.a,30),d:txt(r.d,200),por:txt(r.por,40)}));
   if(f.origen==='campana')f.dm=(Array.isArray(x.dm)?x.dm:[]).slice(-300).filter(r=>r&&typeof r==='object'&&txt(r.txt,3000)).map((r,i)=>({id:txt(r.id,20)||'d'+i,t:int(r.t,0,9e15),tipo:['evento','nota','secreto'].includes(r.tipo)?r.tipo:'nota',txt:txt(r.txt,3000)}));
   for(const k of MON)f.mon[k]=int(x.mon&&x.mon[k],0,9999999);
-  f.inventario=(Array.isArray(x.inventario)?x.inventario:[]).slice(0,200).filter(i=>i&&typeof i==='object'&&txt(i.n,80)).map((i,k)=>({id:txt(i.id,20)||'i'+k,n:txt(i.n,80),q:int(i.q,0,99999,1),nota:txt(i.nota,200),eq:!!i.eq,sin:!!i.sin}));
+  f.inventario=(Array.isArray(x.inventario)?x.inventario:[]).slice(0,200).filter(i=>i&&typeof i==='object'&&txt(i.n,80)).map((i,k)=>({id:txt(i.id,20)||'i'+k,n:txt(i.n,80),q:int(i.q,0,99999,1),nota:txt(i.nota,200),eq:!!i.eq,sin:!!i.sin,sint:!!i.sint,uso:int(i.uso,0,999,0),ug:Math.min(int(i.ug,0,999,0),int(i.uso,0,999,0)),mun:!!i.mun}));
   if(f.origen==='campana')f.pendientes=normPendientes(x.pendientes);
   /* ficha completa: todo opcional */
   for(const [h] of HABIL){const v=int(x.habil&&x.habil[h],0,2);if(v)f.habil[h]=v;}
@@ -546,17 +546,17 @@ const L={
     c:{barbaro:'Barbar',bardo:'Barde',brujo:'Hexenmeister',clerigo:'Kleriker',druida:'Druide',explorador:'Waldläufer',guerrero:'Kämpfer',hechicero:'Zauberer',mago:'Magier',monje:'Mönch',paladin:'Paladin',picaro:'Schurke'}}};
 const L2={   // etiquetas de los apartados añadidos a la ficha completa
   es:{hb:'Habilidades',sv:'Salvaciones',at:'Ataques',rg:'Rasgos',mg:'Conjuros',mh:'Característica de lanzamiento',cs:'Estados',rs:'Resistencias',im:'Inmunidades',vu:'Vulnerabilidades',id:'Idiomas',ar:'Armas',am:'Armaduras',he:'Herramientas',iv:'Inventario',mo:'Monedas',pa:'Pasivas',
-    pe:{altura:'Altura',peso:'Peso',ojos:'Ojos',piel:'Piel',pelo:'Pelo',alineamiento:'Alineamiento',edad:'Edad',aspecto:'Aspecto',personalidad:'Personalidad',ideales:'Ideales',vinculos:'Vínculos',defectos:'Defectos',historia:'Historia'}},
+    pe:{lugar:'Lugar de origen',altura:'Altura',peso:'Peso',ojos:'Ojos',piel:'Piel',pelo:'Pelo',alineamiento:'Alineamiento',edad:'Edad',aspecto:'Aspecto',personalidad:'Personalidad',ideales:'Ideales',vinculos:'Vínculos',defectos:'Defectos',historia:'Historia'}},
   en:{hb:'Skills',sv:'Saving throws',at:'Attacks',rg:'Features',mg:'Spells',mh:'Spellcasting ability',cs:'Conditions',rs:'Resistances',im:'Immunities',vu:'Vulnerabilities',id:'Languages',ar:'Weapons',am:'Armor',he:'Tools',iv:'Inventory',mo:'Coins',pa:'Passive',
-    pe:{altura:'Height',peso:'Weight',ojos:'Eyes',piel:'Skin',pelo:'Hair',alineamiento:'Alignment',edad:'Age',aspecto:'Appearance',personalidad:'Personality',ideales:'Ideals',vinculos:'Bonds',defectos:'Flaws',historia:'Backstory'}},
+    pe:{lugar:'Place of origin',altura:'Height',peso:'Weight',ojos:'Eyes',piel:'Skin',pelo:'Hair',alineamiento:'Alignment',edad:'Age',aspecto:'Appearance',personalidad:'Personality',ideales:'Ideals',vinculos:'Bonds',defectos:'Flaws',historia:'Backstory'}},
   fr:{hb:'Compétences',sv:'Jets de sauvegarde',at:'Attaques',rg:'Aptitudes',mg:'Sorts',mh:'Caractéristique d’incantation',cs:'États',rs:'Résistances',im:'Immunités',vu:'Vulnérabilités',id:'Langues',ar:'Armes',am:'Armures',he:'Outils',iv:'Inventaire',mo:'Pièces',pa:'Passives',
-    pe:{altura:'Taille',peso:'Poids',ojos:'Yeux',piel:'Peau',pelo:'Cheveux',alineamiento:'Alignement',edad:'Âge',aspecto:'Apparence',personalidad:'Personnalité',ideales:'Idéaux',vinculos:'Liens',defectos:'Défauts',historia:'Histoire'}},
+    pe:{lugar:"Lieu d'origine",altura:'Taille',peso:'Poids',ojos:'Yeux',piel:'Peau',pelo:'Cheveux',alineamiento:'Alignement',edad:'Âge',aspecto:'Apparence',personalidad:'Personnalité',ideales:'Idéaux',vinculos:'Liens',defectos:'Défauts',historia:'Histoire'}},
   pt:{hb:'Perícias',sv:'Salvaguardas',at:'Ataques',rg:'Características',mg:'Magias',mh:'Atributo de conjuração',cs:'Condições',rs:'Resistências',im:'Imunidades',vu:'Vulnerabilidades',id:'Idiomas',ar:'Armas',am:'Armaduras',he:'Ferramentas',iv:'Inventário',mo:'Moedas',pa:'Passivas',
-    pe:{altura:'Altura',peso:'Peso',ojos:'Olhos',piel:'Pele',pelo:'Cabelo',alineamiento:'Tendência',edad:'Idade',aspecto:'Aparência',personalidad:'Personalidade',ideales:'Ideais',vinculos:'Vínculos',defectos:'Defeitos',historia:'História'}},
+    pe:{lugar:'Local de origem',altura:'Altura',peso:'Peso',ojos:'Olhos',piel:'Pele',pelo:'Cabelo',alineamiento:'Tendência',edad:'Idade',aspecto:'Aparência',personalidad:'Personalidade',ideales:'Ideais',vinculos:'Vínculos',defectos:'Defeitos',historia:'História'}},
   it:{hb:'Abilità',sv:'Tiri salvezza',at:'Attacchi',rg:'Capacità',mg:'Incantesimi',mh:'Caratteristica da incantatore',cs:'Condizioni',rs:'Resistenze',im:'Immunità',vu:'Vulnerabilità',id:'Linguaggi',ar:'Armi',am:'Armature',he:'Strumenti',iv:'Inventario',mo:'Monete',pa:'Passive',
-    pe:{altura:'Altezza',peso:'Peso',ojos:'Occhi',piel:'Pelle',pelo:'Capelli',alineamiento:'Allineamento',edad:'Età',aspecto:'Aspetto',personalidad:'Personalità',ideales:'Ideali',vinculos:'Legami',defectos:'Difetti',historia:'Storia'}},
+    pe:{lugar:"Luogo d'origine",altura:'Altezza',peso:'Peso',ojos:'Occhi',piel:'Pelle',pelo:'Capelli',alineamiento:'Allineamento',edad:'Età',aspecto:'Aspetto',personalidad:'Personalità',ideales:'Ideali',vinculos:'Legami',defectos:'Difetti',historia:'Storia'}},
   de:{hb:'Fertigkeiten',sv:'Rettungswürfe',at:'Angriffe',rg:'Merkmale',mg:'Zauber',mh:'Zauberattribut',cs:'Zustände',rs:'Resistenzen',im:'Immunitäten',vu:'Anfälligkeiten',id:'Sprachen',ar:'Waffen',am:'Rüstungen',he:'Werkzeuge',iv:'Inventar',mo:'Münzen',pa:'Passive',
-    pe:{altura:'Größe',peso:'Gewicht',ojos:'Augen',piel:'Haut',pelo:'Haare',alineamiento:'Gesinnung',edad:'Alter',aspecto:'Aussehen',personalidad:'Persönlichkeit',ideales:'Ideale',vinculos:'Bindungen',defectos:'Makel',historia:'Hintergrundgeschichte'}}};
+    pe:{lugar:'Herkunftsort',altura:'Größe',peso:'Gewicht',ojos:'Augen',piel:'Haut',pelo:'Haare',alineamiento:'Gesinnung',edad:'Alter',aspecto:'Aussehen',personalidad:'Persönlichkeit',ideales:'Ideale',vinculos:'Bindungen',defectos:'Makel',historia:'Hintergrundgeschichte'}}};
 const fm=v=>(v>=0?'+':'')+v;
 /* Apartados de la ficha completa en Markdown; solo salen los que tienen algo escrito. */
 function mdCompleta(f,l2,l){
@@ -769,7 +769,12 @@ function retirar(f,id,ctx){const p=f.pendientes.find(x=>x.id===id);if(!p)return 
 const MON=['pc','pp','pe','po','ppt'];
 function invAnadir(f,x){const g=copia(f),n=txt(x&&x.n,80);if(!n)return no('vacio');if(g.inventario.length>=200)return no('demasiados');
   const e=g.inventario.find(i=>i.n.toLowerCase()===n.toLowerCase());const q=int(x.q,1,99999,1);
-  if(e)e.q=Math.min(99999,e.q+q);else g.inventario.push({id:'i'+Math.random().toString(36).slice(2,8),n,q,nota:txt(x.nota,200)});return ok(g);}
+  if(e)e.q=Math.min(99999,e.q+q);else g.inventario.push({id:'i'+Math.random().toString(36).slice(2,8),n,q,nota:txt(x.nota,200),sint:!!x.sint,uso:int(x.uso,0,999,0),ug:0,mun:!!x.mun});return ok(g);}
+/* usos (cargas) y munición: «delta» gasta (+) o recupera (−) usos; en munición gasta cantidad sin quitar el objeto */
+function invUsar(f,id,delta){const g=copia(f),e=g.inventario.find(i=>i.id===id);if(!e)return no('no_existe');delta=int(delta,-999,999,0);
+  if(e.mun){e.q=Math.max(0,Math.min(99999,e.q-delta));return ok(g);}
+  if(!e.uso)return no('sin_usos');if(delta>0&&e.ug>=e.uso)return no('agotado');e.ug=Math.max(0,Math.min(e.uso,e.ug+delta));return ok(g);}
+function invRecargar(f,id){const g=copia(f),e=g.inventario.find(i=>i.id===id);if(!e)return no('no_existe');e.ug=0;return ok(g);}
 /* equipado / sintonizado: lo equipado y sintonizado se marca en la lista; solo caben 3 objetos sintonizados */
 function invMarcar(f,id,campo,val){const g=copia(f),e=g.inventario.find(i=>i.id===id);if(!e||!['eq','sin'].includes(campo))return no('no_existe');
   if(campo==='sin'&&val&&!e.sin&&g.inventario.filter(i=>i.sin).length>=3)return no('demasiados');e[campo]=!!val;return ok(g);}
@@ -866,7 +871,7 @@ function arbol(bases,grupos){
   for(const g of grupos)for(const f of g.fichas){const e=f.base&&por.get(f.base);const it={f,campana:g.campana,nombre:g.nombre};if(e)e.copias.push(it);else huerfanas.push(it);}
   return {nodos:[...por.values()],huerfanas};
 }
-return {desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invCantidad,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
+return {desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
 })();
 </script>
 <script id="grupos-core">
@@ -1063,6 +1068,78 @@ window.Dlg=(()=>{
   }
   return {si:(m,o)=>ask(m,o),texto:(m,o)=>ask(m,{...o,texto:true})};
 })();
+</script>
+<script id="reloj-core">
+/* Reloj de campaña con el calendario de Harptos (Reinos Olvidados): 12 meses de 30 días (3 decenas), 5 fiestas entre meses
+   y el Escudo-encuentro cada 4 años (año divisible entre 4). El tiempo es un número de minutos desde el 1.º de Martillo del año 0 DR. */
+(function(g){
+const MESES=[['Hammer','Martillo','invierno'],['Alturiak','Alturiak','invierno'],['Ches','Ches','primavera'],['Tarsakh','Tarsakh','primavera'],['Mirtul','Mirtul','primavera'],['Kythorn','Kythorn','verano'],['Flamerule','Flamerule','verano'],['Eleasis','Eleasis','verano'],['Eleint','Eleint','otoño'],['Marpenoth','Marpenoth','otoño'],['Uktar','Uktar','otoño'],['Nightal','Nightal','invierno']];
+// fiestas: «tras» = mes (1-12) después del cual caen; «est» = estación en la que cuentan
+const FIESTAS=[{k:'midwinter',n:'Pleno Invierno',tras:1,est:'invierno'},{k:'greengrass',n:'Hierba Verde',tras:2,est:'primavera'},{k:'midsummer',n:'Pleno Verano',tras:7,est:'verano'},{k:'shieldmeet',n:'Escudo-encuentro',tras:7,est:'verano',bisiesto:true},{k:'highharvest',n:'Alta Cosecha',tras:9,est:'otoño'},{k:'moon',n:'Fiesta de la Luna',tras:11,est:'otoño'}];
+const bis=a=>a%4===0;
+const diasAnio=a=>bis(a)?366:365;
+const antes=a=>a<=0?0:365*a+Math.floor((a-1)/4)+1;   // días de todos los años anteriores a «a» (el año 0 es bisiesto)
+function tramos(a){
+  const t=[];
+  MESES.forEach((m,i)=>{t.push({mes:i+1,n:30});for(const f of FIESTAS)if(f.tras===i+1&&(!f.bisiesto||bis(a)))t.push({fiesta:f,n:1});});
+  return t;
+}
+/* día absoluto (0 = 1 de Martillo del año 0) → fecha */
+function fecha(dia){
+  dia=Math.floor(dia);let a=Math.floor(dia/365.25);while(antes(a)>dia)a--;while(antes(a+1)<=dia)a++;
+  let r=dia-antes(a);
+  for(const t of tramos(a)){
+    if(r<t.n){
+      if(t.fiesta)return {anio:a,fiesta:t.fiesta.k,nombre:t.fiesta.n,estacion:t.fiesta.est,dia:1,decena:0};
+      const m=MESES[t.mes-1];
+      return {anio:a,mes:t.mes,dia:r+1,decena:Math.floor(r/10)+1,nombre:m[1],estacion:m[2]};
+    }
+    r-=t.n;
+  }
+  return null;
+}
+/* {anio,mes,dia} o {anio,fiesta} → día absoluto */
+function aDia(f){
+  let r=antes(f.anio);
+  for(const t of tramos(f.anio)){
+    if(f.fiesta&&t.fiesta&&t.fiesta.k===f.fiesta)return r;
+    if(!f.fiesta&&t.mes===f.mes)return r+Math.min(30,Math.max(1,f.dia|0))-1;
+    r+=t.n;
+  }
+  return NaN;
+}
+const p2=n=>String(n).padStart(2,'0');
+function texto(f){return f.fiesta?`${f.nombre}, ${f.anio} DR`:`${f.dia} de ${f.nombre}, ${f.anio} DR`;}
+function hora(min){const m=((Math.floor(min)%1440)+1440)%1440;return p2(Math.floor(m/60))+':'+p2(m%60);}
+function norm(o){
+  o=o&&typeof o==='object'?o:{};
+  const n=v=>Number.isFinite(+v)?Math.max(0,Math.floor(+v)):0;
+  return {min:n(o.min),inicio:n(o.inicio),ult:o.ult==null||o.ult===''?null:n(o.ult),
+    clima:typeof o.clima==='string'?o.clima.slice(0,200):'',
+    log:(Array.isArray(o.log)?o.log:[]).slice(-60).map(x=>({m:n(x&&x.m),q:String(x&&x.q||'').slice(0,60),d:n(x&&x.d)}))};
+}
+const nuevo=(anio,mes,dia,h)=>{const d=aDia({anio,mes,dia});return norm({min:d*1440+(h==null?8:h)*60,inicio:d*1440+(h==null?8:h)*60});};
+/* suma tiempo (minutos) con un motivo; «largo» marca el inicio de un descanso largo */
+function sumar(r,min,motivo,largo){
+  min=Math.floor(+min);const s=norm(r);if(!Number.isFinite(min)||min<=0)return s;
+  if(largo)s.ult=s.min;s.min+=min;s.log.push({m:s.min,q:String(motivo||'').slice(0,60),d:min});s.log=s.log.slice(-60);return s;
+}
+const corto=r=>sumar(r,60,'Descanso corto');
+const largo=r=>sumar(r,480,'Descanso largo',true);
+/* ¿cuándo puede empezar el siguiente descanso largo? (24 h después de que empezara el anterior) */
+function proximoLargo(r){const s=norm(r);return s.ult==null?null:s.ult+1440;}
+const puedeLargo=r=>{const p=proximoLargo(r);return p==null||norm(r).min>=p;};
+function desc(min){min=Math.floor(min);const d=Math.floor(min/1440),h=Math.floor(min%1440/60),m=min%60;return [d&&d+' d',h&&h+' h',m&&m+' min'].filter(Boolean).join(' ')||'0';}
+// clima por estación: tabla d20 (la tirada la pone quien llama)
+const CLIMA={
+  invierno:['Ventisca','Ventisca','Nevada fuerte','Nevada fuerte','Nevada','Nevada','Nieve ligera','Frío intenso y despejado','Frío intenso y despejado','Gris y frío','Gris y frío','Niebla helada','Nublado y frío','Nublado y frío','Cielo despejado y frío','Cielo despejado y frío','Aguanieve','Aguanieve','Helada con viento fuerte','Día soleado y gélido'],
+  primavera:['Tormenta con granizo','Tormenta','Lluvia fuerte','Lluvia fuerte','Lluvia','Lluvia','Llovizna','Llovizna','Niebla matinal','Nublado','Nublado','Fresco y despejado','Fresco y despejado','Templado y soleado','Templado y soleado','Templado y soleado','Viento fuerte','Viento fuerte','Arcoíris tras la lluvia','Día radiante'],
+  verano:['Tormenta violenta','Tormenta eléctrica','Tormenta eléctrica','Chaparrón','Chaparrón','Bochorno y nubes de tormenta','Bochorno','Calor sofocante','Calor sofocante','Soleado y caluroso','Soleado y caluroso','Soleado','Soleado','Despejado y agradable','Despejado y agradable','Despejado y agradable','Brisa fresca','Brisa fresca','Neblina de calor','Ola de calor'],
+  otoño:['Tormenta de otoño','Tormenta de otoño','Lluvia fuerte','Lluvia fuerte','Lluvia','Lluvia','Llovizna','Llovizna','Niebla espesa','Niebla espesa','Nublado','Nublado','Nublado y ventoso','Fresco y despejado','Fresco y despejado','Fresco y despejado','Viento fuerte','Viento fuerte','Primeras heladas','Día dorado y soleado']
+};
+const clima=(est,d20)=>{const t=CLIMA[est]||CLIMA.primavera;return t[Math.min(19,Math.max(0,(d20|0)-1))];};
+g.Harptos={MESES,FIESTAS,CLIMA,bis,diasAnio,fecha,aDia,texto,hora,norm,nuevo,sumar,corto,largo,proximoLargo,puedeLargo,desc,clima};
+})(typeof window!=='undefined'?window:globalThis);
 </script>
 <script id="notas-core">
 /* Notas de campaña: modelo, Markdown seguro y enlaces [[así]]. Sin DOM ni almacenamiento: se prueba aparte. */
@@ -3076,8 +3153,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.117</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.118</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
+<div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
 <section class="vpage" id="view-inicio" hidden>
@@ -3282,6 +3360,10 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.118 <span>25 nov 2026</span></h3><ul>
+      <li><b>Reloj de campaña (Harptos).</b> Fecha y hora de la partida con el calendario de los Reinos Olvidados: descansos (+1 h y +8 h), viajes, días de cada sesión, aviso del siguiente descanso largo y clima según la estación.</li>
+      <li><b>Diario del personaje.</b> Capítulos de su vida, solo para su jugador y el máster; nace con el trasfondo y el lugar de origen.</li>
+      <li><b>Inventario desde el compendio.</b> Objetos con sintonización, usos y munición.</li></ul></li>
     <li><h3>v1.117 <span>24 nov 2026</span></h3><ul>
       <li><b>Jugadores (1.117.2).</b> El rol de máster o jugador en cada campaña lo decide la cuenta, no lo que haya quedado en el dispositivo: un jugador ya no ve criaturas, módulos ni combate aunque entre en el mismo navegador que el máster. Y crear la cuenta de un jugador vuelve a funcionar.</li>
       <li><b>Crear cuentas de jugador (1.117.1).</b> Si el enlace de la campaña en este dispositivo estaba desfasado, ya no falla con «no es tuya»: se enlaza a tu campaña de la nube.</li>
@@ -7182,7 +7264,7 @@ function rasgosDeClases(cl){
 }
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
-  getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;refreshCompView();renderHome();if(pjEdit==='new')pjRender();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
+  getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;try{fillCompDL();}catch{}refreshCompView();renderHome();if(pjEdit==='new')pjRender();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
 }
 /* Reglas homebrew por campaña: sin ajuste guardado valen todas; con ajuste, solo las marcadas (en la configuración de la campaña, que viaja con ella). */
 /* Reglas homebrew que el máster tiene activas en la campaña: el jugador recibe una copia de solo lectura (clave camp-homebrew-v1). */
@@ -7325,6 +7407,7 @@ function extraAct(act,b,c,e){
     case 'pfopen':updRefresca();$('#pf-view').value=$('#view').value;$('#pf-skin').value=$('#skin').value;$('#pf-theme').value=document.documentElement.dataset.theme||'';$('#pf-dist').value=PREFS.dist;$('#pf-peso').value=PREFS.peso;$('#prefmodal').hidden=false;lkPrefs();syncModalOpen();break;
     case 'qrclose':$('#qrmodal').hidden=true;syncModalOpen();break;
     case 'sesstart':case 'seshoy':case 'sesgo':case 'sesend':case 'sesfin':sesActuar(act);break;
+    case 'relabrir':case 'relcorto':case 'rellargo':case 'relsum':case 'relclima':case 'relinit':relActuar(act);break;
     case 'sesclose':sesCierra();break;
     case 'pzprobar':{const bx=b.closest('.pzbox'),r=$('#pz-res'),v=pzNorm(($('#pz-in')||{}).value);if(!bx||!r)break;
       if(!v){r.className='pzres';r.textContent=T('Escribe algo para probar');break;}
@@ -7400,6 +7483,13 @@ function extraAct(act,b,c,e){
     case 'pjtocamp':{const s=pjGet(pjSel);if(!s)break;const c=Ficha.aCampana(s.f,{campana:Store.campaigns.active(),nombreCampana:Store.campaigns.activeName(),quien:Store.campaigns.activeName(),ahora:Date.now()});PJC.push(c);pjSave();toast(T('Copia creada en la campaña; el original sigue en Mis personajes'));location.hash='personajes/'+c.id;break;}
     case 'pjdup':{const s=pjGet(pjSel);if(!s)break;const c=pjNuevaCopia(s.f,{nombre:s.f.nombre+' (2)',jugador:'',estado:'activo'});(s.lista==='campana'?PJC:PJ).push(c);pjSave();location.hash='personajes/'+c.id;break;}
     case 'pjdmadd':{const s=pjGet(pjSel);if(!s)break;const x=$('#pjdm-x');if(pjCommit(Ficha.dmAnotar(s.f,{tipo:$('#pjdm-t').value,txt:x.value},pjCtx()),s))toast(T('Anotado'));break;}
+    case 'pjinvuso':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.invUsar(s.f,b.dataset.id,+b.dataset.d||1),s);break;}
+    case 'pjinvrec':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.invRecargar(s.f,b.dataset.id),s);break;}
+    case 'pjinvcomp':{const s=pjGet(pjSel),c=$('#pji-c');if(!s||!c)break;const x=compFind('objetos',c.value);if(!x){toast(T('No está en el compendio'));break;}
+      const mu=/munici/i.test((x.t||'')+' '+x.n),cg=/(\d+)\s+cargas/i.exec(String(x.d||'').replace(/<[^>]+>/g,' '));
+      if(pjCommit(Ficha.invAnadir(s.f,{n:x.n,q:1,nota:[x.t,x.r].filter(Boolean).join(', ').slice(0,200),sint:!!x.s,uso:cg?+cg[1]:0,mun:mu}),s))toast(T('Añadido')+': '+x.n);break;}
+    case 'diaadd':{const s=pjGet(pjSel);if(!s)break;const d=diaGet(s.f.id);if(d.cap.length>=DIA_MAXCAP){toast(T('Demasiados capítulos'));break;}d.cap.push({id:uid(),t:'',x:'',f:diaHoy()});diaPon(s.f.id,d);pjRender();break;}
+    case 'diadel':{const s=pjGet(pjSel);if(!s)break;const d=diaGet(s.f.id);d.cap=d.cap.filter(c=>c.id!==b.dataset.id);diaPon(s.f.id,d);pjRender();break;}
     case 'pjdmdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.dmQuitar(s.f,b.dataset.id,pjCtx()),s);break;}
     case 'pjspadd':{const s=pjGet(pjSel),v=$('#pj-spin')?.value.trim();if(!s||!v)break;const sp=SPELLS[v.toLowerCase()];pjCommit(Ficha.conjuroAnadir(s.f,sp?sp.n:v,sp?+sp.lv||0:0),s);break;}
     case 'pjatqadd':{const s=pjGet(pjSel),n=$('#pja-n');if(!s||!n||!n.value.trim())break;pjCommit(Ficha.ataqueAnadir(s.f,{n:n.value,b:$('#pja-b').value,dano:$('#pja-d').value,tipo:$('#pja-t').value}),s);break;}
@@ -7944,6 +8034,49 @@ function pjLoad(){pjCargado=true;
   PJ=rd(Store.root.get(PJKEY));PJC=rd(Store.get(PJCKEY));
 }
 function pjGuardar(){try{Store.root.set(PJKEY,JSON.stringify(PJ));Store.set(PJCKEY,JSON.stringify(PJC));}catch{toast(T('No se pudo guardar'));}}
+/* ---------- diario del personaje: capítulos de su vida, solo para su jugador y el máster ----------
+   Un diario por ficha de campaña, guardado en la copia local de la campaña y sincronizado como «dia:<id de la ficha>». */
+const DIAKEY='camp-diarios-v1',DIA_MAXCAP=100;
+var DIA=null;
+function diaNorm(d){
+  const cap=(Array.isArray(d&&d.cap)?d.cap:[]).slice(0,DIA_MAXCAP).map(c=>c&&typeof c==='object'?{id:String(c.id||'').slice(0,40)||uid(),t:String(c.t||'').slice(0,120),x:String(c.x||'').slice(0,20000),f:String(c.f||'').slice(0,10)}:null).filter(Boolean);
+  return {cap,ed:+(d&&d.ed)||0};
+}
+function diaLoad(){if(DIA)return DIA;DIA={};try{const o=JSON.parse(Store.get(DIAKEY)||'{}');if(o&&typeof o==='object')for(const [k,v] of Object.entries(o)){if(/^[A-Za-z0-9_-]{1,60}$/.test(k))DIA[k]=diaNorm(v);}}catch{}return DIA;}
+function diaSave(){try{Store.set(DIAKEY,JSON.stringify(DIA||{}));}catch{toast(T('No se pudo guardar'));}}
+const diaGet=id=>diaLoad()[id]||{cap:[],ed:0};
+function diaPon(id,d){diaLoad();d.ed=Date.now();DIA[id]=diaNorm(d);diaSave();}
+const diaHoy=()=>new Date().toISOString().slice(0,10);
+/* El diario nace con lo que se sabe al crear el personaje: su trasfondo y su lugar de origen. */
+function diaSemilla(f,trasfondo,lugar){
+  const cap=[];
+  if(trasfondo)cap.push({id:uid(),t:T('Trasfondo'),x:trasfondo,f:diaHoy()});
+  if(lugar)cap.push({id:uid(),t:T('Lugar de origen'),x:lugar,f:diaHoy()});
+  if(cap.length)diaPon(f.id,{cap});
+}
+/* usos y munición de un objeto del inventario */
+function pjInvExtra(i){
+  let h='';
+  if(i.sint)h+='<span class="pjtag" title="'+esc(T('Requiere sintonización'))+'">'+esc(T('Sintonizable'))+'</span>';
+  if(i.uso)h+='<span class="pjtag">'+esc(T('Usos'))+' '+(i.uso-i.ug)+'/'+i.uso+'</span><button type="button" class="btn sm" data-act="pjinvuso" data-id="'+esc(i.id)+'" data-d="1"'+(i.ug>=i.uso?' disabled':'')+'>'+esc(T('Usar'))+'</button><button type="button" class="btn sm ghost" data-act="pjinvrec" data-id="'+esc(i.id)+'"'+(i.ug?'':' disabled')+'>'+esc(T('Recargar'))+'</button>';
+  if(i.mun)h+='<span class="pjtag">'+esc(T('Munición'))+'</span><button type="button" class="btn sm" data-act="pjinvuso" data-id="'+esc(i.id)+'" data-d="1"'+(i.q?'':' disabled')+'>'+esc(T('Gastar 1'))+'</button>';
+  return h;
+}
+function pjDiarioHTML(f){
+  const d=diaGet(f.id);
+  return '<div class="pjbox pjdia"><h3>📖 '+esc(T('Diario del personaje'))+' <span class="pjtag">'+esc(T('Solo lo ven su jugador y el máster'))+'</span></h3>'
+   +'<p class="pcsub">'+esc(T('Los capítulos de su vida: de dónde viene, qué le ha pasado, qué quiere. Se pueden editar en cualquier momento.'))+'</p>'
+   +(d.cap.length?d.cap.map(c=>'<div class="diacap" data-diacap="'+esc(c.id)+'"><div class="pjrow"><input class="diat" data-dia="t" maxlength="120" value="'+esc(c.t)+'" placeholder="'+esc(T('Título del capítulo'))+'" aria-label="'+esc(T('Título del capítulo'))+'" style="flex:1 1 220px"><input type="date" data-dia="f" value="'+esc(c.f)+'" aria-label="'+esc(T('Fecha'))+'"><button type="button" class="btn sm ghost" data-act="diadel" data-id="'+esc(c.id)+'" aria-label="'+esc(T('Quitar capítulo'))+'">✕</button></div>'
+     +'<textarea data-dia="x" maxlength="20000" rows="4" aria-label="'+esc(T('Texto del capítulo'))+'">'+esc(c.x)+'</textarea></div>').join(''):'<p class="pcsub">'+esc(T('Aún no hay capítulos.'))+'</p>')
+   +'<div class="pjrow"><button type="button" class="btn" data-act="diaadd">'+esc(T('Añadir capítulo'))+'</button></div></div>';
+}
+document.addEventListener('input',e=>{
+  const el=e.target,k=el.dataset&&el.dataset.dia;if(!k)return;
+  const box=el.closest('[data-diacap]'),s=pjSel&&pjGet(pjSel);if(!box||!s)return;
+  const d=diaGet(s.f.id),c=d.cap.find(x=>x.id===box.dataset.diacap);if(!c)return;
+  c[k]=k==='t'?el.value.slice(0,120):k==='f'?el.value.slice(0,10):el.value.slice(0,20000);
+  diaPon(s.f.id,d);
+});
 /* Guardar desde la ficha o desde un panel: además, la criatura que la representa en el combate toma sus valores. (El combate guarda con pjGuardar: va en el otro sentido.) */
 function pjSave(){pjGuardar();pjAlCombate();}
 function pjAlCombate(){
@@ -7994,6 +8127,7 @@ function pjRender(){
   const s=pjSel&&pjGet(pjSel);
   document.querySelector('#view-personajes .vhead .inline').hidden=!!s||pjEdit==='new';
   body.innerHTML=pjEdit==='new'?pjFormHTML():s?pjSheetHTML(s.f,s.lista):pjListHTML();
+  if(s){compLoad();if(COMP_SRD)fillCompDL();}   // objetos del compendio para el inventario
 }
 const PJEST={activo:'Activo',caido:'Caído',retirado:'Retirado'};
 /* Fichas de campaña de TODAS las campañas (la activa ya está cargada; las demás se leen sin cambiar de campaña). */
@@ -8130,7 +8264,7 @@ function pjwRasgosHTML(w,amb){
 const PJW_ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
 const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
 let PJW=null;
-function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
+function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',lugar:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
 const pjwComp=(lista,n)=>((COMP_SRD&&COMP_SRD[lista])||[]).find(x=>fold(x.n)===fold(n))||null;
 const pjwClase=k=>pjwComp('clases',CLSN[k]);
 const pjwAbKey=s=>{const f=fold(s);return Ficha.AB.find(a=>fold(({fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'})[a])===f)||'';};
@@ -8229,6 +8363,7 @@ function pjwPaso(w){
     return '<p class="hint">'+esc(T('Pasos 4 y 5 del Manual del Jugador: alineamiento y detalles. Todo es opcional y se puede cambiar luego en la hoja.'))+'</p>'
       +'<div class="pjrow"><label style="flex:1 1 220px">'+esc(T('Nombre'))+'<input id="pjw-n" data-pjw="nombre" maxlength="80" value="'+esc(w.nombre)+'" autocomplete="off"></label>'
       +'<label style="flex:1 1 200px">'+esc(T('Alineamiento'))+'<select data-pjw="alin">'+PJW_ALIN.map(x=>'<option value="'+esc(x)+'"'+(w.alin===x?' selected':'')+'>'+esc(x?T(x):T('Elegir…'))+'</option>').join('')+'</select></label></div>'
+      +'<label class="f">'+esc(T('Lugar de origen'))+'<input data-pjw="lugar" maxlength="200" value="'+esc(w.lugar)+'" autocomplete="off" placeholder="'+esc(T('Una ciudad, región o lugar donde creció'))+'"></label>'
       +'<div class="pjw-det2">'+ta('personalidad','Rasgos de personalidad',3000,3)+ta('ideales','Ideales',3000,3)+ta('vinculos','Vínculos',3000,3)+ta('defectos','Defectos',3000,3)+'</div>'
       +ta('historia','Historia',3000,6)
       +'<div class="pjrow"><label>'+esc(T('Dónde'))+'<select data-pjw="donde"><option value="libre"'+(w.donde==='libre'?' selected':'')+'>'+esc(T('Mis personajes (libre)'))+'</option><option value="campana"'+(w.donde==='campana'?' selected':'')+'>'+esc(T('Esta campaña'))+'</option></select></label></div>';
@@ -8278,10 +8413,10 @@ function pjwCrear(w){
   const tam=String(esp&&esp.tam||'').split(' (')[0].split(' ')[0];
   const ahora=Date.now();
   const f=Ficha.norm({nombre:w.nombre.trim()||T('Sin nombre'),especie:w.esp,trasfondo:w.tf,car:R.fin,niveles:[{c:w.cls,hp:C.d}],habil:R.hab,salvac:C.sv,
-    dotes:tf&&tf.dote?[tf.dote]:[],vel:R.vel||esp&&esp.vel||'9 m',rasgos:R.rasgos,tamano:/^(Mediano|Pequeño)$/.test(tam)?tam:'',pers:{alineamiento:w.alin,personalidad:w.personalidad,ideales:w.ideales,vinculos:w.vinculos,defectos:w.defectos,historia:w.historia},
+    dotes:tf&&tf.dote?[tf.dote]:[],vel:R.vel||esp&&esp.vel||'9 m',rasgos:R.rasgos,tamano:/^(Mediano|Pequeño)$/.test(tam)?tam:'',pers:{alineamiento:w.alin,lugar:w.lugar,personalidad:w.personalidad,ideales:w.ideales,vinculos:w.vinculos,defectos:w.defectos,historia:w.historia},
     otras:{herramientas:tf&&tf.herr?[tf.herr]:[],idiomas:pjwIdiomas(w).fijos.concat(w.idi)},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
     registro:R.origen.map(d=>({t:ahora,a:'creacion',d:d.slice(0,200),por:''}))});
-  (camp?PJC:PJ).push(f);pjSave();pjEdit=null;PJW=null;location.hash='personajes/'+f.id;
+  (camp?PJC:PJ).push(f);pjSave();if(camp)diaSemilla(f,w.tf?T('Trasfondo')+': '+w.tf:'',w.lugar.trim());pjEdit=null;PJW=null;location.hash='personajes/'+f.id;
 }
 function pjwAct(b){
   const w=PJW,a=b.dataset.w,v=b.dataset.v;if(!w)return;
@@ -8361,7 +8496,7 @@ const PERS_CORTO_UI=['alineamiento','edad','altura','peso','ojos','piel','pelo']
 const PJ_PERS={alineamiento:'Alineamiento',edad:'Edad',altura:'Altura',peso:'Peso',ojos:'Ojos',piel:'Piel',pelo:'Pelo',aspecto:'Aspecto',personalidad:'Personalidad',ideales:'Ideales',vinculos:'Vínculos',defectos:'Defectos',historia:'Historia'};
 function pjPersHTML(f){
   return '<div class="pjrow">'+PERS_CORTO_UI.map(k=>'<label>'+esc(T(PJ_PERS[k]))+'<input data-pjf="pers.'+k+'" maxlength="60" value="'+esc(f.pers[k])+'"></label>').join('')+'</div>'
-   +['aspecto','personalidad','ideales','vinculos','defectos','historia'].map(k=>'<h3>'+esc(T(PJ_PERS[k]))+'</h3><textarea data-pjf="pers.'+k+'" maxlength="3000" aria-label="'+esc(T(PJ_PERS[k]))+'">'+esc(f.pers[k])+'</textarea>').join('');
+   +['lugar','aspecto','personalidad','ideales','vinculos','defectos','historia'].map(k=>'<h3>'+esc(T(PJ_PERS[k]))+'</h3><textarea data-pjf="pers.'+k+'" maxlength="3000" aria-label="'+esc(T(PJ_PERS[k]))+'">'+esc(f.pers[k])+'</textarea>').join('');
 }
 function pjMagiaHTML(f){
   const mg=Ficha.magia(f),lv=n=>f.magia.niv[n]||0,orden=f.conjuros.slice().sort((a,b)=>lv(a)-lv(b)||a.localeCompare(b));
@@ -8418,8 +8553,9 @@ function pjSheetHTML(f,lista){
   // dotes y notas
   h+='<div class="pjbox"><h3>'+esc(T('Monedas'))+pjPend(f,'mon')+'</h3><div class="pjrow">'+Ficha.MON.map(k=>'<label>'+k.toUpperCase()+'<input type="number" min="0" max="9999999" data-pjf="mon.'+k+'" value="'+f.mon[k]+'" style="width:92px"></label>').join('')+'</div>'
    +'<h3>'+esc(T('Inventario'))+pjPend(f,'inventario')+'</h3>'
-   +(f.inventario.length?'<ul class="pjlist">'+f.inventario.map(i=>'<li><span class="noi18n" style="flex:1 1 180px;min-width:0">'+esc(i.n)+'</span><label class="chk pcsub"><input type="checkbox" data-pjinvm="eq" data-id="'+esc(i.id)+'"'+(i.eq?' checked':'')+'> '+esc(T('Equipado'))+'</label><label class="chk pcsub"><input type="checkbox" data-pjinvm="sin" data-id="'+esc(i.id)+'"'+(i.sin?' checked':'')+'> '+esc(T('Sintonizado'))+'</label><input type="number" min="0" max="99999" data-pjinvq="'+esc(i.id)+'" value="'+i.q+'" style="width:78px" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn sm danger" data-act="pjinvdel" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin objetos.'))+'</p>')
-   +'<div class="pjrow"><input id="pji-n" maxlength="80" placeholder="'+esc(T('Objeto'))+'" aria-label="'+esc(T('Objeto'))+'" style="flex:1 1 200px"><input id="pji-q" type="number" min="1" max="99999" value="1" style="width:78px" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn" data-act="pjinvadd">'+esc(T('Añadir'))+'</button></div></div>';
+   +(f.inventario.length?'<ul class="pjlist">'+f.inventario.map(i=>'<li><span class="noi18n" style="flex:1 1 180px;min-width:0">'+esc(i.n)+'</span>'+pjInvExtra(i)+'<label class="chk pcsub"><input type="checkbox" data-pjinvm="eq" data-id="'+esc(i.id)+'"'+(i.eq?' checked':'')+'> '+esc(T('Equipado'))+'</label><label class="chk pcsub"><input type="checkbox" data-pjinvm="sin" data-id="'+esc(i.id)+'"'+(i.sin?' checked':'')+'> '+esc(T('Sintonizado'))+'</label><input type="number" min="0" max="99999" data-pjinvq="'+esc(i.id)+'" value="'+i.q+'" style="width:78px" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn sm danger" data-act="pjinvdel" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin objetos.'))+'</p>')
+   +'<div class="pjrow"><input id="pji-n" maxlength="80" placeholder="'+esc(T('Objeto'))+'" aria-label="'+esc(T('Objeto'))+'" style="flex:1 1 200px"><input id="pji-q" type="number" min="1" max="99999" value="1" style="width:78px" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn" data-act="pjinvadd">'+esc(T('Añadir'))+'</button></div>'
+   +'<div class="pjrow"><input id="pji-c" list="cm-obj-dl" maxlength="80" placeholder="'+esc(T('Busca un objeto del compendio'))+'" aria-label="'+esc(T('Objeto del compendio'))+'" style="flex:1 1 200px"><button type="button" class="btn" data-act="pjinvcomp">'+esc(T('Añadir del compendio'))+'</button></div></div>';
   h+='<div class="pjbox"><h3>'+esc(T('Conjuros'))+pjPend(f,'conjuros','magia')+'</h3>'+pjMagiaHTML(f)
    +'<div class="pjrow"><input id="pj-spin" list="spells-dl" maxlength="60" placeholder="'+esc(T('Busca un conjuro y pulsa Enter'))+'" aria-label="'+esc(T('Añadir conjuro'))+'" style="flex:1 1 220px"><button type="button" class="btn" data-act="pjspadd">'+esc(T('Añadir conjuro'))+'</button></div>'
    +'<p class="pcsub">'+esc(T('Lo que lances en el combate gasta los espacios de esta ficha.'))+'</p></div>';
@@ -8428,6 +8564,7 @@ function pjSheetHTML(f,lista){
   h+=pjDet('def','Estados, resistencias y vulnerabilidades',pjListaHTML(f,'defensas',Ficha.DEFS),pjPend(f,'defensas'))
    +pjDet('otr','Idiomas y competencias',pjListaHTML(f,'otras',Ficha.OTRAS),pjPend(f,'otras'))
    +pjDet('per','Personaje: personalidad e historia',pjPersHTML(f),pjPend(f,'pers'));
+  if(camp)h+=pjDiarioHTML(f);
   // sección privada del máster
   if(camp&&PJROL==='dm'){
     const tp={evento:['Evento','⚡'],nota:['Nota','✎'],secreto:['Secreto','🗝']};
@@ -8513,7 +8650,7 @@ document.addEventListener('change',e=>{
   }
 });
 document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.pjw)pjwCambio(e.target);});
-document.addEventListener('input',e=>{const el=e.target,k=el.dataset&&el.dataset.pjw;if(PJW&&k&&['nombre','personalidad','ideales','vinculos','defectos','historia'].includes(k))PJW[k]=el.value.slice(0,k==='nombre'?80:3000);});
+document.addEventListener('input',e=>{const el=e.target,k=el.dataset&&el.dataset.pjw;if(PJW&&k&&['nombre','lugar','personalidad','ideales','vinculos','defectos','historia'].includes(k))PJW[k]=el.value.slice(0,k==='nombre'?80:k==='lugar'?200:3000);});
 /* ---------- eventos del combate (tarjetas, reloj y efectos; el máster decide siempre) ---------- */
 const evFmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 function evCheck(){
@@ -9454,6 +9591,7 @@ function sesFinHTML(a){
    +'<label class="f">'+esc(T('Resumen de lo ocurrido (opcional)'))+'<textarea id="ses-res" rows="7" maxlength="20000" placeholder="'+esc(T('Se guarda en la sesión. Déjalo vacío si no hace falta.'))+'"></textarea></label>'
    +'<label class="f">'+esc(T('Fecha de la próxima sesión (opcional)'))+'<input type="date" id="ses-next" min="'+Notas.fechaDe(sesAhora())+'"></label>'
    +'<label class="chk"><input type="checkbox" id="ses-pub"> '+esc(T('Compartir el resumen con los jugadores'))+'</label>'
+   +(relLoad()?'<label class="f">'+esc(T('Días que han pasado en el juego durante la sesión (opcional)'))+'<input type="number" id="ses-dias" min="0" max="3650" value="0" style="width:100px"></label>':'')
    +'<div class="inline"><button type="button" class="btn primary" data-act="sesfin">'+esc(T('Finalizar sesión'))+'</button><button type="button" class="btn ghost" data-act="sesclose">'+esc(T('Seguir jugando'))+'</button></div>';
 }
 function sesActuar(act){
@@ -9470,11 +9608,61 @@ function sesActuar(act){
     const a=Notas.activa(CP);if(!a){sesCierra();return;}
     const r=Notas.finalizarSesion(CP,a.id,{resumen:$('#ses-res').value,compartir:$('#ses-pub').checked,proxima:$('#ses-next').value,ahora:sesAhora()});
     if(!r.ok){toast(T('No se ha podido finalizar la sesión'));return;}
+    const dj=$('#ses-dias')?Math.max(0,Math.floor(+$('#ses-dias').value||0)):0;if(dj&&relLoad())relPon(Harptos.sumar(relLoad(),dj*1440,'Fin de sesión'));
     sesGuarda(r.items);sesCierra();toast(T($('#ses-res').value.trim()?'Sesión finalizada. El resumen está en la sesión':'Sesión finalizada')+(r.proxima?' · '+T('Próxima sesión planeada'):''));bkAuto();
   }
 }
 document.addEventListener('change',e=>{if(e.target.id==='ses-sel'){const w=$('#ses-nomw');if(w)w.hidden=!!e.target.value;}});
 sesRender();setInterval(()=>{if(!document.hidden)sesRender();},30000);
+
+/* ---- reloj de campaña (calendario de Harptos): fecha y hora de la partida, descansos, viajes y clima ---- */
+const RELKEY='camp-reloj-v1';
+let REL=null;
+function relLoad(){if(REL)return REL;try{const o=JSON.parse(Store.get(RELKEY)||'null');REL=o&&typeof o==='object'?Harptos.norm(o):null;}catch{REL=null;}return REL;}
+function relPon(r){REL=r?Harptos.norm(r):null;try{if(REL)Store.set(RELKEY,JSON.stringify(REL));}catch{}relRender();}
+const relMaster=()=>Store.campaigns.rol()!=='jugador';
+function relRender(){
+  const b=$('#relbar');if(!b)return;const r=relLoad(),dm=relMaster();
+  if(!r){b.hidden=!dm;b.innerHTML=dm?'<span class="sesdot" aria-hidden="true" style="background:#8886"></span><span class="sesinfo">'+esc(T('Reloj de campaña sin configurar'))+'</span><button type="button" class="btn sm" data-act="relabrir">'+esc(T('Configurar reloj'))+'</button>':'';return;}
+  const f=Harptos.fecha(Math.floor(r.min/1440)),pl=Harptos.proximoLargo(r),ok=Harptos.puedeLargo(r);
+  const est=T(f.estacion.charAt(0).toUpperCase()+f.estacion.slice(1));
+  b.hidden=false;
+  b.innerHTML='<span class="sesdot" aria-hidden="true" style="background:var(--accent,#c9a227)"></span><span class="sesinfo noi18n"><b>'+esc(Harptos.texto(f))+'</b> · '+esc(Harptos.hora(r.min))+' · '+esc(est)+(r.clima?' · '+esc(r.clima):'')+'</span>'
+    +'<span class="pcsub">'+esc(ok?T('Descanso largo disponible'):T('Próximo descanso largo en')+' '+Harptos.desc(pl-r.min))+'</span>'
+    +(dm?'<button type="button" class="btn sm" data-act="relcorto" title="'+esc(T('Suma 1 hora'))+'">'+esc(T('Descanso corto'))+'</button><button type="button" class="btn sm" data-act="rellargo" title="'+esc(T('Suma 8 horas'))+'">'+esc(T('Descanso largo'))+'</button><button type="button" class="btn sm" data-act="relabrir">'+esc(T('Reloj…'))+'</button>':'');
+}
+function relModalHTML(){
+  const r=relLoad(),f=r&&Harptos.fecha(Math.floor(r.min/1440));
+  const ini=r?Harptos.fecha(Math.floor(r.inicio/1440)):{anio:1492,mes:1,dia:1};
+  const opt=Harptos.MESES.map((m,i)=>'<option value="'+(i+1)+'"'+(ini.mes===i+1?' selected':'')+'>'+esc(m[1])+'</option>').join('');
+  let h='';
+  if(r){
+    h+='<p class="pcsub noi18n"><b>'+esc(Harptos.texto(f))+'</b> · '+esc(Harptos.hora(r.min))+' · '+esc(T('Llevan jugando'))+' '+esc(Harptos.desc(r.min-r.inicio))+'</p>'
+     +'<h4>'+esc(T('Sumar tiempo'))+'</h4><div class="pjrow"><label class="f">'+esc(T('Días'))+'<input id="rel-d" type="number" min="0" max="3650" value="0" style="width:90px"></label><label class="f">'+esc(T('Horas'))+'<input id="rel-h" type="number" min="0" max="999" value="0" style="width:90px"></label>'
+     +'<label class="f" style="flex:1 1 160px">'+esc(T('Motivo'))+'<select id="rel-q">'+['Viaje','Exploración','Descanso','Trabajo o espera','Otro'].map(x=>'<option value="'+esc(x)+'">'+esc(T(x))+'</option>').join('')+'</select></label></div>'
+     +'<div class="inline"><button type="button" class="btn primary" data-act="relsum">'+esc(T('Sumar al reloj'))+'</button><button type="button" class="btn" data-act="relclima">'+esc(T('Sortear el clima de hoy'))+'</button></div>'
+     +(r.log.length?'<h4>'+esc(T('Últimos movimientos'))+'</h4><ul class="pjlist">'+r.log.slice(-8).reverse().map(x=>'<li class="noi18n"><span style="flex:1 1 200px">'+esc(Harptos.texto(Harptos.fecha(Math.floor(x.m/1440))))+' '+esc(Harptos.hora(x.m))+' · '+esc(T(x.q))+'</span><span class="pcsub">+'+esc(Harptos.desc(x.d))+'</span></li>').join('')+'</ul>':'')
+     +'<h4>'+esc(T('Cambiar la fecha de inicio'))+'</h4>';
+  }else h+='<p class="pcsub">'+esc(T('Calendario de Harptos (Reinos Olvidados). Indica cuándo empieza la campaña; después sumarás horas y días con los descansos, los viajes y al acabar cada sesión.'))+'</p>';
+  h+='<div class="pjrow"><label class="f">'+esc(T('Año (DR)'))+'<input id="rel-a" type="number" min="0" max="9999" value="'+ini.anio+'" style="width:100px"></label><label class="f">'+esc(T('Mes'))+'<select id="rel-m">'+opt+'</select></label><label class="f">'+esc(T('Día'))+'<input id="rel-di" type="number" min="1" max="30" value="'+(ini.dia||1)+'" style="width:80px"></label><label class="f">'+esc(T('Hora'))+'<input id="rel-ho" type="number" min="0" max="23" value="'+(r?Math.floor(r.inicio%1440/60):8)+'" style="width:80px"></label></div>'
+   +'<div class="inline"><button type="button" class="btn'+(r?'':' primary')+'" data-act="relinit">'+esc(T(r?'Reiniciar el reloj con esta fecha':'Empezar el reloj'))+'</button><button type="button" class="btn ghost" data-act="sesclose">'+esc(T('Cerrar'))+'</button></div>';
+  return h;
+}
+function relActuar(act){
+  if(!relMaster()&&act!=='relabrir')return;
+  const r=relLoad();
+  if(act==='relabrir'){sesAbre('Reloj de campaña',relModalHTML());return;}
+  if(act==='relinit'){
+    const n=Harptos.nuevo(+$('#rel-a').value||1492,+$('#rel-m').value||1,+$('#rel-di').value||1,Math.min(23,Math.max(0,+$('#rel-ho').value||0)));
+    relPon(n);sesAbre('Reloj de campaña',relModalHTML());toast(T('Reloj puesto en hora'));return;
+  }
+  if(!r)return;
+  if(act==='relcorto'){relPon(Harptos.corto(r));toast(T('+1 hora (descanso corto)'));}
+  else if(act==='rellargo'){if(!Harptos.puedeLargo(r)&&!confirm(T('Aún no han pasado 24 horas desde el último descanso largo. ¿Hacerlo igualmente?')))return;relPon(Harptos.largo(r));toast(T('+8 horas (descanso largo)'));}
+  else if(act==='relsum'){const m=Math.round((+$('#rel-d').value||0)*1440+(+$('#rel-h').value||0)*60);if(m<=0){toast(T('Indica días u horas'));return;}relPon(Harptos.sumar(r,m,$('#rel-q').value));sesAbre('Reloj de campaña',relModalHTML());toast('+'+Harptos.desc(m));}
+  else if(act==='relclima'){const f=Harptos.fecha(Math.floor(r.min/1440)),c=Harptos.clima(f.estacion,1+Math.floor(Math.random()*20));relPon({...r,clima:c});sesAbre('Reloj de campaña',relModalHTML());toast(c);}
+}
+relRender();
 
 /* ---- bloqueo de pantalla: solo en la app de escritorio ---- */
 const LKESC=!!window.__AppShell;
@@ -9833,8 +10021,10 @@ function scSnapshot(){
   for(const p of PARTY)if(p&&p.id&&!p.ex)m['pj:'+p.id]=p;
   if(!pjCargado)pjLoad();grpSync();
   for(const f of PJC)if(f&&f.id)m['fch:'+f.id]=f;                 // fichas de los personajes de la campaña
+  for(const f of PJC)if(f&&f.id){const d=diaLoad()[f.id];if(d&&d.cap.length)m['dia:'+f.id]=d;}   // diario de cada personaje de campaña
   for(const g of GRP)if(g&&g.id)m['grp:'+g.id]=g;                 // grupos (jugadores, aliados, rivales…)
-  try{const c=Store.get(PJCFG);if(c){const o=JSON.parse(c);if(o&&typeof o==='object')m['cfg:permisos']=o;}}catch{}   // qué puede tocar cada jugador
+  try{const c=Store.get(PJCFG);if(c){const o=JSON.parse(c);if(o&&typeof o==='object')m['cfg:permisos']=o;}}catch{}
+  if(Store.campaigns.rol()!=='jugador'&&relLoad())m['cfg:reloj']=relLoad();   // el reloj lo mueve el máster; los jugadores lo leen   // qué puede tocar cada jugador
   if(Store.campaigns.rol()==='jugador'){for(const [k,it] of Object.entries((SC.l&&SC.l.items)||{}))if(k.startsWith('hb:')&&!it.del&&it.valor)m[k]=it.valor;}   // copia de solo lectura de las reglas homebrew del máster
   else for(const x of ((myMod(false)||{}).reglas||[]))if(x&&x.n&&hbOn(x.n))m[hbSlug(x.n)]={n:x.n,cat:x.cat||'Homebrew',tag:x.tag||'',d:String(x.d||''),ref:x.ref!==false};   // las activas en esta campaña
   for(const k of Object.keys(m))if(!Sincro.CLAVE.test(k))delete m[k];
@@ -9858,8 +10048,10 @@ function scApply(r){
     else if(tp==='enc'&&it.valor&&Array.isArray(it.valor.items)){put(PRESETS,{...scClone(it.valor),id});nE=true;}
     else if(tp==='pj'&&it.valor&&typeof it.valor==='object'){put(PARTY,{...scClone(it.valor),id});nP=true;}
     else if(tp==='fch'&&it.valor&&typeof it.valor==='object'){if(!pjCargado)pjLoad();const f=Ficha.norm({...scClone(it.valor),id});if(f){put(PJC,f);nF=true;}}
+    else if(tp==='dia'&&it.valor&&typeof it.valor==='object'){diaLoad();DIA[id]=diaNorm(it.valor);diaSave();nF=true;}
     else if(tp==='grp'&&it.valor&&typeof it.valor==='object'){const g=Grupos.normLista([{...scClone(it.valor),id}])[0];if(g){const l=GRP.slice();put(l,g);GRP=l;nG=true;}}
     else if(tp==='hb'&&it.valor&&typeof it.valor==='object'){if(Store.campaigns.rol()==='jugador'){const l=hbcLoad(),n=String(it.valor.n||'').slice(0,120),x={id:k,n,cat:String(it.valor.cat||'Homebrew').slice(0,60),tag:String(it.valor.tag||'').slice(0,60),d:String(it.valor.d||'').slice(0,20000),ref:it.valor.ref!==false},i=l.findIndex(y=>y.id===k);if(n){if(i>=0)l[i]=x;else l.push(x);hbcSave(l);nH=true;}}}
+    else if(tp==='cfg'&&id==='reloj'&&it.valor&&typeof it.valor==='object'){REL=Harptos.norm(it.valor);try{Store.set(RELKEY,JSON.stringify(REL));}catch{}relRender();}
     else if(tp==='cfg'&&id==='permisos'&&it.valor&&typeof it.valor==='object'){try{Store.set(PJCFG,JSON.stringify(it.valor));nC=true;}catch{}}}
   for(const k of r.borrados){const [tp,id]=parte(k);
     if(tp==='hb'&&Store.campaigns.rol()==='jugador'){const l=hbcLoad().filter(y=>y.id!==k);if(l.length!==hbcLoad().length){hbcSave(l);nH=true;}}
@@ -10066,7 +10258,7 @@ async function scRemotas(auto){
   if(!SC.cargada)scLoad();scConfPinta();scInvCarga();
 }
 /* ---- copias de conflicto: lo que perdió cuando dos dispositivos editaron lo mismo; se puede recuperar o descartar ---- */
-const SC_TIPO={nota:'Nota',enc:'Encuentro',pj:'Jugador',fch:'Personaje',grp:'Grupo',cfg:'Permisos'};
+const SC_TIPO={nota:'Nota',enc:'Encuentro',pj:'Jugador',fch:'Personaje',dia:'Diario',grp:'Grupo',cfg:'Permisos'};
 function scConfNombre(c){const v=c.valor,k=String(c.clave),tp=k.slice(0,k.indexOf(':'));
   const n=v&&typeof v==='object'?(v.nombre||v.n||v.titulo||''):'';return T(SC_TIPO[tp]||'Elemento')+(n?' · '+n:'');}
 /* ---------- control de versiones (escritorio): qué difiere de la cuenta, conflictos abiertos y subir/descargar a la fuerza ---------- */
