@@ -53,7 +53,11 @@ Deno.serve(async (req) => {
   const cid = b.campana_id && /^[0-9a-f-]{36}$/.test(b.campana_id) ? b.campana_id : null;
   if (cid) {
     const { data: c } = await admin.from('campanas').select('id').eq('id', cid).eq('master_id', u.user.id).maybeSingle();
-    if (!c) return json({ error: 'esa campaña no es tuya' }, 403);
+    if (!c) {
+      const { data: real } = await admin.from('campanas').select('master_id').eq('id', cid).maybeSingle();
+      const motivo = real ? 'la campaña es de otra cuenta' : 'la campaña no existe en la cuenta';
+      return json({ error: `esa campaña no es tuya (${motivo}; campaña ${cid.slice(0, 8)}, tú ${u.user.id.slice(0, 8)}${real ? ', dueño ' + String(real.master_id).slice(0, 8) : ''})` }, 403);
+    }
   }
 
   // 4) la cuenta
