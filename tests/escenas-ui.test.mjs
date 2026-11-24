@@ -121,7 +121,7 @@ const TAIL=`<script>
     // galería de documentos
     const big='data:image/jpeg;base64,'+'A'.repeat(700000);
     ok('un documento admite una imagen grande y un PNJ no',Notas.norm({tipo:'handout',nombre:'Carta',img:big}).img===big&&Notas.norm({tipo:'npc',nombre:'x',img:big}).img===null);
-    ok('la galería es una pestaña de la campaña',Notas.TIPOS.some(x=>x[0]==='handout')&&!!document.querySelector('[data-cptabs] a[href="#campana/handout"]'));
+    ok('la galería es una pestaña de la campaña',Notas.TIPOS.some(x=>x[0]==='handout')&&!!document.querySelector('[data-cptabs] a[href="#campana/handout"]')||CP_GRUPOS.some(g=>g[1].includes('handout')));
     const ho=Notas.nuevo('handout','Carta del barón');ho.texto='Querido capitán,'+String.fromCharCode(10)+'La cripta debe permanecer cerrada.';CP.push(ho);cpDirty=true;cpFlush();
     ok('un documento nace oculto para los jugadores',ho.visibilidad==='dm');
     ok('un documento solo de texto se puede convertir en carta para la mesa',/^data:image[/]jpeg;base64,/.test(cpCartaImg(ho)));

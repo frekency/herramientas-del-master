@@ -4,6 +4,17 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.115.0] - 2026-11-24
+### Cambiado
+- Navegación en cuatro bloques: Campaña, Personajes, Compendio y Utilidades, en la barra y en la portada (cuatro tarjetas a pantalla completa). Combate y Ventana de mesa quedan dentro de Campaña; Referencia y Homebrew, en Compendio; Tablas, Módulos y Revisión, en Utilidades.
+- Nueva página Utilidades con preferencias, audio y cuenta. Las rutas no cambian.
+- Cada tarjeta de la portada lleva accesos de un toque (Combate, Ventana de mesa, Criaturas, Tablas…, y los primeros personajes).
+- Con un combate en curso, una pastilla «Combate · R3 · turno» en la barra vuelve a él desde cualquier pantalla. Atajos: C para el combate y 1 a 4 para los bloques.
+- Accesibilidad: la barra marca la página actual con `aria-current`, y los enlaces secundarios y las pestañas de Campaña miden 44 px en móvil.
+- Cabecera del combate en una sola fila (sin el botón Grupo; las etiquetas de los botones se ven desde 1000 px de ancho y Terminar queda separado).
+- Las pestañas de Campaña pasan a tres segmentos (Jugar, Preparar y Grupo) que muestran solo sus pestañas; el Diario va en Jugar.
+- Utilidades usa un solo patrón de tarjetas (herramientas y ajustes), con una línea de descripción cada una.
+
 ## [1.114.0] - 2026-11-24
 ### Añadido
 - Lugares: casilla «Apto como mapa de combate»; los marcados se ofrecen en el estudio de la mesa con su mapa. El mapa de un lugar usa la nueva compresión WebP (hasta 2048 px).
