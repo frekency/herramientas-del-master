@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.116.0] - 2026-11-24
+### Añadido
+- La web se puede instalar como aplicación (PWA): icono propio, pantalla completa sin la barra del navegador y apertura sin conexión con lo ya visitado. En el iPhone: Compartir > Añadir a pantalla de inicio. Primero la red, así las versiones nuevas llegan siempre.
+
 ## [1.115.1] - 2026-11-24
 ### Corregido
 - Portada en móvil: las tarjetas van en una columna, sin estirarse ni dejar huecos, con los accesos en dos columnas, y caben los cuatro bloques en poco más de una pantalla.
