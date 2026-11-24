@@ -1083,7 +1083,7 @@ window.Notas=(()=>{
     sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r',paso:'s',extras:'d',lectura:'r'},
     diario:{fecha:'s',sesion:'s'},
     npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p',stats:'t',inventario:'i',acompana:'b'},
-    lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b'},
+    lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b',combate:'b'},
     tienda:{dueno:'s',lugar:'s',oro:'s',descuento:'s',mision:'s',inventario:'i',publico:'p',verinv:'b'},
     mision:{estado:'e',encargo:'s',recompensa:'s',objetivos:'c',publico:'p',verobj:'b'},
     puzzle:{estado:'e',clase:'s',lugar:'s',reglas:'r',solucion:'r',fallo:'r',recompensa:'s',pistas:'c',respuesta:'s',hash:'s',jugable:'b',publico:'p'},
@@ -2987,7 +2987,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.113</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.114</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3186,6 +3186,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.114 <span>24 nov 2026</span></h3><ul>
+      <li><b>Mapas de combate en los Lugares.</b> En un lugar con mapa aparece la casilla «Apto como mapa de combate»: marcado, el mapa se ofrece en la lista de imágenes del estudio de la mesa para usarlo como fondo (o ficha) de la pantalla. El mapa del lugar se guarda ahora también en WebP y hasta 2048 px.</li>
+    </ul></li>
     <li><h3>v1.113 <span>24 nov 2026</span></h3><ul>
       <li><b>Imágenes mejor comprimidas.</b> Al subir una imagen se guarda en WebP (≈30 % más pequeño que JPEG con la misma calidad) y hasta 2048 px en los mapas y handouts, en vez de 1600 px en JPEG. Si aún no cabe, baja la calidad hasta un mínimo y después reduce las dimensiones, no al revés. Conserva la transparencia. Se guarda igual que antes, así que vale en la web y en la app; un navegador sin WebP usa JPEG.</li>
     </ul></li>
@@ -4949,8 +4952,11 @@ const msNom=c=>{
   return c.tipo==='iniciativa'?T('Orden de iniciativa'):T('Cuentas atrás');
 };
 const msCartas=new Map();
+/* un lugar con mapa marcado «apto para combate» se ofrece en la pantalla con ese mapa (no con su retrato) */
+const msCombate=i=>!!(i&&i.tipo==='lugar'&&i.mapa&&i.campos&&i.campos.combate);
 function msSrc(nid){
   const it=nid&&cpGet(nid);if(!it)return '';
+  if(msCombate(it))return it.mapa;
   if(it.img)return it.img;
   if(it.tipo==='handout'&&it.texto){const k=it.id+'|'+it.nombre+'|'+it.texto;if(!msCartas.has(k)){if(msCartas.size>8)msCartas.clear();msCartas.set(k,cpCartaImg(it));}return msCartas.get(k);}
   return '';
@@ -5085,8 +5091,8 @@ function msBarra(){
 }
 function msBiblio(){
   const q=MS.q.trim().toLowerCase();
-  const L=CP.filter(i=>!i.id.startsWith('pub_')&&(i.img||(i.tipo==='handout'&&i.texto))&&(!q||(cpName(i)+' '+(i.texto||'')).toLowerCase().includes(q))).sort((a,b)=>(b.tipo==='handout')-(a.tipo==='handout')||cpName(a).localeCompare(cpName(b),'es')).slice(0,120);
-  $('#ms-docs').innerHTML=L.length?L.map(i=>'<li><button type="button" data-ms="img" data-id="'+esc(i.id)+'">'+(i.img?'<img src="'+i.img+'" alt="" loading="lazy">':'<span class="ph">'+ic('scroll')+'</span>')+'<span class="nm">'+esc(cpName(i))+'</span><small>'+esc(i.tipo==='handout'?(i.img?'':T('Documento')):(Notas.SING?T(Notas.SING[i.tipo]||''):''))+'</small></button><button type="button" class="ib ms-ren" data-ms="imgtitulo" data-id="'+esc(i.id)+'" title="'+esc(T('Poner título o texto para encontrarla'))+'" aria-label="'+esc(T('Poner título o texto para encontrarla'))+'">✎</button></li>').join('')
+  const L=CP.filter(i=>!i.id.startsWith('pub_')&&(i.img||msCombate(i)||(i.tipo==='handout'&&i.texto))&&(!q||(cpName(i)+' '+(i.texto||'')).toLowerCase().includes(q))).sort((a,b)=>(b.tipo==='handout')-(a.tipo==='handout')||cpName(a).localeCompare(cpName(b),'es')).slice(0,120);
+  $('#ms-docs').innerHTML=L.length?L.map(i=>'<li><button type="button" data-ms="img" data-id="'+esc(i.id)+'">'+(msCombate(i)||i.img?'<img src="'+(msCombate(i)?i.mapa:i.img)+'" alt="" loading="lazy">':'<span class="ph">'+ic('scroll')+'</span>')+'<span class="nm">'+esc(cpName(i))+'</span><small>'+esc(i.tipo==='handout'?(i.img?'':T('Documento')):(Notas.SING?T(Notas.SING[i.tipo]||''):''))+'</small></button><button type="button" class="ib ms-ren" data-ms="imgtitulo" data-id="'+esc(i.id)+'" title="'+esc(T('Poner título o texto para encontrarla'))+'" aria-label="'+esc(T('Poner título o texto para encontrarla'))+'">✎</button></li>').join('')
     :'<li class="empty">'+esc(q?T('Nada coincide'):T('Aún no hay imágenes. Añádelas en Campaña → Galería, o como imagen de un PNJ o lugar.'))+'</li>';
   /* arte de criaturas (carpeta de imágenes del bestiario): se escribe el nombre y se importa a la Galería al elegirla */
   MS.crL=[];
@@ -7712,6 +7718,7 @@ function cpMapa(it){
   const dentro=Notas.lugaresDentro(CP,it),pins=it.campos.pines||[];
   const mapa=it.mapa?`<div class="cpmap${cpPinArm?' arm':''}" id="cp-map"><img src="${it.mapa}" alt="${esc(T('Mapa'))}: ${esc(cpName(it))}">${pins.map((q,n)=>`<button type="button" class="pin" data-pin="${n}" style="left:${q.x}%;top:${q.y}%"><span>${esc(q.l)}</span></button>`).join('')}</div>`:'';
   return `<div class="cpck cpmapbox" data-f="mapa"><h4>${T('Mapa y lugares')}</h4>
+    ${it.mapa?`<label class="cpacomp"><input type="checkbox" data-cpf="campos.combate"${it.campos.combate?' checked':''}> ${T('Apto como mapa de combate (se ofrece en la pantalla de la mesa)')}</label>`:''}
     ${it.mapa?`<div class="cplink bfilters"><input type="text" id="cp-pinl" list="cp-dl-lugar" placeholder="${esc(T('Lugar de este mapa (existente o nuevo)'))}" aria-label="${esc(T('Lugar de este mapa (existente o nuevo)'))}"><button type="button" class="btn" data-act="cppinarm">${cpPinArm?T('Pulsa en el mapa…'):T('Colocar en el mapa')}</button></div>`:`<p class="hint">${T('Añade el mapa de este lugar (una región, una ciudad, una mazmorra) y marca en él los lugares que contiene.')}</p>`}
     ${mapa}
     <div class="cpimgbox"><label class="btn sm">${it.mapa?T('Cambiar mapa'):T('Añadir mapa')}<input type="file" accept="image/*" id="cp-mapimg" hidden></label>${it.mapa?`<button type="button" class="btn sm ghost" data-act="cpmaprm">${T('Quitar mapa')}</button>`:''}</div>
@@ -7724,10 +7731,8 @@ function cpMapImage(file,it){
   const u=URL.createObjectURL(file),im=new Image();
   im.onload=()=>{
     URL.revokeObjectURL(u);
-    let w=im.naturalWidth,h=im.naturalHeight;const k=Math.min(1,1400/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
-    const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(im,0,0,w,h);
-    let q=.82,d=cv.toDataURL('image/jpeg',q);while(d.length>880000&&q>.35){q-=.08;d=cv.toDataURL('image/jpeg',q);}
-    if(d.length>880000)return toast('La imagen es demasiado grande');
+    const d=imgComprimir(im,2048,880000);
+    if(!d)return toast('La imagen es demasiado grande');
     it.mapa=d;it.editado=Date.now();cpDirty=true;cpFlush();cpRenderDet();
   };
   im.onerror=()=>{URL.revokeObjectURL(u);toast('No se pudo leer la imagen');};

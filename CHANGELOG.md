@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.114.0] - 2026-11-24
+### Añadido
+- Lugares: casilla «Apto como mapa de combate»; los marcados se ofrecen en el estudio de la mesa con su mapa. El mapa de un lugar usa la nueva compresión WebP (hasta 2048 px).
+
 ## [1.113.0] - 2026-11-24
 ### Cambiado
 - Subida de imágenes: compresión a WebP (calidad alta, hasta 2048 px, conserva la transparencia) con reducción de calidad y después de tamaño solo si no cabe en el límite; mismo almacenamiento para web y escritorio.

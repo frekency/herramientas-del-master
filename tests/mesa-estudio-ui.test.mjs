@@ -84,6 +84,13 @@ const TAIL=`<script>
      for(let i=0;i<40&&CP.filter(x=>x.tipo==='handout').length===antes;i++)await wait(50);
      const nuevo=CP.find(x=>x.nombre==='mapa-del-tesoro');
      ok('la imagen subida pasa a ser un documento de la galería',nuevo&&nuevo.tipo==='handout'&&/^data:image\\/(webp|jpeg)/.test(nuevo.img));
+     const lg=cpNew('lugar','Aldea en ruinas');lg.mapa='data:image/png;base64,iVBORw0KGgo=';lg.img='data:image/png;base64,AAAA';msBiblio();
+     ok('un lugar con mapa sin marcar no sale en la lista de imágenes por su mapa',!document.querySelector('#ms-docs [data-id="'+lg.id+'"] img[src="'+lg.mapa+'"]')&&msSrc(lg.id)===lg.img);
+     ok('en el lugar con mapa sale la casilla «Apto como mapa de combate»',cpMapa(lg).includes('campos.combate'));
+     lg.campos.combate=true;msBiblio();
+     ok('marcado apto para combate se ofrece con su mapa (no con su retrato)',!!document.querySelector('#ms-docs [data-id="'+lg.id+'"] img[src="'+lg.mapa+'"]')&&msSrc(lg.id)===lg.mapa);
+     const sinMapa=cpNew('lugar','Sin mapa');sinMapa.campos.combate=true;
+     ok('sin mapa no hay nada que ofrecer aunque esté marcado',!msCombate(sinMapa)&&!cpMapa(sinMapa).includes('campos.combate'));
      ok('y queda puesta en la zona elegida',nuevo&&msSelC()&&msSelC().nid===nuevo.id);}
     // plantillas
     await click('[data-ms="plguardar"]');
