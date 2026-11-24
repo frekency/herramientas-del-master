@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.115.1] - 2026-11-24
+### Corregido
+- Portada en móvil: las tarjetas van en una columna, sin estirarse ni dejar huecos, con los accesos en dos columnas, y caben los cuatro bloques en poco más de una pantalla.
+- Las cuatro pestañas de la barra se reparten el ancho en el móvil y «Más» con la cuenta bajan juntos a la fila siguiente.
+- La franja «Sin sesión activa» ya no ocupa una fila en la portada (sí se ve con una sesión en curso).
+
 ## [1.115.0] - 2026-11-24
 ### Cambiado
 - Navegación en cuatro bloques: Campaña, Personajes, Compendio y Utilidades, en la barra y en la portada (cuatro tarjetas a pantalla completa). Combate y Ventana de mesa quedan dentro de Campaña; Referencia y Homebrew, en Compendio; Tablas, Módulos y Revisión, en Utilidades.
