@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.107.0] - 2026-11-24
+### Añadido
+- Creador de personajes: cuarto método de características, la tabla «Conjunto estándar por clase» del Manual del Jugador, con opción de ajustarla a mano.
+### Cambiado
+- Creador de personajes: los puntos del trasfondo se reparten con botones +2/+1 por característica (o +1 a las tres) y se bloquean al completarse.
+
 ## [1.106.0] - 2026-11-24
 ### Cambiado
 - Ambiente: se retiran los efectos hechos con código (niebla, lluvia, nieve, tormenta, noche, brasas) y los sonidos generados. La capa muestra un vídeo o imagen animada en bucle (enlace https o carpeta de ambientes del usuario) y un sonido aparte (enlace, archivo o búsqueda). La carpeta ahora admite también vídeos e imágenes.
