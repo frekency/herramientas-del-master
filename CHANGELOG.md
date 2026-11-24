@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.117.2] - 2026-11-24
+### Corregido
+- Un jugador que entraba en un dispositivo donde ya estaba el máster veía la campaña como máster (criaturas, módulos, combate) y vacía. El rol (máster o jugador) ahora lo manda la cuenta en cada campaña, y si cambia, la app se recarga una vez.
+- La sincronización de un jugador ya no quita en su copia local lo que no le llega: un jugador solo lee una parte de los datos y eso no significa que esté borrado.
+- Crear la cuenta de un jugador: la función de Supabase no tenía permisos sobre las tablas y veía la campaña como inexistente; corregido en Supabase (permisos del rol de servicio).
+
 ## [1.117.1] - 2026-11-24
 ### Corregido
 - Crear la cuenta de un jugador fallaba con «esa campaña no es tuya» cuando el enlace de la campaña guardado en el dispositivo apuntaba a un id que no existe en la cuenta. Ahora se comprueba antes: se enlaza a tu campaña de la nube con el mismo nombre (o se crea una) y, si la campaña es de otra cuenta, el mensaje lo explica.

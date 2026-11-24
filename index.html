@@ -3283,6 +3283,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.117 <span>24 nov 2026</span></h3><ul>
+      <li><b>Jugadores (1.117.2).</b> El rol de máster o jugador en cada campaña lo decide la cuenta, no lo que haya quedado en el dispositivo: un jugador ya no ve criaturas, módulos ni combate aunque entre en el mismo navegador que el máster. Y crear la cuenta de un jugador vuelve a funcionar.</li>
       <li><b>Crear cuentas de jugador (1.117.1).</b> Si el enlace de la campaña en este dispositivo estaba desfasado, ya no falla con «no es tuya»: se enlaza a tu campaña de la nube.</li>
       <li><b>Sincronización sin conflictos manuales.</b> La cuenta manda: si algo cambia en dos sitios gana lo más reciente y la otra versión queda como copia recuperable. Sin conexión se trabaja en local y al volver la red sube todo solo. Se acabó el aviso que reaparecía.</li>
       <li><b>Referencia rápida</b> vuelve a verse con ese nombre en Compendio.</li>
@@ -10006,7 +10007,7 @@ async function scRun(manual){
       if(error)throw error;
       const remoto={};let max=SC.since,maxMs=SC.since?Date.parse(SC.since):0;
       for(const r of data){const ms=Date.parse(r.actualizado)||0;remoto[r.clave]={valor:r.valor,version:r.version,actualizado:ms,borrado:!!r.borrado};if(ms>=maxMs){maxMs=ms;max=r.actualizado;}}
-      const f=Sincro.fusionar(SC.l,remoto,Date.now(),{incremental:!!SC.since&&!completa,manual:false});
+      const f=Sincro.fusionar(SC.l,remoto,Date.now(),{incremental:(!!SC.since&&!completa)||Store.campaigns.rol(Store.campaigns.active())==='jugador',manual:false});
       completa=false;
       SC.l=f.l;SC.since=max;res.bajados+=f.bajados.length+f.borrados.length;res.conflictos+=f.conflictos.length;res.rechazadas+=f.rechazadas.length;
       scApply(f);
@@ -10049,6 +10050,11 @@ async function scRemotas(auto){
   const {data:mi,error}=await SB.from('miembros_campana').select('campana_id,rol,campanas(nombre)').eq('user_id',SB_USER.id);
   if(error||!mi){return;}
   const data=mi.filter(m=>m.campanas).map(m=>({id:m.campana_id,nombre:m.campanas.nombre,rol:m.rol})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  {let cambio=false;   // el rol (máster/jugador) lo manda la cuenta, no lo que haya quedado guardado en este dispositivo: así un jugador que entra aquí no ve lo del máster
+   for(const c of Store.campaigns.list()){if(!c.remoto)continue;const f=data.find(x=>x.id===c.remoto);if(!f)continue;
+     const quiere=f.rol==='jugador'?'jugador':'master';
+     if((c.rol==='jugador')!==(quiere==='jugador')){Store.campaigns.setRol(c.id,quiere);if(c.id===Store.campaigns.active())cambio=true;}}
+   if(cambio){location.reload();return;}}
   const ya=new Set(Store.campaigns.list().map(c=>c.remoto).filter(Boolean));let libres=data.filter(c=>!ya.has(c.id));
   if(auto){   // al iniciar sesión, las campañas de la cuenta que faltan aquí se añaden solas; su contenido baja al abrirlas
     const sol=new Set(scSoltadas()),nuevas=libres.filter(c=>!sol.has(c.id));
