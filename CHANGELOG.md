@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.112.0] - 2026-11-24
+### Añadido
+- Estudio de la mesa: botón «Quitar ventana» para las ventanas 2 a 8 (con confirmación; cierra la real y borra su escena).
+
 ## [1.111.1] - 2026-11-24
 ### Cambiado
 - Nueva publicación de la 1.111 (el instalador de Windows no se generó). Sin cambios de funcionamiento.

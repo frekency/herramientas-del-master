@@ -133,7 +133,17 @@ const TAIL=`<script>
     await click('#ms-vents [data-n="1"]');
     ok('volver a la ventana 1 recupera su escena',MS.vent===1&&MS.capas.length===n1&&MS.otros[2]&&MS.otros[2].capas.length===1);
     ok('la escena de cada ventana se guarda',JSON.parse(Store.get('mesa-estudio-ventanas')).otros[2].capas.length===1);
-    await click('#ms-vents [data-n="2"]');await click('[data-ms="sel"][data-id="'+MS.capas[0].id+'"]');await click('[data-ms="del"]');await click('#ms-vents [data-n="1"]');
+    ok('la ventana 1 no se puede quitar',!q('[data-ms="quitarwin"]'));
+    await click('#ms-vents [data-n="2"]');
+    ok('en la ventana 2 aparece «Quitar ventana»',!!q('[data-ms="quitarwin"]'));
+    let preg=0;Dlg.si=async()=>{preg++;return false;};
+    await click('[data-ms="quitarwin"]');await wait(100);
+    ok('si no se confirma, no se quita nada',preg===1&&MS.vent===2&&MS.capas.length===1);
+    Dlg.si=async()=>true;await click('[data-ms="quitarwin"]');await wait(150);
+    ok('confirmado, la ventana desaparece, su escena se olvida y se vuelve a la 1',MS.vent===1&&!MS.otros[2]&&!q('#ms-vents [data-n="2"]')&&!JSON.parse(Store.get('mesa-estudio-ventanas')).otros[2]);
+    await click('[data-ms="ventmas"]');
+    ok('al añadir otra vuelve a nacer vacía con el número libre',MS.vent===2&&MS.capas.length===0);
+    await click('#ms-vents [data-n="1"]');
     // datos rotos en el almacenamiento no rompen nada
     Store.set('mesa-estudio-v1',JSON.stringify({nombre:7,fondo:'url(x)',capas:[{tipo:'bomba'},{tipo:'texto',x:'abc',w:-5,t:{a:1}},null]}));
     msLoad();
