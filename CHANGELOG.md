@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.113.0] - 2026-11-24
+### Cambiado
+- Subida de imágenes: compresión a WebP (calidad alta, hasta 2048 px, conserva la transparencia) con reducción de calidad y después de tamaño solo si no cabe en el límite; mismo almacenamiento para web y escritorio.
+
 ## [1.112.0] - 2026-11-24
 ### Añadido
 - Estudio de la mesa: botón «Quitar ventana» para las ventanas 2 a 8 (con confirmación; cierra la real y borra su escena).

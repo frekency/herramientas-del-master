@@ -83,7 +83,7 @@ const TAIL=`<script>
      document.querySelector('dialog.ask button.primary').click();
      for(let i=0;i<40&&CP.filter(x=>x.tipo==='handout').length===antes;i++)await wait(50);
      const nuevo=CP.find(x=>x.nombre==='mapa-del-tesoro');
-     ok('la imagen subida pasa a ser un documento de la galería',nuevo&&nuevo.tipo==='handout'&&/^data:image\\/jpeg/.test(nuevo.img));
+     ok('la imagen subida pasa a ser un documento de la galería',nuevo&&nuevo.tipo==='handout'&&/^data:image\\/(webp|jpeg)/.test(nuevo.img));
      ok('y queda puesta en la zona elegida',nuevo&&msSelC()&&msSelC().nid===nuevo.id);}
     // plantillas
     await click('[data-ms="plguardar"]');
