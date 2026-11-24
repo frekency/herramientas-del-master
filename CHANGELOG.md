@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.109.0] - 2026-11-24
+### Añadido
+- Creador de personajes: idiomas del Manual del Jugador (común, dos estándar a elegir, druídico del druida, jerga de ladrones y un idioma extra del pícaro), guardados en la hoja (`otras.idiomas`) y en el resumen.
+
 ## [1.108.0] - 2026-11-24
 ### Cambiado
 - Creador de personajes: 5 pasos (Clase, Origen, Características, Detalles, Resumen). Detalles reúne nombre, alineamiento, personalidad, ideales, vínculos, defectos e historia; el Resumen va en bloques y el desglose del origen queda plegado.

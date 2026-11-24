@@ -2613,6 +2613,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .pjw{max-width:760px}.pjw-pasos{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}.pjw-pasos button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;cursor:pointer;font:inherit}.pjw-pasos button.on{background:var(--accent);color:var(--on-accent,#fff);border-color:var(--accent)}.pjw-pasos button.hecho{color:var(--fg)}.pjw-pasos span{font-weight:700}
 .pjw-seg{display:flex;gap:6px;margin:6px 0}.pjw-bono{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;max-width:420px}.pjw-bono li{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:8px}.pjw-bono li.on{border-color:var(--accent)}.pjw-bono .nm{flex:1;font-weight:600}.pjw-n{font-weight:800;color:var(--accent)}
 .pjw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:8px 0}.pjw-op{text-align:left;border:1px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:8px;padding:8px 10px;cursor:pointer;font:inherit;display:grid;gap:2px}.pjw-op small{color:var(--muted)}.pjw-op.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pjw-fijos{margin:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pjw-chip.fijo{background:var(--surface-2,transparent);border-color:var(--accent)}
 .pjw-chips{display:flex;flex-wrap:wrap;gap:6px}.pjw-chip{border:1px solid var(--line);border-radius:999px;padding:3px 10px}.pjw-det{border-left:3px solid var(--accent);padding:2px 10px;margin:8px 0;max-height:240px;overflow:auto}.pjw-car{border-collapse:collapse;margin:8px 0}.pjw-car th,.pjw-car td{padding:4px 10px;text-align:left}.pjw-pie{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}.pjw-orig{margin:10px 0}.pjw-orig ul{margin:6px 0;padding-left:18px;display:grid;gap:2px}.pjw-det2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:8px 0}.pjw .f textarea{width:100%;box-sizing:border-box;resize:vertical}
 .pjw-res{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 28px;margin:10px 0}.pjw-res section{border-top:1px solid var(--line);padding:8px 0}.pjw-res h5{margin:0 0 3px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.pjw-res p{margin:0}
 .pjrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -2984,7 +2985,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.108</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones"><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Inicio</a><span class="navsep">Preparar</span><a href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-scroll"/></svg> Campaña</a><a href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Personajes <span class="navbadge" id="nav-pjb" hidden></span></a><span class="navsep">Jugar</span><a href="#combate"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#tablas"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><span class="navsep">Biblioteca</span><a href="#compendio"><svg class="ic" aria-hidden="true"><use href="#i-books"/></svg> Compendio</a><a href="#referencia"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.109</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
 
@@ -3183,6 +3184,9 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.109 <span>24 nov 2026</span></h3><ul>
+      <li><b>Creador de personajes: idiomas.</b> En Origen se eligen los idiomas como dice el Manual del Jugador: común fijo y dos más de la tabla «Idiomas estándar»; el druida lleva además druídico, y el pícaro jerga de ladrones y un idioma más (estándar o inusual). Quedan en la hoja y en el resumen.</li>
+    </ul></li>
     <li><h3>v1.108 <span>24 nov 2026</span></h3><ul>
       <li><b>Creador de personajes:</b> el alineamiento pasa a un paso final de <b>Detalles</b> junto con el nombre, los rasgos de personalidad, ideales, vínculos, defectos e historia (todo opcional y guardado en la hoja). El <b>Resumen</b> se muestra en bloques (características, habilidades, salvaciones, dotes, herramientas, equipo, especie, PG) y el desglose de dónde sale cada cosa queda plegado.</li>
     </ul></li>
@@ -7934,10 +7938,20 @@ const PJW_NUM={una:1,uno:1,dos:2,tres:3,cuatro:4};
 /* «Conjunto estándar por clase» del Manual del Jugador 2024: los valores 15, 14, 13, 12, 10 y 8 ya repartidos según la característica principal de cada clase (Fue, Des, Con, Int, Sab, Car) */
 const PJW_TABLA={barbaro:[15,13,14,10,12,8],bardo:[8,14,12,13,10,15],brujo:[8,14,13,12,10,15],clerigo:[14,8,13,10,15,12],druida:[8,12,14,13,15,10],explorador:[12,15,13,8,14,10],
   guerrero:[15,14,13,8,10,12],hechicero:[10,13,14,8,12,15],mago:[8,12,13,15,14,10],monje:[12,15,13,10,14,8],paladin:[15,10,13,8,12,14],picaro:[12,15,13,14,10,8]};
+/* Idiomas del Manual del Jugador 2024: todos saben común y dos más de la tabla «Idiomas estándar»; los inusuales llegan por rasgos (druídico del druida, jerga de ladrones del pícaro, que además elige otro) */
+const PJW_IDI_STD=['Dracónico','Elfo','Enano','Gigante','Gnomo','Goblin','Lenguaje de signos común','Mediano','Orco'];
+const PJW_IDI_RAROS=['Abisal','Celestial','Druídico','Habla de las profundidades','Infernal','Infracomún','Jerga de ladrones','Primordial','Silvano'];
+const PJW_IDI_CLASE={druida:'Druídico',picaro:'Jerga de ladrones'};
+function pjwIdiomas(w){
+  const fijos=['Común'].concat(PJW_IDI_CLASE[w.cls]?[PJW_IDI_CLASE[w.cls]]:[]);
+  const extra=w.cls==='picaro'?1:0;   // el pícaro elige además un idioma de cualquiera de las dos tablas
+  return {fijos,n:2+extra,pool:PJW_IDI_STD.concat(extra?PJW_IDI_RAROS.filter(i=>!fijos.includes(i)):[]),estandar:2};
+}
+const pjwIdiOk=w=>{const I=pjwIdiomas(w);return w.idi.length===I.n&&w.idi.filter(i=>PJW_IDI_STD.includes(i)).length>=I.estandar&&w.idi.every(i=>I.pool.includes(i));};
 const PJW_ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
 const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
 let PJW=null;
-function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
+function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
 const pjwComp=(lista,n)=>((COMP_SRD&&COMP_SRD[lista])||[]).find(x=>fold(x.n)===fold(n))||null;
 const pjwClase=k=>pjwComp('clases',CLSN[k]);
 const pjwAbKey=s=>{const f=fold(s);return Ficha.AB.find(a=>fold(({fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'})[a])===f)||'';};
@@ -7967,7 +7981,7 @@ const pjwGastado=w=>Ficha.AB.reduce((s,a)=>s+PJW_COSTE[w.compra[a]],0);
 function pjwFinal(w){const b=pjwBase(w),n=pjwBono(w),o={};for(const a of Ficha.AB)o[a]=Math.min(20,(b[a]||0)+(n[a]||0));return o;}
 function pjwValido(w,p){
   if(p===0){const h=pjwHabClase(w.cls);return !!w.cls&&(!h.n||w.sk.length===h.n);}
-  if(p===1){const tf=pjwComp('trasfondos',w.tf);if(!w.esp||!tf)return false;return w.tfm==='111'||!!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
+  if(p===1){const tf=pjwComp('trasfondos',w.tf);if(!w.esp||!tf||!pjwIdiOk(w))return false;return w.tfm==='111'||!!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
   if(p===2){if(w.met==='tabla')return !!PJW_TABLA[w.cls];if(w.met==='compra')return pjwGastado(w)<=PJW_PUNTOS;const u=Ficha.AB.map(a=>w.asig[a]);return u.every(i=>i!==undefined&&i>=0)&&new Set(u).size===6;}
   return true;
 }
@@ -8007,7 +8021,12 @@ function pjwPaso(w){
     }
     return s;
   };
-  if(w.paso===1)return '<p class="hint">'+esc(T('Paso 2 del Manual del Jugador: determina tu origen. Elige la especie y el trasfondo.'))+'</p><h3>'+esc(T('Especie'))+'</h3>'+B1()+'<h3>'+esc(T('Trasfondo'))+'</h3>'+B2();
+  const B3=()=>{const I=pjwIdiomas(w);
+    return '<h3>'+esc(T('Idiomas'))+'</h3><p class="hint">'+esc(T('Todos los personajes saben común; elige dos idiomas más de la tabla «Idiomas estándar»')+(w.cls==='picaro'?' '+T('y otro más, estándar o inusual (el pícaro).'):'.'))+'</p>'
+      +'<p class="pjw-fijos">'+I.fijos.map(i=>'<span class="pjw-chip fijo">'+esc(T(i))+'</span>').join('')+(PJW_IDI_CLASE[w.cls]?' <small class="pcsub">'+esc(T('Fijos'))+': '+esc(T('común y el idioma de tu clase'))+'</small>':'')+'</p>'
+      +'<div class="pjw-chips" role="group" aria-label="'+esc(T('Idiomas'))+'">'+I.pool.map(i=>{const on=w.idi.includes(i);return '<label class="pjw-chip"><input type="checkbox" data-pjw="idi" value="'+esc(i)+'"'+(on?' checked':'')+(!on&&w.idi.length>=I.n?' disabled':'')+'> '+esc(T(i))+'</label>';}).join('')+'</div>'
+      +'<p class="hint" role="status">'+w.idi.length+' / '+I.n+'</p>';};
+  if(w.paso===1)return '<p class="hint">'+esc(T('Paso 2 del Manual del Jugador: determina tu origen. Elige la especie y el trasfondo.'))+'</p><h3>'+esc(T('Especie'))+'</h3>'+B1()+'<h3>'+esc(T('Trasfondo'))+'</h3>'+B2()+B3();
   if(w.paso===2){
     const fin=pjwFinal(w),b=pjwBase(w),n=pjwBono(w);
     let s='<p class="hint">'+esc(T('Paso 3: puntuaciones de característica. Asigna los valores y se suman los puntos del trasfondo (máximo 20).'))+'</p><div class="pjrow">'
@@ -8046,6 +8065,7 @@ function pjwResumen(w){
   for(const k of w.sk){hab[k]=1;o.push(T('Competencia en')+' '+Ficha.HAB_NOM[k]+' ('+T('clase')+' '+CLSN[w.cls]+')');}
   for(const x of String(tf&&tf.hab||'').split(/,| y /)){const k=pjwHabKey(x.trim());if(k){if(hab[k])o.push(T('Ya tenías')+' '+Ficha.HAB_NOM[k]+': '+T('elige otra habilidad en la hoja'));else{hab[k]=1;o.push(T('Competencia en')+' '+Ficha.HAB_NOM[k]+' ('+T('trasfondo')+' '+w.tf+')');}}}
   for(const a of Ficha.AB)o.push(ABK[a]+' '+fin[a]+' = '+b[a]+(n[a]?' + '+n[a]+' ('+T('trasfondo')+' '+w.tf+')':''));
+  o.push(T('Idiomas')+': '+pjwIdiomas(w).fijos.concat(w.idi).join(', ')+' ('+T('común, clase y tu elección')+')');
   o.push(T('Salvaciones')+': '+C.sv.map(a=>ABK[a]).join(', ')+' ('+T('clase')+' '+CLSN[w.cls]+')');
   o.push(T('Dado de golpe')+' d'+C.d+' · '+T('PG de nivel 1')+' '+Math.max(1,C.d+Math.floor((fin.con-10)/2)));
   if(tf&&tf.dote)o.push(T('Dote de origen')+': '+tf.dote+' ('+T('trasfondo')+' '+w.tf+')');
@@ -8056,6 +8076,7 @@ function pjwResumen(w){
     ['Características',Ficha.AB.map(a=>ABK[a]+' '+fin[a]+(n[a]?' (+'+n[a]+')':'')).join(' · ')],
     ['Habilidades',w.sk.map(nom).join(', ')+(delT.length?' + '+delT.map(nom).join(', ')+' ('+T('trasfondo')+')':'')],
     ['Salvaciones',C.sv.map(a=>T(PJW_ABN[a])).join(', ')],
+    ['Idiomas',pjwIdiomas(w).fijos.concat(w.idi).map(T).join(', ')],
     ['Dotes y mejoras',tf&&tf.dote?T('Dote de origen')+' ('+T('trasfondo')+'): '+tf.dote:'—'],
     ['Herramientas',tf&&tf.herr||'—'],
     ['Equipo',tf&&tf.equipo||'—'],
@@ -8070,13 +8091,13 @@ function pjwCrear(w){
   const ahora=Date.now();
   const f=Ficha.norm({nombre:w.nombre.trim()||T('Sin nombre'),especie:w.esp,trasfondo:w.tf,car:R.fin,niveles:[{c:w.cls,hp:C.d}],habil:R.hab,salvac:C.sv,
     dotes:tf&&tf.dote?[tf.dote]:[],vel:esp&&esp.vel||'9 m',tamano:/^(Mediano|Pequeño)$/.test(tam)?tam:'',pers:{alineamiento:w.alin,personalidad:w.personalidad,ideales:w.ideales,vinculos:w.vinculos,defectos:w.defectos,historia:w.historia},
-    otras:{herramientas:tf&&tf.herr?[tf.herr]:[]},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
+    otras:{herramientas:tf&&tf.herr?[tf.herr]:[],idiomas:pjwIdiomas(w).fijos.concat(w.idi)},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
     registro:R.origen.map(d=>({t:ahora,a:'creacion',d:d.slice(0,200),por:''}))});
   (camp?PJC:PJ).push(f);pjSave();pjEdit=null;PJW=null;location.hash='personajes/'+f.id;
 }
 function pjwAct(b){
   const w=PJW,a=b.dataset.w,v=b.dataset.v;if(!w)return;
-  if(a==='cls'){if(w.cls!==v){w.cls=v;w.sk=[];}}
+  if(a==='cls'){if(w.cls!==v){w.cls=v;w.sk=[];w.idi=[];}}
   else if(a==='esp')w.esp=v;
   else if(a==='tf'){if(w.tf!==v){w.tf=v;w.tfa=['',''];}}
   else if(a==='tfm'){w.tfm=v==='111'?'111':'21';}
@@ -8092,7 +8113,8 @@ function pjwAct(b){
 }
 function pjwCambio(el){
   const w=PJW,k=el.dataset.pjw;if(!w)return false;
-  if(k==='sk'){const i=w.sk.indexOf(el.value);if(el.checked&&i<0)w.sk.push(el.value);else if(!el.checked&&i>=0)w.sk.splice(i,1);}
+  if(k==='idi'){const I=pjwIdiomas(w),i=w.idi.indexOf(el.value);if(el.checked&&i<0&&w.idi.length<I.n)w.idi.push(el.value);else if(!el.checked&&i>=0)w.idi.splice(i,1);}
+  else if(k==='sk'){const i=w.sk.indexOf(el.value);if(el.checked&&i<0)w.sk.push(el.value);else if(!el.checked&&i>=0)w.sk.splice(i,1);}
   else if(k==='met'){w.met=el.value;w.asig={};w.pool=el.value==='std'?PJW_STD.slice():w.pool;if(el.value==='dados'&&w.pool===PJW_STD)w.pool=PJW_STD.slice();}
   else if(k==='asig')w.asig[el.dataset.a]=+el.value;
   else if(k==='alin'){w.alin=el.value;return true;}

@@ -29,6 +29,11 @@ const TAIL=`<script>
     ok('paso 2 Origen: las 9 especies y los 4 trasfondos en la misma pantalla',document.querySelectorAll('[data-w="esp"]').length===9&&document.querySelectorAll('[data-w="tf"]').length===4);
     await click(op('esp','Humano'));
     await click(op('tf','Acólito'));
+    ok('sin idiomas elegidos no deja seguir y común viene fijo',sig().disabled&&q('.pjw-fijos').textContent.includes('Común'));
+    ok('la tabla de idiomas tiene los 9 estándar del manual y no los inusuales',document.querySelectorAll('[data-pjw="idi"]').length===9&&!q('[data-pjw="idi"][value="Abisal"]'));
+    await chk('[data-pjw="idi"][value="Enano"]',true);await chk('[data-pjw="idi"][value="Elfo"]',true);
+    ok('con dos elegidos el resto se bloquea (falta aún repartir los puntos del trasfondo)',q('[data-pjw="idi"][value="Orco"]').disabled&&sig().disabled);
+    ok('el pícaro y el druida llevan su idioma de clase y el pícaro elige uno más (estándar o inusual)',(p=>p.fijos.join()==='Común,Jerga de ladrones'&&p.n===3&&p.pool.includes('Abisal')&&!p.pool.includes('Jerga de ladrones'))(pjwIdiomas({cls:'picaro'}))&&pjwIdiomas({cls:'druida'}).fijos.join()==='Común,Druídico'&&pjwIdiomas({cls:'bardo'}).n===2);
     const bt=(w,a)=>'[data-act="pjw"][data-w="'+w+'"][data-v="'+a+'"]';
     ok('el trasfondo muestra sus 3 características con +2 y +1 y bloquea hasta repartir',document.querySelectorAll('.pjw-bono li').length===3&&document.querySelectorAll('.pjw-bono button').length===6&&sig().disabled);
     await click(bt('b2','sab'));
@@ -72,6 +77,7 @@ const TAIL=`<script>
     ok('el resumen va en bloques (habilidades, dotes, equipo…) y guarda el desglose aparte',document.querySelectorAll('.pjw-res section').length>=6&&body().textContent.includes('Dotes y mejoras')&&body().textContent.includes('Legal bueno')&&body().textContent.includes('trasfondo Acólito'));
     await click('[data-w="sig"]');
     const f=PJ[PJ.length-1];
+    ok('la ficha guarda los idiomas',f.otras.idiomas.join()==='Común,Enano,Elfo');
     ok('la ficha creada lleva nombre, clase, especie y trasfondo',!!f&&f.nombre==='Brenna'&&f.niveles[0].c==='guerrero'&&f.especie==='Humano'&&f.trasfondo==='Acólito');
     ok('características: reparto + trasfondo',f.car.fue===15&&f.car.con===14&&f.car.des===13&&f.car.sab===14&&f.car.car===11&&f.car.int===8);
     ok('competencias de clase y trasfondo',f.habil.atletismo===1&&f.habil.percepcion===1&&f.habil.perspicacia===1&&f.habil.religion===1);
