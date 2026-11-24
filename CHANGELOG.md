@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.117.0] - 2026-11-24
+### Cambiado
+- Sincronización: la cuenta manda. Ya no hay conflictos que resolver a mano: si algo cambia en dos sitios gana lo más reciente y la otra versión queda como copia recuperable. Sin conexión se sigue trabajando en local y, al volver la red, todo sube solo. Se sincroniza cada 10 s con la app abierta.
+### Corregido
+- El aviso de «conflictos por resolver» que reaparecía tras resolverlo: lo que se descarga de la cuenta ya no se confunde con una edición propia.
+- Compendio: «Referencia rápida» vuelve a verse con ese nombre en la portada y en la propia vista.
+
 ## [1.116.2] - 2026-11-24
 ### Corregido
 - Portada: en la app de escritorio las cuatro columnas se desbordaban y cortaban los títulos. Ahora son cuatro tarjetas grandes en cuadrícula 2×2, con «¿Qué hacemos hoy?» y la campaña activa arriba, y accesos rápidos compactos al pie de cada tarjeta.
