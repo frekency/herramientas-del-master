@@ -25,7 +25,9 @@ const TAIL=`<script>
     ok('la portada tiene cuatro bloques',document.querySelectorAll('#view-inicio .bqs4 .bq').length===4&&document.querySelectorAll('#view-inicio .bq .bqc').length>=8);
     ok('la barra tiene los cuatro bloques y ninguno marcado en la portada',nv.querySelectorAll('a.main').length===4&&!nv.querySelector('a.main.on'));
     ok('en la portada no hay enlaces secundarios ni separador',subs().length===0&&nv.querySelector('.navsep').hidden);
+    ok('la portada permite abrir Campañas (cambiar de campaña y ver conflictos)',!!document.querySelector('#view-inicio [data-act="campopen"]')&&!!document.getElementById('hs-campname').textContent);
     await go('#campana/sesion');
+    ok('dentro de Campaña hay un botón que abre Campañas (conflictos)',!!document.querySelector('#view-campana [data-cpcamp][data-act="campopen"]'));
     ok('Campaña marcada y con Combate y Ventana de mesa',on('a.main[href="#campana"]')&&subs().join()==='#combate,#mesa');
     ok('las pestañas de Campaña van en tres grupos',[...document.querySelectorAll('#view-campana .cptabs')[0].querySelectorAll('.cpsg')].map(x=>x.textContent).join()==='Jugar,Preparar,Grupo'&&[...document.querySelectorAll('#view-campana .cptabs')[0].querySelectorAll('.cpt a')].map(a=>a.getAttribute('href')).join()==='#campana/sesion,#campana/diario,#campana/encuentros');
     await go('#combate');
@@ -89,6 +91,6 @@ testNav('navegación en cuatro bloques',{skip:!BROWSER&&'no hay Edge ni Chrome',
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=20,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=22,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

@@ -2506,7 +2506,7 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 @keyframes lkfloat{from{transform:translate(-8vw,-6vh)}to{transform:translate(8vw,6vh)}}
 @media (prefers-reduced-motion:reduce){#lockscr .lkbox{animation:none}}
 #pf-lock:not([hidden]){display:grid;gap:10px;border-top:1px solid var(--line,#8884);padding-top:10px}
-:root[data-page="inicio"] .sesbar:not(.on){display:none}
+:root:not([data-page="campana"]):not([data-page="jugadores"]):not([data-page="encuentros"]) .sesbar:not(.on){display:none}
 .sesbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 16px;font-size:14px;border-bottom:1px solid var(--line,#8886)}
 .cpcal{border:1px solid var(--line,#8886);border-radius:10px;padding:8px;display:grid;gap:6px}
 .cpcal[hidden]{display:none}.cpcal .cph{display:flex;align-items:center;gap:6px}.cpcal .cph b{flex:1;text-align:center}
@@ -2949,6 +2949,20 @@ html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}
 .bqc{display:flex;align-items:center;flex:1 1 0;min-height:44px;max-height:96px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--fg) 4%,var(--surface));color:var(--fg);text-decoration:none;font:inherit;font-weight:600;text-align:left;cursor:pointer}
 .bqc:hover,.bqc:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
 .bqc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.campbtn{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font:inherit;font-size:14px;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.campbtn:hover,.campbtn:focus-visible{border-color:var(--accent);color:var(--fg)}
+.campbtn.alerta{border-color:var(--bad,#c0392b);color:var(--bad,#c0392b);font-weight:700}
+.campchiprow{display:flex;margin:6px 0 10px}
+.campchip{display:inline-flex;align-items:center;gap:8px;min-height:44px;max-width:100%;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);font:inherit;cursor:pointer}
+.campchip .cl{color:var(--muted);font-size:13px}
+.campchip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.campchip .cw{color:var(--bad,#c0392b);font-weight:700;font-size:13px}
+.campchip.alerta{border-color:var(--bad,#c0392b)}
+.campchip:hover,.campchip:focus-visible{border-color:var(--accent)}
+/* en pantallas táctiles los campos llevan 16 px: con menos, iOS hace zoom al escribir y no lo quita */
+@media (hover:none) and (pointer:coarse){
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}
+}
 .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:10px;margin:0 0 14px}
 .ucard{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:2px 12px;min-height:72px;padding:14px 18px;border:1px solid var(--line);border-radius:var(--r,12px);background:var(--surface);color:var(--fg);text-decoration:none;text-align:left;font:inherit;cursor:pointer}
 .ucard:hover,.ucard:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
@@ -2966,6 +2980,10 @@ html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}
   html:not(.app-escritorio) .pagenav .navsep[hidden]{display:none}
   html:not(.app-escritorio) .pagenav a.sub.sv{display:inline-flex;align-items:center;gap:6px;order:0;min-height:44px}
   .cptabs a{min-height:44px}
+  html:not(.app-escritorio) .pagenav .navmore>summary>span{display:none}
+  html:not(.app-escritorio) .pagenav .acct{font-size:0;min-width:44px;min-height:44px;justify-content:center;padding:0 10px}
+  html:not(.app-escritorio) .pagenav .acct .ic{width:20px;height:20px;font-size:16px}
+  html:not(.app-escritorio) .pagenav a.sub.sv{padding-inline:10px}
   .bqc{min-height:44px}
   .bqs4{grid-template-columns:1fr;grid-auto-rows:auto;min-height:0;gap:10px}
   .bq{min-height:0;gap:8px}
@@ -3066,6 +3084,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="hoy" id="hs-hoy" hidden></div>
   <div class="hoy" id="hs-cambios" hidden></div>
+  <div class="campchiprow"><button type="button" class="campchip" data-act="campopen"><span class="cl">Campaña</span> <b class="noi18n" id="hs-campname"></b> <span class="cw" id="hs-campwarn" hidden></span> <span aria-hidden="true">▾</span></button></div>
   <nav class="bqs4" aria-label="Secciones principales">
     <div class="bq" data-blk="campana"><a class="bqh" href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg><span class="bqn">Campaña</span><span class="bqs" id="hs-t-camp"></span><span class="bqd">Notas, encuentros, combate y ventana de mesa.</span></a><div class="bql" id="bql-camp"><a class="bqc" href="#combate">Combate</a><a class="bqc" href="#mesa">Ventana de mesa</a><a class="bqc" href="#campana/sesion">Sesiones</a><a class="bqc" href="#campana/encuentros">Encuentros</a></div></div>
     <div class="bq" data-blk="personajes"><a class="bqh" href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg><span class="bqn">Personajes</span><span class="bqs" id="hs-t-pj"></span><span class="bqd">Fichas, creador de personajes y jugadores.</span></a><div class="bql" id="bql-pj"></div></div>
@@ -3083,6 +3102,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="ucard" id="hs-rvli" href="#revision"><span class="un">Revisión</span><span class="us" id="hs-rv"></span><span class="ud">Importado pendiente de comprobar.</span></a>
   </div>
   <div class="ugrid" aria-label="Ajustes">
+    <button class="ucard" type="button" data-act="campopen"><span class="un">Campañas</span><span class="us" id="hs-camps"></span><span class="ud">Cambiar de campaña, crear otras y resolver conflictos de sincronización.</span></button>
     <button class="ucard" type="button" data-act="pfopen"><span class="un">Preferencias</span><span class="ud">Estilo, tema, vista, unidades y PIN.</span></button>
     <button class="ucard" type="button" data-act="audopen"><span class="un">Audio</span><span class="ud">Enlaces de audio para la mesa.</span></button>
     <button class="ucard" type="button" data-act="acopen"><span class="un">Cuenta y copias</span><span class="ud">Sincronización y copia de seguridad.</span></button>
@@ -3105,7 +3125,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 </section>
 
 <section class="vpage" id="view-campana" hidden>
-  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" data-cpcamp></span></div>
+  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="cpgrid">
     <aside class="cplist">
@@ -3259,6 +3279,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.116 <span>24 nov 2026</span></h3><ul>
+      <li><b>Campañas y conflictos en el móvil (1.116.1).</b> Botón con la campaña activa en la portada y tarjeta «Campañas» en Utilidades, con el aviso de conflictos por resolver. Sin zoom de iOS al escribir. Barras del móvil más compactas.</li>
       <li><b>Instalable como app (PWA).</b> Con icono propio, a pantalla completa sin la barra del navegador y con apertura sin conexión de lo ya visitado. En el iPhone: Compartir, «Añadir a pantalla de inicio». Siempre se pide primero a la red, así las versiones nuevas llegan solas.</li>
     </ul></li>
     <li><h3>v1.115 <span>24 nov 2026</span></h3><ul>
@@ -3701,7 +3722,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 </section>
 
 <section class="vpage" id="view-encuentros" hidden>
-  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" data-cpcamp></span></div>
+  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="epgrid">
     <aside class="epside"><div class="bfilters"><button type="button" class="btn primary" data-act="encnew">+ Nuevo encuentro</button></div><ul id="ep-list" class="eplist"></ul></aside>
@@ -3710,7 +3731,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 </section>
 
 <section class="vpage" id="view-jugadores" hidden>
-  <div class="vhead"><h2>Campaña</h2><span class="pcsub noi18n" data-cpcamp></span></div>
+  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="vhead"><h2>Jugadores</h2><span class="pcsub" id="vp-count"></span>
     <div class="inline" style="margin-left:auto">
@@ -7284,6 +7305,7 @@ function extraAct(act,b,c,e){
       toast(T('Copia propia creada en Tablas: corrígela allí y la del libro dejará de salir pendiente'));try{renderRev();}catch{}try{refreshCompView();}catch{}break;}
     case 'openparty':location.hash='jugadores';break;
     case 'gocombate':location.hash='#combate';break;
+    case 'campopen':campOpen();break;
     case 'cfgtoggle':$('#cfgbtn').click();break;
     case 'lwhide':try{Store.set('combat-localwarn-off','1');}catch(e){}renderAcct();break;
     case 'sumclose':state.summary=null;save();render();break;
@@ -7540,6 +7562,9 @@ function renderHome(){
        else if(hoy)html='<b>'+esc(T('Hoy toca'))+'</b><span class="pcsub noi18n">'+esc(cpName(hoy))+'</span><button type="button" class="btn primary" data-act="seshoy">'+esc(T('Iniciar la de hoy'))+'</button>';}
    }catch{}
    h.innerHTML=html;h.hidden=!html;}
+  try{const nAb=(SC&&SC.l&&SC.l.abiertos||[]).length,w=$('#hs-campwarn');$('#hs-campname').textContent=Store.campaigns.activeName()||T('Sin campaña');
+    w.textContent=nAb?'⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver'):'';w.hidden=!nAb;$('#hs-camps').textContent=nAb?'⚠ '+nAb:'';
+    $('.campchip').classList.toggle('alerta',!!nAb);}catch{}
   {const c=Store.campaigns.activeName();$('#hs-t-camp').textContent=(c?c+' · ':'')+(state.active?`combate en curso, ronda ${state.round}`:'sin combate en curso');}
   $('#hs-t-pj').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''} en el grupo`:'Sin personajes en el grupo';
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-t-comp').textContent=esJug()?`${SPELL_LIST.length} conjuros y las reglas`:allBest().length||SPELL_LIST.length?`${allBest().length} criaturas · ${SPELL_LIST.length} conjuros${n?` · ${n} más`:''}`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
@@ -8682,7 +8707,8 @@ function cpRenderTabs(sel,q){
   const seg=gs.length>1?'<div class="cpseg" role="group" aria-label="'+esc(T('Grupos de la campaña'))+'">'+gs.map(([g,ts])=>`<a class="cpsg" href="#campana/${ts[0][0]}"${g===cur[0]?' aria-current="true"':''}>${T(g)}</a>`).join('')+'</div>':'';
   const tabs=cur[1].length>1?'<div class="cpt" role="tablist">'+cur[1].map(tab).join('')+'</div>':'';
   document.querySelectorAll('[data-cptabs]').forEach(n=>{n.innerHTML=seg+tabs;});
-  document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=Store.campaigns.activeName()||'';});
+  const nAb=(()=>{try{return (SC&&SC.l&&SC.l.abiertos||[]).length}catch{return 0}})();
+  document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=(Store.campaigns.activeName()||'')+' ▾'+(nAb?'  ⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver'):'');n.classList.toggle('alerta',!!nAb);});
 }
 function renderCampana(){
   const r=route();

@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.116.1] - 2026-11-24
+### Corregido
+- En el móvil y en la app instalada no había forma de abrir Campañas (cambiar de campaña y resolver conflictos de sincronización): ahora hay un botón con la campaña activa en la portada y una tarjeta «Campañas» en Utilidades, con aviso «⚠ N conflictos por resolver».
+- iOS ya no hace zoom al escribir (por ejemplo, al iniciar sesión) y no se queda ampliado: los campos de texto miden 16 px en pantallas táctiles.
+- Barras del móvil más compactas: «Más» y la cuenta pasan a icono y la franja «Sin sesión activa» solo se ve en Campaña (o con una sesión en curso).
+
 ## [1.116.0] - 2026-11-24
 ### Añadido
 - La web se puede instalar como aplicación (PWA): icono propio, pantalla completa sin la barra del navegador y apertura sin conexión con lo ya visitado. En el iPhone: Compartir > Añadir a pantalla de inicio. Primero la red, así las versiones nuevas llegan siempre.
