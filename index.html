@@ -1662,7 +1662,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .sptable tr:last-child td{border-bottom:0}
 .books{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
 .books>summary{cursor:pointer;padding:9px 14px;font-weight:700}
-.books-body{padding:0 14px 12px;display:grid;gap:8px}
 #md-urlform,.books form.inline{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;margin:0;flex:1 1 360px;max-width:560px}
 #md-url,.books input[type=url]{flex:1 1 auto;min-width:0;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
 .legal{max-width:1320px;margin:0 auto;padding:18px 16px 28px;font-size:12px;line-height:1.5;color:var(--muted)}
@@ -1702,13 +1701,8 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .acbody{display:grid;gap:10px}
 .acpane{display:grid;gap:10px}
 .acpane[hidden]{display:none}
-.aclinks{margin:0;font-size:13px;color:var(--muted)}
-.aclink{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
-.acor{margin:0;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
-.acor::before,.acor::after{content:"";flex:1;border-top:1px solid var(--line)}
 .acmsg{margin:0;font-size:13px;min-height:1em;color:#e07a5f}
 .acmsg.ok{color:var(--muted)}
-.accode{font-family:var(--f-num);font-size:22px;letter-spacing:6px;text-align:center}
 .cmtabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .cmtabs button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 14px;cursor:pointer}
 .cmtabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
@@ -1730,6 +1724,49 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .cmtab th,.cmtab td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
 .cmtab td.sec{font-style:italic;color:var(--muted)}
 .cmwrap{overflow-x:auto}
+@media print{
+  .cmbody .cmtab,.cmbody .cmtab.cmcards{display:table!important;width:100%!important;border-collapse:collapse;font-size:9.5pt;break-inside:auto}
+  .cmbody .cmtab thead,.cmbody .cmtab.cmcards thead{display:table-header-group!important}
+  .cmbody .cmtab tbody,.cmbody .cmtab.cmcards tbody{display:table-row-group!important}
+  .cmbody .cmtab tr,.cmbody .cmtab.cmcards tr{display:table-row!important;break-inside:avoid;border:0!important;margin:0!important;padding:0!important}
+  .cmbody .cmtab th,.cmbody .cmtab td,.cmbody .cmtab.cmcards td{display:table-cell!important;border:1px solid #777!important;padding:1.2mm 2mm!important;white-space:normal!important;min-width:0!important;color:#000!important;font-size:inherit!important;font-weight:inherit}
+  .cmbody .cmtab th{padding:1.2mm 1.5mm!important;font-size:9pt!important}
+  .cmbody .cmtab th{font-weight:700!important;background:#e6e6e6!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cmbody .cmtab.cmcards td::before{content:none!important}
+  .cmbody .cmtab tbody tr:nth-child(even){background:transparent!important}
+}
+/* tablas de clase/subclase: ancho completo, cabecera fija legible, filas a rayas */
+.cmbody .cmtab{width:100%;font-size:14px}
+.cmbody .cmtab th{background:var(--surface-2);font-weight:600;border-bottom:2px solid var(--line)}
+.cmbody .cmtab td{overflow-wrap:break-word}
+.cmbody .cmtab th{overflow-wrap:normal;word-break:normal;hyphens:manual}
+.cmbody .cmtab td{padding:5px 8px}
+.cmbody .cmtab tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+@media screen and (max-width:700px){
+  .cmbody .cmtab{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;font-size:13px;width:auto;max-width:100%;border:1px solid var(--line);border-radius:8px}
+  .cmbody .cmtab caption{display:block;padding:6px 8px;position:sticky;left:0}
+  .cmbody .cmtab th{vertical-align:bottom}
+  .cmbody .cmtab th{overflow-wrap:normal;word-break:normal;padding:6px 6px}
+  .cmbody .cmtab:not(.cmcards){font-size:12.5px}
+  .cmbody .cmtab th,.cmbody .cmtab td{padding:6px 4px}
+  .cmbody .cmtab:not(.cmcards){background:linear-gradient(to right,var(--surface) 30%,transparent) left center/32px 100% no-repeat local,linear-gradient(to left,var(--surface) 30%,transparent) right center/32px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgb(0 0 0/.22),transparent) left center/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgb(0 0 0/.22),transparent) right center/10px 100% no-repeat scroll,var(--surface)}
+}
+@media screen and (max-width:1000px){
+  /* tablas anchas (4+ columnas): cada fila es una tarjeta, sin desplazar a los lados */
+  .cmbody .cmtab.cmcards{display:table;overflow:visible;border:0;border-radius:0;width:100%}
+  .cmbody .cmtab.cmcards thead{display:none}
+  .cmbody .cmtab.cmcards,.cmbody .cmtab.cmcards tbody{display:block}
+  .cmbody .cmtab.cmcards tr{display:flex;flex-wrap:wrap;gap:2px 14px;padding:9px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+  .cmbody .cmtab.cmcards tbody tr:nth-child(even){background:var(--surface)}
+  .cmbody .cmtab.cmcards td{display:block;padding:0;border:0;min-width:0;width:auto}
+  .cmbody .cmtab.cmcards td:first-child{flex:0 0 auto;width:auto;font-weight:700;text-align:left}
+  .cmbody .cmtab.cmcards td:first-child::before{content:attr(data-l) " "}
+  .cmbody .cmtab.cmcards td:nth-child(2){font-weight:700}
+  .cmbody .cmtab.cmcards td:nth-child(3){flex:1 1 100%;min-width:0;order:3}
+  .cmbody .cmtab.cmcards td:nth-child(n+4){font-size:var(--t-xs);color:var(--muted);order:4}
+  .cmbody .cmtab.cmcards td:nth-child(n+4)::before{content:attr(data-l) ": ";font-size:inherit}
+  .cmbody .cmtab.cmcards td:empty{display:none}
+}
 .modline{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .modline a,.empty a,.mdbanner a{color:inherit;font-weight:600}
 .mdh{font-family:var(--f-display);font-size:18px;margin:22px 0 8px}
@@ -1754,8 +1791,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .mdbanner{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px dashed var(--sb-rule);border-radius:10px;padding:12px 16px;margin:0 0 16px}
 .tbitem .tag{margin-left:0}
 .tbro td{padding:6px 10px}
-.bklist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-.bklist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
 .bkfmt>summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .bkfmt[open]{display:grid;gap:8px}
 .fmtt{border-collapse:collapse;font-size:13px}
@@ -1790,7 +1825,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .badge.srd{color:var(--muted);border-color:var(--line);background:none}
 .badge.pend{color:#a35b00;border-color:#d9a24a;background:#fff3d6}
 @media (prefers-color-scheme:dark){.badge.pend{color:#f0c27a;border-color:#8a6a2f;background:#3a2f18}}
-.sptable .vadd-cell{text-align:right}
 .crtable .vbody{display:grid;gap:8px}
 .vbody.sb{border-radius:0 0 10px 10px;border-top:none}
 .vbody select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
@@ -1815,7 +1849,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 @media (min-width:1001px){.bar .nav #endbtn{margin-left:14px}}
 .bar .nav #next{white-space:nowrap}
 .pagenav .navsep{align-self:center;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 2px 0 10px}
-.pagenav .pfbtn{margin-left:6px}
 .pagenav .navtoggle{display:none}
 .cmtabs a{font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 14px;text-decoration:none}
 .cmtabs a:hover{background:var(--surface-2)}
@@ -1831,7 +1864,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .ficha{max-width:920px}
 .ficha>.sb{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--surface)}
 .u.cv{text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,var(--muted) 70%,transparent);text-underline-offset:3px}
-.tools-h{margin-top:22px}
 .qrsec{margin:18px 0 6px}
 .qrsec h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:18px}
 .qrsec h3 .pcsub{font-weight:400}
@@ -1851,26 +1883,15 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .hoy b{font-family:var(--f-display);font-size:22px;line-height:1.2}
 .hoy .pcsub{flex:1 1 200px}
 .ix{list-style:none;margin:0 0 6px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));column-gap:44px}
-.ixr{display:grid;grid-template-columns:auto 1fr auto;column-gap:10px;align-items:baseline;padding:12px 2px 13px;border-top:1px solid var(--line);color:var(--fg);text-decoration:none}
-.ixr::before{content:"";grid-column:2;grid-row:1;align-self:end;margin-bottom:.32em;border-bottom:2px dotted color-mix(in srgb,var(--fg) 35%,transparent)}
-.ixn{grid-column:1;grid-row:1;font-family:var(--f-display);font-weight:700;font-size:19px;line-height:1.2}
-.ixs{grid-column:3;grid-row:1;font-family:var(--f-num);font-size:13px;color:var(--muted);text-align:right}
-.ixd{grid-column:1/-1;grid-row:2;color:var(--muted);font-size:14px;margin-top:3px;max-width:62ch}
-.ixr:hover .ixn,.ixr:focus-visible .ixn{color:var(--accent);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:2px}
-.ixr:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .tool{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--fg);text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
 .tool:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow)}
 .tool .ti{line-height:1}
 .tool .tn{font-family:var(--f-display);font-weight:700;font-size:19px}
 .tool .td{color:var(--muted);font-size:14px;flex:1}
-.tool .tstat{font-size:12px;font-family:var(--f-num);color:var(--accent);border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
 .changelog{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:760px}
 .changelog>li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
 .changelog h3{font-family:var(--f-display);font-size:17px;margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
 .changelog h3 span{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:400}
-.clmore{margin:12px 0 0;max-width:760px;text-align:right;font-size:14px}
-.clmore a{color:var(--accent,inherit);font-weight:600}
 .changelog ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}/* ===== Vista minimalista: solo lo que se usa en mesa ===== */
 .mini-only{display:none}
 :root[data-view="mini"] .mini-only{display:inline-flex}
@@ -1921,9 +1942,7 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .panel>h2,.panel>.inline>h2,.listhead h2,.vhead h2{color:var(--sb-rule)}
 .panel>h2{padding-bottom:6px;border-bottom:1px solid color-mix(in srgb,var(--sb-rule) 35%,transparent)}
 .c-init input{border-radius:50%;aspect-ratio:1;width:46px;max-width:100%;padding:0;margin:auto;display:block;border:1.5px solid color-mix(in srgb,var(--sb-rule) 55%,transparent);background:var(--surface-2)}
-:root:not([data-skin]) .row.cur .c-init input,:root[data-skin=""] .row.cur .c-init input{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface))}
 .tool .tn{color:var(--sb-rule)}
-.tool .tstat{border-top-style:dotted}
 .rsep{color:var(--sb-rule)}
 .rsep::before,.rsep::after{background:color-mix(in srgb,var(--sb-rule) 40%,transparent)}
 ::selection{background:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--fg)}/* ===== Estilo «Cuaderno»: libreta de hojas negras, bolígrafo de gel, boli rojo y fluorescente ===== */
@@ -1984,7 +2003,6 @@ main.wrap .listhead{scroll-margin-top:100px}/* notas discretas: avisan sin quita
 .pagenav{align-items:center;gap:6px}
 .pagenav .navtoggle{display:inline-flex}
 .pagenav .btn{order:1;flex:none}
-.pagenav .pfbtn{margin-left:auto}
 .pagenav .acct{margin-left:0}
 .pagenav .navsep{font-size:11px!important;width:auto!important;height:auto!important;background:none!important;margin:0 2px 0 10px!important}
 .pagenav:not(.open) a:not(.on),.pagenav:not(.open) .navsep{display:none}
@@ -2122,7 +2140,6 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .cpcd.hoy{border-color:currentColor;font-weight:700}
 .cpcd i{display:inline-block;width:6px;height:6px;border-radius:50%;margin:0 1px;background:#8886}
 .cpcd i.planeada{background:#d90}
-.cpcd i.en-curso{background:var(--ok,#3a8)}
 .cpcd i.jugada{background:#58c}
 .cpcd i.cancelada{background:#c55}
 #printdoc{display:none}
@@ -2237,18 +2254,12 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 #printdoc .hs-eq{min-height:50mm;font-size:7.2pt;line-height:1.3}
 #printdoc .hs-sn{display:flex;align-items:center;gap:2mm;border-bottom:.15mm solid #777;height:5.4mm}
 #printdoc .hs-mon .hs-f>span{text-align:center}
-#printdoc .hjrow{display:flex;gap:2mm;margin:2mm 0;flex-wrap:wrap}
 #printdoc .hj{flex:1 1 22mm;border:1px solid #000;border-radius:2mm;padding:1mm 2mm;min-height:11mm}
-#printdoc .hj.g2{flex:2 1 50mm}
 #printdoc .hj b{display:block;font-size:7.5pt;text-transform:uppercase}
 #printdoc .hj span{font-size:11pt}
 #printdoc .hj.ab{text-align:center;flex:1 1 20mm;min-height:22mm}
 #printdoc .hj.ab .m{display:block;font-size:15pt;font-weight:700}
-#printdoc .hj.ab .s{display:inline-block;border:1px solid #000;border-radius:50%;min-width:8mm;min-height:6mm}
-#printdoc .hjcols{display:flex;gap:5mm}
-#printdoc .hjcols>div{flex:1;min-width:0}
-#printdoc .prtsk{list-style:none;padding:0;margin:0;font-size:9.5pt}
-#printdoc .prtsk li{padding:.3mm 0}}
+#printdoc .hj.ab .s{display:inline-block;border:1px solid #000;border-radius:50%;min-width:8mm;min-height:6mm}}
 .sesbar[hidden]{display:none}
 .sesbar .sesdot{width:10px;height:10px;border-radius:50%;background:var(--ok,#3a8)}
 .sesbar.on{background:color-mix(in srgb,var(--ok,#3a8) 14%,transparent)}
@@ -2711,14 +2722,12 @@ html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}/* navegación e
 .bqc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .campbtn{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font:inherit;font-size:14px;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .campbtn:hover,.campbtn:focus-visible{border-color:var(--accent);color:var(--fg)}
-.campbtn.alerta{border-color:var(--bad,#c0392b);color:var(--bad,#c0392b);font-weight:700}
 .campchiprow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:6px 0 12px}
 .campchiprow h2{margin:0;font-family:var(--f-display);font-size:clamp(22px,2.6vw,32px)}
 .campchip{display:inline-flex;align-items:center;gap:8px;min-height:44px;max-width:100%;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);font:inherit;cursor:pointer}
 .campchip .cl{color:var(--muted);font-size:13px}
 .campchip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .campchip .cw{color:var(--bad,#c0392b);font-weight:700;font-size:13px}
-.campchip.alerta{border-color:var(--bad,#c0392b)}
 .campchip:hover,.campchip:focus-visible{border-color:var(--accent)}/* en pantallas táctiles los campos llevan 16 px: con menos, iOS hace zoom al escribir y no lo quita */
 @media (hover:none) and (pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}
 .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:10px;margin:0 0 14px}
@@ -2764,7 +2773,6 @@ html.app-escritorio .pagenav .navmore-body .btn{order:0}
 html:not(.app-escritorio) .pagenav>a{padding:5px 9px}
 html.app-escritorio .pagenav .navmore-body{position:static;min-width:0;padding:0;border:0;box-shadow:none;background:none}
 html.app-escritorio .pagenav .btn{order:2;justify-content:flex-start;margin:0}
-html.app-escritorio .pagenav .pfbtn{margin-left:0}
 html.app-escritorio .pagenav .navtoggle{display:inline-flex;order:-1;margin-bottom:8px}
 html.app-escritorio.sb-min .pagenav a{font-size:0;justify-content:center;padding:10px 0;gap:0}
 html.app-escritorio.sb-min .pagenav .navsep{font-size:0!important;width:auto!important;height:1px!important;background:var(--line)!important;margin:8px 6px!important}
@@ -2848,8 +2856,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] .sb .sub,[data-skin="limpio"] .sb .act>b,[data-skin="limpio"] .spfl,[data-skin="limpio"] .cmbody .cmhead,[data-skin="limpio"] .cmtab td.sec{font-style:normal}/* texto de tarjeta: 1 px menos que el de fuera */
 [data-skin="limpio"] .tool .td,[data-skin="limpio"] .panel,[data-skin="limpio"] .pcard,[data-skin="limpio"] .sb,[data-skin="limpio"] .acsrd{font-size:var(--t-m);line-height:1.5}
 [data-skin="limpio"] .sb{font-family:var(--f-sb);border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:10px}
-[data-skin="limpio"] .hint,[data-skin="limpio"] .tool .tstat,[data-skin="limpio"] .pcsub{font-size:var(--t-s);font-family:var(--f-body)}
-[data-skin="limpio"] .tool .tstat{color:var(--muted);border-top:0;padding-top:0}/* botones: 1 px menos que el texto de alrededor; sin negrita */
+[data-skin="limpio"] .hint,[data-skin="limpio"] .pcsub{font-size:var(--t-s);font-family:var(--f-body)}/* botones: 1 px menos que el texto de alrededor; sin negrita */
 [data-skin="limpio"] .btn,[data-skin="limpio"] .qb,[data-skin="limpio"] select,[data-skin="limpio"] input,[data-skin="limpio"] textarea{font-family:var(--f-body)}
 [data-skin="limpio"] .btn{font-size:var(--t-m);font-weight:500;letter-spacing:0;border-radius:8px;padding:7px 14px}
 [data-skin="limpio"] .btn.primary{font-weight:500}
@@ -2942,7 +2949,6 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] .tool:nth-child(even){transform:rotate(.45deg)}
 [data-skin="limpio"] .tool:hover{transform:rotate(0) translateY(-2px)}
 [data-skin="limpio"] .tool .tn{color:var(--fg)}
-[data-skin="limpio"] .tool .tstat{}
 [data-skin="limpio"] .qrcard{background:transparent;border:0;border-bottom:1px solid var(--cu-rule);border-radius:0}
 [data-skin="limpio"] .qrcard .qi{background:none}
 [data-skin="limpio"] .qrcard .qt{}
@@ -3088,7 +3094,6 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   [data-skin="limpio"] a.golink{padding:14px 12px;margin:-14px -6px}
   [data-skin="limpio"] details>summary{min-height:44px;display:flex;align-items:center}
   [data-skin="limpio"] .sptable td small{font-size:12px}
-  [data-skin="limpio"] .chip .r{font-size:12px}
   [data-skin="limpio"] .brand a{display:inline-flex;align-items:center;min-height:44px}
   /* compendio: la tabla de criaturas enseña lo esencial (nombre, VD, CA, PG); tipo, tamaño y manual quedan en la ficha desplegable */
   [data-skin="limpio"] .crtable thead th:nth-child(2),[data-skin="limpio"] .crtable thead th:nth-child(3),[data-skin="limpio"] .crtable thead th:last-child,
@@ -3111,7 +3116,15 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 
 /* ===== compendio en móvil: cada fila de la tabla pasa a ser una ficha (nombre grande y los datos debajo, con su etiqueta) ===== */
 @media (max-width:700px){
-  [data-skin="limpio"] .sptwrap{overflow-x:visible}
+  [data-skin="limpio"] .sptwrap:has(>.sptable:not(.tbgrid):not(.tbro):not(.crtable)){overflow-x:visible}
+  [data-skin="limpio"] .tbcard .inline{flex-wrap:wrap}
+  /* columnas de las tablas aleatorias: caben más en pantalla estrecha y, si no caben, se ve que hay más a los lados */
+  [data-skin="limpio"] .tbgrid input{min-width:84px}
+  [data-skin="limpio"] .tbgrid td,[data-skin="limpio"] .tbgrid th{padding:3px 3px}
+  [data-skin="limpio"] .tbcolh{gap:0}
+  [data-skin="limpio"] .tbcolh .btn,[data-skin="limpio"] .tbcolh button{min-width:32px;padding:0 6px}
+  [data-skin="limpio"] .sptwrap:has(>.sptable.tbgrid),[data-skin="limpio"] .sptwrap:has(>.sptable.tbro){background:linear-gradient(to right,var(--surface) 30%,transparent) left center/36px 100% no-repeat local,linear-gradient(to left,var(--surface) 30%,transparent) right center/36px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgb(0 0 0/.2),transparent) left center/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgb(0 0 0/.2),transparent) right center/12px 100% no-repeat scroll,var(--surface)}
+  [data-skin="limpio"] .tbcard .inline>.inline{flex-wrap:wrap}
   [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable),[data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tbody{display:block;width:100%}
   [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) thead{display:none}
   [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -3169,6 +3182,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 }
 @media (max-width:700px){[data-skin="limpio"] .vhead h2{font-size:var(--t-xl,26px)}}
 
+[data-skin="limpio"] .chip .r{font-size:12px}
 /* pulido: la franja «hoy» sin el doble filete rojo del skin antiguo; en móvil los botones a todo el ancho */
 [data-skin="limpio"] .hoy{border-top:1px solid var(--line);align-items:center}
 [data-skin="limpio"] .hoy b{font-weight:500;font-size:var(--t-xl)}
@@ -4876,7 +4890,7 @@ function rich(desc){
   h=h.replace(/(^|\n)((?:[ \t]*\|.*\|[ \t]*(?:\n|$))+)/g,(m,pre,blk)=>{
     const L=blk.trim().split('\n').map(l=>l.trim().slice(1,-1).split('|').map(c=>c.trim()));let head=null;
     if(L[1]&&L[1].every(c=>/^:?-{3,}:?$/.test(c))){head=L[0];L.splice(0,2);}
-    return `${pre}<table class="cmtab">${head?`<thead><tr>${head.map(c=>`<th>${c}</th>`).join('')}</tr></thead>`:''}<tbody>${L.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>\n`;});
+    return `${pre}<table class="cmtab${head&&head.length>=4?' cmcards':''}">${head?`<thead><tr>${head.map(c=>`<th>${c}</th>`).join('')}</tr></thead>`:''}<tbody>${L.map(r=>`<tr>${r.map((c,i)=>`<td${head&&head[i]?` data-l="${String(head[i]).replace(/<[^>]*>/g,'').replace(/"/g,'&quot;')}"`:''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>\n`;});
   // listas en conjuros
   h=h.split(/\n/).map(l=>/^- /.test(l)?`<li>${l.slice(2)}</li>`:l).join('\n').replace(/(<li>.*<\/li>\n?)+/g,m=>`<ul>${m}</ul>`).replace(/\n\n/g,'<br>').replace(/\n/g,' ');
   return h;
@@ -5454,7 +5468,9 @@ function msInsp(){
         +msAudioInsp(c)
         +'<div class="ms-acts"><button type="button" class="btn sm" data-ms="ambprueba" aria-pressed="'+!!MS.ambOn+'">'+esc(MS.ambOn?T('Parar la prueba'):T('Probar el sonido aquí'))+'</button></div>'
         +'<p class="hint">'+esc(T('Se silencia con el telón bajado.'))+'</p>':'')
-      +'<div class="ms-acts"><a class="btn sm noi18n" href="https://tabletopaudio.com/" target="_blank" rel="noopener noreferrer">♪ Tabletop Audio</a></div>'
+      +'<div class="ms-acts"><a class="btn sm noi18n" href="https://tabletopaudio.com/" target="_blank" rel="noopener noreferrer">♪ Tabletop Audio</a>'
+        +audCarga().slice(0,12).map(a=>'<a class="btn sm noi18n" href="'+esc(a.u)+'" target="_blank" rel="noopener noreferrer">♪ '+esc(a.n)+'</a>').join('')
+        +'<button type="button" class="btn sm" data-act="audopen">'+esc(T('Mis enlaces de audio'))+'</button></div>'
       +'<p class="hint">'+esc(T('¿Prefieres grabaciones reales? Abre Tabletop Audio (ambientes pensados para rol, gratis) en el navegador y déjalo sonando por los altavoces. Desactiva aquí el sonido para que no se mezclen. No se puede incrustar en la mesa ni se silencia con el telón.'))+'</p>';
     if(c.tipo==='dados')p+='<p class="hint">'+esc(T('Aquí caen los dados, con física real: no pueden salirse del recuadro. Tira desde «Tirar en la bandeja».'))+'</p>'
       +'<label class="chk"><input type="checkbox" data-ms="confondo"'+(c.fondo?' checked':'')+'> '+esc(T('Con tablero (si no, los dados caen sobre la escena)'))+'</label>'
@@ -7211,6 +7227,11 @@ function revMark(ty,mid,n){
   if(!x)return false;delete x.pend;delete x.dudas;saveMods();refreshMods();return true;
 }
 /* Barra «pendiente de revisar» con su botón, solo para el DM. */
+/* aviso de revisión: datos del compendio reconstruidos a partir del PDF que conviene comparar con el manual (solo lo ve el máster) */
+function revBar(x){
+  if(!x||!x.rev||Store.campaigns.rol()==='jugador')return '';
+  return '<div class="pendbar"><span class="badge pend">Revisar</span><span class="pcsub">'+esc(x.rev)+'</span></div>';
+}
 function pendBar(ty,x){
   if(!x||!x.pend||Store.campaigns.rol()==='jugador')return '';
   const mid=x._mid||(x._mk?String(x._mk).split(':')[1]:'');if(!mid)return '';
@@ -7416,7 +7437,12 @@ function relTablas(tab,x){
   return l.map(t=>`<div class="cmreltb"><h4>${esc(t.n)}</h4>${cmTbBody(t)}</div>`).join('');
 }
 /* Texto de una ficha del compendio. Un módulo nunca se pinta como HTML: si el manual vino en HTML se pasa a texto con negritas. */
-const cmDesc=x=>ruleLinks(x._html?richHTML(x.d).replace(/<th><button[^>]*>(\d*d\d+)<\/button><\/th>/g,'<th>$1</th>').replace(/<table class="cmtab">(?=(?:<caption>[^<]*<\/caption>)?<thead><tr><th>\d*d\d+<\/th>)/g,'<div class="inline"><button type="button" class="btn sm" data-act="cmtbhtml">'+ic('d20')+' Tirar</button><span class="tbout cmtbres" aria-live="polite"></span></div><table class="cmtab">'):rich(/^\s*<(p|ul|h\d|table)\b/.test(String(x.d||''))?htmlTxt(x.d,true):String(x.d||'')));
+/* tablas de 4+ columnas: en móvil cada fila se ve como tarjeta; se rotula cada celda con el nombre de su columna */
+const cmCards=h=>h.replace(/<table class="cmtab">([\s\S]*?)<\/table>/g,(m,inner)=>{
+  const th=[...inner.matchAll(/<th>([\s\S]*?)<\/th>/g)].map(t=>{const x=t[1].replace(/<[^>]*>/g,'').replace(/"/g,'&quot;').trim(),m=x.match(/^(?:.*nivel de conjuro\s+)?(\d)$/i);return m?'Espacios nv '+m[1]:x;});
+  if(th.length<4)return m;
+  return '<table class="cmtab cmcards">'+inner.replace(/<tr>([\s\S]*?)<\/tr>/g,(r,cells)=>{let i=0;return '<tr>'+cells.replace(/<td>/g,()=>'<td data-l="'+(th[i++]||'')+'">')+'</tr>';})+'</table>';});
+const cmDesc=x=>cmCards(ruleLinks(x._html?richHTML(x.d).replace(/<th><button[^>]*>(\d*d\d+)<\/button><\/th>/g,'<th>$1</th>').replace(/<table class="cmtab">(?=(?:<caption>[^<]*<\/caption>)?<thead><tr><th>\d*d\d+<\/th>)/g,'<div class="inline"><button type="button" class="btn sm" data-act="cmtbhtml">'+ic('d20')+' Tirar</button><span class="tbout cmtbres" aria-live="polite"></span></div><table class="cmtab">'):rich(/^\s*<(p|ul|h\d|table)\b/.test(String(x.d||''))?htmlTxt(x.d,true):String(x.d||''))));
 /* Rasgos que da una subclase, por nivel. */
 const subRasgos=x=>compList('rasgos').filter(r=>r.tipo==='Rasgo de subclase'&&fold(r.cls)===fold(x.cls)&&fold(r.sub)===fold(x.sub||x.base)).sort((a,b)=>(+a.nv||0)-(+b.nv||0));
 function cmBody(x,tab=cmTab){
@@ -7426,7 +7452,7 @@ function cmBody(x,tab=cmTab){
   const body=cmDesc(x)
     +(tab==='subclases'?subRasgos(x).map(r=>`<h4>${r.nv?'Nivel '+esc(r.nv)+' · ':''}${esc(r.base||r.n)}</h4>`+cmDesc(r)).join(''):'')
     +(tab==='clases'?(()=>{const l=compList('rasgos').filter(r=>r.tipo==='Subclase'&&fold(r.cls)===fold(x.n));return l.length?`<p><b>Subclases de manuales:</b> ${l.map(r=>esc(r.sub||r.base)+' <span class="tag">'+esc(r._src||'')+'</span>').join(', ')}</p>`:'';})():'');
-  return `<div class="cmbody">${pendBar(tab==='subclases'?'rasgos':tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${x.img&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)?`<img class="cmimg" src="${x.img}" alt="" loading="lazy">`:''}${body}</div>${relTablas(tab,x)}<p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
+  return `<div class="cmbody">${revBar(x)}${pendBar(tab==='subclases'?'rasgos':tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${x.img&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)?`<img class="cmimg" src="${x.img}" alt="" loading="lazy">`:''}${body}</div>${relTablas(tab,x)}<p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }
 function toggleCompRow(r){
   const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
@@ -7497,7 +7523,7 @@ function extraAct(act,b,c,e){
     case 'safetoggle':{try{Store.set('modo-seguro',Store.get('modo-seguro')==='1'?'':'1');}catch(e){}safeApply();toast(safe()?'Modo seguro activado: se ocultan PG, CA y estadísticas de las criaturas':'Modo seguro desactivado');break;}
     case 'lock':lkBloquear();break;
     case 'audopen':audRender();$('#audmodal').hidden=false;syncModalOpen();break;
-    case 'audclose':$('#audmodal').hidden=true;syncModalOpen();break;
+    case 'audclose':$('#audmodal').hidden=true;syncModalOpen();try{const v=$('#view-mesa');if(v&&!v.hidden)msInsp();}catch{}break;
     case 'audadd':audAnadir();break;
     case 'audquitar':{const a=audCarga();a.splice(+b.dataset.i,1);audGuarda(a);audRender();break;}
     case 'lkset':lkGuardarPin();break;

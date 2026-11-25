@@ -4,6 +4,16 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.6] - 2026-11-25
+### Cambiado
+- **Tablas del compendio:** en pantallas de hasta 1000 px las tablas de 4 o más columnas (progresión de clases) se ven como una tarjeta por nivel; las de 3 columnas caben en 360 px y, si hace falta, se desplazan con sombra de aviso. Al imprimir salen siempre como tabla.
+- **Limpieza de CSS:** 38 reglas sin uso retiradas.
+- **Pantallas de la mesa:** el sonido ambiente gestiona tu lista de enlaces de audio.
+### Corregido
+- Editor de tablas aleatorias en móvil: las columnas caben y avisan si hay más a los lados.
+- El contador de rondas de los estados mide 12 px en escritorio.
+- Aviso «Revisar» (solo máster) preparado para fichas del compendio reconstruidas.
+
 ## [1.121.5] - 2026-11-25
 ### Corregido
 - **Campos de formulario:** al enfocar (fondo amarillo), el texto de ayuda y el cursor pasan a tinta en vez de quedarse en gris, en claro y en oscuro.
