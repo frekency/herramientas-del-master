@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.9] - 2026-11-25
+### Cambiado
+- **Tablas del compendio:** las cabeceras salen centradas y las largas («Bonificador por competencia», «Conjuros preparados»…) se reparten en dos líneas.
+
 ## [1.121.8] - 2026-11-25
 ### Cambiado
 - **Fichas del compendio:** las que llevan tablas anchas (progresión de clases) usan todo el ancho disponible; el texto corrido mantiene una medida legible.
