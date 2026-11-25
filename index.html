@@ -1757,7 +1757,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .cmbody .cmtab td{overflow-wrap:break-word}
 .cmbody .cmtab th{overflow-wrap:normal;word-break:normal;hyphens:manual}
 .cmbody .cmtab th{text-align:center;vertical-align:middle;text-wrap:balance}
-@media screen and (min-width:1001px){.cmbody .cmtab th.lg{min-width:14ch}}
 .cmbody .cmtab td{padding:5px 8px}
 .cmbody .cmtab tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
 @media screen and (max-width:700px){
@@ -2456,11 +2455,11 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .ms-main{display:grid;grid-template-columns:220px minmax(0,1fr) 260px;gap:12px;align-items:start}
 .ms-lib,.ms-insp{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface,var(--bg));max-height:calc(100dvh - 190px);overflow:auto}
 .ms-lib h3,.ms-insp h3{margin:4px 0 0;font:600 12px/1.2 var(--f-body,inherit);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,inherit)}
-.ms-add{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
-.ms-add .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:8px 6px;text-align:center;line-height:1.15;white-space:normal;height:auto}
+.ms-add{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}/* un elemento por fila, a todo el ancho */
+.ms-add .btn{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;min-height:40px;padding:8px 12px;text-align:left;line-height:1.15;white-space:normal;height:auto;width:100%}
 .ms-add .btn svg{width:20px;height:20px}
 .ms-add.dd{grid-template-columns:repeat(4,1fr)}
-.ms-add.dd .btn{min-height:34px;padding:4px}
+.ms-add.dd .btn{min-height:34px;padding:4px;justify-content:center;text-align:center}
 .ms-vents{display:flex;flex-wrap:wrap;gap:4px;align-items:center;flex-basis:100%}
 .ms-dados{display:flex;flex-wrap:wrap;gap:6px}
 .ms-dados input{flex:1 1 100%;min-width:0}
@@ -7495,7 +7494,7 @@ function relTablas(tab,x){
 /* tablas de 4+ columnas: en móvil cada fila se ve como tarjeta; se rotula cada celda con el nombre de su columna */
 const cmCards=h=>h.replace(/<table class="cmtab">([\s\S]*?)<\/table>/g,(m,inner)=>{
   const th=[...inner.matchAll(/<th>([\s\S]*?)<\/th>/g)].map(t=>{const x=t[1].replace(/<[^>]*>/g,'').replace(/"/g,'&quot;').trim(),m=x.match(/^(?:.*nivel de conjuro\s+)?(\d)$/i);return m?'Espacios nv '+m[1]:x;});
-  const lg=i=>i.replace(/<th>([^<]{12,})<\/th>/g,'<th class="lg">$1</th>');/* cabeceras largas: dos líneas centradas */
+  const lg=i=>i.replace(/<th>([^<]+)<\/th>/g,(m,t)=>{const w=t.trim().split(/\s+/);if(w.length<2)return m;let k0=1,bd=1e9;for(let k=1;k<w.length;k++){const d=Math.abs(w.slice(0,k).join(' ').length-w.slice(k).join(' ').length);if(d<bd){bd=d;k0=k;}}return '<th>'+w.slice(0,k0).join(' ')+'<br>'+w.slice(k0).join(' ')+'</th>';});/* cabeceras de varias palabras: dos líneas equilibradas, centradas */
   if(th.length<4)return '<table class="cmtab">'+lg(inner)+'</table>';
   return '<table class="cmtab cmcards">'+lg(inner).replace(/<tr>([\s\S]*?)<\/tr>/g,(r,cells)=>{let i=0;return '<tr>'+cells.replace(/<td>/g,()=>'<td data-l="'+(th[i++]||'')+'">')+'</tr>';})+'</table>';});
 const cmDesc=x=>cmCards(ruleLinks(x._html?richHTML(x.d).replace(/<th><button[^>]*>(\d*d\d+)<\/button><\/th>/g,'<th>$1</th>').replace(/<table class="cmtab">(?=(?:<caption>[^<]*<\/caption>)?<thead><tr><th>\d*d\d+<\/th>)/g,'<div class="inline"><button type="button" class="btn sm" data-act="cmtbhtml">'+ic('d20')+' Tirar</button><span class="tbout cmtbres" aria-live="polite"></span></div><table class="cmtab">'):rich(/^\s*<(p|ul|h\d|table)\b/.test(String(x.d||''))?htmlTxt(x.d,true):String(x.d||''))));

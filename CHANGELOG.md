@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.123.1] - 2026-11-25
+### Cambiado
+- **Mesa:** los botones de «Añadir a la escena» van uno por fila a todo el ancho.
+- **Tablas del compendio:** las cabeceras de varias palabras se reparten en dos líneas centradas.
+### Corregido
+- **Paladín:** el texto «Romper un juramento» estaba mezclado en la fila del nivel 20 de la tabla; se recompone debajo de ella (con aviso «Revisar»).
+
 ## [1.123.0] - 2026-11-25
 ### Añadido
 - **Ficha reducida al pasar el ratón:** filas de los listados y enlaces a elementos del compendio (clases, conjuros, criaturas, reglas…) enseñan un resumen flotante. Solo con ratón.
