@@ -2801,7 +2801,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 :root[data-skin="limpio"]{
   --bg:#fbf8ef; --surface:#fffdf7; --surface-2:#f1ece0; --line:#cfd4df;
   --fg:#1c2740; --muted:#566079; --accent:#2e4a8a; --accent-fg:#ffffff;
-  --sb:#fffdf8; --sb-rule:#b8342a; --hl:rgb(250 214 70/.55); --hl-solid:#9a5f00;
+  --sb:#fffdf8; --sb-rule:#b8342a; --hl:#f0dc7c; --hl-solid:#9a5f00; --on-hl:#1c2740;
   --ok:#2f7d4a; --warn:#a0680a; --crit:#b8342a;
   --cu-rule:rgb(110 145 210/.45); --cu-marg:rgb(210 100 100/.5); --cu-tape:rgb(226 204 140/.55); --cu-edge:#e2dccd; --cu-hlrow:rgb(250 214 70/.12);
   --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%232e4a8a' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23b8342a' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%231c2740' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
@@ -2811,7 +2811,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 @media (prefers-color-scheme:dark){:root[data-skin="limpio"]:not([data-theme="light"]){
   --bg:#17181c; --surface:#1e2025; --surface-2:#282a31; --line:#3a3d47;
   --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
-  --sb:#202227; --sb-rule:#ff8a78; --hl:rgb(240 214 80/.30); --hl-solid:#e9cf55;
+  --sb:#202227; --sb-rule:#ff8a78; --hl:#e9cf55; --hl-solid:#e9cf55; --on-hl:#1a1a12;
   --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
   --cu-rule:rgb(150 170 215/.2); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
   --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%239db8ff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23ff8a78' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%23d9d4c7' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
@@ -2820,7 +2820,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 :root[data-skin="limpio"][data-theme="dark"]{
   --bg:#17181c; --surface:#1e2025; --surface-2:#282a31; --line:#3a3d47;
   --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
-  --sb:#202227; --sb-rule:#ff8a78; --hl:rgb(240 214 80/.30); --hl-solid:#e9cf55;
+  --sb:#202227; --sb-rule:#ff8a78; --hl:#e9cf55; --hl-solid:#e9cf55; --on-hl:#1a1a12;
   --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
   --cu-rule:rgb(150 170 215/.2); --cu-marg:rgb(255 120 110/.3); --cu-tape:rgb(214 196 140/.16); --cu-edge:#33363e; --cu-hlrow:rgb(240 214 80/.07);
   --cu-ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%239db8ff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-ring-cur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 46' fill='none' stroke='%23ff8a78' stroke-width='2.3' stroke-linecap='round'%3E%3Cpath d='M12 15C22 3 44 5 48 21S36 44 25 43 4 34 5 22 18 4 36 6'/%3E%3C/svg%3E"); --cu-shield:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44' fill='none' stroke='%23d9d4c7' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M20 3c5 2.5 10 3.5 16 3.8.3 13-3 26-16 34.5C7 32.8 3.6 19.8 4 6.8 10 6.5 15 5.5 20 3z'/%3E%3C/svg%3E");
@@ -2880,11 +2880,11 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] .counter b{}
 [data-skin="limpio"] .now .who{display:block;width:fit-content;max-width:100%;margin:1px 0 2px;padding:0 8px;background:linear-gradient(100deg,transparent 1%,var(--hl) 3%,var(--hl) 96%,transparent 99%);border-radius:3px}
 [data-skin="limpio"] .now .nx{}
-[data-skin="limpio"] h2,[data-skin="limpio"] .panel>h2,[data-skin="limpio"] .listhead h2,[data-skin="limpio"] .vhead h2{color:var(--sb-rule);border-bottom:0;padding-bottom:0}
+[data-skin="limpio"] h2,[data-skin="limpio"] .panel>h2,[data-skin="limpio"] .listhead h2,[data-skin="limpio"] .vhead h2{color:var(--fg);border-bottom:0;padding-bottom:0}
 [data-skin="limpio"] .panel,[data-skin="limpio"] .tool{position:relative}
 [data-skin="limpio"] .panel::before{display:none}
 [data-skin="limpio"] .panel{background:transparent;border:0;border-top:1px solid var(--cu-rule);border-radius:0;box-shadow:none;padding:14px 4px}
-[data-skin="limpio"] .btn{border:1.5px solid color-mix(in srgb,var(--fg) 60%,transparent);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;background:var(--surface)}
+[data-skin="limpio"] .btn{border:1px solid color-mix(in srgb,var(--fg) 40%,transparent);border-radius:8px;background:var(--surface)}
 [data-skin="limpio"] .btn:hover{background:var(--surface-2);border-color:var(--fg)}
 [data-skin="limpio"] .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 [data-skin="limpio"] .btn.ghost{border-color:transparent;background:transparent}
@@ -2920,7 +2920,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] .sb{background-color:var(--sb);background-image:none;border:1px solid var(--cu-edge);border-radius:2px;box-shadow:var(--shadow);padding:16px 18px}
 [data-skin="limpio"] #curpanel .sb{transform:rotate(.4deg)}
 [data-skin="limpio"] .sb h3{color:var(--accent);padding-bottom:4px;border-bottom:1.5px solid var(--cu-marg)}
-[data-skin="limpio"] .sb h4{color:var(--sb-rule);border-bottom:0}
+[data-skin="limpio"] .sb h4{color:var(--fg);border-bottom:0}
 [data-skin="limpio"] .sb hr{height:0;background:none;border-top:1px solid var(--cu-rule)}
 [data-skin="limpio"] .sb .ln b{color:var(--accent)}
 [data-skin="limpio"] .sb .abil div{background:none;}
@@ -2938,7 +2938,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] .tool:nth-child(odd){transform:rotate(-.5deg)}
 [data-skin="limpio"] .tool:nth-child(even){transform:rotate(.45deg)}
 [data-skin="limpio"] .tool:hover{transform:rotate(0) translateY(-2px)}
-[data-skin="limpio"] .tool .tn{color:var(--sb-rule)}
+[data-skin="limpio"] .tool .tn{color:var(--fg)}
 [data-skin="limpio"] .tool .tstat{}
 [data-skin="limpio"] .qrcard{background:transparent;border:0;border-bottom:1px solid var(--cu-rule);border-radius:0}
 [data-skin="limpio"] .qrcard .qi{background:none}
@@ -2948,6 +2948,126 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 @media (max-width:1399px){[data-skin="limpio"] body{background-image:none}}
 [data-skin="limpio"] .panel{padding:20px 4px;gap:14px}
 [data-skin="limpio"] .tool{padding:20px}
+
+/* ===== Portada «pantalla del máster»: cuatro paneles con una nota adhesiva cada uno ===== */
+:root[data-skin="limpio"]{--pi-campana:#f7ebaa;--pi-personajes:#f5d5cd;--pi-compendio:#d3e3ef;--pi-utilidades:#d8e8cd;--pi-tinta:#1c2740}
+/* títulos con tinta, no con rojo: el color queda para avisos */
+[data-skin="limpio"] h2,[data-skin="limpio"] .vhead h2,[data-skin="limpio"] .campchiprow h2,[data-skin="limpio"] .htitle{color:var(--fg)}
+[data-skin="limpio"] .bqs4{gap:22px;margin:18px 0 28px}
+[data-skin="limpio"] .bq{border:0;border-radius:2px;color:var(--pi-tinta);padding:clamp(18px,2vw,26px) clamp(16px,1.8vw,22px) 20px;gap:12px;min-height:0;
+  background-image:linear-gradient(to bottom,rgb(0 0 0/.045) 0 14px,transparent 14px);
+  box-shadow:0 1px 1px rgb(30 30 50/.10),0 14px 16px -10px rgb(30 30 50/.30);transition:transform .15s ease,box-shadow .15s ease}
+[data-skin="limpio"] .bq[data-blk="campana"]{background-color:var(--pi-campana);transform:rotate(-.6deg)}
+[data-skin="limpio"] .bq[data-blk="personajes"]{background-color:var(--pi-personajes);transform:rotate(.5deg)}
+[data-skin="limpio"] .bq[data-blk="compendio"]{background-color:var(--pi-compendio);transform:rotate(.4deg)}
+[data-skin="limpio"] .bq[data-blk="utilidades"]{background-color:var(--pi-utilidades);transform:rotate(-.5deg)}
+[data-skin="limpio"] .bq:hover,[data-skin="limpio"] .bq:focus-within{transform:rotate(0) translateY(-3px);border-color:transparent;box-shadow:0 1px 1px rgb(30 30 50/.10),0 18px 20px -10px rgb(30 30 50/.34)}
+[data-skin="limpio"] .bqh .ic{color:var(--pi-tinta);width:34px;height:34px;opacity:.85}
+[data-skin="limpio"] .bqn{font-size:var(--t-xl);font-weight:500;letter-spacing:-.012em;text-transform:none}
+[data-skin="limpio"] .bqs{color:var(--pi-tinta);opacity:.7;font-weight:400;font-size:var(--t-s);margin-top:4px}
+[data-skin="limpio"] .bqd{color:var(--pi-tinta);opacity:.78;font-size:var(--t-m)}
+/* accesos: renglones de nota, no botones */
+[data-skin="limpio"] .bql{flex-direction:column;flex-wrap:nowrap;gap:0;margin-top:auto;padding-top:10px}
+[data-skin="limpio"] .bqc{border:0;border-bottom:1px dashed color-mix(in srgb,var(--pi-tinta) 32%,transparent);border-radius:0;background:none;color:var(--pi-tinta);min-height:40px;padding:0 2px;font-size:var(--t-s);font-weight:500;justify-content:flex-start}
+[data-skin="limpio"] .bqc:last-child{border-bottom-color:transparent}
+[data-skin="limpio"] .bqc:hover,[data-skin="limpio"] .bqc:focus-visible{background:color-mix(in srgb,var(--pi-tinta) 8%,transparent);border-color:color-mix(in srgb,var(--pi-tinta) 32%,transparent)}
+@media (min-width:1100px){[data-skin="limpio"] .bqs4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* el aviso de la app de escritorio: una línea discreta, no una caja de borde discontinuo */
+[data-skin="limpio"] .mdbanner{border:0;background:none;padding:0;color:var(--muted);font-size:var(--t-s);gap:8px 14px}
+[data-skin="limpio"] #hs-app .btn.primary{background:none;border:0;padding:0;color:var(--accent);font-size:var(--t-s);font-weight:500;text-decoration:underline;text-underline-offset:3px;border-radius:0}
+[data-skin="limpio"] #hs-app a:not(.btn){font-weight:400;color:var(--muted)}
+
+/* ===== Portada: la trasera de la pantalla del máster (cuero con costuras y pliegues) ===== */
+:root[data-skin="limpio"]{--cuero:#4a3a30;--cuero-2:#3a2d25;--cuero-pliegue:rgb(0 0 0/.5);--cuero-costura:rgb(226 200 156/.42)}
+@media (prefers-color-scheme:dark){:root[data-skin="limpio"]:not([data-theme="light"]){--cuero:#2a211c;--cuero-2:#201915;--cuero-costura:rgb(226 200 156/.3)}}
+:root[data-skin="limpio"][data-theme="dark"]{--cuero:#2a211c;--cuero-2:#201915;--cuero-costura:rgb(226 200 156/.3)}
+[data-skin="limpio"] .bqs4{position:relative;gap:0;margin:20px 0 28px;padding:12px 0;border-radius:6px;overflow:hidden;
+  background-color:var(--cuero);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 90% at 50% 0%,rgb(255 255 255/.07),transparent 60%),
+    linear-gradient(var(--cuero),var(--cuero-2));
+  box-shadow:inset 0 0 0 1px rgb(0 0 0/.35),inset 0 2px 14px rgb(0 0 0/.35),0 10px 24px -14px rgb(30 20 10/.5)}
+[data-skin="limpio"] .bqs4::before{content:"";position:absolute;inset:7px;border:1.5px dashed var(--cuero-costura);border-radius:3px;pointer-events:none}
+[data-skin="limpio"] .bq{margin:18px clamp(14px,2vw,26px)}
+@media (min-width:700px){[data-skin="limpio"] .bq{min-height:260px}}
+@media (max-width:699px){[data-skin="limpio"] .bq{margin:14px 14px}[data-skin="limpio"] .bql{margin-top:6px}[data-skin="limpio"] .bqs4{padding:6px 0}}
+@media (min-width:1100px){
+  [data-skin="limpio"] .bqs4{background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(90deg,transparent calc(100% - 3px),var(--cuero-pliegue) calc(100% - 3px) calc(100% - 1px),rgb(255 255 255/.08) calc(100% - 1px)),
+    radial-gradient(120% 90% at 50% 0%,rgb(255 255 255/.07),transparent 60%),
+    linear-gradient(var(--cuero),var(--cuero-2));
+    background-size:180px 180px,25% 100%,auto,auto;background-repeat:repeat,repeat-x,no-repeat,no-repeat}
+}
+
+/* chinchetas: cada nota va clavada al cuero */
+[data-skin="limpio"] .bq{--pin:#c9402f}
+[data-skin="limpio"] .bq[data-blk="personajes"]{--pin:#2f6fb5}
+[data-skin="limpio"] .bq[data-blk="compendio"]{--pin:#d9a21f}
+[data-skin="limpio"] .bq[data-blk="utilidades"]{--pin:#2e8b57}
+[data-skin="limpio"] .bq::after{content:"";position:absolute;top:-7px;left:50%;width:20px;height:20px;margin-left:-10px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 34% 30%,rgb(255 255 255/.85) 0 9%,transparent 24%),radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--pin) 82%,#fff) 0,var(--pin) 55%,color-mix(in srgb,var(--pin) 60%,#000) 100%);
+  box-shadow:0 1px 1px rgb(0 0 0/.35),3px 7px 7px -2px rgb(0 0 0/.55),inset 0 -2px 3px rgb(0 0 0/.3)}
+[data-skin="limpio"] .bq:hover::after,[data-skin="limpio"] .bq:focus-within::after{transform:translateY(1px)}
+
+/* escrito a mano: las notas de la portada llevan letra de bolígrafo */
+[data-skin="limpio"] .bq{--mano:'Kalam','Segoe Print','Bradley Hand',cursive}
+[data-skin="limpio"] .bq .bqn{font-family:var(--mano);font-weight:700;font-size:clamp(24px,2.3vw,30px);line-height:1.05;letter-spacing:0;transform:rotate(-1deg);transform-origin:left center;margin-top:2px}
+[data-skin="limpio"] .bq .bqs{font-family:var(--mano);font-size:calc(var(--t-m) + 1px);opacity:.75}
+[data-skin="limpio"] .bq .bqd{font-family:var(--mano);font-size:calc(var(--t-m) + 1px);line-height:1.35;opacity:.85}
+[data-skin="limpio"] .bq .bqc{font-family:var(--mano);font-size:calc(var(--t-m) + 1px);font-weight:400;padding-top:4px}
+
+/* esquina doblada: el pico inferior derecho está plegado y deja ver el cuero */
+[data-skin="limpio"] .bq::before{content:"";position:absolute;right:0;bottom:0;width:28px;height:28px;pointer-events:none;
+  background:linear-gradient(135deg,transparent 50%,var(--cuero-2) 50%),linear-gradient(135deg,rgb(255 255 255/.55),rgb(0 0 0/.14));
+  filter:drop-shadow(-2px -2px 2px rgb(0 0 0/.18))}
+/* un pliegue marcado en una nota, como papel que ha vivido en la mochila */
+[data-skin="limpio"] .bq[data-blk="personajes"]{background-image:linear-gradient(to bottom,rgb(0 0 0/.045) 0 14px,transparent 14px),linear-gradient(to bottom,transparent 58%,rgb(0 0 0/.07) 58% calc(58% + 1px),rgb(255 255 255/.4) calc(58% + 1px) calc(58% + 3px),transparent calc(58% + 3px))}
+
+/* cada nota es un papel distinto */
+@media (min-width:700px){
+  [data-skin="limpio"] .bqs4{align-items:start}
+  [data-skin="limpio"] .bq[data-blk="campana"]{min-height:300px;margin-top:22px;transform:rotate(-1.3deg)}
+  [data-skin="limpio"] .bq[data-blk="personajes"]{min-height:236px;margin-top:34px;transform:rotate(1deg)}
+  [data-skin="limpio"] .bq[data-blk="compendio"]{min-height:318px;margin-top:14px;transform:rotate(-.4deg)}
+  [data-skin="limpio"] .bq[data-blk="utilidades"]{min-height:262px;margin-top:30px;transform:rotate(1.2deg)}
+  [data-skin="limpio"] .bqs4{padding-bottom:20px}
+}
+/* Campaña: post-it amarillo, chincheta roja, esquina doblada abajo a la derecha (ya definido) */
+/* Personajes: nota rosa con pliegue; chincheta azul descentrada y esquina doblada a la izquierda */
+[data-skin="limpio"] .bq[data-blk="personajes"]::after{left:27%}
+[data-skin="limpio"] .bq[data-blk="personajes"]::before{right:auto;left:0;background:linear-gradient(225deg,transparent 50%,var(--cuero-2) 50%),linear-gradient(225deg,rgb(255 255 255/.55),rgb(0 0 0/.14));filter:drop-shadow(2px -2px 2px rgb(0 0 0/.18))}
+/* Compendio: hoja de cuaderno arrancada de la espiral, con renglones, margen rojo y cinta */
+[data-skin="limpio"] .bq[data-blk="compendio"]{padding-left:clamp(34px,3vw,42px);border-radius:2px 2px 3px 3px;
+  background-image:
+    radial-gradient(circle at 10px 17px,var(--cuero-2) 0 4px,transparent 4.6px),
+    linear-gradient(90deg,transparent 27px,rgb(205 80 80/.45) 27px 28px,transparent 28px),
+    repeating-linear-gradient(to bottom,transparent 0 31px,rgb(70 110 160/.24) 31px 32px),
+    linear-gradient(to bottom,rgb(0 0 0/.045) 0 14px,transparent 14px);
+  background-size:20px 38px,100% 100%,100% 100%,100% 100%;background-repeat:repeat-y,no-repeat,no-repeat,no-repeat;background-position:0 0,0 0,0 8px,0 0}
+[data-skin="limpio"] .bq[data-blk="compendio"]::before{display:none}
+[data-skin="limpio"] .bq[data-blk="compendio"]::after,[data-skin="limpio"] .bq[data-blk="utilidades"]::after{width:78px;height:24px;margin-left:-39px;top:-11px;border-radius:1px;
+  background:linear-gradient(rgb(255 250 225/.62),rgb(244 232 190/.55));
+  box-shadow:0 1px 2px rgb(0 0 0/.25);transform:rotate(-2.5deg)}
+[data-skin="limpio"] .bq[data-blk="compendio"]:hover::after,[data-skin="limpio"] .bq[data-blk="utilidades"]:hover::after{transform:rotate(-2.5deg)}
+/* Utilidades: ficha verde con cinta en la esquina y la marca de una taza de café */
+[data-skin="limpio"] .bq[data-blk="utilidades"]{
+  background-image:
+    radial-gradient(circle at 76% 74%,transparent 0 31px,rgb(110 72 38/.17) 32px 35px,rgb(110 72 38/.05) 36px 40px,transparent 41px),
+    linear-gradient(to bottom,rgb(0 0 0/.045) 0 14px,transparent 14px)}
+[data-skin="limpio"] .bq[data-blk="utilidades"]::after{left:auto;right:-16px;top:8px;margin-left:0;width:64px;transform:rotate(38deg)}
+[data-skin="limpio"] .bq[data-blk="utilidades"]:hover::after{transform:rotate(38deg)}
+[data-skin="limpio"] .bq[data-blk="utilidades"]::before{display:none}
+@media (max-width:699px){[data-skin="limpio"] .bq[data-blk="compendio"]{padding-left:38px}}
+
+/* texto sobre el resaltado amarillo: tinta oscura en los dos modos */
+[data-skin="limpio"] .now .who,[data-skin="limpio"] .pagenav a.on,[data-skin="limpio"] .row.cur .name,[data-skin="limpio"] .dc,[data-skin="limpio"] .advsel button.on,[data-skin="limpio"] .qb:hover,[data-skin="limpio"] .rl:hover,[data-skin="limpio"] ::selection{color:var(--on-hl)}
+
+/* campos de formulario: línea inferior, como rellenar un impreso; al escribir se resaltan en amarillo */
+[data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] label.f select,[data-skin="limpio"] label.f textarea,[data-skin="limpio"] .cptext,[data-skin="limpio"] .bfilters input,[data-skin="limpio"] .bfilters select,[data-skin="limpio"] .frow input[type=text],[data-skin="limpio"] #md-url,[data-skin="limpio"] .books input[type=url],[data-skin="limpio"] .vbody select,[data-skin="limpio"] .skin select,[data-skin="limpio"] .pjver select,[data-skin="limpio"] .pjpermg select,[data-skin="limpio"] .grprow select,[data-skin="limpio"] .grpmv select,[data-skin="limpio"] .pcpj select,[data-skin="limpio"] .grpadd select,[data-skin="limpio"] .grpadd input,[data-skin="limpio"] .grpnew input,[data-skin="limpio"] .grpnew select,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]),[data-skin="limpio"] .pjbox select,[data-skin="limpio"] .pjbox textarea,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]),[data-skin="limpio"] .pjm select,[data-skin="limpio"] .pjsec select,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] .eprow select,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] .epbox select{background-color:transparent;border:0;border-bottom:1.5px solid color-mix(in srgb,var(--fg) 45%,transparent);border-radius:0;box-shadow:none;min-height:38px;padding:6px 2px;color:var(--fg);font-size:var(--t-base)}
+[data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]):focus,[data-skin="limpio"] label.f select:focus,[data-skin="limpio"] label.f textarea:focus,[data-skin="limpio"] .cptext:focus,[data-skin="limpio"] .bfilters input:focus,[data-skin="limpio"] .bfilters select:focus,[data-skin="limpio"] .frow input[type=text]:focus,[data-skin="limpio"] #md-url:focus,[data-skin="limpio"] .books input[type=url]:focus,[data-skin="limpio"] .vbody select:focus,[data-skin="limpio"] .skin select:focus,[data-skin="limpio"] .pjver select:focus,[data-skin="limpio"] .pjpermg select:focus,[data-skin="limpio"] .grprow select:focus,[data-skin="limpio"] .grpmv select:focus,[data-skin="limpio"] .pcpj select:focus,[data-skin="limpio"] .grpadd select:focus,[data-skin="limpio"] .grpadd input:focus,[data-skin="limpio"] .grpnew input:focus,[data-skin="limpio"] .grpnew select:focus,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]):focus,[data-skin="limpio"] .pjbox select:focus,[data-skin="limpio"] .pjbox textarea:focus,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]):focus,[data-skin="limpio"] .pjm select:focus,[data-skin="limpio"] .pjsec select:focus,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]):focus,[data-skin="limpio"] .eprow select:focus,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]):focus,[data-skin="limpio"] .epbox select:focus{background-color:var(--hl);color:var(--on-hl);border-bottom-color:var(--fg);padding-left:6px;outline:0}
+[data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]):disabled,[data-skin="limpio"] label.f select:disabled,[data-skin="limpio"] label.f textarea:disabled,[data-skin="limpio"] .cptext:disabled,[data-skin="limpio"] .bfilters input:disabled,[data-skin="limpio"] .bfilters select:disabled,[data-skin="limpio"] .frow input[type=text]:disabled,[data-skin="limpio"] #md-url:disabled,[data-skin="limpio"] .books input[type=url]:disabled,[data-skin="limpio"] .vbody select:disabled,[data-skin="limpio"] .skin select:disabled,[data-skin="limpio"] .pjver select:disabled,[data-skin="limpio"] .pjpermg select:disabled,[data-skin="limpio"] .grprow select:disabled,[data-skin="limpio"] .grpmv select:disabled,[data-skin="limpio"] .pcpj select:disabled,[data-skin="limpio"] .grpadd select:disabled,[data-skin="limpio"] .grpadd input:disabled,[data-skin="limpio"] .grpnew input:disabled,[data-skin="limpio"] .grpnew select:disabled,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]):disabled,[data-skin="limpio"] .pjbox select:disabled,[data-skin="limpio"] .pjbox textarea:disabled,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]):disabled,[data-skin="limpio"] .pjm select:disabled,[data-skin="limpio"] .pjsec select:disabled,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]):disabled,[data-skin="limpio"] .eprow select:disabled,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]):disabled,[data-skin="limpio"] .epbox select:disabled{opacity:.55}
 </style>
 
 
@@ -2983,7 +3103,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.119</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.120</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -3191,6 +3311,9 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.120 <span>25 nov 2026</span></h3><ul>
+      <li><b>Portada «pantalla del máster».</b> Cuero con costura y pliegues y cuatro notas distintas clavadas, escritas a mano, en claro y oscuro.</li>
+      <li><b>El resto, más sencillo.</b> Títulos en tinta, botones limpios y campos de formulario con línea inferior que se resaltan en amarillo al escribir.</li></ul></li>
     <li><h3>v1.119 <span>25 nov 2026</span></h3><ul>
       <li><b>Un solo estilo: «Limpio».</b> Los colores y adornos de Cuaderno con una sola tipografía, escala corta y títulos rectos. Se quitan los demás estilos.</li>
       <li><b>Manda siempre la cuenta.</b> Con internet todo se guarda en Supabase; sin conexión se guarda en local y se sube en cuanto vuelve. Se acaban los conflictos de datos y sus pantallas.</li></ul></li>

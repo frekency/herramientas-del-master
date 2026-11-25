@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.120.0] - 2026-11-25
+### Cambiado
+- **Portada «pantalla del máster»:** la trasera de la pantalla del máster en cuero con costura y pliegues, con cuatro notas distintas clavadas (post-it con chincheta, nota con pliegue, hoja de cuaderno con cinta y ficha con la marca de un café), escritas a mano. Se ve igual en claro y oscuro.
+- **El resto de la app, más sencillo:** títulos en tinta (el rojo queda para avisos), botones con borde fino y esquinas redondeadas, y el aviso de la app de escritorio como una línea discreta.
+- **Campos de formulario:** línea inferior, como rellenar un impreso; al escribir se resaltan en amarillo.
+- **Resaltado amarillo nuevo:** `#f0dc7c` en claro y `#e9cf55` en oscuro, con el texto en tinta oscura; el aviso de abajo usa el mismo amarillo.
+- Se documenta el sistema de diseño en `DESIGN.md`.
+
 ## [1.119.0] - 2026-11-25
 ### Cambiado
 - **Un solo estilo visual: «Limpio»** (colores y adornos de Cuaderno con una sola tipografía sans, escala corta y títulos rectos). Se quitan Cuaderno, Libro de reglas, Pantalla del máster, Clásico, Arcano, Taberna y Escritorio, y el selector de estilo.
