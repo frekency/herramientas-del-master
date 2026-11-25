@@ -2,9 +2,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Herramientas del Máster</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="color-scheme" content="light dark">
+<style>/* fondo desde el primer fotograma, antes de que cargue el resto: sigue al sistema o a la preferencia guardada */html{background:#fbf8ef}@media (prefers-color-scheme:dark){html{background:#17181c}}html[data-theme="light"]{background:#fbf8ef}html[data-theme="dark"]{background:#17181c}</style>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#efe7d8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#14110e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbf8ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17181c" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Máster">
@@ -3170,7 +3172,6 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 
 /* móvil: la cabecera ya no se queda fija tapando las pestañas (en combate sí, porque lleva el turno), y la pestaña activa se lee */
 @media (max-width:700px){
-  :root[data-skin="limpio"]:not([data-page="combate"]) .bar{position:static;padding-top:env(safe-area-inset-top,0px)}
   html:not(.app-escritorio)[data-skin="limpio"] .pagenav a.main.on{background:var(--hl);border-color:transparent;color:var(--on-hl)}
   html:not(.app-escritorio)[data-skin="limpio"] .pagenav a.main.on .ic{color:var(--on-hl)}
 }

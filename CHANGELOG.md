@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.3] - 2026-11-25
+### Corregido
+- **Móvil:** la cabecera vuelve a quedar fija arriba al desplazarte.
+- **Modo oscuro en la PWA:** los colores de la barra del sistema y del arranque de la app usan la paleta actual (antes eran los marrones del tema antiguo), y el fondo y el esquema de color se declaran desde el primer fotograma, para que no salga claro al abrir.
+
 ## [1.121.2] - 2026-11-25
 ### Corregido
 - **iPhone:** la cabecera (título y buscador) ya no queda tapada por la franja de la barra de estado.
