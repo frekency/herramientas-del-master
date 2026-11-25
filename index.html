@@ -218,14 +218,14 @@ return {MAX,norm,normLista,nueva,restante,terminada,iniciar,pausar,reiniciar,act
 </script>
 <script id="sync-core">
 window.Sincro=(()=>{
-/* Motor de sincronización por elemento. Puro: no toca red ni almacenamiento; decide qué subir, qué bajar y qué hacer en un conflicto.
-   Local:  {items:{clave:{valor,bv,mod,dirty,del}}, conflictos:[…]}     bv = versión del servidor desde la que se editó (0 = nunca subido)
+/* Motor de sincronización por elemento. Puro: no toca red ni almacenamiento; decide qué subir y qué bajar.
+   Local:  {items:{clave:{valor,bv,mod,dirty,del}}}     bv = versión del servidor desde la que se editó (0 = nunca subido)
    Remoto: {clave:{valor,version,actualizado,borrado}}                   version la pone el servidor, no el reloj del dispositivo
    Regla: lo que no se ha tocado en local sigue al servidor. Si se tocó en local y el servidor no se movió, se sube. Si ambos se movieron
-   (conflicto) gana el más reciente, y la versión perdedora se guarda en «conflictos» para poder recuperarla: nunca se tira en silencio. */
-const CLAVE=/^[a-z0-9][a-z0-9._:-]{0,79}$/,MAX_VALOR=1900000,MAX_CONFLICTOS=50;
-const vacio=()=>({items:{},conflictos:[],abiertos:[]});   // abiertos: conflictos sin resolver (modo manual): {clave, remoto:{valor,version,actualizado,borrado}}
-const copia=l=>({items:Object.fromEntries(Object.entries(l.items).map(([k,v])=>[k,{...v}])),conflictos:l.conflictos.slice(),abiertos:(l.abiertos||[]).map(a=>({...a}))});
+   se movieron los dos, manda siempre la cuenta (Supabase). Lo editado sin conexión se sube en cuanto vuelve internet (si la cuenta no se movió). */
+const CLAVE=/^[a-z0-9][a-z0-9._:-]{0,79}$/,MAX_VALOR=1900000;
+const vacio=()=>({items:{}});
+const copia=l=>({items:Object.fromEntries(Object.entries(l.items).map(([k,v])=>[k,{...v}]))});
 const tam=v=>{try{return JSON.stringify(v).length;}catch{return Infinity;}};
 const ord=v=>Array.isArray(v)?v.map(ord):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,ord(v[k])])):v;
 const igual=(a,b)=>{try{return JSON.stringify(ord(a))===JSON.stringify(ord(b));}catch{return false;}};   // mismo contenido, da igual el orden de las claves
@@ -233,9 +233,6 @@ function norm(l){
   const o=vacio();if(!l||typeof l!=='object')return o;
   for(const [k,v] of Object.entries(l.items||{})){if(!CLAVE.test(k)||!v||typeof v!=='object')continue;
     o.items[k]={valor:v.valor,bv:Math.max(0,Math.trunc(+v.bv)||0),mod:Math.max(0,+v.mod||0),dirty:!!v.dirty,del:!!v.del};}
-  o.conflictos=(Array.isArray(l.conflictos)?l.conflictos:[]).slice(-MAX_CONFLICTOS).filter(c=>c&&typeof c.clave==='string'&&CLAVE.test(c.clave));
-  o.abiertos=(Array.isArray(l.abiertos)?l.abiertos:[]).filter(a=>a&&typeof a.clave==='string'&&CLAVE.test(a.clave)&&a.remoto&&typeof a.remoto==='object'&&o.items[a.clave])
-    .map(a=>({clave:a.clave,remoto:{valor:a.remoto.valor,version:Math.max(0,Math.trunc(+a.remoto.version)||0),actualizado:Math.max(0,+a.remoto.actualizado||0),borrado:!!a.remoto.borrado}}));
   return o;
 }
 function editar(l,clave,valor,ahora){
@@ -251,13 +248,11 @@ function borrar(l,clave,ahora){
   return {ok:true,l:g};
 }
 const vivos=l=>Object.fromEntries(Object.entries(l.items).filter(([,v])=>!v.del).map(([k,v])=>[k,v.valor]));
-function guarda(g,clave,valor,motivo,ahora){g.conflictos.push({clave,valor,motivo,t:ahora});if(g.conflictos.length>MAX_CONFLICTOS)g.conflictos.splice(0,g.conflictos.length-MAX_CONFLICTOS);}
-/* → {l, subir:[{clave,valor,borrado,base}], bajados:[], borrados:[], conflictos:[], rechazadas:[]} */
+/* → {l, subir:[{clave,valor,borrado,base}], bajados:[], borrados:[], rechazadas:[]} */
 function fusionar(local,remoto,ahora,opts){
-  const manual=!!(opts&&opts.manual),vig=new Set();   // manual: los conflictos NO se resuelven solos; se guardan en «abiertos» hasta que la persona elige
   const inc=!!(opts&&opts.incremental);   // incremental: «no viene» significa «no ha cambiado»; completa: «no viene» significa «ya no existe»
   const g=copia(norm(local)),R=remoto&&typeof remoto==='object'?remoto:{};
-  const r={l:g,subir:[],bajados:[],borrados:[],conflictos:[],rechazadas:[],abiertos:[]};
+  const r={l:g,subir:[],bajados:[],borrados:[],rechazadas:[]};
   const claves=new Set([...Object.keys(g.items),...Object.keys(R).filter(k=>CLAVE.test(k))]);
   const aplicarRemoto=(k,x)=>{if(x.borrado){if(g.items[k]){delete g.items[k];r.borrados.push(k);}}
     else{g.items[k]={valor:x.valor,bv:x.version,mod:x.actualizado||0,dirty:false,del:false};r.bajados.push(k);}};
@@ -268,36 +263,17 @@ function fusionar(local,remoto,ahora,opts){
     const L=g.items[k],X=R[k];
     if(!L){if(X)aplicarRemoto(k,X);continue;}
     if(!X){
-      if(manual&&g.abiertos.some(a=>a.clave===k)){vig.add(k);continue;}   // conflicto abierto: se espera la decisión
       if(!L.dirty){if(L.bv>0&&!inc)delete g.items[k];continue;}
       if(L.del){if(inc&&L.bv>0)subir(k,L,L.bv);else delete g.items[k];continue;}
       subir(k,L,inc&&L.bv>0?L.bv:0);continue;                               // alta nueva (o edición sobre una versión que el servidor no ha movido)
     }
     if(!L.dirty){if(L.bv!==X.version||X.borrado)aplicarRemoto(k,X);continue;}
     if(L.bv===X.version){subir(k,L,X.version);continue;}             // el servidor no se ha movido: se sube lo mío
-    // conflicto: se movieron los dos
-    if(!X.borrado&&!L.del&&igual(L.valor,X.valor)){L.bv=X.version;L.dirty=false;L.mod=X.actualizado||L.mod;g.abiertos=g.abiertos.filter(a=>a.clave!==k);continue;}   // los dos llegaron al mismo contenido: no hay nada que decidir
-    if(manual){const a={clave:k,remoto:{valor:X.valor,version:X.version,actualizado:X.actualizado||0,borrado:!!X.borrado}},i=g.abiertos.findIndex(y=>y.clave===k);
-      if(i>=0)g.abiertos[i]=a;else g.abiertos.push(a);vig.add(k);r.abiertos.push(k);continue;}
-    const localGana=L.mod>X.actualizado;
-    if(localGana){if(!X.borrado)guarda(g,k,X.valor,'pisada_remota',ahora);L.bv=X.version;subir(k,L,X.version);}
-    else{if(!L.del)guarda(g,k,L.valor,'pisada_local',ahora);aplicarRemoto(k,X);}
-    r.conflictos.push(k);
+    // se movieron los dos
+    if(!X.borrado&&!L.del&&igual(L.valor,X.valor)){L.bv=X.version;L.dirty=false;L.mod=X.actualizado||L.mod;continue;}   // los dos llegaron al mismo contenido: no hay nada que decidir
+    aplicarRemoto(k,X);                                               // manda la cuenta (Supabase)
   }
-  if(manual)g.abiertos=g.abiertos.filter(a=>vig.has(a.clave));
   return r;
-}
-/* Decidir un conflicto abierto: 'mio' conserva lo de este dispositivo (se subirá sobre la versión actual del servidor); 'nube' se queda con lo del servidor
-   y guarda lo local como copia recuperable. → {ok, l, aplicar:{bajados,borrados}} */
-function resolver(l,clave,eleccion,ahora){
-  const g=copia(norm(l)),i=g.abiertos.findIndex(a=>a.clave===clave);if(i<0)return {ok:false,error:'no_hay_conflicto'};
-  const a=g.abiertos[i],L=g.items[clave],ap={bajados:[],borrados:[]};g.abiertos.splice(i,1);
-  if(eleccion==='mio'){if(L){L.bv=a.remoto.version;L.dirty=true;L.mod=ahora;}return {ok:true,l:g,aplicar:ap};}
-  if(eleccion!=='nube')return {ok:false,error:'eleccion_invalida'};
-  if(L&&!L.del&&L.valor!=null)guarda(g,clave,L.valor,'descartada_local',ahora);
-  if(a.remoto.borrado){delete g.items[clave];ap.borrados.push(clave);}
-  else{g.items[clave]={valor:a.remoto.valor,bv:a.remoto.version,mod:a.remoto.actualizado||ahora,dirty:false,del:false};ap.bajados.push(clave);}
-  return {ok:true,l:g,aplicar:ap};
 }
 /* el servidor aceptó la subida: res = {clave, version} */
 function confirmar(l,res){
@@ -306,7 +282,7 @@ function confirmar(l,res){
   return g;
 }
 const pendientes=l=>Object.values(l.items).filter(v=>v.dirty).length;
-return {CLAVE,MAX_VALOR,vacio,norm,editar,borrar,vivos,fusionar,confirmar,pendientes,resolver,igual};
+return {CLAVE,MAX_VALOR,vacio,norm,editar,borrar,vivos,fusionar,confirmar,pendientes,igual};
 })();
 </script>
 <script id="enc-core">
@@ -3007,7 +2983,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.118</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.119</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -3020,7 +2996,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="mdbanner" id="hs-nomods" hidden><span>No tienes ningún módulo activado, así que no hay criaturas ni conjuros. Empieza por el contenido libre:</span><button type="button" class="btn primary" data-act="mdtoggle" data-id="srd521">Activar SRD 5.2.1</button><a href="#modulos">Ver todos los módulos</a></div>
   <div class="hoy" id="hs-hoy" hidden></div>
   <div class="hoy" id="hs-cambios" hidden></div>
-  <div class="campchiprow"><h2>¿Qué hacemos hoy?</h2><button type="button" class="campchip" data-act="campopen"><span class="cl">Campaña</span> <b class="noi18n" id="hs-campname"></b> <span class="cw" id="hs-campwarn" hidden></span> <span aria-hidden="true">▾</span></button></div>
+  <div class="campchiprow"><h2>¿Qué hacemos hoy?</h2><button type="button" class="campchip" data-act="campopen"><span class="cl">Campaña</span> <b class="noi18n" id="hs-campname"></b> <span aria-hidden="true">▾</span></button></div>
   <nav class="bqs4" aria-label="Secciones principales">
     <div class="bq" data-blk="campana"><a class="bqh" href="#campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg><span class="bqn">Campaña</span><span class="bqs" id="hs-t-camp"></span><span class="bqd">Notas, encuentros, combate y ventana de mesa.</span></a><div class="bql" id="bql-camp"><a class="bqc" href="#combate">Combate</a><a class="bqc" href="#mesa">Ventana de mesa</a><a class="bqc" href="#campana/sesion">Sesiones</a><a class="bqc" href="#campana/encuentros">Encuentros</a></div></div>
     <div class="bq" data-blk="personajes"><a class="bqh" href="#personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg><span class="bqn">Personajes</span><span class="bqs" id="hs-t-pj"></span><span class="bqd">Fichas, creador de personajes y jugadores.</span></a><div class="bql" id="bql-pj"></div></div>
@@ -3038,7 +3014,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
     <a class="ucard" id="hs-rvli" href="#revision"><span class="un">Revisión</span><span class="us" id="hs-rv"></span><span class="ud">Importado pendiente de comprobar.</span></a>
   </div>
   <div class="ugrid" aria-label="Ajustes">
-    <button class="ucard" type="button" data-act="campopen"><span class="un">Campañas</span><span class="us" id="hs-camps"></span><span class="ud">Cambiar de campaña, crear otras y resolver conflictos de sincronización.</span></button>
+    <button class="ucard" type="button" data-act="campopen"><span class="un">Campañas</span><span class="us" id="hs-camps"></span><span class="ud">Cambiar de campaña y crear otras.</span></button>
     <button class="ucard" type="button" data-act="pfopen"><span class="un">Preferencias</span><span class="ud">Estilo, tema, vista, unidades y PIN.</span></button>
     <button class="ucard" type="button" data-act="audopen"><span class="un">Audio</span><span class="ud">Enlaces de audio para la mesa.</span></button>
     <button class="ucard" type="button" data-act="acopen"><span class="un">Cuenta y copias</span><span class="ud">Sincronización y copia de seguridad.</span></button>
@@ -3061,7 +3037,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 </section>
 
 <section class="vpage" id="view-campana" hidden>
-  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
+  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar y crear"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div id="cp-midiario" class="pcsub" hidden></div>
   <div class="cpgrid">
@@ -3215,6 +3191,9 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.119 <span>25 nov 2026</span></h3><ul>
+      <li><b>Un solo estilo: «Limpio».</b> Los colores y adornos de Cuaderno con una sola tipografía, escala corta y títulos rectos. Se quitan los demás estilos.</li>
+      <li><b>Manda siempre la cuenta.</b> Con internet todo se guarda en Supabase; sin conexión se guarda en local y se sube en cuanto vuelve. Se acaban los conflictos de datos y sus pantallas.</li></ul></li>
     <li><h3>v1.118 <span>25 nov 2026</span></h3><ul>
       <li><b>Reloj de campaña (Harptos).</b> Fecha y hora de la partida con el calendario de los Reinos Olvidados: descansos (+1 h y +8 h), viajes, días de cada sesión, aviso del siguiente descanso largo y clima según la estación.</li>
       <li><b>Diario del personaje.</b> Capítulos de su vida, solo para su jugador y el máster; nace con el trasfondo y el lugar de origen.</li>
@@ -3670,7 +3649,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 </section>
 
 <section class="vpage" id="view-encuentros" hidden>
-  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
+  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar y crear"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="epgrid">
     <aside class="epside"><div class="bfilters"><button type="button" class="btn primary" data-act="encnew">+ Nuevo encuentro</button></div><ul id="ep-list" class="eplist"></ul></aside>
@@ -3679,7 +3658,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 </section>
 
 <section class="vpage" id="view-jugadores" hidden>
-  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
+  <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar y crear"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
   <div class="vhead"><h2>Jugadores</h2><span class="pcsub" id="vp-count"></span>
     <div class="inline" style="margin-left:auto">
@@ -4042,7 +4021,6 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
       <div class="acpane" data-pane="me" hidden>
         <p style="margin:0">Has entrado como <b id="ac-user"></b> <span class="pcsub" id="ac-via"></span></p>
         <p class="pcsub" id="ac-sync" style="margin:0"></p>
-        <div class="scconf" id="sp-vc"></div>
         <p class="hint" style="display:block;margin:0">Tus personajes, criaturas, encuentros, tablas, módulos y el combate en curso se guardan en tu cuenta y te siguen a cualquier dispositivo donde entres.</p>
         <div class="inline"><button type="button" class="btn" data-act="acapis" id="ac-apis-btn" hidden>Claves de APIs</button><button type="button" class="btn" data-act="pfopen"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Preferencias</button><button type="button" class="btn" data-act="acsync">Sincronizar ahora</button><button type="button" class="btn" data-act="acgo" data-to="newpass">Cambiar contraseña</button><button type="button" class="btn danger" data-act="acout">Cerrar sesión</button></div>
       </div>
@@ -4135,8 +4113,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
       <div class="scrow" id="camp-sc"></div>
       <div class="scremote" id="camp-remote"></div>
       <div class="scconf" id="camp-vc"></div>
-      <div class="scconf" id="camp-conf"></div>
-      <div class="scremote" id="camp-inv"></div>
+            <div class="scremote" id="camp-inv"></div>
       <form class="inline" id="camp-join" hidden><input class="txt noi18n" id="camp-code" maxlength="20" autocomplete="off" aria-label="Código de invitación" placeholder="Código de invitación" style="flex:1 1 200px"><button class="btn" type="submit">Unirme con un código</button></form>
       <p class="hint" id="camp-first" style="display:block;margin:0" hidden><b>Aún no tienes ninguna campaña.</b> Empieza creando la primera: dale un nombre y pulsa «Crear campaña».</p>
       <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
@@ -7403,14 +7380,7 @@ function extraAct(act,b,c,e){
     case 'scinv':scInvCrear();break;
     case 'scinvcopia':{const c=b.dataset.c;try{navigator.clipboard.writeText(c).then(()=>toast(T('Código copiado')),()=>toast(c));}catch{toast(c);}break;}
     case 'scinvdel':{SB.from('invitaciones_campana').delete().eq('codigo',b.dataset.c).then(()=>scInvCarga());break;}
-    case 'scconf':SC.confOpen=!SC.confOpen;scConfPinta();break;
-    case 'scres':scResolver(b.dataset.k,b.dataset.e);break;
-    case 'spres':spResolver(b.dataset.k,b.dataset.e);break;
-    case 'sprec':spRecuperar(+b.dataset.i);break;
-    case 'spdesc':SP.l.conflictos.splice(+b.dataset.i,1);spSave();spVcPinta();break;
     case 'scforzar':scForzar(b.dataset.d);break;
-    case 'screc':{const i=+b.dataset.i;if(scConfRecuperar(i)){toast(T('Versión recuperada; se subirá en la próxima sincronización'));scConfPinta();scRun(false);}break;}
-    case 'scdesc':{const i=+b.dataset.i;if(SC.l.conflictos[i]){SC.l.conflictos.splice(i,1);scSave();scConfPinta();}break;}
     case 'campgo':if(Store.campaigns.select(b.dataset.id))location.reload();break;
     case 'campdel':{const C=Store.campaigns,id=b.dataset.id,c=C.list().find(x=>x.id===id);if(!c)break;
       const rid=C.remote(id),propia=!!rid&&C.rol(id)!=='jugador'&&!!SB_USER;
@@ -7515,9 +7485,7 @@ function renderHome(){
        else if(hoy)html='<b>'+esc(T('Hoy toca'))+'</b><span class="pcsub noi18n">'+esc(cpName(hoy))+'</span><button type="button" class="btn primary" data-act="seshoy">'+esc(T('Iniciar la de hoy'))+'</button>';}
    }catch{}
    h.innerHTML=html;h.hidden=!html;}
-  try{const nAb=(SC&&SC.l&&SC.l.abiertos||[]).length,w=$('#hs-campwarn');$('#hs-campname').textContent=Store.campaigns.activeName()||T('Sin campaña');
-    w.textContent=nAb?'⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver'):'';w.hidden=!nAb;$('#hs-camps').textContent=nAb?'⚠ '+nAb:'';
-    $('.campchip').classList.toggle('alerta',!!nAb);}catch{}
+  try{$('#hs-campname').textContent=Store.campaigns.activeName()||T('Sin campaña');$('#hs-camps').textContent='';}catch{}
   {const c=Store.campaigns.activeName();$('#hs-t-camp').textContent=(c?c+' · ':'')+(state.active?`combate en curso, ronda ${state.round}`:'sin combate en curso');}
   $('#hs-t-pj').textContent=PARTY.length?`${PARTY.length} personaje${PARTY.length>1?'s':''} en el grupo`:'Sin personajes en el grupo';
   {const n=COMP_SRD||!modOn('srd521')?CM_TABS.reduce((s,[k])=>s+compList(k).length,0):0;$('#hs-t-comp').textContent=esJug()?`${SPELL_LIST.length} conjuros y las reglas`:allBest().length||SPELL_LIST.length?`${allBest().length} criaturas · ${SPELL_LIST.length} conjuros${n?` · ${n} más`:''}`:modOn('srd521')?'Se carga al abrirlo':'Sin módulos activos';}
@@ -8707,8 +8675,7 @@ function cpRenderTabs(sel,q){
   const seg=gs.length>1?'<div class="cpseg" role="group" aria-label="'+esc(T('Grupos de la campaña'))+'">'+gs.map(([g,ts])=>`<a class="cpsg" href="#campana/${ts[0][0]}"${g===cur[0]?' aria-current="true"':''}>${T(g)}</a>`).join('')+'</div>':'';
   const tabs=cur[1].length>1?'<div class="cpt" role="tablist">'+cur[1].map(tab).join('')+'</div>':'';
   document.querySelectorAll('[data-cptabs]').forEach(n=>{n.innerHTML=seg+tabs;});
-  const nAb=(()=>{try{return (SC&&SC.l&&SC.l.abiertos||[]).length}catch{return 0}})();
-  document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=(Store.campaigns.activeName()||'')+' ▾'+(nAb?'  ⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver'):'');n.classList.toggle('alerta',!!nAb);});
+  document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=(Store.campaigns.activeName()||'')+' ▾';});
 }
 function cpMiDiario(){
   const b=$('#cp-midiario');if(!b)return;
@@ -9843,7 +9810,7 @@ async function sbInit(){
    La copia local manda mientras no hay conexión; con conexión se funde con la de la cuenta (ver Sincro). */
 const SCKEY='camp-sync-v1';
 var SC={l:Sincro.vacio(),since:null,busy:false,msg:'',cargada:false};
-function scLoad(){SC.cargada=true;try{const o=JSON.parse(Store.get(SCKEY)||'null');if(o){SC.l=Sincro.norm(o.l);SC.l.abiertos=[];SC.since=null;}}catch{}}   // ya no hay conflictos manuales: la cuenta manda y se relee todo una vez
+function scLoad(){SC.cargada=true;try{const o=JSON.parse(Store.get(SCKEY)||'null');if(o){SC.l=Sincro.norm(o.l);SC.since=null;}}catch{}}   // la cuenta manda: se relee todo una vez
 function scSave(){try{Store.set(SCKEY,JSON.stringify({l:SC.l,since:SC.since}));}catch{}}
 const scClone=v=>JSON.parse(JSON.stringify(v));
 /* Lo que el jugador puede ver de una sesión que es solo del máster: el resumen y las escenas marcadas como visibles. Nada más sale de su dispositivo. */
@@ -10043,13 +10010,13 @@ async function mdbBajar(){
     if(!MDB.avisado){MDB.avisado=true;toast(T('No se han podido bajar tus módulos de la cuenta. Falta ejecutar supabase/modulos_usuario.sql en Supabase o no hay conexión.')+' '+(e&&e.message||''),9000);}
   }
 }
-function scEstado(m){SC.msg=m;const e=$('#camp-sc');if(e)e.textContent=m;scConfPinta();}
+function scEstado(m){SC.msg=m;const e=$('#camp-sc');if(e)e.textContent=m;scVcPinta();}
 async function scRun(manual){
   if(SC.busy||!SB||!SB_USER||Store.campaigns.vista())return;   // en «ver como jugador» no se sube ni se baja nada
   const cid=Store.campaigns.remote(Store.campaigns.active());if(!cid)return;
   if(typeof navigator!=='undefined'&&navigator.onLine===false){scEstado(T('Sin conexión: los cambios se guardan aquí y se subirán al volver'));return;}
   SC.busy=true;if(!SC.cargada)scLoad();
-  const res={bajados:0,subidas:0,conflictos:0,rechazadas:0};
+  const res={bajados:0,subidas:0,rechazadas:0};
   try{
     scDetect();
     let completa=false;                                   // tras un rechazo se vuelve a leer todo: la fila en disputa puede no estar en la lectura incremental
@@ -10062,9 +10029,9 @@ async function scRun(manual){
       for(const r of data){const ms=Date.parse(r.actualizado)||0;remoto[r.clave]={valor:r.valor,version:r.version,actualizado:ms,borrado:!!r.borrado};if(ms>=maxMs){maxMs=ms;max=r.actualizado;}}
       const f=Sincro.fusionar(SC.l,remoto,Date.now(),{incremental:(!!SC.since&&!completa)||Store.campaigns.rol(Store.campaigns.active())==='jugador',manual:false});
       completa=false;
-      SC.l=f.l;SC.since=max;res.bajados+=f.bajados.length+f.borrados.length;res.conflictos+=f.conflictos.length;res.rechazadas+=f.rechazadas.length;
+      SC.l=f.l;SC.since=max;res.bajados+=f.bajados.length+f.borrados.length;res.rechazadas+=f.rechazadas.length;
       scApply(f);
-      if(f.bajados.length){   // lo bajado se guarda tal como queda en este dispositivo (ya normalizado): así no se confunde con una edición propia y no nacen conflictos falsos
+      if(f.bajados.length){   // lo bajado se guarda tal como queda en este dispositivo (ya normalizado): así no se confunde con una edición propia
         try{const snap=scSnapshot();for(const k of f.bajados){const it=SC.l.items[k];if(it&&!it.dirty&&snap[k]!==undefined)it.valor=scClone(snap[k]);}}catch{}}
       let rechazo=false;
       for(const u of f.subir){const w=await scEscribir(cid,u);if(w.ok){SC.l=Sincro.confirmar(SC.l,{clave:u.clave,version:w.version});res.subidas++;}else rechazo=true;}
@@ -10074,12 +10041,8 @@ async function scRun(manual){
     }
     scSave();
     const hora=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
-    const nAb=(SC.l.abiertos||[]).length;
-    if(nAb&&nAb>(SC.abAntes||0))toast(nAb+' '+T(nAb===1?'conflicto por resolver: no se ha pisado nada. Ábrelo en Campañas':'conflictos por resolver: no se ha pisado nada. Ábrelos en Campañas'),7000);
-    SC.abAntes=nAb;
-    scEstado((nAb?'⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver')+' · ':'')+T('Sincronizada')+' '+hora+(SC.l.conflictos.length?' · '+SC.l.conflictos.length+' '+T('copias de conflicto guardadas'):''));
-    if(res.conflictos)toast(res.conflictos+' '+T('conflictos resueltos: la versión más reciente gana y la otra queda guardada'),6000);
-    else if(manual)toast(T('Sincronizada')+': '+res.subidas+' ↑ · '+res.bajados+' ↓');
+    scEstado(T('Sincronizada')+' '+hora);
+    if(manual)toast(T('Sincronizada')+': '+res.subidas+' ↑ · '+res.bajados+' ↓');
     try{if(Store.campaigns.rol()==='jugador')await mcBajar(cid);else await mcPublicar(cid);}catch{}   // contenido de los módulos activos de la campaña
   }catch(err){scEstado(T('No se ha podido sincronizar')+': '+(err&&err.message||err));scSave();}
   finally{SC.busy=false;}
@@ -10116,37 +10079,17 @@ async function scRemotas(auto){
   box.innerHTML=libres.length?'<span class="scrow">'+esc(T('Campañas de tu cuenta que aún no están aquí'))+'</span>'+libres.map(c=>'<div class="scrow"><b class="noi18n">'+esc(c.nombre)+'</b><button type="button" class="btn sm" data-act="sctraer" data-id="'+esc(c.id)+'" data-n="'+esc(c.nombre)+'" data-rol="'+esc(c.rol)+'">'+esc(T('Traer'))+'</button></div>').join(''):'';
   const hay=Store.campaigns.remote(Store.campaigns.active());
   $('#camp-sc').innerHTML=hay?esc(SC.msg||'')+' <button type="button" class="btn sm ghost" data-act="scahora">'+esc(T('Sincronizar ahora'))+'</button>':'';
-  if(!SC.cargada)scLoad();scConfPinta();scInvCarga();
+  if(!SC.cargada)scLoad();scVcPinta();scInvCarga();
 }
-/* ---- copias de conflicto: lo que perdió cuando dos dispositivos editaron lo mismo; se puede recuperar o descartar ---- */
-const SC_TIPO={nota:'Nota',enc:'Encuentro',pj:'Jugador',fch:'Personaje',dia:'Diario',grp:'Grupo',cfg:'Permisos'};
-function scConfNombre(c){const v=c.valor,k=String(c.clave),tp=k.slice(0,k.indexOf(':'));
-  const n=v&&typeof v==='object'?(v.nombre||v.n||v.titulo||''):'';return T(SC_TIPO[tp]||'Elemento')+(n?' · '+n:'');}
-/* ---------- control de versiones (escritorio): qué difiere de la cuenta, conflictos abiertos y subir/descargar a la fuerza ---------- */
+/* ---------- control de versiones (escritorio): qué difiere de la cuenta y subir/descargar a la fuerza ---------- */
 const scVcOn=()=>!!(SB&&SB_USER&&Store.campaigns.remote(Store.campaigns.active()));
 function scVcHTML(){
-  if(!scVcOn())return '';
-  const l=SC.l||Sincro.vacio(),ab=l.abiertos||[],pen=Sincro.pendientes(l);
-  if(WEB_NUBE&&!ab.length)return '';   // en la web no se enseña nada de sincronizar mientras no haya un conflicto
-  let h='<div class="scrow"><b>'+esc(T('Control de cambios'))+'</b><span class="pcsub">'+esc(pen?pen+' '+T(pen===1?'cambio sin subir':'cambios sin subir'):T('Todo subido'))+(ab.length?' · '+ab.length+' '+T(ab.length===1?'conflicto por resolver':'conflictos por resolver'):'')+'</span></div>';
-  if(ab.length){
-    h+='<p class="hint" style="display:block;margin:0">'+esc(T('Estos elementos cambiaron aquí y en la cuenta. No se ha pisado nada: elige cuál es la correcta. La que elijas pasa a ser la versión de la cuenta y los demás dispositivos la recibirán al sincronizar; la otra se guarda como copia recuperable.'))+'</p>';
-    h+=ab.map(a=>{const it=l.items[a.clave]||{};
-      return '<div class="scrow"><span class="noi18n">'+esc(scConfNombre({clave:a.clave,valor:it.valor}))+'</span> <span class="pcsub">'+esc(T('Aquí'))+': '+esc(it.mod?new Date(it.mod).toLocaleString():'—')+(it.del?' ('+esc(T('borrado'))+')':'')+' · '+esc(T('Cuenta'))+': '+esc(a.remoto.actualizado?new Date(a.remoto.actualizado).toLocaleString():'—')+(a.remoto.borrado?' ('+esc(T('borrado'))+')':'')+'</span> '
-       +'<button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="mio">'+esc(T('La de este dispositivo es la correcta'))+'</button><button type="button" class="btn sm" data-act="scres" data-k="'+esc(a.clave)+'" data-e="nube">'+esc(T('La de la cuenta es la correcta'))+'</button></div>';}).join('');
-  }
-  if(WEB_NUBE)return h;   // en la web manda la cuenta: solo se ven los conflictos, sin subir/descargar a la fuerza
-  h+='<div class="scrow"><button type="button" class="btn sm" data-act="scforzar" data-d="subir">'+esc(T('Subir todo lo de este dispositivo'))+'</button><button type="button" class="btn sm" data-act="scforzar" data-d="bajar">'+esc(T('Descargar todo lo de la cuenta'))+'</button></div>';
-  return h;
+  if(!scVcOn()||WEB_NUBE)return '';   // en la web manda la cuenta: no se enseña nada de sincronizar
+  const pen=Sincro.pendientes(SC.l||Sincro.vacio());
+  return '<div class="scrow"><b>'+esc(T('Control de cambios'))+'</b><span class="pcsub">'+esc(pen?pen+' '+T(pen===1?'cambio sin subir':'cambios sin subir'):T('Todo subido'))+'</span></div>'
+   +'<div class="scrow"><button type="button" class="btn sm" data-act="scforzar" data-d="subir">'+esc(T('Subir todo lo de este dispositivo'))+'</button><button type="button" class="btn sm" data-act="scforzar" data-d="bajar">'+esc(T('Descargar todo lo de la cuenta'))+'</button></div>';
 }
-function scVcPinta(){const b=$('#camp-vc');if(!b)return;let p='';try{p=spVcHTML();}catch{}   // SP se declara más abajo: antes de que exista no hay nada que enseñar
-  b.innerHTML=p+scVcHTML();}
-function scResolver(k,e){
-  const r=Sincro.resolver(SC.l,k,e,Date.now());if(!r.ok){toast(T('Ese conflicto ya no existe'));scVcPinta();return;}
-  SC.l=r.l;if(r.aplicar.bajados.length||r.aplicar.borrados.length)scApply(r.aplicar);
-  scSave();scConfPinta();toast(T(e==='mio'?'La de este dispositivo pasa a ser la correcta: se sube a la cuenta y los demás dispositivos la recibirán':'La de la cuenta pasa a ser la correcta; tu versión queda como copia recuperable'),5000);
-  scRun(false);
-}
+function scVcPinta(){const b=$('#camp-vc');if(b)b.innerHTML=scVcHTML();}
 /* Compara este dispositivo con la cuenta (lectura completa) y, tras confirmar con las cifras delante, deja uno igual al otro. */
 async function scForzar(dir){
   if(SC.busy||!SB||!SB_USER)return;const cid=Store.campaigns.remote(Store.campaigns.active());if(!cid)return;
@@ -10165,40 +10108,22 @@ async function scForzar(dir){
       +'· '+(sub?soloL.length+' '+T('elementos nuevos se subirán'):soloN.length+' '+T('elementos nuevos se descargarán'))+'\n'
       +'· '+dist.length+' '+T('elementos distintos se sustituirán')+'\n'
       +'· '+(sub?soloN.length+' '+T('de la cuenta se borrarán'):soloL.length+' '+T('de este dispositivo desaparecerán'))+'\n\n'
-      +(sub?T('Lo que haya ahora en la cuenta se sustituye.'):T('Lo de este dispositivo que se pierda se guarda como copias recuperables.')+(pen?'\n'+T('Atención: hay cambios sin subir que se perderían de aquí.'):''))+'\n\n'+T('¿Continuar?');
+      +(sub?T('Lo que haya ahora en la cuenta se sustituye.'):T('Lo de este dispositivo que no esté en la cuenta se perderá.')+(pen?'\n'+T('Atención: hay cambios sin subir que se perderían de aquí.'):''))+'\n\n'+T('¿Continuar?');
     if(!(await Dlg.si(txt,{peligro:true,aceptar:T(dir==='subir'?'Subir todo':'Descargar todo')}))){SC.busy=false;return;}
-    const now=Date.now();
     if(sub){
       for(const k of [...soloL,...dist]){const w=await scEscribir(cid,{clave:k,valor:snap[k],borrado:false,base:filas[k]||0});if(!w.ok)throw new Error(T('Otro dispositivo cambió «')+k+T('»: vuelve a intentarlo'));}
       for(const k of soloN){const w=await scEscribir(cid,{clave:k,valor:null,borrado:true,base:filas[k]});if(!w.ok)throw new Error(T('Otro dispositivo cambió «')+k+T('»: vuelve a intentarlo'));}
     }else{
-      const conf=SC.l.conflictos.slice();
-      for(const k of [...dist,...soloL])conf.push({clave:k,valor:scClone(snap[k]),motivo:'descarga_forzada',t:now});
-      SC.l={...Sincro.vacio(),conflictos:conf.slice(-50)};
+      SC.l=Sincro.vacio();
       CP.length=0;cpDirty=false;try{Store.set(CPKEY,Notas.guardar(CP));}catch{}
       PRESETS=PRESETS.filter(p=>p&&p.ex);savePresets();PARTY=PARTY.filter(p=>p&&p.ex);saveParty();
       if(!pjCargado)pjLoad();PJC.splice(0,PJC.length);pjGuardar();GRP=[];grpSave();try{Store.remove(PJCFG);Store.remove(HBKEY);}catch{}
     }
-    if(sub)SC.l={...Sincro.vacio(),conflictos:SC.l.conflictos};
+    if(sub)SC.l=Sincro.vacio();
     SC.since=null;scSave();ok=true;
   }catch(err){toast(T('No se ha podido completar')+': '+(err&&err.message||err),7000);}
   finally{SC.busy=false;}
   if(ok){await scRun(true);location.reload();}
-}
-function scConfHTML(){
-  const l=SC.l&&SC.l.conflictos||[];if(!l.length)return '';
-  if(!SC.confOpen)return '<button type="button" class="btn sm ghost" data-act="scconf">'+esc(T('Ver copias de conflicto'))+' ('+l.length+')</button>';
-  return '<div class="scrow"><b>'+esc(T('Copias de conflicto'))+'</b> <button type="button" class="btn sm ghost" data-act="scconf">'+esc(T('Ocultar'))+'</button></div>'
-   +'<p class="hint" style="display:block;margin:0">'+esc(T('Cuando dos dispositivos cambian lo mismo, gana lo más reciente y la otra versión queda aquí. Puedes recuperarla (sustituye a la actual) o descartarla.'))+'</p>'
-   +l.map((c,i)=>'<div class="scrow"><span class="noi18n">'+esc(scConfNombre(c))+'</span> <span class="pcsub">'+esc(T(c.motivo==='pisada_local'?'Tu versión, sustituida por otro dispositivo':c.motivo==='descarga_forzada'?'Tu versión, sustituida al descargar de la cuenta':c.motivo==='descartada_local'?'Tu versión, descartada al elegir la de la cuenta':'Versión de otro dispositivo, sustituida por la tuya'))+' · '+esc(new Date(c.t).toLocaleString())+'</span> '
-     +'<button type="button" class="btn sm" data-act="screc" data-i="'+i+'">'+esc(T('Recuperar'))+'</button><button type="button" class="btn sm ghost" data-act="scdesc" data-i="'+i+'">'+esc(T('Descartar'))+'</button></div>').reverse().join('');
-}
-function scConfPinta(){const b=$('#camp-conf');if(b)b.innerHTML=scConfHTML();scVcPinta();}
-function scConfRecuperar(i){
-  const c=SC.l.conflictos[i];if(!c||c.valor==null)return false;
-  const r=Sincro.editar(SC.l,c.clave,scClone(c.valor),Date.now());if(!r.ok){toast(T('No se puede recuperar'));return false;}
-  SC.l=r.l;scApply({bajados:[c.clave],borrados:[]});
-  SC.l.conflictos.splice(i,1);scSave();return true;
 }
 /* ---- invitaciones: el máster da un código (caduca a los 7 días, 10 usos) y el jugador lo canjea en «Unirme con un código» ---- */
 const SC_INV={l:[]};
@@ -10312,11 +10237,11 @@ async function acAct(act,b){
 /* ---------- datos personales con control de versiones ----------
    Cada bloque (bestiario propio, tablas, módulos, preferencias, grupo, encuentros, fichas libres y combate) es una fila de datos_usuario
    con versión del servidor. Se usa el mismo motor que la campaña: lo que no se ha tocado aquí sigue a la cuenta, lo tocado aquí se sube si
-   la cuenta no se movió, y si se movieron los dos hay un conflicto que no pisa nada y se resuelve a mano. Necesita supabase/versiones.sql;
+   la cuenta no se movió, y si se movieron los dos manda la cuenta. Necesita supabase/versiones.sql;
    sin él se sigue con el sistema antiguo. */
 const SPKEY='combat-sync-v2';
 const SP_NOM={tracker:'Combate en curso',bestiario:'Bestiario propio',grupo:'Grupo de personajes',encuentros:'Encuentros guardados',tablas:'Tablas',modulos:'Módulos',preferencias:'Preferencias',fichas:'Fichas libres'};
-const SP={l:Sincro.vacio(),base:false,v2:null,busy:false,disp:{},abAntes:0};
+const SP={l:Sincro.vacio(),base:false,v2:null,busy:false,disp:{}};
 const spDisp=()=>window.__AppShell?'escritorio':'web';
 function spLoad(){try{const o=JSON.parse(Store.root.get(SPKEY)||'null');SP.l=Sincro.norm(o&&o.l);SP.base=!!(o&&o.base);SP.disp=(o&&o.disp&&typeof o.disp==='object')?o.disp:{};}catch{SP.l=Sincro.vacio();SP.base=false;SP.disp={};}}
 function spSave(){try{Store.root.set(SPKEY,JSON.stringify({l:SP.l,base:SP.base,disp:SP.disp}));}catch{}}
@@ -10335,29 +10260,6 @@ function spValorSeguro(k,valor){
     for(const m of loc.list){const i=out.list.findIndex(x=>x&&x.id===m.id);if(i<0)out.list.push(m);else if(modPeso(m)>modPeso(out.list[i]))out.list[i]=m;}
     return out;}catch{return valor;}
 }
-/* Dos dispositivos cambiaron los módulos a la vez (p. ej. uno añadido en la web con el escritorio abierto): no hay nada que elegir, se unen.
-   Cada módulo se queda con el más completo y, dentro de uno, gana lo revisado y no se pierde lo que solo tiene uno de los dos. */
-function spUnirModulos(a,b){
-  const A=a&&Array.isArray(a.list)?a:{list:[],on:{}},B=b&&Array.isArray(b.list)?b:{list:[],on:{}};
-  const out={...A,...B,on:{...(A.on||{}),...(B.on||{})},list:[]};
-  const ids=[...new Set([...A.list,...B.list].map(m=>m&&m.id).filter(Boolean))];
-  for(const id of ids){
-    const x=A.list.find(m=>m&&m.id===id),y=B.list.find(m=>m&&m.id===id);
-    if(!x||!y){out.list.push(x||y);continue;}
-    const [pesado,otro]=modPeso(y)>=modPeso(x)?[y,x]:[x,y];
-    out.list.push({...otro,...modFusionar(otro,pesado)});
-  }
-  return out;
-}
-function spAutoModulos(){
-  const ab=SP.l.abiertos.find(x=>x.clave==='modulos'),it=SP.l.items.modulos;if(!ab||!it)return false;
-  const m=spUnirModulos(ab.remoto.valor,it.valor),r=Sincro.resolver(SP.l,'modulos','mio',Date.now());if(!r.ok)return false;
-  SP.l=r.l;SP.l.items.modulos.valor=m;SP.l.items.modulos.mod=Date.now();
-  try{Store.root.set(MKEY,JSON.stringify(m));MODS=null;lastRaw.modulos=lsRaw(MKEY);}catch{return false;}
-  try{refreshMods();if(location.hash==='#modulos')renderMods();}catch{}
-  toast(T('Módulos unidos: se habían cambiado en dos dispositivos a la vez y no se ha perdido nada'),6000);
-  return true;
-}
 function spSnapshot(){const m={};for(const [cl,k] of Object.entries(SYNC_KEYS)){const raw=lsRaw(k);if(raw==null)continue;try{m[cl]=JSON.parse(raw);}catch{}}return m;}
 async function spEscribir(u){
   const fila={valor:u.valor,dispositivo:spDisp()};
@@ -10370,7 +10272,7 @@ async function spEscribir(u){
   if(error)throw error;
   return data&&data.length?{ok:true,version:data[0].version}:{ok:false};   // 0 filas = otro dispositivo se adelantó
 }
-/* modo 'login': lee todo, trae lo nuevo de la cuenta y recarga la página si cambió algo. Resto de modos: solo sube lo tocado aquí y detecta conflictos
+/* modo 'login': lee todo, trae lo nuevo de la cuenta y recarga la página si cambió algo. Resto de modos: solo sube lo tocado aquí
    (nunca cambia datos que la página ya tiene en memoria, para no pisar lo que se está editando). */
 async function spRun(modo){
   if(SP.busy||!SB_USER)return;
@@ -10390,22 +10292,17 @@ async function spRun(modo){
         for(const [cl,x] of Object.entries(remoto)){SP.l.items[cl]={valor:x.valor,bv:x.version,mod:x.actualizado,dirty:false,del:false};cambiadas.push(cl);}
         SP.base=true;
       }
-      if(modo!=='login')remoto=Object.fromEntries(Object.entries(remoto).filter(([k])=>{const it=SP.l.items[k];return it&&(it.dirty||SP.l.abiertos.some(a=>a.clave===k));}));
-      const f=Sincro.fusionar(SP.l,remoto,Date.now(),{manual:true,incremental:modo!=='login'});
+      if(modo!=='login')remoto=Object.fromEntries(Object.entries(remoto).filter(([k])=>{const it=SP.l.items[k];return it&&it.dirty;}));
+      const f=Sincro.fusionar(SP.l,remoto,Date.now(),{incremental:modo!=='login'});
       SP.l=f.l;
-      let auto=false;if(f.abiertos.includes('modulos')&&spAutoModulos())auto=true;
       if(modo==='login')for(const k of f.bajados){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(spValorSeguro(k,SP.l.items[k].valor)));if(!cambiadas.includes(k))cambiadas.push(k);}catch{}}
       let rechazo=false;
       for(const u of f.subir){const w=await spEscribir(u);if(w.ok){SP.l=Sincro.confirmar(SP.l,{clave:u.clave,version:w.version});SP.disp[u.clave]=spDisp();}else rechazo=true;}
       spSave();
-      if(!rechazo&&!auto)break;
+      if(!rechazo)break;
     }
     spSave();
-    const nAb=SP.l.abiertos.length;
-    if(nAb&&nAb>SP.abAntes)toast(nAb+' '+T(nAb===1?'conflicto en tus datos personales: no se ha pisado nada. Ábrelo en tu cuenta':'conflictos en tus datos personales: no se ha pisado nada. Ábrelos en tu cuenta'),7000);
-    SP.abAntes=nAb;
-    acStatus(nAb?'⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver'):'Guardado en tu cuenta a las '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
-    spVcPinta();
+    acStatus('Guardado en tu cuenta a las '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
   }catch(err){acStatus('No se ha podido sincronizar tus datos: '+(err&&err.message||err));}
   finally{SP.busy=false;}
   if(cambiadas.length){let otra=false;try{otra=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}
@@ -10413,33 +10310,6 @@ async function spRun(modo){
 }
 const spNombre=k=>T(SP_NOM[k]||'Datos');
 const spCuando=t=>t?new Date(t).toLocaleString():'—';
-function spVcHTML(){
-  if(!SB_USER||!SP.v2)return '';
-  const ab=SP.l.abiertos||[],cf=SP.l.conflictos||[];if(!ab.length&&!cf.length)return '';
-  let h='<div class="scrow"><b>'+esc(T('Datos personales'))+'</b>'+(ab.length?'<span class="pcsub">'+ab.length+' '+esc(T(ab.length===1?'conflicto por resolver':'conflictos por resolver'))+'</span>':'')+'</div>';
-  if(ab.length){
-    h+='<p class="hint" style="display:block;margin:0">'+esc(T('Estos datos cambiaron aquí y en la cuenta. No se ha pisado nada: elige cuál es la correcta. La que elijas pasa a ser la versión de la cuenta y los demás dispositivos la recibirán; la otra se guarda como copia recuperable.'))+'</p>';
-    h+=ab.map(a=>{const it=SP.l.items[a.clave]||{};
-      return '<div class="scrow"><span class="noi18n">'+esc(spNombre(a.clave))+'</span> <span class="pcsub">'+esc(T('Aquí'))+': '+esc(spCuando(it.mod))+' · '+esc(T('Cuenta'))+': '+esc(spCuando(a.remoto.actualizado))+(SP.disp[a.clave]?' ('+esc(SP.disp[a.clave])+')':'')+'</span> '
-       +'<button type="button" class="btn sm" data-act="spres" data-k="'+esc(a.clave)+'" data-e="mio">'+esc(T('La de este dispositivo es la correcta'))+'</button><button type="button" class="btn sm" data-act="spres" data-k="'+esc(a.clave)+'" data-e="nube">'+esc(T('La de la cuenta es la correcta'))+'</button></div>';}).join('');
-  }
-  if(cf.length){
-    h+='<div class="scrow"><b>'+esc(T('Copias recuperables'))+'</b></div>'+cf.map((c,i)=>'<div class="scrow"><span class="noi18n">'+esc(spNombre(c.clave))+'</span> <span class="pcsub">'+esc(spCuando(c.t))+'</span> <button type="button" class="btn sm" data-act="sprec" data-i="'+i+'">'+esc(T('Recuperar'))+'</button><button type="button" class="btn sm ghost" data-act="spdesc" data-i="'+i+'">'+esc(T('Descartar'))+'</button></div>').reverse().join('');
-  }
-  return h;
-}
-function spVcPinta(){const b=$('#sp-vc');if(b)b.innerHTML=spVcHTML();scVcPinta();}
-function spResolver(k,e){
-  const r=Sincro.resolver(SP.l,k,e,Date.now());if(!r.ok){toast(T('Ese conflicto ya no existe'));spVcPinta();return;}
-  SP.l=r.l;
-  if(r.aplicar.bajados.length){try{Store.root.set(SYNC_KEYS[k],JSON.stringify(spValorSeguro(k,SP.l.items[k].valor)));}catch{}spSave();location.reload();return;}   // la página recarga con lo de la cuenta
-  spSave();spVcPinta();toast(T('La de este dispositivo pasa a ser la correcta: se sube a la cuenta y los demás dispositivos la recibirán'),5000);spRun('bg');
-}
-function spRecuperar(i){
-  const c=SP.l.conflictos[i];if(!c||c.valor==null)return;
-  const r=Sincro.editar(SP.l,c.clave,scClone(c.valor),Date.now());if(!r.ok)return;
-  SP.l=r.l;SP.l.conflictos.splice(i,1);try{Store.root.set(SYNC_KEYS[c.clave],JSON.stringify(c.valor));}catch{}spSave();location.reload();
-}
 // Sincronización (sistema antiguo, sin versiones; solo si no está aplicado supabase/versiones.sql): una fila por clave de localStorage. Se compara por contenido (no por texto: la base de datos reordena las claves).
 async function syncPull(){
   acStatus('Sincronizando…');
@@ -10482,6 +10352,7 @@ function startSync(){
   syncT=setInterval(()=>{if(!SB_USER||syncBusy)return;if(Object.entries(SYNC_KEYS).some(([cl,k])=>lsRaw(k)!==lastRaw[cl])){syncBusy=true;syncPush().finally(()=>{syncBusy=false;});}},4000);
 }
 addEventListener('visibilitychange',()=>{if(document.hidden&&SB_USER&&!syncBusy)syncPush();});
+addEventListener('online',()=>{if(SB_USER&&!syncBusy)syncPush();});   // al volver internet, lo editado sin conexión se sube ya
 
 /* ---------- catálogo de la comunidad ---------- */
 async function loadCatalog(){

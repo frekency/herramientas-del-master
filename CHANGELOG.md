@@ -4,6 +4,14 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.119.0] - 2026-11-25
+### Cambiado
+- **Un solo estilo visual: «Limpio»** (colores y adornos de Cuaderno con una sola tipografía sans, escala corta y títulos rectos). Se quitan Cuaderno, Libro de reglas, Pantalla del máster, Clásico, Arcano, Taberna y Escritorio, y el selector de estilo.
+- **Sincronización: manda siempre la cuenta (Supabase).** Si algo cambió en la cuenta y en este dispositivo, se queda lo de la cuenta. Sin conexión (app de escritorio) todo se guarda en local y se sube en cuanto vuelve internet.
+
+### Eliminado
+- Los conflictos de datos: el modo manual con elegir «la de este dispositivo / la de la cuenta», las copias de conflicto recuperables, sus avisos y pantallas, y la unión automática de módulos entre dispositivos.
+
 ## [1.118.0] - 2026-11-25
 ### Añadido
 - **Reloj de campaña con el calendario de Harptos** (Reinos Olvidados): fecha de inicio de la campaña, hora del día, estación, descanso corto (+1 h), descanso largo (+8 h), horas o días de viaje y de exploración, y aviso de cuándo se puede hacer el siguiente descanso largo (24 h). Al finalizar una sesión se indican los días que han pasado en el juego. Sortea el clima del día según la estación. Los jugadores ven el reloj; solo el máster lo mueve.

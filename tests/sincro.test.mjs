@@ -1,4 +1,4 @@
-// Motor de sincronización por elemento (index.html, bloque sync-core): subidas, bajadas, conflictos, borrados y convergencia.
+// Motor de sincronización por elemento (index.html, bloque sync-core): subidas, bajadas, borrados y convergencia (si cambian los dos lados manda la cuenta).
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PAGE} from './lib.mjs';
@@ -61,28 +61,23 @@ test('editar elementos distintos en dos dispositivos NO pisa nada (el motivo de 
   a.sync(20);b.sync(21);a.sync(22);
   assert.deepEqual(a.datos(),b.datos());
   assert.deepEqual(a.datos(),{n1:{t:'a editada en el PC'},n2:{t:'b editada en el móvil'}});
-  assert.equal(a.l.conflictos.length+b.l.conflictos.length,0);
 });
 
-test('conflicto en el mismo elemento: gana el más reciente y la perdedora queda guardada',()=>{
+test('cambio en el mismo elemento: manda lo que hay en la cuenta y los dos dispositivos convergen',()=>{
   const srv=servidor(),a=dispositivo(srv,'a'),b=dispositivo(srv,'b');
   a.editar('n',{t:'base'},1);a.sync(2);b.sync(3);
   a.editar('n',{t:'del PC'},10);b.editar('n',{t:'del móvil'},50);
-  a.sync(60);                                                         // el PC sube primero (actualizado del servidor > 50, pero…)
-  b.sync(70);a.sync(80);
+  a.sync(60);b.sync(70);a.sync(80);
   assert.deepEqual(a.datos(),b.datos());
-  const todos=[...a.l.conflictos,...b.l.conflictos].map(c=>c.valor.t);
-  assert.ok(todos.length>=1);
-  const ganador=a.datos().n.t;assert.ok(['del PC','del móvil'].includes(ganador));
-  assert.ok(todos.includes(ganador==='del PC'?'del móvil':'del PC'),'la versión perdedora debe quedar recuperable');
+  assert.equal(a.datos().n.t,'del PC');   // el PC llegó primero a la cuenta; el móvil, que iba sobre la versión vieja, se queda con lo de la cuenta
 });
 
-test('conflicto: el servidor decide la ganadora por «actualizado» frente al mod local',()=>{
+test('si cambian los dos lados nunca se sube lo local sobre lo de la cuenta, aunque sea más reciente',()=>{
   const a=S.editar(S.vacio(),'n',{t:'local'},100).l;
-  const sync=S.fusionar({items:{n:{...a.items.n,bv:1}},conflictos:[]},{n:{valor:{t:'remoto'},version:2,actualizado:50,borrado:false}},200);
-  assert.equal(sync.subir[0].valor.t,'local');assert.equal(sync.subir[0].base,2);assert.equal(sync.l.conflictos[0].valor.t,'remoto');
-  const sync2=S.fusionar({items:{n:{...a.items.n,bv:1}},conflictos:[]},{n:{valor:{t:'remoto'},version:2,actualizado:500,borrado:false}},200);
-  assert.equal(sync2.subir.length,0);assert.equal(sync2.l.items.n.valor.t,'remoto');assert.equal(sync2.l.conflictos[0].valor.t,'local');
+  for(const actualizado of [50,500]){
+    const r=S.fusionar({items:{n:{...a.items.n,bv:1}}},{n:{valor:{t:'remoto'},version:2,actualizado,borrado:false}},200);
+    assert.equal(r.subir.length,0);assert.equal(r.l.items.n.valor.t,'remoto');assert.equal(r.l.items.n.dirty,false);
+  }
 });
 
 test('un borrado se propaga y no resucita',()=>{
@@ -101,19 +96,14 @@ test('borrar algo que nunca se subió no deja rastro; borrar sin conexión se en
   a.editar('m',{t:'y'},4);a.sync(5);a.borrar('m',6);assert.equal(S.pendientes(a.l),1);a.sync(7);assert.equal(srv.filas.m.borrado,true);
 });
 
-test('editar vs. borrado remoto: gana el más reciente y la edición perdida se conserva',()=>{
+test('editar vs. borrado remoto: manda la cuenta',()=>{
   const srv=servidor(),a=dispositivo(srv,'a'),b=dispositivo(srv,'b');
   a.editar('n',{t:'v1'},1);a.sync(2);b.sync(3);
   a.borrar('n',10);a.sync(11);               // el servidor registra el borrado con su reloj
   b.editar('n',{t:'editada tarde'},99999);    // b edita después, sin saber del borrado
   b.sync(100000);a.sync(100001);
   assert.deepEqual(a.datos(),b.datos());
-  assert.deepEqual(b.datos(),{n:{t:'editada tarde'}});
-  const c=dispositivo(srv,'c');c.editar('n',{t:'otra'},1);   // ahora al revés: edición antigua frente a un borrado más reciente
-  const d=dispositivo(srv,'d');d.sync(5);d.editar('n',{t:'antigua'},6);
-  c.sync(7);c.borrar('n',2000);c.sync(2001);d.sync(2002);
-  assert.deepEqual(d.datos(),c.datos());
-  assert.ok([...d.l.conflictos,...c.l.conflictos].some(x=>x.valor&&x.valor.t==='antigua')||d.datos().n!==undefined);
+  assert.deepEqual(b.datos(),{});             // aunque la edición sea más reciente, manda lo que hay en la cuenta: el borrado
 });
 
 test('una escritura rechazada por versión se reintenta tras volver a leer',()=>{
@@ -151,11 +141,11 @@ test('validación: claves inválidas, valores enormes y estado local corrupto',(
   assert.equal(S.editar(S.vacio(),'Mala Clave',{}, 1).error,'clave_invalida');
   assert.equal(S.editar(S.vacio(),'../x',{}, 1).error,'clave_invalida');
   assert.equal(S.editar(S.vacio(),'ok',{t:'x'.repeat(2000000)},1).error,'demasiado_grande');
-  const n=S.norm({items:{'MAL':{valor:1},'bien':{valor:2,bv:'7',dirty:1},'__proto__':{valor:9}},conflictos:[{clave:'x'},{clave:'BAD'},5]});
-  assert.deepEqual(Object.keys(n.items),['bien']);assert.equal(n.items.bien.bv,7);assert.equal(n.conflictos.length,1);
+  const n=S.norm({items:{'MAL':{valor:1},'bien':{valor:2,bv:'7',dirty:1},'__proto__':{valor:9}},conflictos:[{clave:'x'}]});
+  assert.deepEqual(Object.keys(n.items),['bien']);assert.equal(n.items.bien.bv,7);assert.equal(n.conflictos,undefined);
   assert.deepEqual(S.norm(null),S.vacio());assert.deepEqual(S.norm('x'),S.vacio());
   const r=S.fusionar(S.vacio(),{'MAL CLAVE':{valor:1,version:1,actualizado:1}},5);assert.equal(r.bajados.length,0);
-  const grande={items:{g:{valor:{t:'x'.repeat(2000000)},bv:0,mod:1,dirty:true,del:false}},conflictos:[]};
+  const grande={items:{g:{valor:{t:'x'.repeat(2000000)},bv:0,mod:1,dirty:true,del:false}}};
   const rg=S.fusionar(grande,{},5);assert.equal(rg.subir.length,0);assert.equal(rg.rechazadas[0].motivo,'demasiado_grande');
 });
 
@@ -165,19 +155,12 @@ test('no muta el estado que recibe',()=>{
   assert.equal(JSON.stringify(l),antes);
 });
 
-test('el conjunto de conflictos tiene tope',()=>{
-  let l=S.vacio();
-  for(let i=0;i<80;i++){const e=S.editar({items:{n:{valor:{t:'l'+i},bv:1,mod:1000+i,dirty:true,del:false}},conflictos:l.conflictos},'n',{t:'l'+i},1000+i).l;
-    l=S.fusionar({items:{n:{...e.items.n,bv:1}},conflictos:l.conflictos},{n:{valor:{t:'r'+i},version:2+i,actualizado:1,borrado:false}},i).l;}
-  assert.ok(l.conflictos.length<=50);
-});
-
 test('lectura incremental: lo que no llega no ha cambiado; lo pendiente se sube con su versión base', () => {
   const base = { items: {
     quieta: { valor: 1, bv: 3, mod: 1, dirty: false, del: false },
     editada: { valor: 2, bv: 4, mod: 9, dirty: true, del: false },
     borrada: { valor: 3, bv: 5, mod: 9, dirty: true, del: true },
-    nueva: { valor: 4, bv: 0, mod: 9, dirty: true, del: false } }, conflictos: [] };
+    nueva: { valor: 4, bv: 0, mod: 9, dirty: true, del: false } } };
   const inc = S.fusionar(base, {}, 100, { incremental: true });
   assert.ok(inc.l.items.quieta);                                                         // sigue ahí
   const u = Object.fromEntries(inc.subir.map(x => [x.clave, x]));
@@ -220,73 +203,30 @@ test('convergencia con lecturas incrementales y varios dispositivos', () => {
   }
 });
 
-/* ---------- modo manual: control de versiones (los conflictos no se resuelven solos) ---------- */
 function conConflicto(){
   // el servidor tiene la versión 2 de «nota:a» (otro dispositivo); aquí se editó sobre la 1 y aún no se ha subido
-  let l=S.vacio();l={...l,items:{'nota:a':{valor:{t:'mía'},bv:1,mod:5000,dirty:true,del:false}}};
+  const l={items:{'nota:a':{valor:{t:'mía'},bv:1,mod:5000,dirty:true,del:false}}};
   const remoto={'nota:a':{valor:{t:'nube'},version:2,actualizado:4000,borrado:false}};
   return {l,remoto};
 }
-test('manual: si cambian los dos lados no se pisa nada, el conflicto queda abierto',()=>{
-  const {l,remoto}=conConflicto(),r=S.fusionar(l,remoto,9000,{manual:true});
-  assert.deepEqual(r.subir,[]);assert.deepEqual(r.bajados,[]);assert.deepEqual(r.conflictos,[]);assert.deepEqual(r.abiertos,['nota:a']);
-  assert.deepEqual(r.l.items['nota:a'].valor,{t:'mía'});          // lo local intacto, aunque sea más reciente o más antiguo
-  assert.equal(r.l.abiertos.length,1);assert.equal(r.l.abiertos[0].remoto.version,2);
-  assert.equal(r.l.conflictos.length,0);                            // aún no hay copia perdida: nadie ha elegido
-});
-test('manual: lo más antiguo tampoco se pisa (antes ganaba el más reciente)',()=>{
-  const {l,remoto}=conConflicto();remoto['nota:a'].actualizado=99999;
-  const r=S.fusionar(l,remoto,9000,{manual:true});
-  assert.deepEqual(r.l.items['nota:a'].valor,{t:'mía'});assert.equal(r.l.abiertos.length,1);
-});
-test('manual: en una lectura incremental el conflicto abierto se mantiene y no se intenta subir',()=>{
-  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true}),b=S.fusionar(a.l,{},9500,{manual:true,incremental:true});
-  assert.deepEqual(b.subir,[]);assert.equal(b.l.abiertos.length,1);
-});
-test('manual: elegir «lo mío» sube sobre la versión actual del servidor y converge',()=>{
-  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
-  const rs=S.resolver(a.l,'nota:a','mio',9100);assert.ok(rs.ok);assert.equal(rs.l.abiertos.length,0);
-  const r=S.fusionar(rs.l,remoto,9200,{manual:true});
-  assert.deepEqual(r.subir.map(u=>[u.clave,u.base,u.borrado]),[['nota:a',2,false]]);   // base = versión del servidor, así que el servidor lo acepta
-  assert.deepEqual(r.subir[0].valor,{t:'mía'});
-});
-test('manual: elegir «la nube» trae lo del servidor y guarda lo local como copia recuperable',()=>{
-  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
-  const rs=S.resolver(a.l,'nota:a','nube',9100);assert.ok(rs.ok);
-  assert.deepEqual(rs.l.items['nota:a'].valor,{t:'nube'});assert.equal(rs.l.items['nota:a'].dirty,false);assert.equal(rs.l.items['nota:a'].bv,2);
-  assert.deepEqual(rs.aplicar,{bajados:['nota:a'],borrados:[]});
-  assert.equal(rs.l.conflictos.length,1);assert.equal(rs.l.conflictos[0].motivo,'descartada_local');assert.deepEqual(rs.l.conflictos[0].valor,{t:'mía'});
-});
-test('manual: borrado en la nube frente a edición local es conflicto; «la nube» borra aquí, «lo mío» lo resucita',()=>{
-  const {l}=conConflicto(),remoto={'nota:a':{valor:null,version:2,actualizado:4000,borrado:true}};
-  const a=S.fusionar(l,remoto,9000,{manual:true});assert.equal(a.l.abiertos.length,1);assert.deepEqual(a.subir,[]);
-  const n=S.resolver(a.l,'nota:a','nube',9100);assert.ok(!n.l.items['nota:a']);assert.deepEqual(n.aplicar.borrados,['nota:a']);
-  const m=S.resolver(a.l,'nota:a','mio',9100),r=S.fusionar(m.l,remoto,9200,{manual:true});
-  assert.deepEqual(r.subir.map(u=>[u.clave,u.base]),[['nota:a',2]]);
-});
-test('manual: si ya no hay conflicto (el servidor volvió a coincidir) se cierra solo',()=>{
-  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
-  const iguales={'nota:a':{valor:{t:'mía'},version:3,actualizado:6000,borrado:false}};
-  const r=S.fusionar({...a.l,items:{'nota:a':{...a.l.items['nota:a'],dirty:false,bv:3}}},iguales,9100,{manual:true});
-  assert.equal(r.l.abiertos.length,0);
-});
-test('resolver: sin conflicto o con elección inválida no hace nada',()=>{
-  assert.equal(S.resolver(S.vacio(),'nota:a','mio',1).ok,false);
-  const {l,remoto}=conConflicto(),a=S.fusionar(l,remoto,9000,{manual:true});
-  assert.equal(S.resolver(a.l,'nota:a','otra',1).ok,false);
-});
-test('el modo por defecto (sin «manual») sigue resolviendo solo: gana el más reciente y guarda la otra',()=>{
+test('si cambian los dos lados manda la cuenta, sin copias ni conflictos abiertos',()=>{
   const {l,remoto}=conConflicto(),r=S.fusionar(l,remoto,9000);
-  assert.deepEqual(r.conflictos,['nota:a']);assert.equal(r.l.abiertos.length,0);
+  assert.deepEqual(r.subir,[]);assert.deepEqual(r.l.items['nota:a'].valor,{t:'nube'});assert.equal(r.l.items['nota:a'].dirty,false);
+  assert.equal(r.l.conflictos,undefined);assert.equal(r.l.abiertos,undefined);assert.equal(r.conflictos,undefined);
+});
+test('borrado en la cuenta frente a edición local: manda la cuenta',()=>{
+  const {l}=conConflicto(),r=S.fusionar(l,{'nota:a':{valor:null,version:2,actualizado:4000,borrado:true}},9000);
+  assert.deepEqual(r.subir,[]);assert.deepEqual(r.borrados,['nota:a']);assert.ok(!r.l.items['nota:a']);
+});
+test('lo editado sin conexión se sube en cuanto vuelve internet si la cuenta no se movió',()=>{
+  const {l}=conConflicto(),r=S.fusionar(l,{'nota:a':{valor:{t:'base'},version:1,actualizado:4000,borrado:false}},9000);
+  assert.deepEqual(r.subir.map(u=>[u.clave,u.base,u.valor.t]),[['nota:a',1,'mía']]);
 });
 
 test('si los dos lados llegan al mismo contenido no hay conflicto (aunque cambie el orden de las claves)',()=>{
   const l={...S.vacio(),items:{'nota:a':{valor:{a:1,b:[{x:1,y:2}]},bv:1,mod:5000,dirty:true,del:false}}};
   const remoto={'nota:a':{valor:{b:[{y:2,x:1}],a:1},version:2,actualizado:4000,borrado:false}};
-  for(const manual of [true,false]){
-    const r=S.fusionar(l,remoto,9000,{manual});
-    assert.deepEqual(r.subir,[]);assert.equal(r.l.abiertos.length,0);assert.equal(r.conflictos.length,0);
-    assert.equal(r.l.items['nota:a'].dirty,false);assert.equal(r.l.items['nota:a'].bv,2);
-  }
+  const r=S.fusionar(l,remoto,9000);
+  assert.deepEqual(r.subir,[]);assert.equal(r.l.items['nota:a'].dirty,false);assert.equal(r.l.items['nota:a'].bv,2);
   assert.equal(S.igual({a:[1,{b:2,c:3}]},{a:[1,{c:3,b:2}]}),true);assert.equal(S.igual({a:1},{a:2}),false);
 });

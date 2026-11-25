@@ -42,29 +42,7 @@ const TAIL=`<script>
     scApply({bajados:[],borrados:['fch:zz1','grp:gx1']});
     ok('lo borrado en otro dispositivo desaparece aquí',!PJC.some(f=>f.id==='zz1')&&!GRP.some(g=>g.id==='gx1'));
     // la biblioteca de la cuenta incluye los personajes libres
-    // copias de conflicto: se ven, se recuperan y se descartan
-    scLoad();SC.l.conflictos=[{clave:'fch:c1',valor:{...scClone(PJC[0]),nombre:'Lyra vieja'},motivo:'pisada_local',t:5},{clave:'nota:s1',valor:{id:'s1'},motivo:'pisada_remota',t:6}];
-    ok('hay botón de conflictos',scConfHTML().includes('(2)'));SC.confOpen=true;ok('la lista nombra el elemento',scConfHTML().includes('Lyra vieja'));
-    ok('recuperar devuelve la versión perdida',scConfRecuperar(0)&&PJC.find(f=>f.id==='c1').nombre==='Lyra vieja'&&SC.l.conflictos.length===1&&SC.l.items['fch:c1'].dirty===true);
-    SC.l.conflictos.splice(0,1);ok('descartar quita la copia',scConfHTML()==='');
     ok('los personajes libres viajan con la biblioteca de la cuenta',SYNC_KEYS.fichas==='fichas-v1');
-    // control de versiones: un conflicto abierto no pisa nada; elegir «la cuenta» trae su versión y guarda la tuya, elegir «lo mío» la conserva
-    SC.l=Sincro.vacio();let lq=Sincro.editar(SC.l,'grp:gq',{id:'gq',n:'Mío',tipo:'aliados',miembros:[]},5).l;lq.items['grp:gq'].bv=1;
-    lq.abiertos=[{clave:'grp:gq',remoto:{valor:{id:'gq',n:'Nube',tipo:'aliados',miembros:[]},version:2,actualizado:4,borrado:false}}];SC.l=Sincro.norm(lq);
-    ok('el conflicto queda abierto sin tocar lo local',SC.l.abiertos.length===1&&SC.l.items['grp:gq'].valor.n==='Mío');
-    scResolver('grp:gq','nube');
-    ok('elegir la cuenta trae su versión y guarda la mía como copia',GRP.some(g=>g.id==='gq'&&g.n==='Nube')&&SC.l.abiertos.length===0&&SC.l.conflictos.some(c=>c.clave==='grp:gq'&&c.motivo==='descartada_local'&&c.valor.n==='Mío'));
-    lq=Sincro.editar(Sincro.vacio(),'grp:gq',{id:'gq',n:'Otra mía',tipo:'aliados',miembros:[]},9).l;lq.items['grp:gq'].bv=2;
-    lq.abiertos=[{clave:'grp:gq',remoto:{valor:{id:'gq',n:'Otra nube',tipo:'aliados',miembros:[]},version:3,actualizado:8,borrado:false}}];SC.l=Sincro.norm(lq);
-    scResolver('grp:gq','mio');
-    ok('elegir lo mío lo deja listo para subir sobre la versión actual',SC.l.abiertos.length===0&&SC.l.items['grp:gq'].dirty===true&&SC.l.items['grp:gq'].bv===3&&GRP.some(g=>g.id==='gq'&&g.n==='Nube'));
-    // datos personales con versiones: el conflicto se ve con nombre y se resuelve igual
-    SB_USER={id:'u1'};SP.v2=true;SP.disp={bestiario:'escritorio'};
-    SP.l=Sincro.norm({items:{bestiario:{valor:[{n:'Mío'}],bv:1,mod:5,dirty:true,del:false}},abiertos:[{clave:'bestiario',remoto:{valor:[{n:'Nube'}],version:2,actualizado:4,borrado:false}}]});
-    ok('el panel de datos personales nombra el conflicto y el dispositivo',spVcHTML().includes('Bestiario propio')&&spVcHTML().includes('escritorio')&&spVcHTML().includes('data-act="spres"'));
-    spResolver('bestiario','mio');
-    ok('elegir la de este dispositivo la deja lista para subir sobre la versión de la cuenta',SP.l.abiertos.length===0&&SP.l.items.bestiario.dirty===true&&SP.l.items.bestiario.bv===2);
-    ok('sin conflictos ni copias el panel no enseña nada',spVcHTML()==='');
     ok('el estado de sincronización no viaja en la copia de seguridad',!Copia.claveOk('combat-sync-v2')&&!Copia.claveOk('combat-sync-v1'));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
@@ -93,6 +71,6 @@ testNav('sincronización: fichas, grupos y permisos de la campaña',{skip:!BROWS
     const R=JSON.parse(m[1].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&'));
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=10,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=7,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });
