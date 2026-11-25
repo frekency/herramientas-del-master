@@ -44,7 +44,7 @@ const TAIL=`<script>
     ok('restaurar recupera lo guardado',n>0&&JSON.parse(Store.get('camp-notes-v1')).items.length===1);
     // enlaces de audio
     document.querySelector('[data-act="closeio"]').click();
-    document.querySelector('[data-act="audopen"]').click();await wait(100);
+    audRender();document.getElementById('audmodal').hidden=false;await wait(100);/* el audio ya no tiene botón en el menú: se prueba la función */
     document.getElementById('aud-url').value='youtube.com/watch?v=abc';document.getElementById('aud-nom').value='Taberna';
     document.querySelector('[data-act="audadd"]').click();
     document.getElementById('aud-url').value='javascript:alert(1)';document.querySelector('[data-act="audadd"]').click();

@@ -27,7 +27,7 @@ const TAIL=`<script>
      ok("elegir orden actualiza la lista sin pulsar nada y deja elegir la categoría",nombres>=1&&!!document.getElementById("rv-ty")&&document.getElementById("rv-mod").options.length>=1);
      o.value="azar";o.dispatchEvent(new Event("change",{bubbles:true}));await wait(100);}
     ok("el menú muestra Revisión cuando hay pendientes",!document.getElementById("nav-rv").hidden);
-    ok("el menú «Más» guarda audio, modo seguro, bloqueo y preferencias",["aud-btn","safe-btn","lock-btn"].every(id=>document.getElementById(id).closest("#navmore"))&&!!document.querySelector("#navmore [data-act=pfopen]"));
+    ok("el menú «Más» guarda modo seguro y bloqueo; las preferencias van en la cuenta",["safe-btn","lock-btn"].every(id=>document.getElementById(id).closest("#navmore"))&&!document.querySelector("#navmore [data-act=pfopen]")&&!!document.querySelector("#acctmodal [data-act=pfopen]"));
     location.hash="#revision";await wait(500);
     ok("la sección Revisión muestra los pendientes",document.querySelectorAll("#rv-list .hbcard").length===2);
     {const i=document.querySelector("#rv-list [data-rvpg]");ok("cada pendiente tiene la página editable",!!i);
