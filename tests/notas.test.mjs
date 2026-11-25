@@ -12,7 +12,7 @@ test('norm: rechaza tipos desconocidos y limpia campos que no son del tipo',()=>
   assert.equal(N.norm({tipo:'hack',nombre:'x'}),null);
   assert.equal(N.norm(null),null);
   const n=N.norm({tipo:'npc',nombre:'Elda',campos:{rol:'Posadera',estado:'activa',__proto__:{x:1},criatura:'srd:Commoner'}});
-  assert.deepEqual(Object.keys(n.campos).sort(),['acompana','actitud','aspecto','criatura','equipo','eventos','inventario','lugar','publico','quiere','rol','secreto','stats']);
+  assert.deepEqual(Object.keys(n.campos).sort(),['acompana','actitud','aspecto','criatura','equipo','eventos','inventario','lugar','publico','quiere','ref','rol','secreto','stats']);
   assert.equal(n.campos.rol,'Posadera');
 });
 
@@ -168,4 +168,12 @@ test('NPC: token propio, solo imagen válida y pequeña; otros tipos no lo guard
   assert.equal(N.norm({tipo:'npc',nombre:'Brisa',tok:'javascript:alert(1)'}).tok,undefined);
   assert.equal(N.norm({tipo:'npc',nombre:'Brisa',tok:'data:image/webp;base64,'+'A'.repeat(70000)}).tok,undefined);
   assert.equal(N.norm({tipo:'lugar',nombre:'Torre',tok:ok}).tok,undefined);
+});
+
+test('PNJ: la clase de referencia se limpia y acota',()=>{
+  const n=item('npc','Varo',{campos:{ref:{c:'Guerrero<x>',n:99,sub:'Campeón',car:[16,'x',40,0,null,10],hab:'Atletismo',eq:'Escudo'}}});
+  assert.deepEqual(n.campos.ref,{c:'',n:20,sub:'Campeón',car:[16,null,30,1,null,10],hab:'Atletismo',eq:'Escudo'});
+  assert.equal(item('npc','V2',{campos:{ref:{c:'guerrero',n:0}}}).campos.ref.n,1);
+  assert.equal(item('npc','V3').campos.ref.c,'');
+  assert.equal(item('lugar','L',{campos:{ref:{c:'guerrero'}}}).campos.ref,undefined);
 });

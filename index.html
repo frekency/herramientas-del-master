@@ -400,7 +400,7 @@ function norm(x){
     base:x.origen==='campana'?txt(x.base,40):'',jugador:x.origen==='campana'?txt(x.jugador,40):'',   // copia de campaña: de qué personaje base viene y qué jugador del grupo la lleva
     estado:x.origen==='campana'&&['caido','retirado'].includes(x.estado)?x.estado:'activo',propietario:txt(x.propietario,40),especie:txt(x.especie),trasfondo:txt(x.trasfondo),ca:int(x.ca,0,40,10),vel:txt(x.vel,20)||'9 m',
     car:{},niveles:[],xp:int(x.xp,0,9999999),concedidas:int(x.concedidas,0,20),hp:0,temp:int(x.temp,0,999),dgUsados:{},slotsUsados:Array(9).fill(0),
-    pactUsados:0,agot:int(x.agot,0,6),recursos:[],dotes:[],conjuros:[],mon:{},inventario:[],pendientes:[],notas:txt(x.notas,5000),registro:[],dm:[],
+    pactUsados:0,agot:int(x.agot,0,6),activos:Object.fromEntries(Object.entries(x.activos&&typeof x.activos==='object'?x.activos:{}).filter(([k,v])=>v===true&&/^[a-z_]{1,24}$/.test(k)).slice(0,10)),recursos:[],dotes:[],conjuros:[],mon:{},inventario:[],pendientes:[],notas:txt(x.notas,5000),registro:[],dm:[],
     habil:{},salvac:[],ataques:[],rasgos:[],magia:{hab:'',niv:{},prep:[]},defensas:{},otras:{},pers:{},
     subclase:txt(x.subclase,80),tamano:txt(x.tamano,20),insp:!!x.insp,muerte:{ex:int(x.muerte&&x.muerte.ex,0,3),fa:int(x.muerte&&x.muerte.fa,0,3)}};
   for(const a of AB)f.car[a]=int(x.car&&x.car[a],1,30,10);
@@ -411,7 +411,7 @@ function norm(x){
   f.slotsUsados=f.slotsUsados.map((_,i)=>int(x.slotsUsados&&x.slotsUsados[i],0,e.slots[i]));
   f.pactUsados=int(x.pactUsados,0,e.pact?e.pact.n:0);
   for(const r of Array.isArray(x.recursos)?x.recursos.slice(0,30):[]){if(!r||typeof r!=='object')continue;const max=int(r.max,0,99);
-    f.recursos.push({id:txt(r.id,20)||'r'+f.recursos.length,n:txt(r.n,60),max,uso:int(r.uso,0,max),rec:['corto','largo'].includes(r.rec)?r.rec:''});}
+    f.recursos.push({id:txt(r.id,20)||'r'+f.recursos.length,n:txt(r.n,60),max,uso:int(r.uso,0,max),rec:['corto','largo'].includes(r.rec)?r.rec:'',...(txt(r.a,40)?{a:txt(r.a,40),cor:int(r.cor,0,max)}:{})});}
   f.dotes=(Array.isArray(x.dotes)?x.dotes:[]).slice(0,30).map(d=>txt(d,60)).filter(Boolean);
   {const vistos=new Set();f.conjuros=(Array.isArray(x.conjuros)?x.conjuros:[]).slice(0,200).map(d=>txt(d,60)).filter(d=>d&&!vistos.has(d.toLowerCase())&&vistos.add(d.toLowerCase()));}   // nombres de conjuros conocidos o preparados
   f.registro=(Array.isArray(x.registro)?x.registro:[]).slice(-200).filter(r=>r&&typeof r==='object').map(r=>({t:int(r.t,0,9e15),a:txt(r.a,30),d:txt(r.d,200),por:txt(r.por,40)}));
@@ -452,18 +452,221 @@ function dmAnotar(f,x,ctx){if(f.origen!=='campana')return no('solo_campana');if(
   g.dm.push({id:'d'+Math.random().toString(36).slice(2,9),t:int(ctx.ahora,0,9e15,Date.now()),tipo:['evento','nota','secreto'].includes(x.tipo)?x.tipo:'nota',txt:s});return ok(g);}
 function dmQuitar(f,id,ctx){if(!ctx||ctx.rol!=='dm')return no('solo_dm');const g=copia(f),i=g.dm.findIndex(r=>r.id===id);if(i<0)return no('no_existe');g.dm.splice(i,1);return ok(g);}
 /* dados: [{c:'mago',v:4}, …] — dados de golpe gastados con su resultado */
+/* Recursos que dan las clases, leídos de los datos del compendio (x.prog y x.recursos de cada clase). Nada está programado por clase:
+   datos = {barbaro:{prog,recursos}, …}. Los recursos creados así llevan a:'clase:id' y se mantienen solos al cambiar de nivel o de característica. */
+function recMax(m,lv,fila,f){
+  if(typeof m==='number')return m;if(!m||typeof m!=='object')return 0;
+  if(m.col)return Math.max(0,+(fila&&fila.v&&fila.v[m.col])||0);
+  if(m.mod)return Math.max(m.min||0,mod(f.car[m.mod]));
+  if(m.por_nv)return lv*m.por_nv;
+  if(m.lv){let r=0;for(const [n,v] of Object.entries(m.lv))if(lv>=+n)r=v;return r;}
+  return 0;
+}
+function recursosClase(f,datos){
+  const out=[];
+  for(const [c,lv] of Object.entries(clases(f))){
+    const d=datos&&datos[c];if(!d||!Array.isArray(d.recursos))continue;
+    const fila=d.prog&&d.prog.filas&&d.prog.filas[lv-1];
+    for(const r of d.recursos){
+      if(lv<(r.nv||1))continue;
+      const max=recMax(r.max,lv,fila,f);if(!(max>0))continue;
+      let rec=r.rec==='corto'?'corto':'largo';for(const [n,v] of Object.entries(r.recNv||{}))if(lv>=+n)rec=v==='corto'?'corto':'largo';
+      out.push({k:c+':'+r.id,n:r.n,max:Math.min(99,max),rec,cor:rec==='largo'?(r.cor||0):0});
+    }
+  }
+  return out;
+}
+function sincRecursos(f,datos){
+  const defs=recursosClase(f,datos),claves=new Set(defs.map(d=>d.k)),g=copia(f);
+  g.recursos=g.recursos.filter(r=>!r.a||claves.has(r.a));
+  for(const d of defs){
+    let r=g.recursos.find(x=>x.a===d.k);
+    if(!r){   // un recurso manual con el mismo nombre se adopta en vez de duplicarlo
+      r=g.recursos.find(x=>!x.a&&x.n.toLowerCase()===d.n.toLowerCase());
+      if(!r){if(g.recursos.length>=30)continue;r={id:'r'+Math.random().toString(36).slice(2,8),n:d.n,max:d.max,uso:0,rec:d.rec};g.recursos.push(r);}
+    }
+    Object.assign(r,{a:d.k,n:d.n,max:d.max,uso:Math.min(r.uso||0,d.max),rec:d.rec,cor:d.cor});
+  }
+  return norm(g);
+}
+/* Efectos de los rasgos de clase (x.ef en los datos del compendio): la hoja los reúne con su origen sin saber nada de cada clase.
+   Un «estado» (furia, ataque temerario…) se activa con un botón, gasta el recurso que declara y solo entonces valen sus efectos. */
+const sumaMod=(f,t)=>String(t).split('+').reduce((s,p)=>s+(AB.includes(p.trim())?mod(f.car[p.trim()]):p.trim()==='pb'?prof(f):(Number(p)||0)),0);
+const fold=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+function efectosClase(f,datos){
+  const out=[];
+  for(const [c,lv] of Object.entries(clases(f))){
+    const d=datos&&datos[c];if(!d||!d.ef||!d.prog)continue;const vistos=new Set();
+    for(let i=0;i<Math.min(lv,20);i++)for(const nm of (d.prog.filas[i]&&d.prog.filas[i].rasgos)||[]){
+      if(vistos.has(nm)||!Array.isArray(d.ef[nm]))continue;vistos.add(nm);
+      out.push({c,lv,nv:i+1,rasgo:nm,clase:d.n,fila:d.prog.filas[lv-1],ef:d.ef[nm]});}
+    const sc=fold(f.subclase||'');
+    if(sc&&d.subef)for(const [sn,L] of Object.entries(d.subef))if(fold(sn)===sc)for(const r of L)if(lv>=r.nv)out.push({c,lv,nv:r.nv,rasgo:r.n,clase:sn,fila:d.prog.filas[lv-1],ef:r.ef});
+  }
+  return out;
+}
+function derivados(f,datos){
+  const r={ca:[],vel:[],ventaja:[],resiste:[],dano:[],avisos:[],estados:[],inmune:[],cd:[],valores:[],artes:'',critico:20,ataques:0};
+  const act=f.activos||{};
+  const valor=(v,e)=>typeof v==='number'||typeof v==='string'?v:v&&v.col&&e.fila&&e.fila.v?e.fila.v[v.col]:null;
+  for(const e of efectosClase(f,datos)){
+    const o=e.clase+' · '+e.rasgo;
+    const aplica=(x,estado)=>{
+      if(x.t==='ca')r.ca.push({v:sumaMod(f,x.f),f:x.f,o,sin:x.sin||'',cond:x.cond||''});
+      else if(x.t==='vel'){const v=valor(x.v,e),n=typeof v==='number'?v:parseFloat(String(v||'').replace(',','.'));if(n)r.vel.push({v:n,o,sin:x.sin||'',cond:x.cond||''});}
+      else if(x.t==='artes'){const v=valor(x.v,e);if(v)r.artes=String(v);}
+      else if(x.t==='valor')r.valores.push({n:x.n,v:Math.max(x.min||0,mod(f.car[x.f])),o});
+      else if(x.t==='ventaja')for(const en of x.en||[])r.ventaja.push({en,o,cond:x.cond||'',estado:estado||''});
+      else if(x.t==='resiste')r.resiste.push({tipos:x.tipos||[],o,estado:estado||''});
+      else if(x.t==='dano'){const v=valor(x.v,e);if(v!=null)r.dano.push({v,o,ab:x.ab||'',cond:x.cond||'',estado:estado||''});}
+      else if(x.t==='ataques')r.ataques=Math.max(r.ataques,x.n|0);
+      else if(x.t==='critico')r.critico=Math.min(r.critico,x.v|0||20);
+      else if(x.t==='aviso')r.avisos.push({txt:x.txt,o,acc:x.acc||'',estado:estado||''});
+      else if(x.t==='inmune')r.inmune.push({estados:x.estados||[],o,estado:estado||x.si||''});
+      else if(x.t==='cd')r.cd.push({n:x.n,v:sumaMod(f,x.f),o});
+    };
+    for(const x of e.ef){
+      if(x.si&&!act[x.si])continue;
+      if(x.t==='estado'){
+        const activo=!!act[x.id]&&!x.inst;
+        r.estados.push({id:x.id,n:x.n,gasta:x.gasta?e.c+':'+x.gasta:'',cond:x.cond||'',dur:x.dur||'',txt:x.txt||'',coste:x.coste||1,acc:x.acc||'libre',inst:!!x.inst,o,activo});
+        if(activo)for(const y of x.ef||[])aplica(y,x.id);
+      }else aplica(x,'');
+    }
+  }
+  return r;
+}
+/* Equipo y statblock: de la clase (efectos) y del inventario equipado (armas y armaduras del compendio: x.arma / x.arm) sale una ficha con el formato de una criatura.
+   eq(nombre) devuelve la entrada del compendio de objetos; sin ella el equipo no cuenta. */
+function equipado(f,eq){
+  const o={armadura:null,escudo:null,armas:[]};
+  for(const i of f.inventario){
+    if(!i.eq)continue;const x=eq&&eq(i.n);if(!x)continue;
+    if(x.arm){if(x.arm.tipo==='escudo'){if(!o.escudo)o.escudo=x;}else if(!o.armadura)o.armadura=x;}
+    else if(x.arma)o.armas.push(x);
+  }
+  return o;
+}
+const infoClase=(datos,c,k)=>fold(datos&&datos[c]&&datos[c].info?datos[c].info[k]||'':'');
+function armaCompetente(f,datos,a){
+  for(const c of Object.keys(clases(f))){
+    const t=infoClase(datos,c,'Competencias con armas');
+    if(a.cat==='sencilla'&&/sencillas/.test(t))return true;
+    if(a.cat==='marcial'&&/marciales/.test(t)){const req=[...t.matchAll(/[«“"](\w+)[»”"]/g)].map(m=>m[1].replace(/o$/,'a'));if(!req.length||req.some(p=>a.props.includes(p)))return true;}
+  }
+  return false;
+}
+function armaduraCompetente(f,datos,a){
+  const pat=a.tipo==='escudo'?/escudos/:a.tipo==='ligera'?/ligera/:a.tipo==='media'?/media/:/pesada/;
+  return Object.keys(clases(f)).some(c=>pat.test(infoClase(datos,c,'Entrenamiento con armaduras')));
+}
+const sg=n=>(n>=0?'+':'')+n;
+const VENT_NOM={'salv:des':'salvaciones de Destreza','salv:fue':'salvaciones de Fuerza','prueba:fue':'pruebas de Fuerza','ataque:fue':'ataques con Fuerza','ataque':'ataques','iniciativa':'iniciativa','prueba:atletismo':'Atletismo','salv:muerte':'salvaciones contra muerte'};
+const m1=n=>String(n).replace('.',',');
+function statblock(f,datos,eq,sp){
+  const d=derivados(f,datos),E=equipado(f,eq),pb=prof(f),m=a=>mod(f.car[a]);
+  // CA
+  let ca,cao='',pesada=false,pen=0;
+  if(E.armadura){const a=E.armadura.arm;ca=a.ca+(a.des?(a.desMax!=null?Math.min(m('des'),a.desMax):m('des')):0);cao=E.armadura.n;pesada=a.tipo==='pesada';if(a.fue&&f.car.fue<a.fue)pen=3;}
+  else{
+    ca=10+m('des');
+    for(const x of d.ca){if(x.sin==='armadura_escudo'&&E.escudo)continue;if(x.v>ca){ca=x.v;cao=x.o.split(' · ')[1]||x.o;}}
+    if(f.ca>ca){ca=f.ca;cao='manual';}
+  }
+  if(E.escudo){ca+=E.escudo.arm.bono;cao=(cao?cao+', ':'')+E.escudo.n.toLowerCase();}
+  // velocidad
+  let v=parseFloat(String(f.vel).replace(',','.'))||9;
+  for(const x of d.vel){if(pesada&&/pesada/.test(x.cond))continue;if(x.sin&&(E.armadura||(x.sin==='armadura_escudo'&&E.escudo)))continue;v+=x.v;}
+  v-=pen;
+  // ataques
+  const crit=d.critico<20?' Crítico '+d.critico+'–20.':'';
+  const maes=Object.keys(clases(f)).some(c=>datos&&datos[c]&&datos[c].prog&&datos[c].prog.cols.some(k=>k.id==='maestrias'));
+  const rabia=d.dano.filter(x=>x.ab==='fue'&&x.estado).reduce((s,x)=>s+(parseInt(x.v)||0),0);
+  const acciones=[];
+  if(d.ataques>1)acciones.push({n:'Multiataque',t:'Realiza '+d.ataques+' ataques cuando haces la acción de atacar.'});
+  for(const x of E.armas){
+    const a=x.arma,pro=armaCompetente(f,datos,a),ab=a.dist?'des':a.props.includes('sutil')&&m('des')>m('fue')?'des':'fue';
+    const alc='alcance '+(a.dist?a.alc.map(m1).join('/'):a.props.includes('gran_alcance')?'3':'1,5')+' m';
+    const fijo=m(ab)+(ab==='fue'&&!a.dist?rabia:0),mt=/^(\d+)d(\d+)$/.exec(a.dano),prom=(mt?Math.floor(+mt[1]*(+mt[2]+1)/2):+a.dano)+fijo;
+    const t='Tirada de ataque '+(a.dist?'a distancia':'cuerpo a cuerpo')+': '+sg(m(ab)+(pro?pb:0))+', '+alc+'. Acierto: '+prom+' ('+a.dano+(fijo?(fijo>0?' + ':' - ')+Math.abs(fijo):'')+') de daño '+a.tipo+'.'
+      +(a.props.includes('arrojadiza')&&a.alc?' Arrojadiza ('+a.alc.map(m1).join('/')+' m).':'')+(a.versatil?' A dos manos: '+a.versatil+'.':'')+(a.mae&&maes?' Maestría: '+a.mae+'.':'')+crit+(pro?'':' (sin competencia)');
+    acciones.push({n:x.n,t});
+  }
+  {
+    const ab=d.artes&&m('des')>m('fue')?'des':'fue',mt=/^(\d+)d(\d+)$/.exec(d.artes||''),fj=m(ab);
+    const dano=mt?Math.floor(+mt[1]*(+mt[2]+1)/2)+fj+' ('+d.artes+(fj?(fj>0?' + ':' - ')+Math.abs(fj):'')+')':String(Math.max(1,1+m('fue')));
+    acciones.push({n:'Ataque sin armas',t:'Tirada de ataque cuerpo a cuerpo: '+sg(m(ab)+pb)+', alcance 1,5 m. Acierto: '+dano+' de daño contundente.'+(d.artes?' Artes marciales.':'')});
+  }
+  for(const a of f.ataques)acciones.push({n:a.n,t:'Tirada de ataque: '+sg(a.b)+(a.dano?'. Acierto: '+a.dano+(a.tipo?' de daño '+a.tipo:''):'')+(a.nota?'. '+a.nota:'')});
+  const adicionales=[],reacciones=[],libres=[],rasgos=[];
+  const lim=t=>t.replace(/^(Reacción|Acción adicional):\s*/,'');
+  const nom=o=>o.split(' · ')[1]||o;
+  for(const e of d.estados){
+    const q=e.gasta&&f.recursos.find(r=>r.a===e.gasta),uso=q?' ('+(q.max-q.uso)+'/'+q.max+' usos)':'';
+    const it={n:e.n+uso+(e.activo?' — activo':''),t:[e.txt,e.cond&&('Cuándo: '+e.cond),e.dur&&('Duración: '+e.dur)].filter(Boolean).join('. ')};
+    ({accion:acciones,adicional:adicionales,reaccion:reacciones,libre:libres}[e.acc]||libres).push(it);
+  }
+  for(const a of d.avisos){
+    if(a.estado)continue;
+    const it={n:nom(a.o),t:lim(a.txt)};
+    if(a.acc==='adicional')adicionales.push(it);else if(a.acc==='reaccion')reacciones.push(it);else rasgos.push(it);
+  }
+  for(const x of d.ventaja)if(!x.estado)rasgos.push({n:nom(x.o),t:'Ventaja en '+(VENT_NOM[x.en]||x.en)+(x.cond?' ('+x.cond+')':'')});
+  for(const x of d.inmune)if(!x.estado)rasgos.push({n:nom(x.o),t:'Inmune a '+x.estados.join(', ')});
+  for(const x of d.dano)if(!x.ab&&!x.estado)rasgos.push({n:nom(x.o),t:'Daño adicional '+x.v+(x.cond?' ('+x.cond+')':'')});
+  for(const x of d.cd)rasgos.push({n:x.n,t:'CD '+x.v});
+  for(const x of d.valores)rasgos.push({n:x.n,t:sg(x.v)});
+  // lanzamiento de conjuros, como en las criaturas: una lista por nivel
+  const mg=magia(f);
+  if(mg&&f.conjuros.length){
+    const por={};for(const n of f.conjuros){const q=sp&&sp(n),lv=q&&q.lv!=null?+q.lv:-1;(por[lv]=por[lv]||[]).push(n);}
+    const e=espacios(f),L=[];
+    for(const lv of Object.keys(por).map(Number).sort((a,b)=>a-b)){
+      const cab=lv===0?'Trucos (a voluntad)':lv<0?'Otros':'Nivel '+lv+(e.slots[lv-1]?' ('+e.slots[lv-1]+' espacio'+(e.slots[lv-1]>1?'s':'')+')':'');
+      L.push(cab+': '+por[lv].sort((a,b)=>a.localeCompare(b,'es')).join(', '));
+    }
+    if(e.pact&&e.pact.n)L.push('Magia de pacto: '+e.pact.n+' espacio'+(e.pact.n>1?'s':'')+' de nivel '+e.pact.nivel+' (descanso corto)');
+    rasgos.unshift({n:'Lanzamiento de conjuros',t:'Su aptitud mágica es '+HAB_ES[mg.hab]+' (CD '+mg.cd+', '+sg(mg.atq)+' al ataque). Puede lanzar los siguientes conjuros: '+L.join('. ')+'.'});
+  }
+  const avisos=[];
+  if(E.armadura&&E.armadura.arm.sig)avisos.push('Desventaja en Sigilo por la armadura');
+  if(pen)avisos.push('Fuerza insuficiente para la armadura: velocidad −3 m');
+  if(E.armadura&&!armaduraCompetente(f,datos,E.armadura.arm))avisos.push('Sin competencia con la armadura: desventaja en pruebas, salvaciones y ataques de Fue/Des y no puede lanzar conjuros');
+  if(E.escudo&&!armaduraCompetente(f,datos,E.escudo.arm))avisos.push('Sin competencia con el escudo');
+  const sv=salvas(f);
+  return {
+    n:f.nombre,cls:Object.entries(clases(f)).map(([c,n])=>((datos&&datos[c]&&datos[c].n)||c)+' '+n).join(' / '),pb,
+    ca:{v:ca,o:cao},pg:{max:hpMax(f),cur:f.hp},vel:m1(v)+' m',
+    ini:{v:m('des'),vent:d.ventaja.some(x=>x.en==='iniciativa')},
+    car:AB.map(a=>({a,v:f.car[a],m:m(a),s:salvBonus(f,a),p:sv.includes(a)})),
+    hab:HABIL.filter(([h])=>f.habil[h]).map(([h])=>({n:HAB_NOM[h],b:habBonus(f,h),pericia:f.habil[h]>1})),
+    defensas:f.defensas,pp:pasiva(f,'percepcion'),idiomas:f.otras.idiomas.slice(),
+    equipo:f.inventario.map(i=>(i.q>1?i.q+'× ':'')+i.n+(i.eq?' (equipado)':'')),
+    acciones,adicionales,reacciones,libres,rasgos,avisos,
+  };
+}
+function activar(f,id,datos,ctx){
+  const e=derivados(f,datos).estados.find(x=>x.id===id);if(!e)return no('no_existe');if(e.activo)return no('ya_activo');
+  const g=copia(f);
+  if(e.gasta){const q=g.recursos.find(x=>x.a===e.gasta),c=e.coste||1;if(!q)return no('no_existe');if(q.uso+c>q.max)return no('agotado');q.uso+=c;}
+  if(!e.inst)g.activos={...g.activos,[id]:true};return ok(anota(g,ctx,e.inst?'uso':'estado',e.n));
+}
+function desactivar(f,id,ctx){
+  if(!f.activos||!f.activos[id])return no('no_existe');
+  const g=copia(f);delete g.activos[id];return ok(anota(g,ctx,'estado terminado',id));
+}
 function descansoCorto(f,dados,ctx){
   const g=copia(f);let cura=0;
   for(const x of Array.isArray(dados)?dados:[]){const q=dg(g)[x&&x.c];if(!q||q.quedan<1)return no('sin_dados');const v=Number(x.v);if(!Number.isInteger(v)||v<1||v>q.d)return no('dado_invalido');
     g.dgUsados[x.c]++;cura+=Math.max(0,v+mod(g.car.con));}
-  g.hp=Math.min(hpMax(g),g.hp+cura);g.pactUsados=0;for(const r of g.recursos)if(r.rec==='corto')r.uso=0;
+  g.hp=Math.min(hpMax(g),g.hp+cura);g.pactUsados=0;for(const r of g.recursos){if(r.rec==='corto')r.uso=0;else if(r.cor)r.uso=Math.max(0,r.uso-r.cor);}g.activos={};
   return ok(anota(g,ctx,'descanso corto','+'+cura+' PG'));
 }
 function descansoLargo(f,ctx){
   const g=copia(f);g.hp=hpMax(g);let gasto=0;for(const q of Object.values(dg(g)))gasto+=q.usados;
   let recup=Math.max(1,Math.floor(nivel(g)/2));
   for(const c of Object.keys(g.dgUsados)){const r=Math.min(g.dgUsados[c],recup);g.dgUsados[c]-=r;recup-=r;}
-  g.slotsUsados=g.slotsUsados.map(()=>0);g.pactUsados=0;for(const r of g.recursos)if(r.rec)r.uso=0;g.agot=Math.max(0,g.agot-1);
+  g.slotsUsados=g.slotsUsados.map(()=>0);g.pactUsados=0;for(const r of g.recursos)if(r.rec)r.uso=0;g.agot=Math.max(0,g.agot-1);g.activos={};
   return ok(anota(g,ctx,'descanso largo',''));
 }
 /* camp: {criterio:'hito'|'xp'} de la campaña; null para fichas libres (siempre se puede subir) */
@@ -664,7 +867,7 @@ function desdeRoliando(t,res){
      propuesta  → el cambio queda pendiente hasta que el máster lo acepte o lo rechace
      bloqueado  → solo el máster
    El jugador trabaja sobre la vista (valores aprobados + sus propuestas); el resto de la aplicación usa los valores aprobados. */
-const GRUPO_DE={hp:'pg',temp:'pg',agot:'pg',dgUsados:'gasto',slotsUsados:'gasto',pactUsados:'gasto',recursos:'gasto',nombre:'identidad',especie:'identidad',trasfondo:'identidad',
+const GRUPO_DE={hp:'pg',temp:'pg',agot:'pg',dgUsados:'gasto',slotsUsados:'gasto',pactUsados:'gasto',recursos:'gasto',activos:'gasto',nombre:'identidad',especie:'identidad',trasfondo:'identidad',
   ca:'datos',vel:'datos',notas:'texto',subclase:'identidad',tamano:'identidad',insp:'pg',muerte:'pg',inventario:'inventario',mon:'monedas',conjuros:'conjuros',niveles:'progreso',car:'progreso',dotes:'progreso',xp:'progreso',concedidas:'progreso',
   habil:'progreso',salvac:'progreso',ataques:'datos',rasgos:'datos',otras:'datos',magia:'conjuros',defensas:'pg',pers:'texto'};
 const POLITICAS=['libre','propuesta','bloqueado'];
@@ -797,9 +1000,10 @@ function ataqueQuitar(f,id){const g=copia(f);if(!g.ataques.some(a=>a.id===id))re
 /* Un rasgo puede llevar usos: se guardan como un recurso (los descansos ya lo recuperan) enlazado al rasgo. */
 function rasgoAnadir(f,x){const g=copia(f),n=txt(x&&x.n,80);if(!n)return no('vacio');if(g.rasgos.length>=60)return no('demasiados');
   const r={id:'g'+Math.random().toString(36).slice(2,8),n,txt:sinCtl(x.txt,2000),r:''},max=int(x.max,0,99);
-  if(max){if(g.recursos.length>=30)return no('demasiados');const rid='r'+Math.random().toString(36).slice(2,8);g.recursos.push({id:rid,n,max,uso:0,rec:['corto','largo'].includes(x.rec)?x.rec:''});r.r=rid;}
+  const ya=max&&g.recursos.find(q=>q.n.toLowerCase()===n.toLowerCase());   // si la clase ya da ese recurso, el rasgo se enlaza a él
+  if(ya)r.r=ya.id;else if(max){if(g.recursos.length>=30)return no('demasiados');const rid='r'+Math.random().toString(36).slice(2,8);g.recursos.push({id:rid,n,max,uso:0,rec:['corto','largo'].includes(x.rec)?x.rec:''});r.r=rid;}
   g.rasgos.push(r);return ok(g);}
-function rasgoQuitar(f,id){const g=copia(f),r=g.rasgos.find(x=>x.id===id);if(!r)return no('no_existe');g.rasgos=g.rasgos.filter(x=>x.id!==id);if(r.r)g.recursos=g.recursos.filter(q=>q.id!==r.r);return ok(g);}
+function rasgoQuitar(f,id){const g=copia(f),r=g.rasgos.find(x=>x.id===id);if(!r)return no('no_existe');g.rasgos=g.rasgos.filter(x=>x.id!==id);if(r.r)g.recursos=g.recursos.filter(q=>q.id!==r.r||q.a);return ok(g);}
 function conjuroNivel(f,n,lv){const g=copia(f);if(!g.conjuros.includes(n))return no('no_existe');lv=int(lv,0,9);if(lv)g.magia.niv[n]=lv;else delete g.magia.niv[n];return ok(g);}
 function conjuroPreparar(f,n,si){const g=copia(f);if(!g.conjuros.includes(n))return no('no_existe');g.magia.prep=g.conjuros.filter(c=>c===n?!!si:g.magia.prep.includes(c));return ok(g);}
 /* Listas libres: defensas (estados, res, inm, vul) y otras (idiomas, armas, armaduras, herramientas). */
@@ -853,7 +1057,7 @@ function arbol(bases,grupos){
   for(const g of grupos)for(const f of g.fichas){const e=f.base&&por.get(f.base);const it={f,campana:g.campana,nombre:g.nombre};if(e)e.copias.push(it);else huerfanas.push(it);}
   return {nodos:[...por.values()],huerfanas};
 }
-return {desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
+return {desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,recursosClase,sincRecursos,efectosClase,derivados,equipado,statblock,activar,desactivar,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
 })();
 </script>
 <script id="grupos-core">
@@ -1146,11 +1350,14 @@ window.Notas=(()=>{
   const stat=v=>{v=v&&typeof v==='object'?v:{};const n=(x,a,b)=>{if(x===''||x==null)return null;const y=Math.round(+x);return Number.isFinite(y)?Math.min(b,Math.max(a,y)):null;};
     const ab=Array.isArray(v.ab)?v.ab:[];
     return {ca:n(v.ca,0,40),pg:n(v.pg,1,99999),bi:n(v.bi,-10,30),vel:str(v.vel,60),ab:[0,1,2,3,4,5].map(i=>n(ab[i],1,30)),ataques:str(v.ataques,2000),notas:str(v.notas,2000)};};
+  /* clase de referencia de un PNJ: clase + nivel + características + equipo; de ahí sale su statblock */
+  const refc=v=>{v=v&&typeof v==='object'?v:{};const n=(x,a,b,d)=>{if(x===''||x==null)return d;const y=Math.round(+x);return Number.isFinite(y)?Math.min(b,Math.max(a,y)):d;},car=Array.isArray(v.car)?v.car:[];
+    return {c:/^[a-z]{0,20}$/.test(v.c||'')?(v.c||''):'',n:n(v.n,1,20,1),sub:str(v.sub,80),car:[0,1,2,3,4,5].map(i=>n(car[i],1,30,null)),hab:str(v.hab,400),eq:str(v.eq,600)};};
   /* campos permitidos por tipo y cómo se limpian */
   const CAMPOS={
     sesion:{fecha:'s',estado:'e',escenas:'x',encuentros:'d',inicio:'s',fin:'s',publico:'r',resumen:'r',paso:'s',extras:'d',lectura:'r'},
     diario:{fecha:'s',sesion:'s'},
-    npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p',stats:'t',inventario:'i',acompana:'b'},
+    npc:{rol:'s',lugar:'s',actitud:'s',aspecto:'s',quiere:'s',secreto:'s',criatura:'s',equipo:'s',eventos:'c',publico:'p',stats:'t',ref:'k',inventario:'i',acompana:'b'},
     lugar:{clase:'s',padre:'s',pines:'m',publico:'p',vermapa:'b',combate:'b'},
     tienda:{dueno:'s',lugar:'s',oro:'s',descuento:'s',mision:'s',inventario:'i',publico:'p',verinv:'b'},
     mision:{estado:'e',encargo:'s',recompensa:'s',objetivos:'c',publico:'p',verobj:'b'},
@@ -1163,7 +1370,7 @@ window.Notas=(()=>{
     const t=x.tipo,c={},src=x.campos&&typeof x.campos==='object'?x.campos:{};
     for(const [k,k2] of Object.entries(CAMPOS[t])){
       const v=src[k];
-      c[k]=k2==='t'?stat(v):k2==='b'?!!v:k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='r'?str(v,MAX.texto):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
+      c[k]=k2==='k'?refc(v):k2==='t'?stat(v):k2==='b'?!!v:k2==='m'?pines(v):k2==='x'?escs(v):k2==='p'?str(v,5000):k2==='r'?str(v,MAX.texto):k2==='c'?checks(v):k2==='d'?ids(v):k2==='i'?inv(v):k2==='e'?(ESTADOS[t].includes(v)?v:ESTADOS[t][0]):str(v,MAX.campo);
     }
     const img=typeof x.img==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)&&x.img.length<=(t==='handout'?MAX.mapa:MAX.img)?x.img:null;
     const mapa=t==='lugar'&&typeof x.mapa==='string'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.mapa)&&x.mapa.length<=MAX.mapa?x.mapa:null;
@@ -1648,6 +1855,13 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .hvcard p{margin:6px 0 0}
 .hvcard .hvf{margin-top:8px;padding-top:6px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
 @media (hover:none),(pointer:coarse){.hvcard{display:none!important}}
+.pjefs{flex-wrap:wrap;gap:6px}
+.pjef{display:inline-block;padding:3px 10px;border:1px solid var(--line);border-radius:99px;font-size:13px;line-height:1.35;background:var(--surface)}
+.pjef.on{border-color:var(--accent);color:var(--accent)}
+.pjest{flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.cpref{margin:14px 0}
+.cpref .f{margin:6px 0}
+.cpref #cpref-sb{margin-top:10px}
 .clgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .clcard{display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--fg);text-decoration:none;position:relative}
 .clcard:hover,.clcard:focus-visible{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -3253,7 +3467,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.123</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.124</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -3460,6 +3674,11 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.124 <span>25 nov 2026</span></h3><ul>
+      <li><b>La clase lo calcula casi todo.</b> Recursos (furia, inspiración, forma salvaje…), efectos de los rasgos con sus botones y subclases salen de los datos del compendio, para las 12 clases.</li>
+      <li><b>Statblock de personaje.</b> Se genera desde la clase y el equipo equipado: CA, ataques, acciones, acciones adicionales, reacciones y conjuros, con el formato de una criatura.</li>
+      <li><b>PNJ con clase de referencia.</b> Un PNJ puede llevar clase, nivel y equipo en vez de un statblock escrito a mano, y entra al combate con sus cifras.</li>
+      <li><b>Tablas de clase.</b> Progresión revisada y estructurada para los 20 niveles.</li></ul></li>
     <li><h3>v1.123 <span>25 nov 2026</span></h3><ul>
       <li><b>Ficha al pasar el ratón.</b> Cualquier elemento del compendio enseña un resumen flotante al señalarlo; los listados ya no se despliegan y abren su página.</li></ul></li>
     <li><h3>v1.122 <span>25 nov 2026</span></h3><ul>
@@ -7404,7 +7623,7 @@ function rasgosDeClases(cl){
 }
 function compLoad(){
   if(COMP_SRD||compLoading)return;compLoading=true;
-  getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;try{fillCompDL();}catch{}refreshCompView();renderHome();if(pjEdit==='new')pjRender();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
+  getJSON(DATA_FILES.comp).then(d=>{COMP_SRD=d||{};normClasses(COMP_SRD);COMP_SRD.rasgos=rasgosDeClases(COMP_SRD.clases);compLoading=false;try{if(pjCargado&&pjSyncRec())pjGuardar();}catch{}try{fillCompDL();}catch{}refreshCompView();renderHome();if(pjEdit==='new')pjRender();fillCompDL();if(curView()==='referencia')renderRef();if(!$('#bestmodal').hidden)renderBest();});
 }
 /* Reglas homebrew por campaña: sin ajuste guardado valen todas; con ajuste, solo las marcadas (en la configuración de la campaña, que viaja con ella). */
 /* Reglas homebrew que el máster tiene activas en la campaña: el jugador recibe una copia de solo lectura (clave camp-homebrew-v1). */
@@ -7609,6 +7828,10 @@ function extraAct(act,b,c,e){
       const pide=[4,8,12,16,19].includes(Ficha.nivelClase(s.f,L.c)+1)||(Ficha.CLASES[L.c].mej||[]).includes(Ficha.nivelClase(s.f,L.c)+1);
       if(pide)op.mejora=L.modo==='dote'?{dote:L.dote}:L.modo==='2'?{[L.a1]:2}:(L.a1===L.a2?{[L.a1]:2}:{[L.a1]:1,[L.a2]:1});
       if(pjCommit(Ficha.subir(s.f,op,s.lista==='campana'?{criterio:pjCriterio()}:null,pjCtx()),s,'subida')){pjCerrar();toast(PJROL==='dm'||s.lista!=='campana'?T('¡Sube de nivel!'):T('Subida de nivel propuesta'));}break;}
+    case 'pjstat':{const s=pjGet(pjSel);if(s){const h=sbHTML(pjStatM(s.f),null,{compact:true});
+      pjModal(T('Statblock'),'<p class="hint">'+esc(T('Generado desde la clase y lo que lleva equipado. Cambia el equipo o los efectos en la hoja y se actualiza.'))+'</p>'+h+'<div class="inline" style="margin-top:12px"><button type="button" class="btn primary" data-act="pjstatprint">'+esc(T('Imprimir'))+'</button></div>');}break;}
+    case 'pjstatprint':{const s=pjGet(pjSel);if(s){const h='<section class="prts">'+sbHTML(pjStatM(s.f),null,{compact:true})+'</section>';
+      pjCerrar();prtVista('Vista previa','<div class="inline"><button type="button" class="btn primary" data-act="prtvgo">'+esc(T('Imprimir'))+'</button><button type="button" class="btn ghost" data-act="prtvclose">'+esc(T('Cancelar'))+'</button></div>',()=>h);}break;}
     case 'pjexport':pjModo='exportar';pjModal(T('Exportar personaje'),pjExportHTML());break;
     case 'pjcopy':{const x=$('#pjx-txt');if(x){navigator.clipboard.writeText(x.value).then(()=>toast(T('Copiado')),()=>{x.select();toast(T('Selecciona y copia con Ctrl+C'));});}break;}
     case 'pjdl':{const s=pjGet(pjSel);if(!s)break;const x=$('#pjx-txt').value,json=pjExp.formato==='json',a=document.createElement('a');
@@ -7619,6 +7842,8 @@ function extraAct(act,b,c,e){
     case 'pjpact':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarPact(s.f,pjCtx()):Ficha.devolverPact(s.f,pjCtx()),s);break;}
     case 'pjrec':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarRecurso(s.f,b.dataset.id,pjCtx()):Ficha.devolverRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
     case 'pjrecdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.quitarRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
+    case 'pjact':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.activar(s.f,b.dataset.id,pjDatosClase(),pjCtx()),s);break;}
+    case 'pjdes':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.desactivar(s.f,b.dataset.id,pjCtx()),s);break;}
     case 'pjrecnew':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.nuevoRecurso(s.f,{n:$('#pjr-n').value,max:$('#pjr-m').value,rec:$('#pjr-r').value},pjCtx()),s);break;}
     case 'pjshort':pjRest={dados:[]};pjRender();break;
     case 'pjshortcancel':pjRest=null;pjRender();break;
@@ -8207,14 +8432,65 @@ const CLSN={barbaro:'Bárbaro',bardo:'Bardo',brujo:'Brujo',clerigo:'Clérigo',dr
 const CLSC={barbaro:'#d0453c',bardo:'#c15fa8',brujo:'#7a4bd0',clerigo:'#d9b24a',druida:'#4f9a5a',explorador:'#6f9a3a',guerrero:'#b07a45',hechicero:'#e0663f',mago:'#3d7bd9',monje:'#3aa3a3',paladin:'#e0c060',picaro:'#7c8798'};
 const ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
 const ABK={fue:'FUE',des:'DES',con:'CON',int:'INT',sab:'SAB',car:'CAR'};
-const PJERR={sin_espacio:'No quedan espacios de ese nivel',agotado:'Recurso agotado',sin_dados:'No quedan dados de golpe',dado_invalido:'Resultado de dado no válido',faltan_xp:'Aún no tiene la experiencia necesaria',sin_hito:'El máster aún no ha concedido la subida',nivel_maximo:'Ya es de nivel 20',falta_mejora:'Este nivel exige una mejora de característica o una dote',mejora_invalida:'La mejora no es válida',mejora_no_toca:'Este nivel no da mejora',tope_20:'Una característica no puede pasar de 20',bloqueado:'En un personaje de campaña eso solo cambia al subir de nivel',solo_dm:'Solo el máster puede hacerlo',hp_invalido:'El resultado de PG no es válido',clase_invalida:'Clase no válida',nada_que_devolver:'No hay nada que devolver',vacio:'Escribe algo primero',solo_campana:'Solo en personajes de campaña',sin_nombre:'Ponle un nombre',demasiados:'Hay demasiados',no_existe:'No existe'};
+const PJERR={ya_activo:'Ya está activo',sin_espacio:'No quedan espacios de ese nivel',agotado:'Recurso agotado',sin_dados:'No quedan dados de golpe',dado_invalido:'Resultado de dado no válido',faltan_xp:'Aún no tiene la experiencia necesaria',sin_hito:'El máster aún no ha concedido la subida',nivel_maximo:'Ya es de nivel 20',falta_mejora:'Este nivel exige una mejora de característica o una dote',mejora_invalida:'La mejora no es válida',mejora_no_toca:'Este nivel no da mejora',tope_20:'Una característica no puede pasar de 20',bloqueado:'En un personaje de campaña eso solo cambia al subir de nivel',solo_dm:'Solo el máster puede hacerlo',hp_invalido:'El resultado de PG no es válido',clase_invalida:'Clase no válida',nada_que_devolver:'No hay nada que devolver',vacio:'Escribe algo primero',solo_campana:'Solo en personajes de campaña',sin_nombre:'Ponle un nombre',demasiados:'Hay demasiados',no_existe:'No existe'};
 var PJROL=(()=>{try{return Store.campaigns.rol()==='jugador'||Store.root.get('pj-rol')==='jugador'?'jugador':'dm';}catch{return 'dm';}})();   // el rol sale de la campaña; el máster puede probar la vista de jugador
 var PJ=[],PJC=[],pjCargado=false,pjSel=null,pjEdit=null,pjRest=null,pjLvl=null,pjModo='';
 function pjLoad(){pjCargado=true;
   const rd=raw=>{try{const a=JSON.parse(raw||'[]');return (Array.isArray(a)?a:[]).slice(0,200).map(Ficha.norm).filter(Boolean);}catch{return [];}};
   PJ=rd(Store.root.get(PJKEY));PJC=rd(Store.get(PJCKEY));
+  try{compLoad();}catch{}   // los datos de clase del compendio llegan después: al cargarse, los recursos se sincronizan
+  try{if(pjSyncRec())pjGuardar();}catch{}
 }
-function pjGuardar(){try{Store.root.set(PJKEY,JSON.stringify(PJ));Store.set(PJCKEY,JSON.stringify(PJC));}catch{toast(T('No se pudo guardar'));}try{mesaGrupoSend();}catch{}}
+/* recursos de clase: se crean y ajustan solos a partir de los datos del compendio (x.prog y x.recursos), sin programar nada por clase */
+function pjDatosClase(){
+  if(!COMP_SRD)return null;
+  const o={};for(const x of compList('clases')){const k=Object.keys(Ficha.CLASES).find(c=>fold(c)===fold(x.n));if(k&&x.prog&&!o[k])o[k]=x;}
+  return o;
+}
+const EF_EN={'salv:muerte':'salvaciones contra muerte','prueba:atletismo':'Atletismo','ataque':'tu siguiente ataque','salv:des':'salvaciones de Destreza','salv:fue':'salvaciones de Fuerza','prueba:fue':'pruebas de Fuerza','ataque:fue':'ataques con Fuerza','iniciativa':'iniciativa'};
+/* efectos de los rasgos de clase: estados con botón y lo que está siempre activo, cada cosa con su origen */
+function pjEfectosHTML(f){
+  const dd=pjDatosClase();if(!dd)return '';
+  const d=Ficha.derivados(f,dd);
+  if(!d.estados.length&&!d.ca.length&&!d.vel.length&&!d.ventaja.length&&!d.ataques&&!d.avisos.length&&!d.inmune.length&&!d.cd.length&&d.critico>=20)return '';
+  const chip=(t,o,c)=>'<span class="pjef'+(c?' '+c:'')+'" title="'+esc(o)+'">'+esc(t)+'</span>';
+  let h='<div class="pjbox"><h3>'+esc(T('Efectos de clase'))+'</h3>';
+  if(d.estados.length)h+='<div class="pjrow pjest">'+d.estados.map(e=>{
+    const q=e.gasta&&f.recursos.find(r=>r.a===e.gasta),sin=q&&q.uso>=q.max;
+    return e.activo?'<button type="button" class="btn sm primary" data-act="pjdes" data-id="'+esc(e.id)+'" title="'+esc(e.o)+'">'+esc(e.n)+' · '+esc(T('activo'))+' ✕</button>'
+      :'<button type="button" class="btn sm" data-act="pjact" data-id="'+esc(e.id)+'"'+(sin?' disabled':'')+' title="'+esc(e.o+(e.cond?' — '+e.cond:'')+(e.dur?' · '+e.dur:''))+'">'+esc(T(e.inst?'Usar':'Activar'))+' '+esc(e.n.toLowerCase())+(q?' <small>('+(q.max-q.uso)+')</small>':'')+'</button>';}).join('')+'</div>';
+  const w=[];
+  for(const x of d.ca)w.push(chip('CA '+x.v+' '+T('sin armadura'),x.o+(x.cond?' — '+x.cond:'')));
+  for(const x of d.vel)w.push(chip('+'+x.v+' m '+T('velocidad'),x.o+(x.cond?' — '+x.cond:'')));
+  if(d.ataques>1)w.push(chip(d.ataques+' '+T('ataques por acción de atacar'),'Ataque adicional'));
+  for(const x of d.ventaja)w.push(chip(T('Ventaja')+': '+T(EF_EN[x.en]||x.en)+(x.estado?'':''),x.o+(x.cond?' — '+x.cond:''),x.estado?'on':''));
+  for(const x of d.resiste)w.push(chip(T('Resistencia')+': '+x.tipos.join(', '),x.o,'on'));
+  for(const x of d.dano)w.push(chip(T('Daño')+' '+(typeof x.v==='number'?'+'+x.v:x.v)+(x.cond?' ('+x.cond+')':''),x.o,'on'));
+  if(d.critico<20)w.push(chip(T('Crítico')+' '+d.critico+'–20',T('Crítico mejorado')));
+  for(const x of d.inmune)w.push(chip(T('Inmune')+': '+x.estados.join(', '),x.o,x.estado?'on':''));
+  for(const x of d.cd)w.push(chip(x.n+' CD '+x.v,x.o));
+  for(const x of d.avisos)w.push(chip(x.txt,x.o,x.estado?'on':''));
+  h+=(w.length?'<div class="pjrow pjefs">'+w.join('')+'</div>':'')+'<p class="pcsub">'+esc(T('Cada efecto muestra su origen al pasar el ratón. Los activos solo valen mientras dura el estado; se terminan con un descanso.'))+'</p></div>';
+  return h;
+}
+/* statblock de un personaje: clase + equipo equipado (objetos del compendio), con el formato de una criatura del bestiario */
+const pjEq=n=>compList('objetos').find(x=>fold(x.n)===fold(n))||null;
+function pjStatM(f){
+  const s=Ficha.statblock(f,pjDatosClase()||{},pjEq,n=>SPELLS[String(n).toLowerCase()]||null),par=(l)=>l.map(x=>[x.n,x.t]);
+  const hab=s.hab.map(x=>x.n+' '+(x.b>=0?'+':'')+x.b+(x.pericia?' (pericia)':'')).join(', ');
+  const D=k=>f.defensas[k].join(', ');
+  return {n:s.n||'Sin nombre',tyl:s.cls+' · '+T('Nivel')+' '+Ficha.nivel(f)+' · '+T('competencia')+' +'+s.pb,
+    ac:String(s.ca.v)+(s.ca.o?' ('+s.ca.o+')':''),hp:s.pg.max,sp:s.vel,in:s.ini.v,ab:s.car.map(c=>c.v),sv:s.car.map(c=>c.s),
+    sk:hab,vu:D('vul'),re:D('res'),im:D('inm'),pp:s.pp,la:s.idiomas.join(', '),eq:s.equipo.join(', '),
+    t:[...par(s.libres.map(x=>({n:x.n,t:'Sin acción. '+x.t}))),...par(s.rasgos),...s.avisos.map(a=>[T('Equipo'),a])],
+    a:par(s.acciones),b:par(s.adicionales),r:par(s.reacciones)};
+}
+function pjSyncRec(){
+  const dd=pjDatosClase();if(!dd)return false;let cambio=false;
+  for(const L of [PJ,PJC])for(let i=0;i<L.length;i++){const g=Ficha.sincRecursos(L[i],dd);if(JSON.stringify(g.recursos)!==JSON.stringify(L[i].recursos)){L[i]=g;cambio=true;}}
+  return cambio;
+}
+function pjGuardar(){try{pjSyncRec();}catch{}try{Store.root.set(PJKEY,JSON.stringify(PJ));Store.set(PJCKEY,JSON.stringify(PJC));}catch{toast(T('No se pudo guardar'));}try{mesaGrupoSend();}catch{}}
 /* ---------- diario del personaje: capítulos de su vida, solo para su jugador y el máster ----------
    Un diario por ficha de campaña, guardado en la copia local de la campaña y sincronizado como «dia:<id de la ficha>». */
 const DIAKEY='camp-diarios-v1',DIA_MAXCAP=100;
@@ -8698,7 +8974,7 @@ function pjSheetHTML(f,lista){
    +'<div class="pjrow"><b>'+esc(pjCls(f))+'</b>'+(new Set(f.niveles.map(n=>n.c)).size>1?'<span>'+esc(T('Nivel'))+' '+N+'</span>':'')+'<span class="pjtag">'+esc(camp?T('De campaña'):T('Libre'))+'</span><span class="pcsub">'+esc(T('Competencia'))+' '+pjSgn(pb)+'</span></div>'
    +'<div class="pjrow"><label>'+esc(T('Especie'))+inp('especie',f.especie,'',' list="cm-esp-dl" maxlength="80"')+'</label><label>'+esc(T('Trasfondo'))+inp('trasfondo',f.trasfondo,'',' list="cm-tf-dl" maxlength="80"')+'</label>'
    +'<label>'+esc(T('Subclase'))+inp('subclase',f.subclase,'',' maxlength="80"')+'</label><label>'+esc(T('Tamaño'))+inp('tamano',f.tamano,'',' maxlength="20" style="width:110px"')+'</label></div></div>'
-   +'<div class="pjrow"><button type="button" class="btn primary" data-act="pjlevel">'+esc(T('Subir de nivel'))+'</button><button type="button" class="btn" data-act="pjexport">'+esc(T('Exportar'))+'</button><button type="button" class="btn" data-act="pjprint">'+esc(T('Imprimir / guardar PDF'))+'</button></div></div>';
+   +'<div class="pjrow"><button type="button" class="btn primary" data-act="pjlevel">'+esc(T('Subir de nivel'))+'</button><button type="button" class="btn" data-act="pjstat">'+esc(T('Statblock'))+'</button><button type="button" class="btn" data-act="pjexport">'+esc(T('Exportar'))+'</button><button type="button" class="btn" data-act="pjprint">'+esc(T('Imprimir / guardar PDF'))+'</button></div></div>';
   grpSync();h+=pjRelHTML(f)+pjPendientesHTML(f);
   if(camp)h+='<p class="pjlock">'+esc(T('Este personaje pertenece a la campaña: el nivel, los PG máximos y las características solo cambian al subir de nivel.'))+'</p>';
   // características
@@ -8723,8 +8999,9 @@ function pjSheetHTML(f,lista){
      +(esp.pact?'<li><span>'+esc(T('Magia de pacto'))+' ('+esc(T('nivel'))+' '+esp.pact.nivel+')</span>'+pjPips(esp.pact.n,f.pactUsados,'pjpact','')+'</li>':'')+'</ul></div>';
   }
   // recursos
-  h+='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist">'+f.recursos.map(r=>'<li><span><b>'+esc(r.n)+'</b> <small class="pcsub">'+esc(r.rec==='corto'?T('Descanso corto'):r.rec==='largo'?T('Descanso largo'):T('Sin recarga'))+'</small></span><span class="pjrow">'+pjPips(r.max,r.uso,'pjrec',' data-id="'+esc(r.id)+'"')+'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(r.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
+  h+='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist">'+f.recursos.map(r=>'<li><span><b>'+esc(r.n)+'</b> <small class="pcsub">'+esc(r.rec==='corto'?T('Descanso corto'):r.rec==='largo'?T('Descanso largo'):T('Sin recarga'))+(r.cor?' · '+esc(T('1 en descanso corto')):'')+(r.a?' · '+esc(T('de la clase')):'')+'</small></span><span class="pjrow">'+pjPips(r.max,r.uso,'pjrec',' data-id="'+esc(r.id)+'"')+(r.a?'':'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(r.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button>')+'</span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
    +'<div class="pjrow"><input id="pjr-n" placeholder="'+esc(T('Nombre'))+'" maxlength="60"><input id="pjr-m" type="number" min="1" max="99" value="1" aria-label="'+esc(T('Usos'))+'"><select id="pjr-r" aria-label="'+esc(T('Recarga'))+'"><option value="largo">'+esc(T('Descanso largo'))+'</option><option value="corto">'+esc(T('Descanso corto'))+'</option><option value="">'+esc(T('Sin recarga'))+'</option></select><button type="button" class="btn sm" data-act="pjrecnew">'+esc(T('Añadir'))+'</button></div></div>';
+  h+=pjEfectosHTML(f);
   h+=pjDet('hab','Habilidades y salvaciones',pjHabHTML(f),pjPend(f,'habil','salvac'))+pjDet('atq','Ataques',pjAtqHTML(f),pjPend(f,'ataques'))+pjDet('ras','Rasgos y características de clase',pjRasHTML(f),pjPend(f,'rasgos'));
   // experiencia / hito
   const crit=pjCriterio(),sig=N<20?Ficha.XP[N]:0;
@@ -9099,6 +9376,32 @@ function cpEncs(it){
   const libres=PRESETS.filter(p=>!ids.includes(p.id));
   return '<div class="cpck" data-f="encuentros"><h4>'+T('Encuentros sin escena')+'</h4>'+rows+(libres.length?'<div class="cplink bfilters"><select id="cp-encsel" aria-label="'+T('Añadir encuentro…')+'"><option value="">'+T('Añadir encuentro…')+'</option>'+libres.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></div>':'<p class="hint">'+T('Aún no hay encuentros guardados. Guárdalos desde Combate.')+'</p>')+'</div>';
 }
+/* PNJ con clase de referencia: de clase, nivel, características, habilidades y equipo sale una ficha efímera y de ella su statblock */
+function pjRefFicha(it){
+  const r=it&&it.campos&&it.campos.ref,dd=pjDatosClase();
+  if(!r||!r.c||!dd||!dd[r.c]||!Ficha.CLASES[r.c])return null;
+  const d=Ficha.CLASES[r.c].d,habil={};
+  for(const t of String(r.hab||'').split(',')){const k=pjwHabKey(t.trim());if(k)habil[k]=1;}
+  const eq=String(r.eq||'').split(',').map(x=>x.trim()).filter(Boolean).map((n,i)=>({id:'e'+i,n,q:1,eq:true}));
+  return Ficha.norm({id:'npc_'+it.id,nombre:cpName(it),subclase:r.sub||'',car:Object.fromEntries(Ficha.AB.map((a,i)=>[a,r.car[i]||10])),habil,
+    niveles:Array.from({length:r.n},(_,i)=>({c:r.c,hp:i?Math.floor(d/2)+1:d})),inventario:eq});
+}
+function cpRefM(it){const f=pjRefFicha(it);return f?pjStatM(f):null;}
+function cpRefSb(it){const m=cpRefM(it);return m?sbHTML(m,null,{compact:true}):'<p class="hint">'+esc(T('Elige una clase para generar su statblock.'))+'</p>';}
+function cpRef(it){
+  const r=it.campos.ref||{c:'',n:1,sub:'',car:[],hab:'',eq:''},dd=pjDatosClase()||{},ks=Object.keys(dd);
+  const eqNombres=compList('objetos').filter(x=>x.arma||x.arm).map(x=>x.n);
+  const subs=(dd[r.c]&&dd[r.c].sub)||[];
+  return `<div class="cpref"><h4>${esc(T('Clase de referencia'))}</h4>
+    <p class="hint" style="display:block">${esc(T('En vez de escribir un statblock, dale una clase, un nivel y un equipo: se genera solo (CA, ataques, acciones, reacciones, conjuros) y es lo que entra al combate si no has rellenado estadísticas propias.'))}</p>
+    <div class="cpst4"><label class="f">${esc(T('Clase'))}<select data-cpref="c" id="cpref-c"><option value="">—</option>${ks.map(k=>`<option value="${k}"${k===r.c?' selected':''}>${esc(CLSN[k]||k)}</option>`).join('')}</select></label>
+      <label class="f">${esc(T('Nivel'))}<input type="number" min="1" max="20" data-cpref="n" value="${r.n}"></label>
+      <label class="f">${esc(T('Subclase'))}<input type="text" list="cpref-subs" data-cpref="sub" value="${esc(r.sub)}" maxlength="80"><datalist id="cpref-subs">${subs.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label></div>
+    <div class="cpst6">${Ficha.AB.map((a,i)=>`<label class="f"><span>${a.toUpperCase()}</span><input type="number" inputmode="numeric" data-cpref="car:${i}" value="${r.car[i]==null?'':r.car[i]}" placeholder="10" aria-label="${a}"></label>`).join('')}</div>
+    <label class="f">${esc(T('Habilidades competentes (separadas por comas)'))}<input type="text" data-cpref="hab" value="${esc(r.hab)}" placeholder="Atletismo, Percepción"></label>
+    <label class="f">${esc(T('Equipo equipado (armas y armaduras del compendio, separadas por comas)'))}<input type="text" list="cpref-eq" data-cpref="eq" value="${esc(r.eq)}" placeholder="Cota de malla, Escudo, Espada larga"><datalist id="cpref-eq">${eqNombres.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>
+    <div id="cpref-sb">${r.c?cpRefSb(it):''}</div></div>`;
+}
 function cpCreature(i){
   const k=i.campos.criatura,m=k&&tpl(k);
   if(k&&!m&&k.startsWith('srd:')&&!SRD_ALL.length)return `<div class="cpcr"><h4>${T('Ficha de criatura')}</h4><p class="hint">${T('Cargando…')}</p></div>`;
@@ -9120,6 +9423,12 @@ function cpStats(it){
 /* ¿Qué entra al combate de este PNJ? Sus estadísticas propias mandan; lo que falte sale de la criatura vinculada. */
 function cpNpcFila(it){
   const s=it.campos.stats||{},k=it.campos.criatura,t=k?tpl(k):null,propio=!cpStatsVacio(s);
+  const rf=!propio?pjRefFicha(it):null;
+  if(rf){
+    const sb=Ficha.statblock(rf,pjDatosClase()||{},pjEq,n=>SPELLS[String(n).toLowerCase()]||null);
+    const atq=sb.acciones.filter(a=>/^Tirada de ataque/.test(a.t)&&a.n!=='Ataque sin armas').slice(0,4).map(a=>{const b=/: ([+-]\d+),/.exec(a.t),dm=/\(([^)]+)\)/.exec(a.t);return a.n+' '+(b?b[1]:'')+(dm?' ('+dm[1]+')':'');});
+    return {tpl:null,name:cpName(it),ac:sb.ca.v,initBonus:sb.ini.v,maxHp:sb.pg.max,notes:[sb.cls,atq.join('; ')].filter(Boolean).join(' · ').slice(0,300),npc:it.id};
+  }
   if(!t&&!propio)return null;
   const notas=[s.ataques,s.notas].filter(Boolean).join(' · ').replace(/\s*\n\s*/g,' · ').slice(0,300);
   return {tpl:t?k:null,name:cpName(it),ac:s.ca!=null?s.ca:(t?t.ac:null),initBonus:s.bi!=null?s.bi:(t?(t.in??0):0),maxHp:s.pg!=null?s.pg:(t?null:1),notes:notas,npc:it.id};
@@ -9196,7 +9505,7 @@ function cpRenderDet(){
   el.innerHTML=`${dl}${it.tipo==='lugar'?cpMigas(it):''}${head}${tabs}${it.tipo==='npc'?`<label class="cpacomp"><input type="checkbox" data-cpf="campos.acompana"${it.campos.acompana?' checked':''}> <span><b>${esc(T('Acompaña ahora al grupo'))}</b><small>${esc(T('Al empezar un combate se te preguntará si entra con los jugadores.'))}</small></span></label>`:''}
     <div class="cpfields">${CPF[it.tipo].filter(f=>f[2]!=='area').map(f=>cpField(it,f)).join('')}</div>${CPF[it.tipo].some(f=>f[2]==='area')?`<div class="cpareas">${CPF[it.tipo].filter(f=>f[2]==='area').map(f=>cpField(it,f)).join('')}</div>`:''}${it.tipo==='tienda'?cpDescEstado(it):''}
     ${CPIMG.includes(it.tipo)?`<div class="cpimgbox">${it.img?`<img class="cpimg" src="${it.img}" alt="">`:''}<label class="btn sm">${it.img?T('Cambiar imagen'):T('Añadir imagen')}<input type="file" accept="image/*" id="cp-img" hidden></label>${it.img?`<button type="button" class="btn sm ghost" data-act="cpimgrm">${T('Quitar imagen')}</button>`:''}${it.img&&window.__AppShell?`<button type="button" class="btn sm primary" data-act="cpmesa">${T('Mostrar en la mesa')}</button><button type="button" class="btn sm ghost" data-act="cpmesaclear">${T('Limpiar la mesa')}</button>`:''}</div>`:''}${it.tipo==='npc'?cpTokBox(it):''}
-    ${it.tipo==='npc'?cpStats(it)+cpCreature(it):''}
+    ${it.tipo==='npc'?cpStats(it)+cpRef(it)+cpCreature(it):''}
     ${it.tipo==='lugar'?cpMapa(it):''}
     ${it.tipo==='handout'?cpHandout(it):''}
     ${it.tipo==='tienda'||it.tipo==='npc'?cpInv(it):''}
@@ -9278,11 +9587,18 @@ function cpImage(file,it,hecho){
       const k=t.dataset.cpst,val=t.type==='number'?(t.value===''?null:+t.value):t.value;
       if(k.startsWith('ab:'))st.ab[+k.slice(3)]=val;else st[k]=val;
       it.editado=Date.now();cpSoon();}
+    else if(t.dataset.cpref){const r=it.campos.ref=it.campos.ref&&typeof it.campos.ref==='object'?it.campos.ref:{c:'',n:1,sub:'',car:[null,null,null,null,null,null],hab:'',eq:''};
+      r.car=Array.isArray(r.car)?r.car:[null,null,null,null,null,null];
+      const k=t.dataset.cpref,v=t.type==='number'?(t.value===''?null:+t.value):t.value;
+      if(k.startsWith('car:'))r.car[+k.slice(4)]=v;else if(k==='n')r.n=Math.min(20,Math.max(1,v||1));else if(k==='c'){r.c=v;r.sub='';}else r[k]=v;
+      it.editado=Date.now();cpSoon();
+      if(k==='c')cpRenderDet();else{const sb=$('#cpref-sb');if(sb&&r.c)sb.innerHTML=cpRefSb(it);}}
     else if(t.dataset.cpinv){const [n,w]=t.dataset.cpinv.split(':'),r=it.campos.inventario?.[+n];if(r){r[w]=t.value;it.editado=Date.now();cpSoon();}}
   });
   det.addEventListener('toggle',e=>{const d=e.target;if(d.classList&&d.classList.contains('esc')){const k=cpSel+':'+d.dataset.n;if(d.open)cpEscAb.add(k);else cpEscAb.delete(k);}},true);
   det.addEventListener('change',e=>{
     const it=cpGet(cpSel);if(!it)return;const t=e.target;
+    if(t.dataset.cpref==='c'){t.dispatchEvent(new Event('input',{bubbles:true}));return;}
     if(t.dataset.cpf==='tipo'){
       const n=Notas.norm({...it,tipo:t.value,campos:it.campos});if(!n)return;
       Object.assign(it,n,{id:it.id});it.editado=Date.now();cpDirty=true;cpFlush();location.hash=Notas.href(it);
@@ -9510,7 +9826,7 @@ function prtItem(it){
   if(it.tipo==='tienda'&&(c.inventario||[]).length)h+='<table class="prttab"><thead><tr><th>'+esc(T('Objeto'))+'</th><th>'+esc(T('Precio'))+'</th><th>'+esc(T('Cant.'))+'</th></tr></thead><tbody>'+c.inventario.map(i=>'<tr><td class="noi18n">'+esc(i.n)+'</td><td class="noi18n">'+esc(i.p)+'</td><td class="noi18n">'+esc(i.c)+'</td></tr>').join('')+'</tbody></table>';
   if(it.tipo==='mision'&&(c.objetivos||[]).length)h+='<ul class="prtck">'+c.objetivos.map(o=>'<li><span class="box">'+(o.ok?'☑':'☐')+'</span> <span class="noi18n">'+esc(o.t)+'</span></li>').join('')+'</ul>';
   if(it.tipo==='lugar'&&it.mapa)h+='<figure class="prtmapa"><img src="'+it.mapa+'" alt="">'+((c.pines||[]).length?'<figcaption class="noi18n">'+esc((c.pines||[]).map(q=>q.l).join(' · '))+'</figcaption>':'')+'</figure>';
-  if(it.tipo==='npc'){if(c.equipo)h+='<p><b>'+esc(T('Equipo'))+':</b> <span class="noi18n">'+esc(c.equipo)+'</span></p>';h+=prtFicha(c.criatura&&tpl(c.criatura));}
+  if(it.tipo==='npc'){if(c.equipo)h+='<p><b>'+esc(T('Equipo'))+':</b> <span class="noi18n">'+esc(c.equipo)+'</span></p>';h+=prtFicha(c.criatura&&tpl(c.criatura));const rm=cpRefM(it);if(rm)h+='<div class="prtsb">'+sbHTML(rm,null,{compact:true})+'</div>';}
   return h+'</article>';
 }
 /* sel: secciones marcadas. Devuelve el HTML del cuaderno; cada sección empieza en página nueva para poder separarlas. */

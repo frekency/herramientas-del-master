@@ -1,0 +1,248 @@
+{
+  "_": "Recursos que da cada clase (SRD 5.2.1). max: {col} columna de la tabla de progresión (x.prog) · {mod:'car',min:1} modificador · {por_nv:5} por nivel de clase · {lv:{'2':1,'17':2}} escalones por nivel · número fijo. rec: 'corto' o 'largo' (qué descanso lo devuelve entero); recNv: cambios de recarga por nivel; cor: usos que devuelve un descanso corto además. nv: nivel desde el que existe.",
+  "Bárbaro": [
+    {
+      "id": "furia",
+      "n": "Furia",
+      "max": {
+        "col": "furias"
+      },
+      "rec": "largo",
+      "cor": 1
+    }
+  ],
+  "Bardo": [
+    {
+      "id": "inspiracion",
+      "n": "Inspiración bárdica",
+      "max": {
+        "mod": "car",
+        "min": 1
+      },
+      "rec": "largo",
+      "recNv": {
+        "5": "corto"
+      }
+    }
+  ],
+  "Brujo": [
+    {
+      "id": "astucia_magica",
+      "n": "Astucia mágica",
+      "nv": 2,
+      "max": 1,
+      "rec": "largo"
+    },
+    {
+      "id": "arcanum_6",
+      "n": "Arcanum místico (nivel 6)",
+      "nv": 11,
+      "max": 1,
+      "rec": "largo"
+    },
+    {
+      "id": "arcanum_7",
+      "n": "Arcanum místico (nivel 7)",
+      "nv": 13,
+      "max": 1,
+      "rec": "largo"
+    },
+    {
+      "id": "arcanum_8",
+      "n": "Arcanum místico (nivel 8)",
+      "nv": 15,
+      "max": 1,
+      "rec": "largo"
+    },
+    {
+      "id": "arcanum_9",
+      "n": "Arcanum místico (nivel 9)",
+      "nv": 17,
+      "max": 1,
+      "rec": "largo"
+    }
+  ],
+  "Clérigo": [
+    {
+      "id": "canalizar",
+      "n": "Canalizar divinidad",
+      "nv": 2,
+      "max": {
+        "col": "canalizar"
+      },
+      "rec": "largo",
+      "cor": 1
+    },
+    {
+      "id": "intercesion",
+      "n": "Intercesión divina",
+      "nv": 10,
+      "max": 1,
+      "rec": "largo"
+    }
+  ],
+  "Druida": [
+    {
+      "id": "forma_salvaje",
+      "n": "Forma salvaje",
+      "nv": 2,
+      "max": {
+        "col": "forma_salvaje"
+      },
+      "rec": "largo",
+      "cor": 1
+    }
+  ],
+  "Explorador": [
+    {
+      "id": "enemigo_predilecto",
+      "n": "Enemigo predilecto",
+      "max": {
+        "col": "enemigo_predilecto"
+      },
+      "rec": "largo"
+    },
+    {
+      "id": "infatigable",
+      "n": "Infatigable",
+      "nv": 10,
+      "max": {
+        "mod": "sab",
+        "min": 1
+      },
+      "rec": "largo"
+    },
+    {
+      "id": "velo",
+      "n": "Velo de la naturaleza",
+      "nv": 14,
+      "max": {
+        "mod": "sab",
+        "min": 1
+      },
+      "rec": "largo"
+    }
+  ],
+  "Guerrero": [
+    {
+      "id": "tomar_aliento",
+      "n": "Tomar aliento",
+      "max": {
+        "col": "tomar_aliento"
+      },
+      "rec": "largo",
+      "cor": 1
+    },
+    {
+      "id": "accion_subita",
+      "n": "Acción súbita",
+      "nv": 2,
+      "max": {
+        "lv": {
+          "2": 1,
+          "17": 2
+        }
+      },
+      "rec": "corto"
+    },
+    {
+      "id": "indomito",
+      "n": "Indómito",
+      "nv": 9,
+      "max": {
+        "lv": {
+          "9": 1,
+          "13": 2,
+          "17": 3
+        }
+      },
+      "rec": "largo"
+    }
+  ],
+  "Hechicero": [
+    {
+      "id": "hechiceria_innata",
+      "n": "Hechicería innata",
+      "max": 2,
+      "rec": "largo"
+    },
+    {
+      "id": "hechiceria",
+      "n": "Puntos de hechicería",
+      "nv": 2,
+      "max": {
+        "col": "hechiceria"
+      },
+      "rec": "largo"
+    }
+  ],
+  "Mago": [
+    {
+      "id": "recuperacion_arcana",
+      "n": "Recuperación arcana",
+      "max": 1,
+      "rec": "largo"
+    }
+  ],
+  "Monje": [
+    {
+      "id": "concentracion",
+      "n": "Puntos de concentración",
+      "nv": 2,
+      "max": {
+        "col": "concentracion"
+      },
+      "rec": "corto"
+    },
+    {
+      "id": "metabolismo",
+      "n": "Metabolismo asombroso",
+      "nv": 2,
+      "max": 1,
+      "rec": "largo"
+    }
+  ],
+  "Paladín": [
+    {
+      "id": "imponer_manos",
+      "n": "Imponer las manos",
+      "max": {
+        "por_nv": 5
+      },
+      "rec": "largo"
+    },
+    {
+      "id": "canalizar",
+      "n": "Canalizar divinidad",
+      "nv": 3,
+      "max": {
+        "col": "canalizar"
+      },
+      "rec": "largo",
+      "cor": 1
+    },
+    {
+      "id": "castigo",
+      "n": "Castigo de paladín",
+      "nv": 2,
+      "max": 1,
+      "rec": "largo"
+    },
+    {
+      "id": "corcel",
+      "n": "Corcel fiel",
+      "nv": 5,
+      "max": 1,
+      "rec": "largo"
+    }
+  ],
+  "Pícaro": [
+    {
+      "id": "golpe_suerte",
+      "n": "Golpe de suerte",
+      "nv": 20,
+      "max": 1,
+      "rec": "corto"
+    }
+  ]
+}

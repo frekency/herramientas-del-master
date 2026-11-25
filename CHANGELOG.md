@@ -4,6 +4,17 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.124.0] - 2026-11-25
+### Añadido
+- **Recursos de clase desde los datos:** furia, inspiración bárdica, forma salvaje, acción súbita, canalizar divinidad, etc. se crean, ajustan y recargan solos según clase, nivel y características; descanso corto y largo devuelven lo que toca.
+- **Efectos de los rasgos:** las 12 clases y sus subclases del SRD tienen sus efectos como datos (`tools/efectos-clase.json`): botones de estado (furia, ataque temerario…), usos instantáneos, inmunidades, ventajas, CD y avisos, cada uno con su origen.
+- **Armas y armaduras estructuradas** (`tools/equipo.mjs`): daño, propiedades, alcance, maestría, CA, límite de Destreza y Fuerza mínima.
+- **Statblock de personaje:** botón «Statblock» en la hoja; CA del equipo, ataques con tirada, multiataque, acciones, acciones adicionales, reacciones y lista de conjuros; se imprime.
+- **PNJ con clase de referencia:** clase, nivel, subclase, características, habilidades y equipo generan su statblock y lo que entra al combate.
+- **Progresión de clase estructurada** (`tools/prog-clases.mjs`) para los 20 niveles de cada clase.
+### Corregido
+- Tablas de progresión de las clases (Paladín nivel 20 y cinco subclases) y reglas de tablas de conjuros del SRD.
+
 ## [1.123.2] - 2026-11-25
 ### Corregido
 - **Campos de formulario:** el buscador y los campos de dados de la mesa salían con la caja gris del navegador; ahora todo campo sin diseño propio usa la línea inferior.

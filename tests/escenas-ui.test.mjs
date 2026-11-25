@@ -67,7 +67,7 @@ const TAIL=`<script>
     // PNJ: bloque de estadísticas propio, inventario y «acompaña al grupo» al empezar un combate
     try{
     const np=Notas.nuevo('npc','Brisa la escolta');np.campos.secreto='Es una espía';CP.push(np);cpDirty=true;cpFlush();cpSel=np.id;cpTipo='npc';cpRenderDet();
-    ok('el PNJ tiene bloque de estadísticas, casilla de acompañar e inventario',!!document.querySelector('.cpst [data-cpst="ca"]')&&document.querySelectorAll('.cpst6 input').length===6&&!!document.querySelector('[data-cpf="campos.acompana"]')&&!!document.querySelector('[data-act="cpadd"][data-f="inventario"]'));
+    ok('el PNJ tiene bloque de estadísticas, casilla de acompañar e inventario',!!document.querySelector('.cpst [data-cpst="ca"]')&&document.querySelectorAll('.cpst .cpst6 input').length===6&&!!document.querySelector('[data-cpf="campos.acompana"]')&&!!document.querySelector('[data-act="cpadd"][data-f="inventario"]'));
     await typeIn('[data-cpst="ca"]','15');await typeIn('[data-cpst="pg"]','27');await typeIn('[data-cpst="bi"]','3');await typeIn('[data-cpst="ab:1"]','16');await typeIn('[data-cpst="ataques"]','Estoque: +5, 1d8+3');
     const ne=cpGet(np.id).campos.stats;
     ok('las estadísticas se guardan',ne.ca===15&&ne.pg===27&&ne.bi===3&&ne.ab[1]===16&&/Estoque/.test(ne.ataques));

@@ -1,0 +1,1551 @@
+{
+ "_": "Efectos de los rasgos de clase (SRD 5.2.1), por clase y nombre de rasgo tal como sale en la tabla de progresión. Vocabulario cerrado: ca {f:'10+des+con'} · vel {v:3} · ventaja {en:['salv:des','prueba:fue','ataque:fue','iniciativa']} · resiste {tipos:[]} · dano {v:{col}|número} · ataques {n} · aviso {txt} · estado {id,n,gasta:'recurso',cond,dur,ef:[…]} (se activa con un botón, gasta 1 uso del recurso y sus efectos solo valen mientras está activo). cond = condición que la hoja no comprueba y se enseña como nota. Un rasgo sin entrada aquí se enseña solo como texto.",
+ "Bárbaro": {
+  "Defensa sin armadura": [
+   {
+    "t": "ca",
+    "f": "10+des+con",
+    "cond": "sin armadura (con escudo también)",
+    "sin": "armadura"
+   }
+  ],
+  "Furia": [
+   {
+    "t": "estado",
+    "id": "furia",
+    "n": "Furia",
+    "gasta": "furia",
+    "cond": "acción adicional; no con armadura pesada",
+    "dur": "hasta el final de tu siguiente turno (máx. 10 min)",
+    "ef": [
+     {
+      "t": "resiste",
+      "tipos": [
+       "contundente",
+       "cortante",
+       "perforante"
+      ]
+     },
+     {
+      "t": "dano",
+      "v": {
+       "col": "dano_furia"
+      },
+      "cond": "ataques con Fuerza",
+      "ab": "fue"
+     },
+     {
+      "t": "ventaja",
+      "en": [
+       "prueba:fue",
+       "salv:fue"
+      ]
+     },
+     {
+      "t": "aviso",
+      "txt": "No puedes mantener la concentración ni lanzar conjuros"
+     }
+    ],
+    "acc": "adicional"
+   }
+  ],
+  "Ataque temerario": [
+   {
+    "t": "estado",
+    "id": "temerario",
+    "n": "Ataque temerario",
+    "cond": "con tu primer ataque del turno",
+    "dur": "hasta el principio de tu siguiente turno",
+    "ef": [
+     {
+      "t": "ventaja",
+      "en": [
+       "ataque:fue"
+      ]
+     },
+     {
+      "t": "aviso",
+      "txt": "Las tiradas de ataque contra ti tienen ventaja"
+     }
+    ],
+    "acc": "libre"
+   }
+  ],
+  "Sentir el peligro": [
+   {
+    "t": "ventaja",
+    "en": [
+     "salv:des"
+    ],
+    "cond": "salvo que estés incapacitado"
+   }
+  ],
+  "Ataque adicional": [
+   {
+    "t": "ataques",
+    "n": 2
+   }
+  ],
+  "Movimiento rápido": [
+   {
+    "t": "vel",
+    "v": 3,
+    "cond": "si no llevas armadura pesada"
+   }
+  ],
+  "Instinto salvaje": [
+   {
+    "t": "ventaja",
+    "en": [
+     "iniciativa"
+    ]
+   }
+  ],
+  "Poderío indómito": [
+   {
+    "t": "aviso",
+    "txt": "En pruebas y salvaciones de Fuerza, si sacas menos que tu Fuerza, usa tu puntuación de Fuerza"
+   }
+  ],
+  "Campeón primordial": [
+   {
+    "t": "aviso",
+    "txt": "Tu Fuerza y tu Constitución aumentan en 4 (máximo 25): súmalo en las características"
+   }
+  ]
+ },
+ "Druida": {
+  "Forma salvaje": [
+   {
+    "t": "estado",
+    "id": "forma_salvaje",
+    "n": "Forma salvaje",
+    "gasta": "forma_salvaje",
+    "cond": "acción adicional",
+    "dur": "horas = mitad de tu nivel de druida, o hasta que la uses de nuevo",
+    "ef": [
+     {
+      "t": "aviso",
+      "txt": "Usas las estadísticas de la bestia, pero conservas tu personalidad, competencias y rasgos; no puedes lanzar conjuros salvo con Conjurar como bestia"
+     }
+    ],
+    "acc": "adicional"
+   }
+  ],
+  "Resurgimiento salvaje": [
+   {
+    "t": "aviso",
+    "txt": "Sin usos de Forma salvaje, gasta un espacio de conjuro para recuperar uno; o gasta un uso para obtener un espacio de nivel 1 (una vez por descanso largo)"
+   }
+  ],
+  "Conjurar como bestia": [
+   {
+    "t": "aviso",
+    "txt": "Puedes lanzar conjuros en Forma salvaje (sin componentes materiales con coste ni consumidos)"
+   }
+  ]
+ },
+ "Bardo": {
+  "Inspiración bárdica": [
+   {
+    "t": "estado",
+    "id": "inspirar",
+    "n": "Dar inspiración",
+    "gasta": "inspiracion",
+    "cond": "acción adicional; aliado a 18 m que te vea u oiga",
+    "dur": "1 hora o hasta que el aliado la use",
+    "ef": [],
+    "inst": true,
+    "acc": "adicional",
+    "txt": "Un aliado puede sumar tu dado de Inspiración bárdica a una prueba, ataque o salvación"
+   }
+  ],
+  "Aprendiz de mucho": [
+   {
+    "t": "aviso",
+    "txt": "Suma la mitad de tu competencia (redondeando abajo) a pruebas de habilidad en las que no seas competente"
+   }
+  ],
+  "Contraencantamiento": [
+   {
+    "t": "aviso",
+    "txt": "Reacción: repite una salvación contra asustado o hechizado (tú o un aliado a 9 m), con ventaja",
+    "acc": "reaccion"
+   }
+  ],
+  "Inspiración superior": [
+   {
+    "t": "aviso",
+    "txt": "Al tirar iniciativa recuperas Inspiración bárdica hasta tener dos usos"
+   }
+  ]
+ },
+ "Bárbaro > Senda del berserker": {
+  "Frenesí": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Furia + Ataque temerario: el primer objetivo que aciertes sufre dados d6 adicionales igual a tu daño por furia",
+     "si": "furia"
+    }
+   ]
+  },
+  "Furia irracional": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "inmune",
+     "estados": [
+      "asustado",
+      "hechizado"
+     ],
+     "si": "furia"
+    }
+   ]
+  },
+  "Represalia": {
+   "nv": 10,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Reacción: al recibir daño de una criatura a 1,5 m, haz un ataque cuerpo a cuerpo contra ella",
+     "acc": "reaccion"
+    }
+   ]
+  },
+  "Presencia intimidante": {
+   "nv": 14,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "presencia",
+     "n": "Presencia intimidante",
+     "inst": true,
+     "cond": "acción adicional; 1 vez por descanso largo, o gastando un uso de furia",
+     "dur": "1 minuto",
+     "ef": [],
+     "acc": "adicional"
+    },
+    {
+     "t": "cd",
+     "n": "Presencia intimidante (Sab)",
+     "f": "8+fue+pb"
+    }
+   ]
+  }
+ },
+ "Druida > Círculo de la tierra": {
+  "Ayuda de la tierra": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "ayuda_tierra",
+     "n": "Ayuda de la tierra",
+     "inst": true,
+     "gasta": "forma_salvaje",
+     "cond": "acción de magia; punto a 18 m",
+     "dur": "instantáneo",
+     "ef": [],
+     "acc": "accion"
+    }
+   ]
+  },
+  "Conjuros del círculo de la tierra": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Tras un descanso largo elige terreno (árido, polar, templado o tropical): tienes preparados sus conjuros de círculo"
+    }
+   ]
+  },
+  "Recuperación natural": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Un conjuro de círculo sin gastar espacio (1 vez por descanso largo); en descanso corto recuperas espacios hasta la mitad de tu nivel de druida en suma"
+    }
+   ]
+  },
+  "Protección de la naturaleza": {
+   "nv": 10,
+   "ef": [
+    {
+     "t": "inmune",
+     "estados": [
+      "envenenado"
+     ]
+    },
+    {
+     "t": "aviso",
+     "txt": "Resistencia según tu terreno: árido fuego, polar frío, templado relámpago, tropical veneno"
+    }
+   ]
+  },
+  "Santuario de la naturaleza": {
+   "nv": 14,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "santuario",
+     "n": "Santuario de la naturaleza",
+     "inst": true,
+     "gasta": "forma_salvaje",
+     "cond": "acción de magia; cubo de 4,5 m a 36 m",
+     "dur": "1 minuto",
+     "ef": [],
+     "acc": "accion"
+    }
+   ]
+  }
+ },
+ "Bardo > Colegio del conocimiento": {
+  "Palabras cortantes": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "cortantes",
+     "n": "Palabras cortantes",
+     "inst": true,
+     "gasta": "inspiracion",
+     "cond": "reacción; criatura a 18 m",
+     "dur": "instantáneo",
+     "ef": [],
+     "txt": "resta tu dado de inspiración a una tirada de daño, prueba, ataque o salvación",
+     "acc": "reaccion"
+    }
+   ]
+  },
+  "Descubrimientos mágicos": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Dos conjuros extra de clérigo, druida o mago, siempre preparados"
+    }
+   ]
+  },
+  "Habilidad sin parangón": {
+   "nv": 14,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Si fallas una prueba o ataque, gasta Inspiración bárdica y suma su dado; si sigues fallando no se gasta"
+    }
+   ]
+  }
+ },
+ "Guerrero": {
+  "Tomar aliento": [
+   {
+    "t": "estado",
+    "id": "tomar_aliento",
+    "n": "Tomar aliento",
+    "inst": true,
+    "gasta": "tomar_aliento",
+    "cond": "acción adicional",
+    "dur": "instantáneo",
+    "ef": [],
+    "txt": "recuperas 1d10 + tu nivel de guerrero en PG",
+    "acc": "adicional"
+   }
+  ],
+  "Acción súbita (un uso)": [
+   {
+    "t": "estado",
+    "id": "accion_subita",
+    "n": "Acción súbita",
+    "inst": true,
+    "gasta": "accion_subita",
+    "cond": "en tu turno",
+    "dur": "instantáneo",
+    "ef": [],
+    "txt": "una acción más este turno, salvo la acción de magia",
+    "acc": "accion"
+   }
+  ],
+  "Mente táctica": [
+   {
+    "t": "aviso",
+    "txt": "Si fallas una prueba, gasta Tomar aliento: suma 1d10 al resultado (el uso no se gasta si sigues fallando)"
+   }
+  ],
+  "Ataque adicional": [
+   {
+    "t": "ataques",
+    "n": 2
+   }
+  ],
+  "Desplazamiento táctico": [
+   {
+    "t": "aviso",
+    "txt": "Al usar Tomar aliento puedes moverte hasta la mitad de tu velocidad sin provocar ataques de oportunidad"
+   }
+  ],
+  "Indómito (un uso)": [
+   {
+    "t": "estado",
+    "id": "indomito",
+    "n": "Indómito",
+    "inst": true,
+    "gasta": "indomito",
+    "cond": "al fallar una salvación",
+    "dur": "instantáneo",
+    "ef": [],
+    "txt": "repite la salvación con bonificador igual a tu nivel de guerrero y quédate con el nuevo resultado",
+    "acc": "libre"
+   }
+  ],
+  "Maestro táctico": [
+   {
+    "t": "aviso",
+    "txt": "Puedes cambiar la maestría del arma por debilitar, empujar o ralentizar"
+   }
+  ],
+  "Dos ataques adicionales": [
+   {
+    "t": "ataques",
+    "n": 3
+   }
+  ],
+  "Ataques estudiados": [
+   {
+    "t": "aviso",
+    "txt": "Si fallas un ataque contra una criatura, ventaja en tu siguiente ataque contra ella antes del final de tu siguiente turno"
+   }
+  ],
+  "Tres ataques adicionales": [
+   {
+    "t": "ataques",
+    "n": 4
+   }
+  ]
+ },
+ "Guerrero > Campeón": {
+  "Atleta sobresaliente": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "ventaja",
+     "en": [
+      "iniciativa",
+      "prueba:atletismo"
+     ]
+    },
+    {
+     "t": "aviso",
+     "txt": "Tras un crítico puedes moverte hasta la mitad de tu velocidad sin provocar ataques de oportunidad"
+    }
+   ]
+  },
+  "Crítico mejorado": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "critico",
+     "v": 19
+    }
+   ]
+  },
+  "Estilo de combate adicional": {
+   "nv": 7,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Otra dote de estilo de combate"
+    }
+   ]
+  },
+  "Guerrero heroico": {
+   "nv": 10,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "En combate, si empiezas tu turno sin inspiración heroica, puedes otorgártela"
+    }
+   ]
+  },
+  "Crítico superior": {
+   "nv": 15,
+   "ef": [
+    {
+     "t": "critico",
+     "v": 18
+    }
+   ]
+  },
+  "Superviviente": {
+   "nv": 18,
+   "ef": [
+    {
+     "t": "ventaja",
+     "en": [
+      "salv:muerte"
+     ]
+    },
+    {
+     "t": "aviso",
+     "txt": "Con 18–20 en salvación contra muerte recuperas 1 PG; al empezar el turno con menos de la mitad de PG (y más de 0) recuperas 5 + Con"
+    }
+   ]
+  }
+ },
+ "Pícaro": {
+  "Ataque furtivo": [
+   {
+    "t": "dano",
+    "v": {
+     "col": "furtivo"
+    },
+    "cond": "una vez por turno; con ventaja o con un aliado adyacente al objetivo; arma sutil o a distancia"
+   }
+  ],
+  "Pericia": [
+   {
+    "t": "aviso",
+    "txt": "Pericia: duplicas tu competencia en las habilidades elegidas"
+   }
+  ],
+  "Acción astuta": [
+   {
+    "t": "aviso",
+    "txt": "Acción adicional: correr, destrabarse o esconderse",
+    "acc": "adicional"
+   }
+  ],
+  "Puntería certera": [
+   {
+    "t": "estado",
+    "id": "punteria",
+    "n": "Puntería certera",
+    "cond": "acción adicional; sin haberte movido",
+    "dur": "hasta el final del turno",
+    "ef": [
+     {
+      "t": "ventaja",
+      "en": [
+       "ataque"
+      ]
+     },
+     {
+      "t": "aviso",
+      "txt": "Tu velocidad es 0 hasta el final del turno"
+     }
+    ],
+    "acc": "adicional"
+   }
+  ],
+  "Golpe astuto": [
+   {
+    "t": "aviso",
+    "txt": "Al infligir Ataque furtivo, añade un efecto de Golpe astuto pagando su coste en dados de furtivo"
+   }
+  ],
+  "Esquiva asombrosa": [
+   {
+    "t": "aviso",
+    "txt": "Reacción: reduces a la mitad el daño de un ataque que te acierte",
+    "acc": "reaccion"
+   }
+  ],
+  "Evasión": [
+   {
+    "t": "aviso",
+    "txt": "Salvación de Destreza para mitad de daño: sin daño si la superas, mitad si la fallas"
+   }
+  ],
+  "Talentos fiables": [
+   {
+    "t": "aviso",
+    "txt": "En pruebas con competencia, un 9 o menos en el d20 cuenta como 10"
+   }
+  ],
+  "Golpe astuto mejorado": [
+   {
+    "t": "aviso",
+    "txt": "Hasta dos efectos de Golpe astuto por Ataque furtivo"
+   }
+  ],
+  "Mente escurridiza": [
+   {
+    "t": "aviso",
+    "txt": "Competencia en salvaciones de Sabiduría y Carisma"
+   }
+  ],
+  "Elusivo": [
+   {
+    "t": "aviso",
+    "txt": "Ningún ataque contra ti tiene ventaja salvo que estés incapacitado"
+   }
+  ],
+  "Golpe de suerte": [
+   {
+    "t": "estado",
+    "id": "golpe_suerte",
+    "n": "Golpe de suerte",
+    "inst": true,
+    "gasta": "golpe_suerte",
+    "cond": "al fallar una prueba de d20",
+    "dur": "instantáneo",
+    "ef": [],
+    "txt": "convierte la tirada fallada en un 20",
+    "acc": "libre"
+   }
+  ]
+ },
+ "Pícaro > Ladrón": {
+  "Manos rápidas": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Acción adicional: Juego de manos, herramientas de ladrón o usar un objeto",
+     "acc": "adicional"
+    }
+   ]
+  },
+  "Balconero": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Velocidad trepando igual a tu velocidad; el salto usa Destreza en vez de Fuerza"
+    }
+   ]
+  },
+  "Sigilo supremo": {
+   "nv": 9,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Golpe astuto: Ataque sigiloso (coste 1d6) no rompe la invisibilidad de esconderse"
+    }
+   ]
+  },
+  "Usar objetos mágicos": {
+   "nv": 13,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Cargas: 1d6, con 6 no gastas; sintonía con 4 objetos; pergaminos de cualquier clase"
+    }
+   ]
+  },
+  "Reflejos de ladrón": {
+   "nv": 17,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "En el primer asalto actúas dos turnos: tu iniciativa y la iniciativa menos 10"
+    }
+   ]
+  }
+ },
+ "Brujo": {
+  "Astucia mágica": [
+   {
+    "t": "estado",
+    "id": "astucia",
+    "n": "Astucia mágica",
+    "acc": "libre",
+    "gasta": "astucia_magica",
+    "inst": true,
+    "cond": "rito de 1 minuto",
+    "txt": "Recuperas espacios de Magia del pacto gastados hasta la mitad de tu máximo (redondeando arriba)",
+    "ef": []
+   }
+  ],
+  "Contactar patrón": [
+   {
+    "t": "aviso",
+    "txt": "Siempre tienes contactar con otro plano preparado y puedes lanzarlo sin espacio para contactar con tu patrón, superando la salvación automáticamente"
+   }
+  ],
+  "Arcanum místico (conjuro de nivel 6)": [
+   {
+    "t": "estado",
+    "id": "arcanum_6",
+    "n": "Arcanum místico (nivel 6)",
+    "acc": "libre",
+    "gasta": "arcanum_6",
+    "inst": true,
+    "txt": "Lanzas tu conjuro de arcanum de nivel 6 sin espacio",
+    "ef": []
+   }
+  ],
+  "Arcanum místico (conjuro de nivel 7)": [
+   {
+    "t": "estado",
+    "id": "arcanum_7",
+    "n": "Arcanum místico (nivel 7)",
+    "acc": "libre",
+    "gasta": "arcanum_7",
+    "inst": true,
+    "txt": "Lanzas tu conjuro de arcanum de nivel 7 sin espacio",
+    "ef": []
+   }
+  ],
+  "Arcanum místico (conjuro de nivel 8)": [
+   {
+    "t": "estado",
+    "id": "arcanum_8",
+    "n": "Arcanum místico (nivel 8)",
+    "acc": "libre",
+    "gasta": "arcanum_8",
+    "inst": true,
+    "txt": "Lanzas tu conjuro de arcanum de nivel 8 sin espacio",
+    "ef": []
+   }
+  ],
+  "Arcanum místico (conjuro de nivel 9)": [
+   {
+    "t": "estado",
+    "id": "arcanum_9",
+    "n": "Arcanum místico (nivel 9)",
+    "acc": "libre",
+    "gasta": "arcanum_9",
+    "inst": true,
+    "txt": "Lanzas tu conjuro de arcanum de nivel 9 sin espacio",
+    "ef": []
+   }
+  ],
+  "Maestro sobrenatural": [
+   {
+    "t": "aviso",
+    "txt": "Astucia mágica te devuelve todos los espacios de Magia del pacto"
+   }
+  ]
+ },
+ "Brujo > Patrón infernal": {
+  "Bendición del oscuro": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Al reducir a 0 PG a un enemigo (o si lo hace otro a 3 m de ti): PG temporales = Carisma + nivel de brujo"
+    }
+   ]
+  },
+  "La suerte del oscuro": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Suma 1d10 a una prueba o salvación después de ver el resultado (usos según tu Carisma)"
+    }
+   ]
+  },
+  "Resistencia infernal": {
+   "nv": 10,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Tras un descanso corto o largo elige un tipo de daño (no fuerza): resistencia a él"
+    }
+   ]
+  },
+  "Arrastrar por el infierno": {
+   "nv": 14,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Una vez por turno, al acertar, el objetivo supera salvación de Carisma o cae a los Planos Inferiores"
+    }
+   ]
+  }
+ },
+ "Clérigo": {
+  "Canalizar divinidad": [
+   {
+    "t": "estado",
+    "id": "canalizar",
+    "n": "Canalizar divinidad",
+    "acc": "accion",
+    "gasta": "canalizar",
+    "inst": true,
+    "cond": "acción de magia",
+    "txt": "Elige un efecto: Chispa divina o Expulsar muertos vivientes (CD de conjuros)",
+    "ef": []
+   }
+  ],
+  "Abrasar muertos vivientes": [
+   {
+    "t": "aviso",
+    "txt": "Expulsar muertos vivientes: daño radiante extra de Sab d8 (mínimo 1d8)"
+   }
+  ],
+  "Golpes benditos": [
+   {
+    "t": "aviso",
+    "txt": "Golpe divino (+1d8 radiante una vez por turno) o Lanzamiento potente, según tu elección"
+   }
+  ],
+  "Intercesión divina": [
+   {
+    "t": "estado",
+    "id": "intercesion",
+    "n": "Intercesión divina",
+    "acc": "accion",
+    "gasta": "intercesion",
+    "inst": true,
+    "cond": "acción de magia",
+    "txt": "Lanzas un conjuro de clérigo de nivel 5 o inferior sin espacio ni componentes",
+    "ef": []
+   }
+  ],
+  "Golpes benditos mejorados": [
+   {
+    "t": "aviso",
+    "txt": "Golpe divino pasa a 2d8; Lanzamiento potente cura al lanzar trucos de daño"
+   }
+  ],
+  "Intercesión divina mayor": [
+   {
+    "t": "aviso",
+    "txt": "Con Intercesión divina puedes elegir deseo; después no podrás usarla hasta 2d4 descansos largos"
+   }
+  ]
+ },
+ "Clérigo > Dominio de la vida": {
+  "Discípulo de la vida": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Tus conjuros de curación recuperan 2 + nivel del espacio PG extra"
+    }
+   ]
+  },
+  "Preservar vida": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "preservar",
+     "n": "Preservar vida",
+     "acc": "accion",
+     "gasta": "canalizar",
+     "inst": true,
+     "cond": "acción de magia; criaturas a 9 m",
+     "dur": "instantáneo",
+     "txt": "Curas hasta 5 × tu nivel de clérigo PG repartidos entre criaturas maltrechas (sin superar la mitad de sus PG)",
+     "ef": []
+    }
+   ]
+  },
+  "Sanador bendito": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Al curar a otro con un espacio de conjuro, tú también recuperas 2 + nivel del espacio PG"
+    }
+   ]
+  },
+  "Sanación suprema": {
+   "nv": 17,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "En curaciones con conjuros o Canalizar divinidad usas el valor máximo de cada dado"
+    }
+   ]
+  }
+ },
+ "Explorador": {
+  "Enemigo predilecto": [
+   {
+    "t": "estado",
+    "id": "marca",
+    "n": "Marca del cazador gratis",
+    "acc": "adicional",
+    "gasta": "enemigo_predilecto",
+    "inst": true,
+    "cond": "acción adicional",
+    "dur": "concentración",
+    "txt": "Lanzas marca del cazador sin espacio de conjuro",
+    "ef": []
+   }
+  ],
+  "Ataque adicional": [
+   {
+    "t": "ataques",
+    "n": 2
+   }
+  ],
+  "Errante": [
+   {
+    "t": "vel",
+    "v": 3,
+    "cond": "si no llevas armadura pesada"
+   },
+   {
+    "t": "aviso",
+    "txt": "Velocidad nadando y trepando iguales a tu velocidad"
+   }
+  ],
+  "Infatigable": [
+   {
+    "t": "estado",
+    "id": "infatigable",
+    "n": "Infatigable",
+    "acc": "accion",
+    "gasta": "infatigable",
+    "inst": true,
+    "cond": "acción de magia",
+    "dur": "instantáneo",
+    "txt": "Ganas 1d8 + Sab PG temporales",
+    "ef": []
+   }
+  ],
+  "Cazador persistente": [
+   {
+    "t": "aviso",
+    "txt": "El daño no rompe tu concentración de marca del cazador"
+   }
+  ],
+  "Velo de la naturaleza": [
+   {
+    "t": "estado",
+    "id": "velo",
+    "n": "Velo de la naturaleza",
+    "acc": "adicional",
+    "gasta": "velo",
+    "inst": true,
+    "cond": "acción adicional",
+    "dur": "hasta el final de tu siguiente turno",
+    "txt": "Eres invisible",
+    "ef": []
+   }
+  ],
+  "Cazador preciso": [
+   {
+    "t": "aviso",
+    "txt": "Ventaja en ataques contra la criatura con tu marca del cazador"
+   }
+  ],
+  "Sentidos salvajes": [
+   {
+    "t": "aviso",
+    "txt": "Visión ciega hasta 9 m"
+   }
+  ],
+  "Azote de enemigos": [
+   {
+    "t": "aviso",
+    "txt": "El dado de marca del cazador es d10"
+   }
+  ]
+ },
+ "Explorador > Cazador": {
+  "Sabiduría del cazador": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Con tu marca sobre una criatura, conoces sus inmunidades, resistencias y vulnerabilidades"
+    }
+   ]
+  },
+  "El cazador y la presa": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Azote de colosos o Destructor de hordas, a tu elección tras un descanso"
+    }
+   ]
+  },
+  "Tácticas defensivas": {
+   "nv": 7,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Defensa contra ataques múltiples o Evasión, a tu elección tras un descanso"
+    }
+   ]
+  },
+  "El cazador experto y la presa": {
+   "nv": 11,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Una vez por turno, el daño de la marca también afecta a otra criatura a 9 m de la marcada"
+    }
+   ]
+  },
+  "Defensa de cazador experto": {
+   "nv": 15,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Reacción: resistencia al daño recibido y a otro del mismo tipo hasta el final del turno",
+     "acc": "reaccion"
+    }
+   ]
+  }
+ },
+ "Hechicero": {
+  "Hechicería innata": [
+   {
+    "t": "estado",
+    "id": "innata",
+    "n": "Hechicería innata",
+    "acc": "adicional",
+    "gasta": "hechiceria_innata",
+    "cond": "acción adicional",
+    "dur": "1 minuto",
+    "ef": [
+     {
+      "t": "aviso",
+      "txt": "La CD de tus conjuros de hechicero sube 1"
+     },
+     {
+      "t": "aviso",
+      "txt": "Ventaja en tiradas de ataque de conjuros de hechicero"
+     }
+    ]
+   }
+  ],
+  "Fuente de magia": [
+   {
+    "t": "aviso",
+    "txt": "Puntos de hechicería: conviértelos en espacios de conjuro y viceversa"
+   }
+  ],
+  "Recuperación mágica": [
+   {
+    "t": "aviso",
+    "txt": "Tras un descanso corto recuperas puntos de hechicería hasta la mitad de tu nivel (una vez por descanso largo)"
+   }
+  ],
+  "Encarnación mágica": [
+   {
+    "t": "aviso",
+    "txt": "Sin usos de Hechicería innata, gasta 2 puntos para activarla; usas hasta dos opciones de metamagia por conjuro"
+   }
+  ],
+  "Apoteosis arcana": [
+   {
+    "t": "aviso",
+    "txt": "Con Hechicería innata activa, una opción de metamagia por turno sin gastar puntos"
+   }
+  ]
+ },
+ "Hechicero > Hechicería dracónica": {
+  "Resistencia dracónica": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "ca",
+     "f": "10+des+car",
+     "sin": "armadura",
+     "cond": "sin armadura"
+    },
+    {
+     "t": "aviso",
+     "txt": "PG máximos +3 y +1 por cada nivel de hechicero"
+    }
+   ]
+  },
+  "Afinidad elemental": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Resistencia a un tipo de daño dracónico elegido; suma Carisma al daño de conjuros de ese tipo"
+    }
+   ]
+  },
+  "Alas de dragón": {
+   "nv": 14,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "alas",
+     "n": "Alas de dragón",
+     "acc": "adicional",
+     "cond": "acción adicional",
+     "dur": "1 hora",
+     "txt": "Velocidad volando 18 m",
+     "ef": []
+    }
+   ]
+  },
+  "Compañero dragón": {
+   "nv": 18,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Invocar dragón sin componentes materiales; una vez gratis por descanso largo"
+    }
+   ]
+  }
+ },
+ "Mago": {
+  "Adepto en rituales": [
+   {
+    "t": "aviso",
+    "txt": "Lanzas como ritual los conjuros de tu libro marcados como ritual, sin tenerlos preparados"
+   }
+  ],
+  "Recuperación arcana": [
+   {
+    "t": "estado",
+    "id": "recuperacion",
+    "n": "Recuperación arcana",
+    "acc": "libre",
+    "gasta": "recuperacion_arcana",
+    "inst": true,
+    "cond": "tras un descanso corto",
+    "txt": "Recuperas espacios gastados cuya suma de niveles sea como mucho la mitad de tu nivel de mago (redondeando arriba; ninguno de nivel 6 o más)",
+    "ef": []
+   }
+  ],
+  "Memorizar conjuro": [
+   {
+    "t": "aviso",
+    "txt": "Tras un descanso corto cambias un conjuro preparado por otro de tu libro"
+   }
+  ],
+  "Maestría sobre conjuros": [
+   {
+    "t": "aviso",
+    "txt": "Un conjuro de nivel 1 y otro de nivel 2 de tu libro, a su nivel más bajo, a voluntad"
+   }
+  ],
+  "Conjuros característicos": [
+   {
+    "t": "aviso",
+    "txt": "Dos conjuros de nivel 3, cada uno una vez gratis por descanso"
+   }
+  ]
+ },
+ "Mago > Evocador": {
+  "Truco potente": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Tus trucos de daño hacen la mitad aunque falles o el objetivo supere la salvación"
+    }
+   ]
+  },
+  "Esculpir conjuros": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "En conjuros de evocación, 1 + nivel de criaturas eligen éxito automático en la salvación y no sufren daño"
+    }
+   ]
+  },
+  "Evocación potenciada": {
+   "nv": 10,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Suma Inteligencia al daño de tus conjuros de evocación"
+    }
+   ]
+  },
+  "Sobrecanalizar": {
+   "nv": 14,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Con un espacio de nivel 1–5, daño máximo en un conjuro de daño (a partir de la segunda vez sufres daño necrótico)"
+    }
+   ]
+  }
+ },
+ "Monje": {
+  "Artes marciales": [
+   {
+    "t": "artes",
+    "v": {
+     "col": "artes_marciales"
+    }
+   },
+   {
+    "t": "aviso",
+    "txt": "Acción adicional: un ataque sin armas tras atacar con arma de monje o sin armas; Destreza en vez de Fuerza"
+   }
+  ],
+  "Defensa sin armadura": [
+   {
+    "t": "ca",
+    "f": "10+des+sab",
+    "sin": "armadura_escudo",
+    "cond": "sin armadura ni escudo"
+   }
+  ],
+  "Concentración de monje": [
+   {
+    "t": "estado",
+    "id": "rafaga",
+    "n": "Ráfaga de golpes",
+    "acc": "adicional",
+    "gasta": "concentracion",
+    "inst": true,
+    "cond": "acción adicional; tras la acción de atacar",
+    "dur": "instantáneo",
+    "txt": "Dos ataques sin armas",
+    "ef": []
+   },
+   {
+    "t": "estado",
+    "id": "defensa_paciente",
+    "n": "Defensa paciente",
+    "acc": "adicional",
+    "gasta": "concentracion",
+    "inst": true,
+    "cond": "acción adicional",
+    "dur": "instantáneo",
+    "txt": "Esquivar; con 1 punto de concentración, también Retirarse",
+    "ef": []
+   },
+   {
+    "t": "estado",
+    "id": "paso_viento",
+    "n": "Paso del viento",
+    "acc": "adicional",
+    "gasta": "concentracion",
+    "inst": true,
+    "cond": "acción adicional",
+    "dur": "instantáneo",
+    "txt": "Correr; con 1 punto de concentración, también Retirarse y saltas el doble",
+    "ef": []
+   }
+  ],
+  "Metabolismo asombroso": [
+   {
+    "t": "estado",
+    "id": "metabolismo",
+    "n": "Metabolismo asombroso",
+    "acc": "libre",
+    "gasta": "metabolismo",
+    "inst": true,
+    "cond": "al tirar iniciativa",
+    "txt": "Recuperas todos los puntos de concentración y sanas dado de Artes marciales + nivel de monje PG",
+    "ef": []
+   }
+  ],
+  "Movimiento sin armadura": [
+   {
+    "t": "vel",
+    "v": {
+     "col": "mov_sin_armadura"
+    },
+    "sin": "armadura_escudo",
+    "cond": "sin armadura ni escudo"
+   }
+  ],
+  "Desviar ataques": [
+   {
+    "t": "aviso",
+    "txt": "Reacción: reduces el daño de un ataque en 1d10 + Des + nivel de monje (0 permite redirigirlo con 1 punto)",
+    "acc": "reaccion"
+   }
+  ],
+  "Caída lenta": [
+   {
+    "t": "aviso",
+    "txt": "Reacción: reduces el daño de caída en 5 × tu nivel de monje",
+    "acc": "reaccion"
+   }
+  ],
+  "Ataque adicional": [
+   {
+    "t": "ataques",
+    "n": 2
+   }
+  ],
+  "Golpe aturdidor": [
+   {
+    "t": "estado",
+    "id": "aturdidor",
+    "n": "Golpe aturdidor",
+    "acc": "libre",
+    "gasta": "concentracion",
+    "inst": true,
+    "cond": "una vez por turno, al acertar",
+    "dur": "instantáneo",
+    "txt": "El objetivo supera salvación de Constitución o queda aturdido hasta tu siguiente turno",
+    "ef": []
+   }
+  ],
+  "Golpes potenciados": [
+   {
+    "t": "aviso",
+    "txt": "Tus ataques sin armas pueden hacer daño de fuerza"
+   }
+  ],
+  "Evasión": [
+   {
+    "t": "aviso",
+    "txt": "Salvación de Destreza para mitad de daño: sin daño si la superas, mitad si la fallas"
+   }
+  ],
+  "Movimiento acrobático": [
+   {
+    "t": "aviso",
+    "txt": "Te mueves por superficies verticales y líquidos sin armadura ni escudo"
+   }
+  ],
+  "Autorrestablecimiento": [
+   {
+    "t": "aviso",
+    "txt": "Al final de tu turno eliminas asustado, envenenado o hechizado"
+   }
+  ],
+  "Concentración agudizada": [
+   {
+    "t": "aviso",
+    "txt": "Defensa paciente, Paso del viento y Ráfaga de golpes ganan beneficios mejorados"
+   }
+  ],
+  "Desviar energía": [
+   {
+    "t": "aviso",
+    "txt": "Desviar ataques funciona contra cualquier tipo de daño"
+   }
+  ],
+  "Superviviente disciplinado": [
+   {
+    "t": "aviso",
+    "txt": "Competencia en todas las salvaciones; gasta 1 punto de concentración para repetir una salvación fallada"
+   }
+  ],
+  "Concentración perfecta": [
+   {
+    "t": "aviso",
+    "txt": "Al tirar iniciativa recuperas puntos hasta tener 4 si te quedan 3 o menos"
+   }
+  ],
+  "Defensa superior": [
+   {
+    "t": "estado",
+    "id": "defensa_superior",
+    "n": "Defensa superior",
+    "acc": "libre",
+    "gasta": "concentracion",
+    "coste": 3,
+    "cond": "al principio de tu turno",
+    "dur": "1 minuto",
+    "txt": "Resistencia a todo el daño salvo fuerza",
+    "ef": []
+   }
+  ]
+ },
+ "Monje > Guerrero de la mano abierta": {
+  "Técnica de la mano abierta": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Con Ráfaga de golpes: derribar (Des), desconcertar o empujar 4,5 m (Fue)"
+    }
+   ]
+  },
+  "Plenitud de cuerpo": {
+   "nv": 6,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Acción adicional: sanas dado de Artes marciales + Sab (usos según tu Sabiduría)",
+     "acc": "adicional"
+    }
+   ]
+  },
+  "Paso veloz": {
+   "nv": 11,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Tras una acción adicional, usas Paso del viento gratis"
+    }
+   ]
+  },
+  "Palma estremecedora": {
+   "nv": 17,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Gasta 4 puntos de concentración: vibraciones letales durante tantos días como tu nivel de monje"
+    }
+   ]
+  }
+ },
+ "Paladín": {
+  "Imponer las manos": [
+   {
+    "t": "aviso",
+    "txt": "Acción adicional: curas PG de tu reserva (5 × nivel); 5 PG de la reserva eliminan envenenado",
+    "acc": "adicional"
+   }
+  ],
+  "Castigo de paladín": [
+   {
+    "t": "estado",
+    "id": "castigo",
+    "n": "Castigo divino gratis",
+    "acc": "adicional",
+    "gasta": "castigo",
+    "inst": true,
+    "cond": "acción adicional",
+    "txt": "Lanzas castigo divino sin espacio de conjuro",
+    "ef": []
+   }
+  ],
+  "Canalizar divinidad": [
+   {
+    "t": "estado",
+    "id": "canalizar",
+    "n": "Canalizar divinidad",
+    "acc": "adicional",
+    "gasta": "canalizar",
+    "inst": true,
+    "cond": "acción adicional (Sentidos divinos)",
+    "txt": "Sentidos divinos u otra opción de Canalizar divinidad",
+    "ef": []
+   }
+  ],
+  "Ataque adicional": [
+   {
+    "t": "ataques",
+    "n": 2
+   }
+  ],
+  "Corcel fiel": [
+   {
+    "t": "estado",
+    "id": "corcel",
+    "n": "Corcel fiel",
+    "acc": "accion",
+    "gasta": "corcel",
+    "inst": true,
+    "cond": "acción de magia",
+    "txt": "Lanzas hallar corcel sin espacio",
+    "ef": []
+   }
+  ],
+  "Aura de protección": [
+   {
+    "t": "valor",
+    "n": "Aura de protección (salvaciones)",
+    "f": "car",
+    "min": 1
+   },
+   {
+    "t": "aviso",
+    "txt": "Emanación de 3 m: tú y tus aliados sumáis tu Carisma a las salvaciones (inactiva si estás incapacitado)"
+   }
+  ],
+  "Abjurar de los enemigos": [
+   {
+    "t": "estado",
+    "id": "abjurar",
+    "n": "Abjurar de los enemigos",
+    "acc": "accion",
+    "gasta": "canalizar",
+    "inst": true,
+    "cond": "acción de magia",
+    "dur": "1 minuto",
+    "txt": "Criaturas a 18 m (hasta tu Carisma) superan salvación de Sabiduría o quedan asustadas",
+    "ef": []
+   }
+  ],
+  "Aura de coraje": [
+   {
+    "t": "inmune",
+    "estados": [
+     "asustado"
+    ],
+    "cond": "dentro del aura"
+   }
+  ],
+  "Golpes radiantes": [
+   {
+    "t": "dano",
+    "v": "1d8",
+    "cond": "radiante, con ataque cuerpo a cuerpo o sin armas"
+   }
+  ],
+  "Toque reparador": [
+   {
+    "t": "aviso",
+    "txt": "Con Imponer las manos, 5 PG de la reserva eliminan asustado, aturdido, cegado, ensordecido, hechizado o paralizado"
+   }
+  ],
+  "Expansión de aura": [
+   {
+    "t": "aviso",
+    "txt": "Tu Aura de protección pasa a 9 m"
+   }
+  ]
+ },
+ "Paladín > Juramento de entrega": {
+  "Arma sagrada": {
+   "nv": 3,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "arma_sagrada",
+     "n": "Arma sagrada",
+     "acc": "libre",
+     "gasta": "canalizar",
+     "cond": "al atacar",
+     "dur": "10 minutos",
+     "txt": "Suma tu Carisma a los ataques con el arma; luz brillante",
+     "ef": [
+      {
+       "t": "aviso",
+       "txt": "Suma tu Carisma a las tiradas de ataque con el arma"
+      }
+     ]
+    }
+   ]
+  },
+  "Aura de entrega": {
+   "nv": 7,
+   "ef": [
+    {
+     "t": "inmune",
+     "estados": [
+      "hechizado"
+     ],
+     "cond": "dentro del aura"
+    }
+   ]
+  },
+  "Castigo protector": {
+   "nv": 15,
+   "ef": [
+    {
+     "t": "aviso",
+     "txt": "Al lanzar castigo divino, tú y tus aliados en el aura tenéis cobertura media hasta tu siguiente turno"
+    }
+   ]
+  },
+  "Halo sagrado": {
+   "nv": 20,
+   "ef": [
+    {
+     "t": "estado",
+     "id": "halo",
+     "n": "Halo sagrado",
+     "acc": "adicional",
+     "cond": "acción adicional",
+     "dur": "10 minutos",
+     "txt": "Beneficios de tu Aura de protección imbuida de poder divino (una vez por descanso largo)",
+     "ef": []
+    }
+   ]
+  }
+ }
+}
