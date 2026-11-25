@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.122.0] - 2026-11-25
+### Cambiado
+- **Compendio de clases:** el listado es una cuadrícula con un recuadro por clase (dado de golpe, característica principal, salvaciones y subclase).
+### Corregido
+- **Tablas de las clases:** 43 tablas de conjuros reconstruidas desde la lista del SRD, tablas de prosa, cabeceras, equipo y Cinturón corregidos. Las 37 fichas tocadas llevan el aviso «Revisar» (la columna Especial de 29 conjuros está deducida).
+
 ## [1.121.9] - 2026-11-25
 ### Cambiado
 - **Tablas del compendio:** las cabeceras salen centradas y las largas («Bonificador por competencia», «Conjuros preparados»…) se reparten en dos líneas.
