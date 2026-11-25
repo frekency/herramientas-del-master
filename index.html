@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Grenze:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Grenze:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
 <script>
 /* Almacenamiento de datos de la app. Es la única puerta de entrada a los datos persistentes.
    Por defecto usa localStorage (web). Otro entorno (p. ej. la app de escritorio con SQLite) puede
@@ -3117,6 +3117,92 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 }
 @media (max-width:1040px){html.app-escritorio.sb-min .wrap,html.app-escritorio.sb-min[data-view="mini"] .wrap{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){html.app-escritorio body,html.app-escritorio .pagenav{transition:none}}
+
+/* ===== Estilo «Limpio» (prueba de diseño) =====
+   Una sans (Inter) para todo; escala corta 12·13·14·15·17·20·34; texto 400 y títulos 400/500; títulos rectos;
+   texto de tarjeta y de botón 1 px menor que el de alrededor; más grande = menos espaciado y menos interlínea. */
+:root[data-skin="limpio"]{
+  --bg:#fafaf9; --surface:#ffffff; --surface-2:#f4f3f1; --line:#e6e3de;
+  --fg:#1c1917; --muted:#6b6560; --accent:#2b4fc4; --accent-fg:#ffffff;
+  --sb:#ffffff; --sb-rule:#1c1917;
+  --ok:#2f7d4a; --warn:#a0680a; --crit:#b3312c;
+  --shadow:0 1px 2px rgb(28 25 23/.05);
+  --f-display:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-sb:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --t-xs:12px; --t-s:13px; --t-m:14px; --t-base:15px; --t-l:17px; --t-xl:20px; --t-xxl:34px;
+  color-scheme:light; scrollbar-color:#cfcac3 transparent}
+@media (prefers-color-scheme:dark){:root[data-skin="limpio"]:not([data-theme="light"]){
+  --bg:#141312; --surface:#1c1b1a; --surface-2:#252321; --line:#34312e;
+  --fg:#f1eeea; --muted:#a39d96; --accent:#8fa8ff; --accent-fg:#0d1330;
+  --sb:#1c1b1a; --sb-rule:#f1eeea;
+  --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b; --shadow:none;
+  color-scheme:dark; scrollbar-color:#4a4642 transparent}}
+:root[data-skin="limpio"][data-theme="dark"]{
+  --bg:#141312; --surface:#1c1b1a; --surface-2:#252321; --line:#34312e;
+  --fg:#f1eeea; --muted:#a39d96; --accent:#8fa8ff; --accent-fg:#0d1330;
+  --sb:#1c1b1a; --sb-rule:#f1eeea;
+  --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b; --shadow:none;
+  color-scheme:dark; scrollbar-color:#4a4642 transparent}
+
+/* texto: 400, 15 px, interlínea cómoda */
+[data-skin="limpio"] body{font-size:var(--t-base);font-weight:400;line-height:1.55;font-feature-settings:"cv11","ss03"}
+[data-skin="limpio"] b,[data-skin="limpio"] strong{font-weight:500}
+[data-skin="limpio"] .num,[data-skin="limpio"] .counter b{font-variant-numeric:tabular-nums}
+[data-skin="limpio"] p,[data-skin="limpio"] li,[data-skin="limpio"] .hint{text-wrap:pretty}
+
+/* títulos: una sola familia, rectos, equilibrados; cuanto más grandes, más juntas las letras y menos interlínea */
+[data-skin="limpio"] h1,[data-skin="limpio"] h2,[data-skin="limpio"] h3,[data-skin="limpio"] h4,[data-skin="limpio"] h5,
+[data-skin="limpio"] .htitle,[data-skin="limpio"] .brand,[data-skin="limpio"] .tool .tn,[data-skin="limpio"] .pcard .pn,[data-skin="limpio"] .now .who,
+[data-skin="limpio"] .sb h3,[data-skin="limpio"] .sb h4,[data-skin="limpio"] .lvl{font-family:var(--f-display);font-style:normal;font-variant:normal;text-transform:none;text-wrap:balance}
+[data-skin="limpio"] .htitle{font-size:var(--t-xxl);font-weight:500;letter-spacing:-.03em;line-height:1.08}
+[data-skin="limpio"] h2,[data-skin="limpio"] .vhead h2,[data-skin="limpio"] .panel>h2,[data-skin="limpio"] .listhead h2{font-size:var(--t-xl);font-weight:500;letter-spacing:-.018em;line-height:1.2}
+[data-skin="limpio"] .brand{font-size:var(--t-l);font-weight:500;letter-spacing:-.01em}
+/* títulos de tarjeta: más pequeños que los de sección */
+[data-skin="limpio"] .tool .tn,[data-skin="limpio"] .pcard .pn,[data-skin="limpio"] .pcard.sinpj .pn,[data-skin="limpio"] .panel h3,[data-skin="limpio"] .now .who{font-size:var(--t-l);font-weight:500;letter-spacing:-.008em;line-height:1.3}
+[data-skin="limpio"] .sb h3{font-size:var(--t-xl);font-weight:500;letter-spacing:-.015em;line-height:1.2;color:var(--fg)}
+[data-skin="limpio"] .sb h4,[data-skin="limpio"] h4{font-size:var(--t-base);font-weight:500;letter-spacing:0;line-height:1.35;color:var(--fg);border-bottom:0}
+[data-skin="limpio"] .lvl{font-size:var(--t-m);font-weight:500;letter-spacing:0;color:var(--muted)}
+[data-skin="limpio"] .sb .sub,[data-skin="limpio"] .sb .act>b,[data-skin="limpio"] .spfl,[data-skin="limpio"] .cmbody .cmhead,[data-skin="limpio"] .cmtab td.sec{font-style:normal}
+
+/* texto de tarjeta: 1 px menos que el de fuera */
+[data-skin="limpio"] .tool .td,[data-skin="limpio"] .panel,[data-skin="limpio"] .pcard,[data-skin="limpio"] .sb,[data-skin="limpio"] .acsrd{font-size:var(--t-m);line-height:1.5}
+[data-skin="limpio"] .sb{font-family:var(--f-sb);border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:10px}
+[data-skin="limpio"] .hint,[data-skin="limpio"] .tool .tstat,[data-skin="limpio"] .pcsub{font-size:var(--t-s);font-family:var(--f-body)}
+[data-skin="limpio"] .tool .tstat{color:var(--muted);border-top:0;padding-top:0}
+
+/* botones: 1 px menos que el texto de alrededor; sin negrita */
+[data-skin="limpio"] .btn,[data-skin="limpio"] .qb,[data-skin="limpio"] select,[data-skin="limpio"] input,[data-skin="limpio"] textarea{font-family:var(--f-body)}
+[data-skin="limpio"] .btn{font-size:var(--t-m);font-weight:500;letter-spacing:0;border-radius:8px;padding:7px 14px}
+[data-skin="limpio"] .btn.primary{font-weight:500}
+[data-skin="limpio"] .btn.big{font-size:var(--t-base)}
+[data-skin="limpio"] .btn.sm{font-size:var(--t-s);padding:4px 10px}
+[data-skin="limpio"] .panel .btn,[data-skin="limpio"] .pcard .btn,[data-skin="limpio"] .tool .btn,[data-skin="limpio"] .sb .btn,[data-skin="limpio"] .sesbar .btn{font-size:var(--t-s)}
+[data-skin="limpio"] .pagenav a{font-size:var(--t-m);font-weight:500;letter-spacing:0}
+
+/* sin adornos: etiquetas en mayúsculas, separadores con texto y píldoras decorativas */
+[data-skin="limpio"] .counter small,[data-skin="limpio"] .now small,[data-skin="limpio"] .sec-label,[data-skin="limpio"] .blist .bk,[data-skin="limpio"] .mine,
+[data-skin="limpio"] .sptable th,[data-skin="limpio"] .c-ac small{text-transform:none;letter-spacing:0;font-size:var(--t-s);font-weight:400;color:var(--muted)}
+[data-skin="limpio"] .pagenav .navsep{display:none}
+[data-skin="limpio"] .badge{background:none;border:0;padding:0;margin:0 8px 0 0;border-radius:0;font-size:var(--t-s);font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted)}
+[data-skin="limpio"] .turnflag{background:none;color:var(--accent);padding:0;font-size:var(--t-s);font-weight:500;letter-spacing:0;text-transform:none}
+[data-skin="limpio"] .tool .ti{display:none}
+
+/* aire entre secciones */
+[data-skin="limpio"] .side{gap:32px}
+[data-skin="limpio"] .panel{padding:20px;gap:14px;border-radius:12px;box-shadow:none}
+[data-skin="limpio"] .tool{padding:20px;gap:8px;border-radius:12px;box-shadow:none}
+[data-skin="limpio"] .vhead{margin-bottom:24px}
+[data-skin="limpio"] .vpage>section,[data-skin="limpio"] .vpage>.panel{margin-top:32px}
+
+/* tarjetas del inicio y de utilidades */
+[data-skin="limpio"] .bqn,[data-skin="limpio"] .un{font-family:var(--f-display);font-style:normal;text-transform:none;font-size:var(--t-l);font-weight:500;letter-spacing:-.008em;line-height:1.3;text-wrap:balance}
+[data-skin="limpio"] .bq{gap:12px;padding:clamp(16px,2vw,24px);box-shadow:none}
+[data-skin="limpio"] .bqs,[data-skin="limpio"] .us{font-size:var(--t-s);font-weight:400;color:var(--muted)}
+[data-skin="limpio"] .bqd,[data-skin="limpio"] .ud{font-size:var(--t-m);line-height:1.5}
+[data-skin="limpio"] .bqc{font-size:var(--t-s);font-weight:500;min-height:40px}
+[data-skin="limpio"] .ucard{padding:16px 20px;box-shadow:none}
 </style>
 
 
@@ -3141,7 +3227,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <label class="skin campsel" title="Campaña activa: cada campaña tiene su combate, su grupo y sus encuentros"><span>Campaña</span><select id="camp" class="noi18n" style="max-width:170px"></select></label>
       <label class="skin" title="Vista"><span>Vista</span><select id="view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <button class="btn ghost mini-only" id="cfgbtn" title="Mostrar bandos, opciones y registro" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Ajustes</button>
-      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="skin" title="Estilo visual"><span>Estilo</span><select id="skin"><option value="limpio">Limpio (prueba)</option><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <button class="btn" data-act="openparty" title="Ir a la página de jugadores"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg> Grupo</button>
       <button class="btn" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos (tecla B)" aria-label="Buscar"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span class="bl">Buscar</span></button>
       <button class="btn" id="prev" title="Turno anterior (←)" aria-label="Turno anterior"><svg class="ic" aria-hidden="true"><use href="#i-prev"/></svg> <span class="bl">Anterior</span></button>
@@ -4229,7 +4315,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
       <label class="f">Distancias<select id="pf-dist"><option value="all">Todas a la vez (metros · pies · casillas)</option><option value="m">Metros (5 pies = 1,5 m)</option><option value="ft">Pies</option><option value="sq">Casillas (1 casilla = 1,5 m = 5 pies)</option></select></label>
       <label class="f">Vista del combate<select id="pf-view"><option value="">Completa</option><option value="mini">Minimalista</option></select></label>
       <label class="f">Tema<select id="pf-theme"><option value="">Automático (como el sistema)</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
-      <label class="f">Estilo visual<select id="pf-skin"><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
+      <label class="f">Estilo visual<select id="pf-skin"><option value="limpio">Limpio (prueba)</option><option value="cuaderno">Cuaderno</option><option value="libro">Libro de reglas</option><option value="pantalla">Pantalla del máster</option><option value="">Clásico</option><option value="arcano">Arcano</option><option value="taberna">Taberna</option></select></label>
       <label class="f">Peso<select id="pf-peso"><option value="kg">Kilos (1 lb = 0,5 kg)</option><option value="lb">Libras</option></select></label>
       <p class="hint" style="display:block;margin:0">Se aplica a todo lo que muestra la web: fichas, conjuros, objetos, tablas y tus módulos, escritos en la unidad que sea. Las distancias largas van en kilómetros o en millas (<span class="nou">1 milla = 1,5 km</span>). Al pasar el ratón por una medida convertida ves la original. Si entras con tu cuenta, tus preferencias se guardan en ella.</p>
       <div id="upd-box" style="display:grid;gap:8px">
