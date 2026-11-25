@@ -3,7 +3,11 @@
 <title>Herramientas del Máster</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="color-scheme" content="light dark">
-<style>/* fondo desde el primer fotograma, antes de que cargue el resto: sigue al sistema o a la preferencia guardada */html{background:#fbf8ef}@media (prefers-color-scheme:dark){html{background:#17181c}}html[data-theme="light"]{background:#fbf8ef}html[data-theme="dark"]{background:#17181c}</style>
+<style>/* fondo desde el primer fotograma, antes de que cargue el resto: sigue al sistema o a la preferencia guardada */html{background:#fbf8ef}@media (prefers-color-scheme:dark){html{background:#17181c}}html[data-theme="light"]{background:#fbf8ef}html[data-theme="dark"]{background:#17181c}
+/* al enfocar, el campo se pinta de amarillo: el texto de ayuda pasa a tinta, no al gris, para que se lea en claro y en oscuro */
+[data-skin="limpio"] :is(input,textarea):focus::placeholder{color:color-mix(in srgb,var(--on-hl) 65%,transparent);opacity:1}
+[data-skin="limpio"] :is(input,textarea):focus{caret-color:var(--on-hl)}
+</style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#fbf8ef" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#17181c" media="(prefers-color-scheme: dark)">

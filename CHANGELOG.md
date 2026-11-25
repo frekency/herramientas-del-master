@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.5] - 2026-11-25
+### Corregido
+- **Campos de formulario:** al enfocar (fondo amarillo), el texto de ayuda y el cursor pasan a tinta en vez de quedarse en gris, en claro y en oscuro.
+
 ## [1.121.4] - 2026-11-25
 ### Cambiado
 - **Menú «Más» más corto:** se quitan Audio y Preferencias. Las preferencias se abren desde el botón del usuario (la cuenta) y la tarjeta de Utilidades; la tarjeta de Audio desaparece.
