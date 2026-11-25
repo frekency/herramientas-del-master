@@ -3167,6 +3167,13 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] .hoy{border-top:1px solid var(--line);align-items:center}
 [data-skin="limpio"] .hoy b{font-weight:500;font-size:var(--t-xl)}
 @media (max-width:700px){[data-skin="limpio"] .hoy .btn{flex:1 1 100%;justify-content:center}}
+
+/* móvil: la cabecera ya no se queda fija tapando las pestañas (en combate sí, porque lleva el turno), y la pestaña activa se lee */
+@media (max-width:700px){
+  :root[data-skin="limpio"]:not([data-page="combate"]) .bar{position:static}
+  html:not(.app-escritorio)[data-skin="limpio"] .pagenav a.main.on{background:var(--hl);border-color:transparent;color:var(--on-hl)}
+  html:not(.app-escritorio)[data-skin="limpio"] .pagenav a.main.on .ic{color:var(--on-hl)}
+}
 </style>
 
 
