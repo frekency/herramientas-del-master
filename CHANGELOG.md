@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.2] - 2026-11-25
+### Corregido
+- **iPhone:** la cabecera (título y buscador) ya no queda tapada por la franja de la barra de estado.
+
 ## [1.121.1] - 2026-11-25
 ### Corregido
 - **Móvil:** la cabecera ya no se queda fija tapando las pestañas de arriba (en combate sí, porque lleva el turno) y la pestaña de la sección actual se lee: amarillo con tinta oscura, también en modo oscuro.

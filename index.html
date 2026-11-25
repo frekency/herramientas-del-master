@@ -3170,7 +3170,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 
 /* móvil: la cabecera ya no se queda fija tapando las pestañas (en combate sí, porque lleva el turno), y la pestaña activa se lee */
 @media (max-width:700px){
-  :root[data-skin="limpio"]:not([data-page="combate"]) .bar{position:static}
+  :root[data-skin="limpio"]:not([data-page="combate"]) .bar{position:static;padding-top:env(safe-area-inset-top,0px)}
   html:not(.app-escritorio)[data-skin="limpio"] .pagenav a.main.on{background:var(--hl);border-color:transparent;color:var(--on-hl)}
   html:not(.app-escritorio)[data-skin="limpio"] .pagenav a.main.on .ic{color:var(--on-hl)}
 }
