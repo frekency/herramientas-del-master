@@ -1,7 +1,7 @@
 /* Service worker de la web (PWA). Primero la red y, si no hay conexión, la última copia guardada:
    así las actualizaciones llegan siempre y la app abre sin conexión con lo que ya se haya visitado.
    Solo guarda peticiones GET del propio sitio; nada de otros dominios (cuentas, nube). */
-const VERSION='1.123.1';
+const VERSION='1.123.2';
 const CACHE='hdm-'+VERSION;
 
 self.addEventListener('install',e=>{

@@ -2305,7 +2305,7 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .grp{--gc:#3d7bd9;border:1px solid var(--line);border-left:6px solid var(--gc);border-radius:12px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:10px;min-width:0}
 .grph{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .grpdot{width:12px;height:12px;border-radius:50%;background:var(--gc);flex:none}
-.grpname{font-size:16px;font-weight:700;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--fg);padding:2px 6px;min-width:0;width:min(260px,100%)}
+.grpname{min-height:0;font-size:16px;font-weight:700;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--fg);padding:2px 6px;min-width:0;width:min(260px,100%)}
 .grpname:hover,.grpname:focus{border-color:var(--line);background:var(--surface-2)}
 .grplist{display:flex;flex-direction:column;gap:6px}
 .grprow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
@@ -3100,6 +3100,12 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 /* campos que faltaban: mismo estilo de línea */
 [data-skin="limpio"] .optsel select,[data-skin="limpio"] input.txt,[data-skin="limpio"] select.txt{background-color:transparent;border:0;border-bottom:1.5px solid color-mix(in srgb,var(--fg) 45%,transparent);border-radius:0;box-shadow:none;min-height:38px;padding:6px 2px;color:var(--fg);font-size:var(--t-base)}
 [data-skin="limpio"] .optsel select:focus,[data-skin="limpio"] input.txt:focus,[data-skin="limpio"] select.txt:focus{background-color:var(--hl);color:var(--on-hl);border-bottom-color:var(--fg);padding-left:6px;outline:0}
+/* red de seguridad: cualquier campo de texto, número, búsqueda o selector sin estilo propio usa la misma línea inferior (especificidad cero: lo que ya tiene diseño propio no cambia) */
+:where([data-skin="limpio"]) :where(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=button],[type=submit],[type=reset],[type=image],[type=hidden]),select,textarea){background-color:transparent;border:0;border-bottom:1.5px solid color-mix(in srgb,var(--fg) 45%,transparent);border-radius:0;box-shadow:none;min-height:36px;padding:6px 2px;color:var(--fg);font:inherit;font-size:var(--t-base)}
+:where([data-skin="limpio"]) :where(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=button],[type=submit],[type=reset],[type=image],[type=hidden]),select,textarea):focus{background-color:var(--hl);color:var(--on-hl);border-bottom-color:var(--fg);padding-left:6px;outline:0}
+:where([data-skin="limpio"]) :where(input,select,textarea):disabled{opacity:.5}
+[data-skin="limpio"] select option,[data-skin="limpio"] select optgroup{background-color:var(--surface);color:var(--fg)}/* la lista desplegada no hereda el amarillo del foco */
+[data-skin="limpio"] select option:disabled{color:var(--muted)}
 
 /* ===== móvil: nada se pisa, nada se corta, todo se toca con el dedo ===== */
 @media (max-width:700px){

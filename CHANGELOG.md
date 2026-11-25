@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.123.2] - 2026-11-25
+### Corregido
+- **Campos de formulario:** el buscador y los campos de dados de la mesa salían con la caja gris del navegador; ahora todo campo sin diseño propio usa la línea inferior.
+- **Selectores:** la lista desplegada ya no hereda el amarillo del foco.
+
 ## [1.123.1] - 2026-11-25
 ### Cambiado
 - **Mesa:** los botones de «Añadir a la escena» van uno por fila a todo el ancho.
