@@ -1862,6 +1862,8 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .spdet .golinkp{float:right;margin:0 0 6px 12px}
 .crumbs{margin:2px 0 12px;font-size:14px}
 .ficha{max-width:920px}
+.ficha:has(.cmtab){max-width:none}/* con tablas anchas (progresión de clases) la ficha usa todo el ancho; el texto corrido mantiene una medida legible */
+.ficha:has(.cmtab) .cmbody>p,.ficha:has(.cmtab) .cmbody ul,.ficha:has(.cmtab) .cmbody ol{max-width:920px}
 .ficha>.sb{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--surface)}
 .u.cv{text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,var(--muted) 70%,transparent);text-underline-offset:3px}
 .qrsec{margin:18px 0 6px}

@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.8] - 2026-11-25
+### Cambiado
+- **Fichas del compendio:** las que llevan tablas anchas (progresión de clases) usan todo el ancho disponible; el texto corrido mantiene una medida legible.
+### Corregido
+- **Cabeceras de espacios de conjuro:** 7 tablas mostraban «Espacios de conjuro por cada nivel de conjuro» en la columna de un nivel; ahora solo el número.
+
 ## [1.121.7] - 2026-11-25
 ### Añadido
 - **Mesa: capa «Resumen del grupo»:** una tarjeta por jugador con vida (barra y PG temporales), espacios de conjuro y de pacto, recursos como la furia, y opcionalmente CA y agotamiento. Se actualiza sola al cambiar las fichas. Los jugadores solo ven nombres y cifras.
