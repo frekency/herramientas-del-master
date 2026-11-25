@@ -8,6 +8,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ### Añadido
 - **Reloj de campaña con el calendario de Harptos** (Reinos Olvidados): fecha de inicio de la campaña, hora del día, estación, descanso corto (+1 h), descanso largo (+8 h), horas o días de viaje y de exploración, y aviso de cuándo se puede hacer el siguiente descanso largo (24 h). Al finalizar una sesión se indican los días que han pasado en el juego. Sortea el clima del día según la estación. Los jugadores ven el reloj; solo el máster lo mueve.
 - **Diario del personaje**: capítulos propios de cada personaje de campaña, que solo ven su jugador y el máster. Nace con el trasfondo y el lugar de origen. Pendiente de aplicar `supabase/diario-personaje.sql` para que el jugador lo sincronice.
+- Los descansos de la ficha de un personaje de campaña preguntan al máster si suman su hora al reloj. En Campaña, el jugador ve la tarjeta «Mi diario» con acceso a su diario.
 - **Lugar de origen** en el creador de personajes y en la hoja.
 - **Inventario desde el compendio**: añade objetos del compendio a la ficha, con marca de sintonizable, usos (cargas) que se gastan y se recargan, y munición que se gasta de uno en uno.
 

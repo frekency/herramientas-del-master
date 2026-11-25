@@ -3209,6 +3209,7 @@ html.app-escritorio.sb-min .sbcamp .nm,html.app-escritorio.sb-min .sbcamp .ic{di
 <section class="vpage" id="view-campana" hidden>
   <div class="vhead"><h2>Campaña</h2><button type="button" class="campbtn noi18n" data-cpcamp data-act="campopen" title="Campañas: cambiar, crear y resolver conflictos"></button></div>
   <nav class="cptabs" data-cptabs role="tablist" aria-label="Secciones de la campaña"></nav>
+  <div id="cp-midiario" class="pcsub" hidden></div>
   <div class="cpgrid">
     <aside class="cplist">
       <div class="cpbar bfilters"><input id="cp-q" type="search" placeholder="Buscar en la campaña" aria-label="Buscar en la campaña"><button type="button" class="btn primary" data-act="cpnew">+ Nuevo</button></div>
@@ -7477,8 +7478,8 @@ function extraAct(act,b,c,e){
     case 'pjshort':pjRest={dados:[]};pjRender();break;
     case 'pjshortcancel':pjRest=null;pjRender();break;
     case 'pjdado':{const c=b.dataset.c,v=Math.trunc(+($('#pjd-'+c)||{}).value);if(pjRest&&v>=1){pjRest.dados.push({c,v});pjRender();}break;}
-    case 'pjshortdone':{const s=pjGet(pjSel);if(!s||!pjRest)break;const d=pjRest.dados;if(pjCommit(Ficha.descansoCorto(s.f,d,pjCtx()),s)){pjRest=null;pjRender();toast(T('Descanso corto terminado'));}break;}
-    case 'pjlong':{const s=pjGet(pjSel);if(s&&pjCommit(Ficha.descansoLargo(s.f,pjCtx()),s))toast(T('Descanso largo terminado'));break;}
+    case 'pjshortdone':{const s=pjGet(pjSel);if(!s||!pjRest)break;const d=pjRest.dados;if(pjCommit(Ficha.descansoCorto(s.f,d,pjCtx()),s)){pjRest=null;pjRender();toast(T('Descanso corto terminado'));pjRelojPregunta(s.f,'corto');}break;}
+    case 'pjlong':{const s=pjGet(pjSel);if(s&&pjCommit(Ficha.descansoLargo(s.f,pjCtx()),s)){toast(T('Descanso largo terminado'));pjRelojPregunta(s.f,'largo');}break;}
     case 'pjconceder':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.conceder(s.f,1,pjCtx()),s);break;}
     case 'pjtocamp':{const s=pjGet(pjSel);if(!s)break;const c=Ficha.aCampana(s.f,{campana:Store.campaigns.active(),nombreCampana:Store.campaigns.activeName(),quien:Store.campaigns.activeName(),ahora:Date.now()});PJC.push(c);pjSave();toast(T('Copia creada en la campaña; el original sigue en Mis personajes'));location.hash='personajes/'+c.id;break;}
     case 'pjdup':{const s=pjGet(pjSel);if(!s)break;const c=pjNuevaCopia(s.f,{nombre:s.f.nombre+' (2)',jugador:'',estado:'activo'});(s.lista==='campana'?PJC:PJ).push(c);pjSave();location.hash='personajes/'+c.id;break;}
@@ -8858,7 +8859,14 @@ function cpRenderTabs(sel,q){
   const nAb=(()=>{try{return (SC&&SC.l&&SC.l.abiertos||[]).length}catch{return 0}})();
   document.querySelectorAll('[data-cpcamp]').forEach(n=>{n.textContent=(Store.campaigns.activeName()||'')+' ▾'+(nAb?'  ⚠ '+nAb+' '+T(nAb===1?'conflicto por resolver':'conflictos por resolver'):'');n.classList.toggle('alerta',!!nAb);});
 }
+function cpMiDiario(){
+  const b=$('#cp-midiario');if(!b)return;
+  const ls=esJug()?PJC.filter(f=>f&&diaGet(f.id).cap.length):[];
+  b.hidden=!ls.length;
+  b.innerHTML=ls.length?'📖 '+esc(T('Mi diario'))+': '+ls.map(f=>'<a class="noi18n" href="#personajes/'+esc(f.id)+'">'+esc(f.nombre)+'</a> <span class="pcsub">('+diaGet(f.id).cap.length+')</span>').join(' · '):'';
+}
 function renderCampana(){
+  if(!pjCargado)pjLoad();cpMiDiario();
   const r=route();
   if(!cpLoaded){cpLoad();cpLoaded=true;}
   if(r.tab==='jugadores'){cpRenderTabs('jugadores',false);return;}
@@ -9615,6 +9623,12 @@ function sesActuar(act){
 document.addEventListener('change',e=>{if(e.target.id==='ses-sel'){const w=$('#ses-nomw');if(w)w.hidden=!!e.target.value;}});
 sesRender();setInterval(()=>{if(!document.hidden)sesRender();},30000);
 
+/* Al descansar un personaje de campaña, el máster decide si el reloj avanza (un descanso de grupo se suma una sola vez). */
+function pjRelojPregunta(f,tipo){
+  if(!f||f.origen!=='campana'||!relMaster()||!relLoad())return;
+  if(tipo==='largo'){if(confirm(T('¿Sumar 8 horas (descanso largo) al reloj de la campaña? Si ya lo has sumado para el grupo, cancela.')))relPon(Harptos.largo(relLoad()));}
+  else if(confirm(T('¿Sumar 1 hora (descanso corto) al reloj de la campaña? Si ya lo has sumado para el grupo, cancela.')))relPon(Harptos.corto(relLoad()));
+}
 /* ---- reloj de campaña (calendario de Harptos): fecha y hora de la partida, descansos, viajes y clima ---- */
 const RELKEY='camp-reloj-v1';
 let REL=null;
@@ -9649,7 +9663,7 @@ function relModalHTML(){
   return h;
 }
 function relActuar(act){
-  if(!relMaster()&&act!=='relabrir')return;
+  if(!relMaster())return;   // el reloj solo lo mueve el máster
   const r=relLoad();
   if(act==='relabrir'){sesAbre('Reloj de campaña',relModalHTML());return;}
   if(act==='relinit'){
