@@ -4,6 +4,16 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.0] - 2026-11-25
+### Cambiado
+- **Móvil sin sobresaltos:** ninguna pantalla se sale del ancho; las tablas del compendio pasan a ser fichas (nombre grande y datos con su etiqueta), los filtros se reparten bien y los botones, pestañas, selectores y enlaces miden al menos 44 px.
+- **Costura con la portada:** la cabecera lleva una tira de cuero, y los títulos de cada pantalla van a mano con subrayado amarillo.
+- **Movimiento suave:** las notas de la portada caen sobre el cuero y se levantan al pasar el ratón (respeta «reducir movimiento»).
+- **Estados vacíos con carácter:** un hueco discontinuo con letra a mano en combate y campaña.
+- **Primeros pasos:** una campaña vacía ya no abre sola una ventana; la portada propone ponerle nombre, crear un personaje o probar con datos de ejemplo.
+- **Accesibilidad y ligereza:** selectores con nombre accesible y solo dos familias tipográficas cargadas (Inter y Kalam).
+- **Limpieza:** paleta de reserva igual a la del diseño actual y animaciones sin uso eliminadas.
+
 ## [1.120.0] - 2026-11-25
 ### Cambiado
 - **Portada «pantalla del máster»:** la trasera de la pantalla del máster en cuero con costura y pliegues, con cuatro notas distintas clavadas (post-it con chincheta, nota con pliegue, hoja de cuaderno con cinta y ficha con la marca de un café), escritas a mano. Se ve igual en claro y oscuro.

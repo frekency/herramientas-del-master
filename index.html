@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icons/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Alegreya+SC:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Pirata+One&family=Bitter:wght@400;600;700&family=Kalam:wght@400;700&family=Grenze:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Kalam:wght@400;700&display=swap">
 <script>
 /* Almacenamiento de datos de la app. Es la única puerta de entrada a los datos persistentes.
    Por defecto usa localStorage (web). Otro entorno (p. ej. la app de escritorio con SQLite) puede
@@ -1309,27 +1309,27 @@ try{if(Store.get('app-sidebar')==='min')R.classList.add('sb-min');}catch(e){}})(
 <script>try{const p=JSON.parse(Store.get('combat-prefs-v1')||'{}');if(p.lang)document.documentElement.lang=p.lang;}catch(e){}try{document.documentElement.dataset.skin='limpio';const v=Store.get('combat-view');if(v)document.documentElement.dataset.view=v;const t=Store.get('combat-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;else if(t===null&&document.documentElement.classList.contains('app-escritorio'))document.documentElement.dataset.theme='light';}catch(e){}</script>
 <style>/* Layout: barra de turno fija arriba; columna principal con el orden de iniciativa y lateral con la ficha del turno, alta de criaturas, bandos y registro. Bestiario y editor en ventanas superpuestas. */
 :root{
-  --bg:#efe7d8; --surface:#faf5ec; --surface-2:#ebe1cf; --line:#d3c4ab;
-  --fg:#2a2118; --muted:#6a5a46; --accent:#8a5a12; --accent-fg:#fff8ea;
-  --sb:#f6efe1; --sb-rule:#8f2f22;
-  --ok:#2f7d4a; --warn:#a06c0c; --crit:#b3312c;
-  --shadow:0 1px 2px rgb(48 32 14/.08),0 6px 18px rgb(48 32 14/.07);
-  --f-display:"Alegreya SC",Georgia,"Times New Roman",serif;
-  --f-body:"Alegreya Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-sb:"Alegreya",Georgia,serif;
-  --f-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --bg:#fbf8ef; --surface:#fffdf7; --surface-2:#f1ece0; --line:#cfd4df;
+  --fg:#1c2740; --muted:#566079; --accent:#2e4a8a; --accent-fg:#ffffff;
+  --sb:#fffdf8; --sb-rule:#b8342a;
+  --ok:#2f7d4a; --warn:#a0680a; --crit:#b8342a;
+  --shadow:0 2px 3px rgb(30 30 50/.08),0 12px 26px rgb(30 30 50/.09);
+  --f-display:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-sb:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#14110e; --surface:#1d1915; --surface-2:#29231d; --line:#3b3229;
-  --fg:#ece3d2; --muted:#ab9d88; --accent:#d9a441; --accent-fg:#1a1306;
-  --sb:#211b15; --sb-rule:#cf6b53;
-  --ok:#58b878; --warn:#e0a83a; --crit:#ec6a5f;
+  --bg:#17181c; --surface:#1e2025; --surface-2:#282a31; --line:#3a3d47;
+  --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
+  --sb:#202227; --sb-rule:#ff8a78;
+  --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
   --shadow:0 1px 2px rgb(0 0 0/.4),0 8px 24px rgb(0 0 0/.3); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#14110e; --surface:#1d1915; --surface-2:#29231d; --line:#3b3229;
-  --fg:#ece3d2; --muted:#ab9d88; --accent:#d9a441; --accent-fg:#1a1306;
-  --sb:#211b15; --sb-rule:#cf6b53;
-  --ok:#58b878; --warn:#e0a83a; --crit:#ec6a5f;
+  --bg:#17181c; --surface:#1e2025; --surface-2:#282a31; --line:#3a3d47;
+  --fg:#ebe7dc; --muted:#a3a6b0; --accent:#9db8ff; --accent-fg:#10131c;
+  --sb:#202227; --sb-rule:#ff8a78;
+  --ok:#7fcf8f; --warn:#e6bb57; --crit:#ff7a6b;
   --shadow:0 1px 2px rgb(0 0 0/.4),0 8px 24px rgb(0 0 0/.3); color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -1923,9 +1923,6 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 ::selection{background:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--fg)}/* ===== Estilo «Cuaderno»: libreta de hojas negras, bolígrafo de gel, boli rojo y fluorescente ===== */
 .hph{display:none}/* ===== Estilo «Pantalla del máster»: la pantalla plegable sobre la mesa, de noche; raíl de fichas ===== */
 .rail{display:none}
-@keyframes pn-flash{from{box-shadow:0 0 0 3px var(--brass),0 0 24px rgb(214 168 92/.5)}}
-@keyframes arc-pulse{50%{box-shadow:0 0 0 1px var(--accent),0 0 44px rgb(242 196 95/.6),inset 0 0 50px rgb(242 196 95/.1)}}
-@keyframes tab-flicker{0%,100%{box-shadow:0 0 0 2px var(--accent),0 0 30px var(--candle),inset 0 0 30px rgb(255 160 60/.1)}40%{box-shadow:0 0 0 2px var(--accent),0 0 42px rgb(255 170 70/.55),inset 0 0 36px rgb(255 160 60/.14)}60%{box-shadow:0 0 0 2px var(--accent),0 0 26px rgb(255 170 70/.32),inset 0 0 26px rgb(255 160 60/.08)}}/* crónica del final del combate, con la piel de las fichas */
 .endsum{margin:0 0 14px;display:grid;gap:6px}
 .endsum .eshead{display:flex;align-items:center;gap:8px}
 .endsum .sub{margin:0}
@@ -3068,6 +3065,108 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 [data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] label.f select,[data-skin="limpio"] label.f textarea,[data-skin="limpio"] .cptext,[data-skin="limpio"] .bfilters input,[data-skin="limpio"] .bfilters select,[data-skin="limpio"] .frow input[type=text],[data-skin="limpio"] #md-url,[data-skin="limpio"] .books input[type=url],[data-skin="limpio"] .vbody select,[data-skin="limpio"] .skin select,[data-skin="limpio"] .pjver select,[data-skin="limpio"] .pjpermg select,[data-skin="limpio"] .grprow select,[data-skin="limpio"] .grpmv select,[data-skin="limpio"] .pcpj select,[data-skin="limpio"] .grpadd select,[data-skin="limpio"] .grpadd input,[data-skin="limpio"] .grpnew input,[data-skin="limpio"] .grpnew select,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]),[data-skin="limpio"] .pjbox select,[data-skin="limpio"] .pjbox textarea,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]),[data-skin="limpio"] .pjm select,[data-skin="limpio"] .pjsec select,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] .eprow select,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] .epbox select{background-color:transparent;border:0;border-bottom:1.5px solid color-mix(in srgb,var(--fg) 45%,transparent);border-radius:0;box-shadow:none;min-height:38px;padding:6px 2px;color:var(--fg);font-size:var(--t-base)}
 [data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]):focus,[data-skin="limpio"] label.f select:focus,[data-skin="limpio"] label.f textarea:focus,[data-skin="limpio"] .cptext:focus,[data-skin="limpio"] .bfilters input:focus,[data-skin="limpio"] .bfilters select:focus,[data-skin="limpio"] .frow input[type=text]:focus,[data-skin="limpio"] #md-url:focus,[data-skin="limpio"] .books input[type=url]:focus,[data-skin="limpio"] .vbody select:focus,[data-skin="limpio"] .skin select:focus,[data-skin="limpio"] .pjver select:focus,[data-skin="limpio"] .pjpermg select:focus,[data-skin="limpio"] .grprow select:focus,[data-skin="limpio"] .grpmv select:focus,[data-skin="limpio"] .pcpj select:focus,[data-skin="limpio"] .grpadd select:focus,[data-skin="limpio"] .grpadd input:focus,[data-skin="limpio"] .grpnew input:focus,[data-skin="limpio"] .grpnew select:focus,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]):focus,[data-skin="limpio"] .pjbox select:focus,[data-skin="limpio"] .pjbox textarea:focus,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]):focus,[data-skin="limpio"] .pjm select:focus,[data-skin="limpio"] .pjsec select:focus,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]):focus,[data-skin="limpio"] .eprow select:focus,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]):focus,[data-skin="limpio"] .epbox select:focus{background-color:var(--hl);color:var(--on-hl);border-bottom-color:var(--fg);padding-left:6px;outline:0}
 [data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]):disabled,[data-skin="limpio"] label.f select:disabled,[data-skin="limpio"] label.f textarea:disabled,[data-skin="limpio"] .cptext:disabled,[data-skin="limpio"] .bfilters input:disabled,[data-skin="limpio"] .bfilters select:disabled,[data-skin="limpio"] .frow input[type=text]:disabled,[data-skin="limpio"] #md-url:disabled,[data-skin="limpio"] .books input[type=url]:disabled,[data-skin="limpio"] .vbody select:disabled,[data-skin="limpio"] .skin select:disabled,[data-skin="limpio"] .pjver select:disabled,[data-skin="limpio"] .pjpermg select:disabled,[data-skin="limpio"] .grprow select:disabled,[data-skin="limpio"] .grpmv select:disabled,[data-skin="limpio"] .pcpj select:disabled,[data-skin="limpio"] .grpadd select:disabled,[data-skin="limpio"] .grpadd input:disabled,[data-skin="limpio"] .grpnew input:disabled,[data-skin="limpio"] .grpnew select:disabled,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]):disabled,[data-skin="limpio"] .pjbox select:disabled,[data-skin="limpio"] .pjbox textarea:disabled,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]):disabled,[data-skin="limpio"] .pjm select:disabled,[data-skin="limpio"] .pjsec select:disabled,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]):disabled,[data-skin="limpio"] .eprow select:disabled,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]):disabled,[data-skin="limpio"] .epbox select:disabled{opacity:.55}
+
+/* campos que faltaban: mismo estilo de línea */
+[data-skin="limpio"] .optsel select,[data-skin="limpio"] input.txt,[data-skin="limpio"] select.txt{background-color:transparent;border:0;border-bottom:1.5px solid color-mix(in srgb,var(--fg) 45%,transparent);border-radius:0;box-shadow:none;min-height:38px;padding:6px 2px;color:var(--fg);font-size:var(--t-base)}
+[data-skin="limpio"] .optsel select:focus,[data-skin="limpio"] input.txt:focus,[data-skin="limpio"] select.txt:focus{background-color:var(--hl);color:var(--on-hl);border-bottom-color:var(--fg);padding-left:6px;outline:0}
+
+/* ===== móvil: nada se pisa, nada se corta, todo se toca con el dedo ===== */
+@media (max-width:700px){
+  /* objetivos táctiles de 44 px */
+  [data-skin="limpio"] label.f input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] label.f select,[data-skin="limpio"] label.f textarea,[data-skin="limpio"] .cptext,[data-skin="limpio"] .bfilters input,[data-skin="limpio"] .bfilters select,[data-skin="limpio"] .frow input[type=text],[data-skin="limpio"] #md-url,[data-skin="limpio"] .books input[type=url],[data-skin="limpio"] .vbody select,[data-skin="limpio"] .skin select,[data-skin="limpio"] .pjver select,[data-skin="limpio"] .pjpermg select,[data-skin="limpio"] .grprow select,[data-skin="limpio"] .grpmv select,[data-skin="limpio"] .pcpj select,[data-skin="limpio"] .grpadd select,[data-skin="limpio"] .grpadd input,[data-skin="limpio"] .grpnew input,[data-skin="limpio"] .grpnew select,[data-skin="limpio"] .pjbox input:not([type=checkbox]):not([type=file]):not([type=radio]),[data-skin="limpio"] .pjbox select,[data-skin="limpio"] .pjbox textarea,[data-skin="limpio"] .pjm input:not([type=checkbox]):not([type=file]):not([type=radio]),[data-skin="limpio"] .pjm select,[data-skin="limpio"] .pjsec select,[data-skin="limpio"] .eprow input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] .eprow select,[data-skin="limpio"] .epbox input:not([type=checkbox]):not([type=radio]),[data-skin="limpio"] .epbox select,[data-skin="limpio"] .optsel select,[data-skin="limpio"] input.txt,[data-skin="limpio"] select.txt{min-height:44px}
+  [data-skin="limpio"] .btn.sm,[data-skin="limpio"] summary.btn.sm,[data-skin="limpio"] .campbtn,[data-skin="limpio"] .cmtabs button,[data-skin="limpio"] .cpcd{min-height:44px}
+  [data-skin="limpio"] .cph .btn.sm,[data-skin="limpio"] summary.btn.sm{min-width:44px}
+  [data-skin="limpio"] .cmtabs a{display:inline-flex;align-items:center;gap:6px;min-height:44px}
+  [data-skin="limpio"] input[type=color]{width:44px;height:44px}
+  [data-skin="limpio"] .sptable th button{display:block;padding:12px 4px;margin:-8px -4px}
+  [data-skin="limpio"] a.golink{padding:14px 12px;margin:-14px -6px}
+  [data-skin="limpio"] details>summary{min-height:44px;display:flex;align-items:center}
+  [data-skin="limpio"] .sptable td small{font-size:12px}
+  [data-skin="limpio"] .chip .r{font-size:12px}
+  [data-skin="limpio"] .brand a{display:inline-flex;align-items:center;min-height:44px}
+  /* compendio: la tabla de criaturas enseña lo esencial (nombre, VD, CA, PG); tipo, tamaño y manual quedan en la ficha desplegable */
+  [data-skin="limpio"] .crtable thead th:nth-child(2),[data-skin="limpio"] .crtable thead th:nth-child(3),[data-skin="limpio"] .crtable thead th:last-child,
+  [data-skin="limpio"] .crtable tr.sprow td:nth-child(2),[data-skin="limpio"] .crtable tr.sprow td:nth-child(3),[data-skin="limpio"] .crtable tr.sprow td.src{display:none}
+  [data-skin="limpio"] .sptable th,[data-skin="limpio"] .sptable td{padding:8px 8px}
+  [data-skin="limpio"] .sptable tr.sprow td:first-child{min-width:0}
+  /* filtros: el buscador a todo el ancho y los selectores de dos en dos */
+  [data-skin="limpio"] .bfilters{display:flex;flex-wrap:wrap;gap:8px 12px}
+  [data-skin="limpio"] .bfilters input{flex:1 1 100%}
+  [data-skin="limpio"] .bfilters select{flex:1 1 calc(50% - 12px);min-width:0;max-width:none}
+  [data-skin="limpio"] .bfilters .btn{flex:1 1 100%}
+  /* opciones del combate: la etiqueta encima del selector, no aplastada a su lado */
+  [data-skin="limpio"] .opts label.optsel{flex-direction:column;align-items:stretch;gap:2px}
+  [data-skin="limpio"] .optsel select{width:100%}
+  /* lista de campañas: el nombre a todo el ancho y las acciones debajo */
+  [data-skin="limpio"] .camprow{flex-wrap:wrap}
+  [data-skin="limpio"] .camprow .txt{flex:1 1 100%}
+  [data-skin="limpio"] .camprow .inline{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+}
+
+/* ===== compendio en móvil: cada fila de la tabla pasa a ser una ficha (nombre grande y los datos debajo, con su etiqueta) ===== */
+@media (max-width:700px){
+  [data-skin="limpio"] .sptwrap{overflow-x:visible}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable),[data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tbody{display:block;width:100%}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) thead{display:none}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td{display:block;padding:0;border:0;white-space:normal;text-align:left;background:none}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td:first-child{flex:1 1 100%;font-size:var(--t-l);font-weight:500;min-width:0}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td:not(:first-child)::before{content:attr(data-l) ": ";color:var(--muted);font-size:var(--t-xs)}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td:not(:first-child){font-size:var(--t-s)}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td:empty,[data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td.c:not(:has(*)):empty{display:none}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.sprow td.src{flex:1 1 100%;color:var(--muted);font-size:var(--t-xs)}
+  [data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.spdet,[data-skin="limpio"] .sptable:not(.tbgrid):not(.tbro):not(.crtable) tr.spdet>td{display:block;width:100%}
+}
+
+@media (max-width:700px){
+  [data-skin="limpio"] .sptable tr.sprow td[data-e],[data-skin="limpio"] .sptable tr.sprow td:has(>.no:only-child){display:none!important}
+  [data-skin="limpio"] .sptable tr.sprow td[data-l="Nivel"]::before{content:none}
+  [data-skin="limpio"] .bfilters select{font-size:var(--t-m)}
+}
+
+@media (max-width:700px){
+  .fmtt,.fmtt tbody{display:block;width:100%}
+  .fmtt tr{display:block;padding:6px 0;border-bottom:1px solid var(--line)}
+  .fmtt td{display:block;padding:1px 0;border:0;white-space:normal;overflow-wrap:anywhere}
+  .fmtt td:first-child{white-space:normal;font-weight:500}
+  .fmtt code{overflow-wrap:anywhere;white-space:pre-wrap}
+}
+
+@media (max-width:700px){
+  [data-skin="limpio"] .modline a,[data-skin="limpio"] #hs-app-otros,[data-skin="limpio"] .crumb a,[data-skin="limpio"] .pcsub a,[data-skin="limpio"] p.hint a,[data-skin="limpio"] #view-compendio p a,[data-skin="limpio"] #view-referencia p a{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  [data-skin="limpio"] .sptable th button{min-width:44px;min-height:44px;display:inline-flex;align-items:center;margin:-8px -4px}
+}
+@media (max-width:700px){[data-skin="limpio"] a.golink{display:inline-flex;align-items:center;justify-content:center;min-width:44px;margin:-14px -10px -14px -6px}}
+
+/* ===== crítica 2026-11-25: costura con la portada, movimiento suave, estados vacíos y títulos a mano ===== */
+/* costura: la cabecera se cose al cuero de la portada */
+[data-skin="limpio"] .bar{border-bottom:4px solid var(--cuero,#4a3a30);box-shadow:0 2px 0 -1px color-mix(in srgb,var(--cuero,#4a3a30) 40%,transparent),var(--shadow)}
+/* títulos de cada pantalla, a mano y con subrayado de rotulador */
+[data-skin="limpio"] .vhead h2{font-family:'Kalam',var(--f-body,inherit),cursive;font-weight:700;font-size:30px;letter-spacing:0;line-height:1.1;display:inline-block;background:linear-gradient(transparent 62%,color-mix(in srgb,var(--hl) 80%,transparent) 62% 90%,transparent 90%);padding:0 6px;margin-left:-6px}
+/* estados vacíos: un hueco para la nota, no una frase suelta */
+[data-skin="limpio"] .empty{border:2px dashed color-mix(in srgb,var(--fg) 28%,transparent);border-radius:6px;padding:28px 20px;margin:12px 0;font-family:'Kalam',var(--f-body,inherit),cursive;font-size:var(--t-l,17px);line-height:1.5;color:var(--muted)}
+[data-skin="limpio"] li.empty{list-style:none}
+/* movimiento: las notas caen sobre el cuero una sola vez y se levantan al pasar el ratón */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes notaCae{from{opacity:0;translate:0 -26px;scale:1.06}60%{opacity:1}to{opacity:1;translate:0 0;scale:1}}
+  [data-skin="limpio"] .bqs4 .bq{animation:notaCae .55s cubic-bezier(.2,.9,.25,1) both}
+  [data-skin="limpio"] .bqs4 .bq:nth-child(2){animation-delay:.09s}
+  [data-skin="limpio"] .bqs4 .bq:nth-child(3){animation-delay:.18s}
+  [data-skin="limpio"] .bqs4 .bq:nth-child(4){animation-delay:.27s}
+  [data-skin="limpio"] .bqs4 .bq{transition:translate .22s cubic-bezier(.2,.9,.25,1),rotate .22s cubic-bezier(.2,.9,.25,1),filter .22s}
+  [data-skin="limpio"] .bqs4 .bq:hover{translate:0 -5px;rotate:.6deg;filter:drop-shadow(0 8px 10px rgb(0 0 0/.35))}
+  [data-skin="limpio"] .bqs4 .bq:active{translate:0 -1px}
+}
+/* sin movimiento: las animaciones decorativas antiguas se quedan quietas */
+@media (prefers-reduced-motion:reduce){
+  #lockscr .lkbox,html.gate-web #acctmodal::before,html.gate-web #acctmodal::after{animation:none!important}
+}
+@media (max-width:700px){[data-skin="limpio"] .vhead h2{font-size:var(--t-xl,26px)}}
+
+/* pulido: la franja «hoy» sin el doble filete rojo del skin antiguo; en móvil los botones a todo el ancho */
+[data-skin="limpio"] .hoy{border-top:1px solid var(--line);align-items:center}
+[data-skin="limpio"] .hoy b{font-weight:500;font-size:var(--t-xl)}
+@media (max-width:700px){[data-skin="limpio"] .hoy .btn{flex:1 1 100%;justify-content:center}}
 </style>
 
 
@@ -3103,7 +3202,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.120</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="aud-btn" data-act="audopen" title="Enlaces de audio" aria-label="Enlaces de audio"><svg class="ic" aria-hidden="true"><use href="#i-wave"/></svg><span class="nl">Audio</span></button><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><button type="button" class="btn sm ghost pfbtn" data-act="pfopen" title="Preferencias: unidades de medida" aria-label="Preferencias"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="nl">Preferencias</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.121</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -3311,6 +3410,9 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.121 <span>25 nov 2026</span></h3><ul>
+      <li><b>Móvil revisado.</b> Nada se sale de la pantalla, el compendio se lee en fichas y todos los botones se pulsan bien con el dedo.</li>
+      <li><b>Portada con movimiento y primeros pasos.</b> Las notas caen sobre el cuero, los títulos van a mano y una campaña vacía te propone por dónde empezar.</li></ul></li>
     <li><h3>v1.120 <span>25 nov 2026</span></h3><ul>
       <li><b>Portada «pantalla del máster».</b> Cuero con costura y pliegues y cuatro notas distintas clavadas, escritas a mano, en claro y oscuro.</li>
       <li><b>El resto, más sencillo.</b> Títulos en tinta, botones limpios y campos de formulario con línea inferior que se resaltan en amarillo al escribir.</li></ul></li>
@@ -4238,7 +4340,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
       <div class="scconf" id="camp-vc"></div>
             <div class="scremote" id="camp-inv"></div>
       <form class="inline" id="camp-join" hidden><input class="txt noi18n" id="camp-code" maxlength="20" autocomplete="off" aria-label="Código de invitación" placeholder="Código de invitación" style="flex:1 1 200px"><button class="btn" type="submit">Unirme con un código</button></form>
-      <p class="hint" id="camp-first" style="display:block;margin:0" hidden><b>Aún no tienes ninguna campaña.</b> Empieza creando la primera: dale un nombre y pulsa «Crear campaña».</p>
+      <p class="hint" id="camp-first" style="display:block;margin:0" hidden><b>Empieza dándole nombre a tu campaña.</b> Cámbialo aquí mismo, o crea otra con su nombre y pulsa «Crear campaña».</p>
       <form class="inline" id="camp-form"><input class="txt noi18n" id="camp-new" maxlength="60" aria-label="Nueva campaña" style="flex:1 1 200px"><button class="btn primary" type="submit">Crear campaña</button></form>
     </div>
   </div>
@@ -4878,7 +4980,7 @@ function render(){
   }).join('');
 
   const L=$('#list');
-  if(!n){L.innerHTML=`<li class="empty">No hay nadie en el combate. Añade jugadores, aliados y enemigos desde el panel «Añadir criatura» o desde ${ic('search')} Buscar.<br><button type="button" class="btn" data-act="acexample" style="margin-top:12px">Insertar datos de ejemplo</button></li>`;}
+  if(!n){L.innerHTML=`<li class="empty">El campo de batalla está en calma. Añade jugadores, aliados y enemigos desde «Añadir criatura» o desde ${ic('search')} Buscar.<br><button type="button" class="btn" data-act="acexample" style="margin-top:12px">Insertar datos de ejemplo</button></li>`;}
   else{
     const rows=s.order.map((id,idx)=>rowHTML(get(id),idx,cur&&cur.id===id));
     const rot=s.active&&s.rotate!==false&&s.turnIdx>0;
@@ -7282,7 +7384,7 @@ function renderCompendio(){
   $('#cm-count').textContent=`${res.length} ${res.length===1?tb[2]:tb[3]}`;
   const cols=CM_COLS[cmTab];$('#cm-new').hidden=!IT_NEW[cmTab];$('#cm-new').textContent=IT_NEW[cmTab]||'';$('#cm-new').dataset.ty=cmTab;
   if(!all.length){$('#cm-list').innerHTML=modOn('srd521')&&!COMP_SRD?'<div class="empty">Cargando el compendio del SRD…</div>':`<div class="empty">No hay ${tb[3]} en tus módulos activos. Activa el SRD 5.2.1 u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>.</div>`;return;}
-  $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>`<td${c[2]?` class="${c[2]}"`:''}>${c[1](x)}</td>`).join('')}<td class="src" title="${esc(x._full)}">${esc([x._src,...(x._also||[])].join(' · '))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
+  $('#cm-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${cols.map(c=>`<th${c[2]?` class="${c[2]}"`:''}>${c[0]}</th>`).join('')}<th>Fuente</th></tr></thead><tbody>${res.slice(0,500).map((x,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false">${cols.map(c=>{const h=c[1](x);return `<td data-l="${esc(c[0])}"${c[2]?` class="${c[2]}"`:''}${h===''||h==='—'?' data-e':''}>${h}</td>`;}).join('')}<td class="src" data-l="Fuente" title="${esc(x._full)}">${esc([x._src,...(x._also||[])].join(' · '))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>500?`<p class="hint" style="display:block">Mostrando 500 de ${res.length}. Afina la búsqueda.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 // Tabla aleatoria de un módulo o propia: se convierte una sola vez a la forma de la herramienta Tablas
 const cmTb=x=>x._hbt||(x._tbc||(x._tbc=modTable(x,0,null)||tbMake(String(x.n),1,['Resultado'])));
@@ -7606,6 +7708,7 @@ function renderHome(){
      else if(sesUsa()){const a=Notas.activa(CP),hoy=a?null:sesHoy();
        if(a)html='<b>'+esc(T('Sesión en curso'))+'</b><span class="pcsub noi18n">'+esc(cpName(a))+'</span><a class="btn primary" href="'+esc(Notas.href(a))+'">'+esc(T('Abrir la sesión'))+'</a>';
        else if(hoy)html='<b>'+esc(T('Hoy toca'))+'</b><span class="pcsub noi18n">'+esc(cpName(hoy))+'</span><button type="button" class="btn primary" data-act="seshoy">'+esc(T('Iniciar la de hoy'))+'</button>';}
+     if(!html&&campVacia())html='<b>'+esc(T('Primeros pasos'))+'</b><span class="pcsub">'+esc(T('Tu campaña está vacía.'))+'</span><button type="button" class="btn primary" data-act="campopen">'+esc(T('Ponerle nombre'))+'</button><a class="btn" href="#personajes">'+esc(T('Crear un personaje'))+'</a><button type="button" class="btn" data-act="acexample">'+esc(T('Probar con datos de ejemplo'))+'</button>';
    }catch{}
    h.innerHTML=html;h.hidden=!html;}
   try{$('#hs-campname').textContent=Store.campaigns.activeName()||T('Sin campaña');$('#hs-camps').textContent='';}catch{}
@@ -7675,7 +7778,7 @@ function renderSpellView(){
   const srt=$('#vs-sort').value,th=(k,l)=>`<th><button type="button" data-vsort="${k}"${srt===k?' aria-sort="ascending"':''}>${l}</button></th>`;
   const tick=v=>v?'<span class="yes" title="Sí">✓</span>':'<span class="no" aria-label="No">–</span>';
   const comp=s=>{const c=s.comp||'',base=c.split('(')[0].split(',').map(x=>x.trim()),cost=c.includes('(');return `<span class="cp" title="${esc(c)}">${['V','S','M'].map(k=>`<i class="${base.includes(k)?(k==='M'&&cost?'cost':''):'off'}">${k}</i>`).join('')}</span>`;};
-  $('#vs-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${th('name','Nombre')}${th('lv','Nivel')}${th('sch','Escuela')}<th class="c">Ritual</th><th class="c">Concentración</th><th>Componentes</th><th>Fuente</th></tr></thead><tbody>${res.slice(0,400).map((s,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(s.n)}${goA('conjuros',s.n)}${s.en?`<i class="ven">${esc(s.en)}</i>`:''}</td><td>${spLevel(s.lv)}</td><td>${s.sch?SCHOOLS[s.sch]:''}</td><td class="c">${tick(s.rit)}</td><td class="c">${tick(s.conc)}</td><td>${comp(s)}</td><td class="src" title="${esc(spellSrcFull(s))}">${esc(spellSrcLabel(s))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>400?`<p class="hint" style="display:block">Mostrando 400 de ${res.length}. Afina los filtros.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
+  $('#vs-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable"><thead><tr>${th('name','Nombre')}${th('lv','Nivel')}${th('sch','Escuela')}<th class="c">Ritual</th><th class="c">Concentración</th><th>Componentes</th><th>Fuente</th></tr></thead><tbody>${res.slice(0,400).map((s,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(s.n)}${goA('conjuros',s.n)}${s.en?`<i class="ven">${esc(s.en)}</i>`:''}</td><td data-l="Nivel">${spLevel(s.lv)}</td><td data-l="Escuela">${s.sch?SCHOOLS[s.sch]:''}</td><td class="c" data-l="Ritual">${tick(s.rit)}</td><td class="c" data-l="Concentración">${tick(s.conc)}</td><td data-l="Componentes">${comp(s)}</td><td class="src" data-l="Fuente" title="${esc(spellSrcFull(s))}">${esc(spellSrcLabel(s))}</td></tr>`).join('')}</tbody></table></div>`+(res.length>400?`<p class="hint" style="display:block">Mostrando 400 de ${res.length}. Afina los filtros.</p>`:''):'<div class="empty">Nada coincide con esos filtros.</div>';
 }
 for(const id of ['#vs-q','#vs-lv','#vs-cls','#vs-sch','#vs-fu','#vs-conc','#vs-rit','#vs-sort'])$(id).addEventListener('input',renderSpellView);
 let VS_RES=[];
@@ -8486,7 +8589,7 @@ function pjSheetHTML(f,lista){
   }
   // recursos
   h+='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist">'+f.recursos.map(r=>'<li><span><b>'+esc(r.n)+'</b> <small class="pcsub">'+esc(r.rec==='corto'?T('Descanso corto'):r.rec==='largo'?T('Descanso largo'):T('Sin recarga'))+'</small></span><span class="pjrow">'+pjPips(r.max,r.uso,'pjrec',' data-id="'+esc(r.id)+'"')+'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(r.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
-   +'<div class="pjrow"><input id="pjr-n" placeholder="'+esc(T('Nombre'))+'" maxlength="60"><input id="pjr-m" type="number" min="1" max="99" value="1"><select id="pjr-r"><option value="largo">'+esc(T('Descanso largo'))+'</option><option value="corto">'+esc(T('Descanso corto'))+'</option><option value="">'+esc(T('Sin recarga'))+'</option></select><button type="button" class="btn sm" data-act="pjrecnew">'+esc(T('Añadir'))+'</button></div></div>';
+   +'<div class="pjrow"><input id="pjr-n" placeholder="'+esc(T('Nombre'))+'" maxlength="60"><input id="pjr-m" type="number" min="1" max="99" value="1" aria-label="'+esc(T('Usos'))+'"><select id="pjr-r" aria-label="'+esc(T('Recarga'))+'"><option value="largo">'+esc(T('Descanso largo'))+'</option><option value="corto">'+esc(T('Descanso corto'))+'</option><option value="">'+esc(T('Sin recarga'))+'</option></select><button type="button" class="btn sm" data-act="pjrecnew">'+esc(T('Añadir'))+'</button></div></div>';
   h+=pjDet('hab','Habilidades y salvaciones',pjHabHTML(f),pjPend(f,'habil','salvac'))+pjDet('atq','Ataques',pjAtqHTML(f),pjPend(f,'ataques'))+pjDet('ras','Rasgos y características de clase',pjRasHTML(f),pjPend(f,'rasgos'));
   // experiencia / hito
   const crit=pjCriterio(),sig=N<20?Ficha.XP[N]:0;
@@ -8537,7 +8640,7 @@ function pjLevelHTML(){
   const s=pjGet(pjSel);if(!s)return '';const f=s.f,L=pjLvl;
   const nc=Ficha.nivelClase(f,L.c)+1,C=Ficha.CLASES[L.c],pide=[4,8,12,16,19].includes(nc)||(C.mej||[]).includes(nc),media=Math.floor(C.d/2)+1;
   const camp=s.lista==='campana'?{criterio:pjCriterio()}:null,puede=Ficha.puedeSubir(f,camp);
-  const ab=(id,sel)=>'<select data-pjl="'+id+'">'+Ficha.AB.map(a=>'<option value="'+a+'"'+(a===sel?' selected':'')+'>'+esc(T(ABN[a]))+'</option>').join('')+'</select>';
+  const ab=(id,sel)=>'<select data-pjl="'+id+'" aria-label="'+esc(T('Característica'))+'">'+Ficha.AB.map(a=>'<option value="'+a+'"'+(a===sel?' selected':'')+'>'+esc(T(ABN[a]))+'</option>').join('')+'</select>';
   let h='<p class="pcsub">'+esc(T('Nivel'))+' '+(Ficha.nivel(f)+1)+'</p>'
    +(puede.ok?'':'<p class="pjlock">'+esc(T(PJERR[puede.error]||'No se puede subir'))+'</p>')
    +'<div class="row"><label>'+esc(T('Clase'))+'<select data-pjl="c">'+Object.keys(CLSN).map(c=>'<option value="'+c+'"'+(c===L.c?' selected':'')+'>'+esc(T(CLSN[c]))+(Ficha.nivelClase(f,c)?' ('+Ficha.nivelClase(f,c)+')':'')+'</option>').join('')+'</select></label>'
@@ -8859,7 +8962,7 @@ function cpEncs(it){
   const rows=ids.map((id,n)=>{const p=PRESETS.find(x=>x.id===id);
     return '<div class="cprow cpenc"><span class="cpencn">'+(p?'<b>'+esc(p.n)+'</b><small>'+esc(encSum(p))+'</small>':'<i>'+T('Encuentro borrado')+'</i>')+'</span>'+(p?'<button type="button" class="btn sm primary" data-act="cpencload" data-id="'+esc(id)+'">'+T('Cargar en el combate')+'</button>':'')+'<button type="button" class="btn sm ghost" data-act="cprm" data-f="encuentros" data-i="'+n+'" aria-label="'+esc(T('Quitar'))+'">✕</button></div>';}).join('');
   const libres=PRESETS.filter(p=>!ids.includes(p.id));
-  return '<div class="cpck" data-f="encuentros"><h4>'+T('Encuentros sin escena')+'</h4>'+rows+(libres.length?'<div class="cplink bfilters"><select id="cp-encsel"><option value="">'+T('Añadir encuentro…')+'</option>'+libres.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></div>':'<p class="hint">'+T('Aún no hay encuentros guardados. Guárdalos desde Combate.')+'</p>')+'</div>';
+  return '<div class="cpck" data-f="encuentros"><h4>'+T('Encuentros sin escena')+'</h4>'+rows+(libres.length?'<div class="cplink bfilters"><select id="cp-encsel" aria-label="'+T('Añadir encuentro…')+'"><option value="">'+T('Añadir encuentro…')+'</option>'+libres.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></div>':'<p class="hint">'+T('Aún no hay encuentros guardados. Guárdalos desde Combate.')+'</p>')+'</div>';
 }
 function cpCreature(i){
   const k=i.campos.criatura,m=k&&tpl(k);
@@ -8945,7 +9048,7 @@ function cpTabCuerpo(it){
 }
 function cpRenderDet(){
   const el=$('#cp-det'),it=cpSel&&cpGet(cpSel);
-  if(!it){const vacio=!cpQ&&!CP.some(i=>i.tipo===cpTipo);el.innerHTML=`<div class="empty">${T(vacio?'Aún no hay nada aquí. Pulsa «+ Nuevo».':'Elige algo de la lista o crea uno nuevo.')}</div>`;return;}
+  if(!it){const vacio=!cpQ&&!CP.some(i=>i.tipo===cpTipo);el.innerHTML=`<div class="empty">${T(vacio?'La página está en blanco. Pulsa «+ Nuevo» para escribir la primera.':'Elige algo de la lista o crea uno nuevo.')}</div>`;return;}
   if(it.id.startsWith('pub_')||(it.tipo==='handout'&&Store.campaigns.rol()==='jugador')){el.innerHTML=cpPubVista(it);return;}
   const lists=(CPLISTS[it.tipo]||[]).map(l=>cpChecks(it,l)).join('')+(it.tipo==='sesion'?cpEscenas(it):'');
   const dl=['sesion','npc','lugar','mision','puzzle'].map(t=>`<datalist id="cp-dl-${t}">${CP.filter(x=>x.tipo===t).map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`).join('');
@@ -9748,11 +9851,12 @@ function renderCamps(){
   scRemotas();
 }
 /* Sin ninguna campaña real (solo la local, vacía y sin cuenta), lo primero al entrar en Campaña es crear una */
+(function(){const K={campana:1,personajes:2,compendio:3,utilidades:4};document.querySelectorAll('.pagenav a.main[data-blk]').forEach(a=>{const k=K[a.dataset.blk];if(k&&!a.title)a.title='Atajo: tecla '+k;});})();
 function campVacia(){const C=Store.campaigns,l=C.list();if(l.length!==1||l[0].id!==C.BASE||C.remote(C.BASE))return false;
   try{if(Notas.cargar(Store.get('camp-notes-v1')).length)return false;}catch{}
   return !(typeof PARTY!=='undefined'&&PARTY.length)&&!(typeof PRESETS!=='undefined'&&PRESETS.length);}
 let campPrimeraVista=false;
-function campPrimera(){if(campPrimeraVista||!campVacia())return;campPrimeraVista=true;campOpen();}
+function campPrimera(){/* ya no se abre sola: la portada propone los primeros pasos */}
 function campOpen(){renderCamps();$('#campmodal').hidden=false;syncModalOpen();setTimeout(()=>$('#camp-new').focus(),30);}
 if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barra plegada y color de los botones de la ventana */
   const R=document.documentElement,S=window.__AppShell;
