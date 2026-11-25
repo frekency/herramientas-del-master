@@ -5,7 +5,7 @@ const COLOR = /^#[0-9a-f]{3,8}$/i;
 const MAX_IMG = 6_000_000;
 
 // ---- escenas: capas con posición y tamaño relativos (en %) sobre un lienzo 16:9 ----
-const CAPAS = ['imagen', 'texto', 'iniciativa', 'cuentas', 'dados', 'mapa', 'ambiente'];
+const CAPAS = ['imagen', 'texto', 'iniciativa', 'cuentas', 'dados', 'mapa', 'ambiente', 'grupo'];
 // ambiente: vídeo o imagen animada en bucle y, aparte, un sonido; ambos de un enlace https o de la carpeta de ambientes del usuario
 const URL_AUDIO = /^https:\/\/[^\s"'<>\\]{4,480}$/;
 const ARCHIVO_AUDIO = /^[^\\/:*?"<>|\u0000-\u001f]{1,120}\.(?:mp3|ogg|oga|opus|wav|m4a|aac|flac)$/i;
@@ -61,6 +61,15 @@ function validarCapa(c, i) {
     o.audio = url ? c.url : arch ? 'app://local/__audios/' + encodeURIComponent(c.archivo) : '';
     o.sonido = c.sonido === true && !!o.audio;
     o.volumen = num(c.volumen, 0, 100, 40);
+    return o;
+  }
+  if (c.tipo === 'grupo') {
+    // resumen del grupo: qué se enseña de cada jugador (vida, espacios de conjuro, recursos como la furia) y cuántas columnas
+    o.pg = c.pg !== false;
+    o.esp = c.esp !== false;
+    o.rec = c.rec !== false;
+    o.ca = c.ca === true;
+    o.cols = Math.trunc(num(c.cols, 0, 4, 0));   // 0 = automático
     return o;
   }
   if (c.tipo === 'iniciativa') {
@@ -158,6 +167,21 @@ function validar(p) {
       return { id: typeof (c && c.id) === 'string' && /^[a-z0-9]{1,24}$/i.test(c.id) ? c.id : '', n: String((c && c.n) || '').slice(0, 60), seg: Number.isFinite(s) ? Math.max(0, Math.min(86400, s)) : 0, pausa: !!(c && c.pausa), fin: !!(c && c.fin) };
     });
     return { tipo: 'cuentas', lista };
+  }
+  if (p.tipo === 'grupo') {
+    // solo cifras y nombres de los personajes de la campaña: nada del máster (notas, secretos, registro)
+    const ent = (v, a, b) => Math.trunc(num(v, a, b, a));
+    const lista = (Array.isArray(p.lista) ? p.lista : []).slice(0, 8).map(j => {
+      j = j && typeof j === 'object' ? j : {};
+      return {
+        n: txt(j.n, 40), cls: txt(j.cls, 60), col: typeof j.col === 'string' && COLOR.test(j.col) ? j.col : '',
+        pg: ent(j.pg, 0, 9999), max: ent(j.max, 0, 9999), tmp: ent(j.tmp, 0, 9999), ca: ent(j.ca, 0, 99), agot: ent(j.agot, 0, 6),
+        esp: (Array.isArray(j.esp) ? j.esp : []).slice(0, 9).map(e => ({ lv: ent(e && e.lv, 1, 9), max: ent(e && e.max, 0, 9), uso: ent(e && e.uso, 0, 9) })).filter(e => e.max > 0),
+        pacto: j.pacto && typeof j.pacto === 'object' ? { nivel: ent(j.pacto.nivel, 1, 9), max: ent(j.pacto.max, 0, 9), uso: ent(j.pacto.uso, 0, 9) } : null,
+        rec: (Array.isArray(j.rec) ? j.rec : []).slice(0, 8).map(r => ({ n: txt(r && r.n, 30), max: ent(r && r.max, 0, 99), uso: ent(r && r.uso, 0, 99) })).filter(r => r.n && r.max > 0),
+      };
+    });
+    return { tipo: 'grupo', lista };
   }
   if (p.tipo === 'aviso') {
     const texto = typeof p.texto === 'string' ? p.texto.trim().slice(0, 400) : '';

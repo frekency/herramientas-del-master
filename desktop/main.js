@@ -67,7 +67,7 @@ ipcMain.on('shell:titlebar', (e, bg, fg) => {
 // Ventanas de la mesa: las que ven los jugadores (hasta 8, cada una con su escena y su telón). Las abre el máster.
 const MAX_VENTANAS = 8;
 const mesas = new Map();   // id → { win, lista, ultimoMesa, ultimoTelon }
-let ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, master = null;
+let ultimaIni = null, ultimoCuentas = { tipo: 'cuentas', lista: [] }, ultimoGrupo = { tipo: 'grupo', lista: [] }, master = null;
 const TELON_OFF = { tipo: 'telon', activo: false, texto: '' };
 const idVentana = n => (Number.isInteger(n) && n >= 1 && n <= MAX_VENTANAS ? n : 1);
 const viva = m => !!(m && m.win && !m.win.isDestroyed());
@@ -125,6 +125,12 @@ function registrarMesa() {
       for (const i of abiertas()) mandar(mesas.get(i), v);
       return;
     }
+    if (v.tipo === 'grupo') {
+      // el resumen del grupo es un dato vivo que solo pinta una capa de la escena: llega a todas las ventanas abiertas
+      ultimoGrupo = v;
+      for (const i of abiertas()) mandar(mesas.get(i), v);
+      return;
+    }
     if (v.tipo === 'iniciativa') {
       ultimaIni = v;
       if (v.abrir) {
@@ -168,6 +174,7 @@ function registrarMesa() {
     mandar(m, m.ultimoMesa);
     if (ultimaIni && m.ultimoMesa.tipo === 'escena') mandar(m, ultimaIni);
     mandar(m, ultimoCuentas);
+    mandar(m, ultimoGrupo);
     if (m.ultimoTelon.activo) mandar(m, m.ultimoTelon);
   });
   ipcMain.on('mesa:pantalla', e => {

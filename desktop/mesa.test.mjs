@@ -203,3 +203,27 @@ test('telón: se baja con un texto corto y se sube', () => {
   assert.deepEqual(validar({ tipo: 'telon', activo: 'si', texto: 'x'.repeat(300) }).texto.length, 80);
   assert.equal(validar({ tipo: 'telon', activo: 'si' }).activo, false);
 });
+
+test('grupo: solo nombres y cifras de los personajes, acotadas y saneadas', () => {
+  const v = validar({ tipo: 'grupo', lista: [
+    { n: 'Brakka', cls: 'Bárbaro 5', col: '#b3262d', pg: 31.9, max: 52, tmp: -4, ca: 16, agot: 9, notas: 'secreto del máster', dm: ['x'],
+      esp: [{ lv: 1, max: 4, uso: 1 }, { lv: 2, max: 0, uso: 0 }, { lv: 12, max: 3, uso: 1 }],
+      pacto: { nivel: 3, max: 2, uso: 1, x: 1 }, rec: [{ n: 'Furia', max: 3, uso: 1 }, { n: '', max: 2, uso: 0 }, { n: 'Sin usos', max: 0, uso: 0 }] },
+    null, 'x',
+  ] });
+  assert.equal(v.tipo, 'grupo');
+  assert.equal(v.lista.length, 3);
+  const j = v.lista[0];
+  assert.deepEqual(j, { n: 'Brakka', cls: 'Bárbaro 5', col: '#b3262d', pg: 31, max: 52, tmp: 0, ca: 16, agot: 6,
+    esp: [{ lv: 1, max: 4, uso: 1 }, { lv: 9, max: 3, uso: 1 }], pacto: { nivel: 3, max: 2, uso: 1 }, rec: [{ n: 'Furia', max: 3, uso: 1 }] });
+  assert.equal('notas' in j || 'dm' in j, false);
+  assert.equal(validar({ tipo: 'grupo', lista: Array.from({ length: 30 }, () => ({ n: 'a' })) }).lista.length, 8);
+  assert.deepEqual(validar({ tipo: 'grupo' }), { tipo: 'grupo', lista: [] });
+});
+
+test('escena: la capa del resumen del grupo guarda qué se enseña y las columnas', () => {
+  const e = validar({ tipo: 'escena', capas: [{ tipo: 'grupo', id: 'g', x: 1, y: 2, w: 90, h: 80, pg: false, ca: true, cols: 9 }] });
+  const c = e.capas[0];
+  assert.equal(c.tipo, 'grupo');
+  assert.deepEqual([c.pg, c.esp, c.rec, c.ca, c.cols], [false, true, true, true, 4]);
+});

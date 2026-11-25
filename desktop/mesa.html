@@ -55,6 +55,28 @@ body.solo .cu .t{font-size:clamp(64px,16vw,260px)}body.solo .cu .n{font-size:cla
 .capa.texto.manuscrita>div{font-family:"Segoe Script","Bradley Hand","Comic Sans MS",cursive}
 .capa.negrita>div{font-weight:800}
 .capa.iniciativa,.capa.cuentas{container-type:size;overflow:hidden;display:flex;flex-direction:column;gap:1cqh}
+/* resumen del grupo: una tarjeta por jugador con vida, espacios de conjuro y recursos (furia, inspiración…) */
+.capa.grupo{container-type:size;overflow:hidden;display:grid;gap:1.6cqh 1.4cqw;align-content:center;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));font-size:min(calc(var(--uh,3)*1cqh),calc(var(--uw,3)*1cqw))}
+.capa.grupo .vacio{grid-column:1/-1;text-align:center;color:var(--muted);font-size:1.4em}
+.pjc{background:var(--row);border-left:.5em solid var(--c,#888);border-radius:.6em;padding:.55em .8em;min-width:0;display:flex;flex-direction:column;gap:.3em}
+.pjc .nm{display:flex;align-items:baseline;gap:.5em;font-weight:700;font-size:1.25em;line-height:1.15}
+.pjc .nm b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pjc .nm small{margin-left:auto;font-weight:600;color:var(--muted);font-size:.6em;white-space:nowrap}
+.pjc .cl{color:var(--muted);font-size:.7em;margin-top:-.2em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pjc .hp{display:flex;align-items:center;gap:.6em}
+.pjc .hpb{flex:1;height:.9em;border-radius:.45em;background:#ffffff1f;overflow:hidden}
+.pjc .hpb i{display:block;height:100%;width:var(--p,100%);background:#4caf6a;border-radius:.45em;transition:width .4s}
+.pjc .hpb i.med{background:#e0a458}.pjc .hpb i.bajo{background:#d0453c}
+.pjc .hpn{font-variant-numeric:tabular-nums;font-weight:700;min-width:4.6em;text-align:right;font-size:1.05em;white-space:nowrap}
+.pjc .hpn small{color:#7fb7ff;font-weight:600;margin-left:.3em;font-size:.7em}
+.pjc.caido{opacity:.55}.pjc.caido .hpn{color:#ff6a5e}
+.pjc .gfl{display:flex;flex-wrap:wrap;align-items:center;gap:.2em .9em;font-size:.82em;color:var(--muted)}
+.pjc .gfl>span{display:inline-flex;align-items:center;gap:.15em;white-space:nowrap}
+.pjc .gfl em{font-style:normal;color:var(--fg);font-weight:600;margin-right:.3em}
+.pip{display:inline-block;width:.75em;height:.75em;border-radius:50%;border:.14em solid var(--ac);box-sizing:border-box}
+.pip.on{background:var(--ac)}
+.pip.pc{border-color:#b98cff}.pip.pc.on{background:#b98cff}
+.pjc .ag{color:#e0a458}
 /* orden de iniciativa en horizontal: tarjetas con token en fila */
 .capa.iniciativa.h{flex-direction:row;align-items:center;gap:2cqw;padding:0 1.5cqw}
 .capa.iniciativa.h .ih{flex:none;height:88%;aspect-ratio:1;border-radius:50%;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 50% 35%,#3a3024,#1d1813);border:.9cqh solid var(--ac);box-shadow:0 .8cqh 2cqh #000a,inset 0 0 0 1.2cqh #1d1813;color:var(--ac);font-weight:800;line-height:.95}
@@ -136,7 +158,7 @@ const $=s=>document.querySelector(s),vistas=['#nada','#img','#ini','#avi','#esc'
 const P=window.__Mesa||(()=>{/* dentro del estudio la propia página hace de vista previa: recibe las escenas por postMessage */
   const o=location.origin;document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('previa'));
   return {onMostrar:cb=>addEventListener('message',e=>{if(e.source===parent&&e.origin===o&&e.data&&typeof e.data==='object')cb(e.data);}),listo:()=>parent.postMessage({mesaListo:1},o),pantallaCompleta(){}};})();
-let modo='legacy',escena=null,iniData=null,cuData=null;
+let modo='legacy',escena=null,iniData=null,cuData=null,grDat=null;
 const REAL=!!window.__Mesa;   // solo la ventana de la mesa tira de verdad; el marco de vista previa del estudio solo enseña dónde estará la bandeja
 function ver(v){document.body.classList.toggle('solo',v==='#nada');for(const s of vistas)$(s).style.display=s===v?(s==='#esc'||s==='#ini'||s==='#img'||s==='#avi'?'flex':'grid'):'none';$('#aviso').style.display=v==='#nada'?'block':'none';}
 
@@ -193,6 +215,39 @@ function ambActualiza(){
   const key='audio|'+cfg.audio;
   if(key!==AMB.key){ambParar();AMB.key=key;const a=new Audio();a.loop=true;a.preload='auto';a.src=cfg.audio;AMB.cur={el:a};a.play().catch(()=>{});}
   AMB.cur.el.volume=tapado?0:Math.min(1,cfg.volumen/100);
+}
+/* resumen del grupo: la capa se repinta cada vez que llega el dato (vida o recursos cambiados en la ficha) */
+function pintaGrupo(d,c){
+  c=c||d._cfg||{};d.textContent='';
+  const L=(grDat&&grDat.lista)||[];
+  if(!L.length){d.style.setProperty('--cols',1);d.style.setProperty('--uh',4);d.style.setProperty('--uw',4);d.append(el('div','vacio','Sin personajes en la campaña'));return;}
+  const n=L.length,cols=c.cols>0?Math.min(c.cols,n):n<=1?1:n<=4?2:n<=6?3:4,rows=Math.ceil(n/cols);
+  let lin=1.3;if(c.pg!==false)lin+=1.1;if(c.esp!==false&&L.some(j=>(j.esp&&j.esp.length)||j.pacto))lin+=1.1;
+  if(c.rec!==false)lin+=Math.max(0,...L.map(j=>(j.rec||[]).length?1:0))*1.1;
+  d.style.setProperty('--cols',cols);
+  d.style.setProperty('--uh',Math.max(1.6,Math.min(4.4,88/(rows*(lin*1.25+.9)))).toFixed(2));
+  d.style.setProperty('--uw',Math.max(1.2,Math.min(3.2,92/cols/13)).toFixed(2));
+  const pips=(max,libres,cl)=>{const f=document.createDocumentFragment();for(let i=0;i<max;i++)f.append(el('i','pip'+(cl?' '+cl:'')+(i<libres?' on':'')));return f;};
+  for(const j of L){
+    const k=el('div','pjc'+(j.max&&j.pg<=0?' caido':''));if(j.col)k.style.setProperty('--c',j.col);
+    const nm=el('div','nm');nm.append(el('b','',j.n||'?'));
+    const ex=[];if(c.ca&&j.ca)ex.push('CA '+j.ca);if(j.agot)ex.push('Agotamiento '+j.agot);
+    if(ex.length)nm.append(el('small','',ex.join(' · ')));
+    k.append(nm);if(j.cls)k.append(el('div','cl',j.cls));
+    if(c.pg!==false&&j.max){
+      const pc=Math.max(0,Math.min(100,Math.round(100*j.pg/j.max))),h=el('div','hp'),b=el('div','hpb'),i=el('i',pc<=25?'bajo':pc<=50?'med':'');i.style.setProperty('--p',pc+'%');b.append(i);
+      const t=el('div','hpn',j.pg+' / '+j.max);if(j.tmp)t.append(el('small','','+'+j.tmp));h.append(b,t);k.append(h);}
+    if(c.esp!==false&&((j.esp&&j.esp.length)||j.pacto)){
+      const f=el('div','gfl');
+      for(const e of j.esp||[]){const s=el('span');s.append(el('em','',e.lv+'º'),pips(e.max,Math.max(0,e.max-e.uso)));f.append(s);}
+      if(j.pacto&&j.pacto.max){const s=el('span');s.append(el('em','','Pacto '+j.pacto.nivel+'º'),pips(j.pacto.max,Math.max(0,j.pacto.max-j.pacto.uso),'pc'));f.append(s);}
+      k.append(f);}
+    if(c.rec!==false&&(j.rec||[]).length){
+      const f=el('div','gfl');
+      for(const r of j.rec){const s=el('span');s.append(el('em','',r.n));
+        if(r.max<=8)s.append(pips(r.max,Math.max(0,r.max-r.uso)));else s.append(document.createTextNode(Math.max(0,r.max-r.uso)+'/'+r.max));f.append(s);}
+      k.append(f);}
+    d.append(k);}
 }
 /* mapa de combate: color base o imagen, cuadrícula con casillas del tamaño real elegido y fichas colocadas en casillas */
 function pintaMapa(d,c){
@@ -257,6 +312,7 @@ function construir(p){
       const t=el('div','',c.t);t.style.textAlign=c.alin==='izq'?'left':c.alin==='der'?'right':'center';d.append(t);}
     else if(c.tipo==='dados'){if(c.fondo)d.style.background=c.fondo;else d.classList.add('libre');d.append(el('div','dlabel',REAL?'':'🎲 Bandeja de dados'));}
     else if(c.tipo==='iniciativa'){d.dataset.orient=c.orient||'v';d.dataset.tokens=c.tokens===false?'0':'1';pintaIni(d);}
+    else if(c.tipo==='grupo'){d._cfg=c;pintaGrupo(d,c);}
     else if(c.tipo==='mapa')pintaMapa(d,c);
     else if(c.tipo==='ambiente')pintaAmbiente(d,c);
     else if(c.tipo==='cuentas'){d.dataset.cid=c.cid||'';d.dataset.fin=c.fin||'';pintaCuentas(d);}
@@ -348,7 +404,7 @@ async function ponerEscena(p){
 function quitaEscena(){escena=null;anterior=null;for(const v of VID.values())v.pause();VID.clear();escTok++;const v=$('#lienzo');if(v)v.remove();posicionaDados();ambActualiza();}
 function actualizaVivas(){
   const c=$('#lienzo');
-  if(c){c.querySelectorAll('.capa.iniciativa').forEach(pintaIni);c.querySelectorAll('.capa.cuentas').forEach(pintaCuentas);}
+  if(c){c.querySelectorAll('.capa.iniciativa').forEach(pintaIni);c.querySelectorAll('.capa.cuentas').forEach(pintaCuentas);c.querySelectorAll('.capa.grupo').forEach(g=>pintaGrupo(g));}
   actualizaOverlay();
 }
 function actualizaOverlay(){
@@ -370,6 +426,7 @@ function mostrar(p){
       d.append(n,t);C.append(d);}
     actualizaVivas();
     return;}
+  if(p.tipo==='grupo'){grDat=p;actualizaVivas();return;}
   if(p.tipo==='limpiar'){modo='legacy';quitaEscena();ver('#nada');actualizaOverlay();return;}
   if(p.tipo==='imagen'){
     modo='legacy';quitaEscena();actualizaOverlay();

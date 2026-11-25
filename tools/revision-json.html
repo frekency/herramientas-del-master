@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revisión de JSON</title>
+<style>
+:root{--bg:#fbf8ef;--surface:#fffdf7;--surface-2:#f1ece0;--line:#cfd4df;--fg:#1c2740;--muted:#566079;--accent:#2e4a8a;--accent-fg:#fff;--hl:#f0dc7c;--ok:#2b7a3d;--warn:#a35b00;--warn-bg:#fff3d6}
+@media (prefers-color-scheme:dark){:root{--bg:#17181c;--surface:#1e2025;--surface-2:#282a31;--line:#3a3d47;--fg:#ebe7dc;--muted:#a3a6b0;--accent:#9db8ff;--accent-fg:#10131c;--hl:#e9cf55;--ok:#7bd08c;--warn:#f0c27a;--warn-bg:#3a2f18}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+h1{font-size:18px;margin:0 8px 0 0;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:16px}
+button,select,input{font:inherit;color:var(--fg)}
+.btn{min-height:40px;padding:0 14px;border:1px solid color-mix(in srgb,var(--fg) 40%,transparent);border-radius:8px;background:var(--surface);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+.btn:disabled{opacity:.45;cursor:default}
+input[type=search],select{min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:0 10px}
+.stat{color:var(--muted);font-size:14px}
+.bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;min-width:140px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:48px 20px;text-align:center;color:var(--muted)}
+.drop.over{border-color:var(--accent);background:var(--surface-2)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:0 0 14px;padding:14px 16px}
+.card.hecho{opacity:.6}
+.card h2{font-size:17px;margin:0 0 4px;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.sec{font-size:12px;color:var(--muted);font-weight:400}
+.motivo{border:1px dashed #d9a24a;background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:6px 10px;margin:6px 0 10px;font-size:14px}
+.prev{border:1px solid var(--line);border-radius:8px;padding:10px 12px;max-height:480px;overflow:auto;background:var(--bg)}
+.prev table{border-collapse:collapse;font-size:13px;margin:.4em 0;max-width:100%}
+.prev caption{text-align:left;font-weight:700;padding:2px 0 4px}
+.prev th,.prev td{border:1px solid var(--line);padding:3px 8px;text-align:left;vertical-align:top}
+.prev th{background:var(--surface-2)}
+.prev h3,.prev h4{margin:.8em 0 .3em}
+textarea{width:100%;min-height:260px;font:13px/1.4 ui-monospace,Consolas,monospace;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:8px;margin-top:8px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.empty{text-align:center;color:var(--muted);padding:40px 0}
+.dudas{margin:4px 0 8px 18px;color:var(--muted);font-size:14px}
+.nota{color:var(--muted);font-size:13px;margin:0 0 14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Revisión de JSON</h1>
+  <button class="btn" id="abrir">Abrir .json</button>
+  <input type="file" id="fichero" accept=".json,application/json" hidden>
+  <input type="search" id="q" placeholder="Buscar por nombre" aria-label="Buscar por nombre" hidden>
+  <select id="sec" aria-label="Sección" hidden></select>
+  <label class="stat" id="lvt" hidden><input type="checkbox" id="todo"> mostrar también lo revisado</label>
+  <span class="stat" id="cnt"></span>
+  <div class="bar" id="barra" hidden><i></i></div>
+  <button class="btn primary" id="guardar" disabled style="margin-left:auto">Guardar JSON revisado</button>
+</header>
+<main>
+  <div id="inicio" class="drop">
+    <p><b>Arrastra aquí un archivo .json</b> o pulsa «Abrir .json».</p>
+    <p>Sirve para el compendio (<code>compendio.json</code>) y para módulos de manual. Muestra lo marcado como pendiente (<code>rev</code> o <code>pend</code>), te deja corregirlo y marcarlo como revisado.</p>
+    <p>Todo ocurre en tu equipo: el archivo no se sube a ningún sitio.</p>
+  </div>
+  <p class="nota" id="nota" hidden></p>
+  <div id="lista"></div>
+</main>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let DATA=null,NOMBRE='',RAW='',SIGUE=false,SUCIO=false,LIM=40;
+const MARCAS=['rev','pend','dudas'];
+const pend=x=>x&&typeof x==='object'&&(x.rev||x.pend||(Array.isArray(x.dudas)&&x.dudas.length));
+const secciones=()=>Object.keys(DATA).filter(k=>Array.isArray(DATA[k])&&DATA[k].some(x=>x&&typeof x==='object'&&'n' in x));
+const CLAVE=()=>'revision-json:'+NOMBRE+':'+RAW.length;
+const guardaBorrador=()=>{try{localStorage.setItem(CLAVE(),JSON.stringify(DATA));}catch{}};
+function abre(txt,nombre){
+  let d;try{d=JSON.parse(txt);}catch(e){alert('Ese archivo no es un JSON válido: '+e.message);return;}
+  if(!d||typeof d!=='object'||Array.isArray(d)){alert('Se esperaba un objeto con secciones (objetos, clases, reglas…).');return;}
+  DATA=d;NOMBRE=nombre;RAW=txt;SIGUE=txt.endsWith('\n');SUCIO=false;LIM=40;
+  let b=null;try{b=localStorage.getItem(CLAVE());}catch{}
+  if(b&&confirm('Hay un borrador guardado de este archivo (tu trabajo anterior sin descargar). ¿Lo recupero?')){try{DATA=JSON.parse(b);SUCIO=true;}catch{}}
+  const sel=$('#sec');sel.innerHTML='<option value="">Todas las secciones</option>'+secciones().map(k=>'<option value="'+esc(k)+'">'+esc(k)+'</option>').join('');
+  for(const e of ['#q','#sec','#lvt','#barra'])$(e).hidden=false;
+  $('#inicio').hidden=true;$('#guardar').disabled=false;
+  TOTAL0=cuentaPend();pinta();
+}
+let TOTAL0=0;
+function cuentaPend(){let n=0;for(const k of secciones())for(const x of DATA[k])if(pend(x))n++;return n;}
+function lista(){
+  const q=$('#q').value.trim().toLowerCase(),s=$('#sec').value,todo=$('#todo').checked,out=[];
+  for(const k of secciones()){if(s&&k!==s)continue;
+    DATA[k].forEach((x,i)=>{if(!x||typeof x!=='object')return;
+      if(!(pend(x)||(todo&&x._rv)))return;
+      if(q&&!String(x.n||'').toLowerCase().includes(q))return;
+      out.push([k,i,x]);});}
+  return out;
+}
+function limpia(html){
+  const d=new DOMParser().parseFromString(String(html||''),'text/html');
+  d.querySelectorAll('script,style,iframe,object,embed,link,meta').forEach(e=>e.remove());
+  d.querySelectorAll('*').forEach(e=>{for(const a of [...e.attributes])if(/^on/i.test(a.name)||/javascript:/i.test(a.value))e.removeAttribute(a.name);});
+  return d.body.innerHTML;
+}
+function pinta(){
+  if(!DATA)return;
+  const L=lista(),pn=cuentaPend();
+  $('#cnt').textContent=pn+' pendientes de '+TOTAL0;
+  $('#barra i').style.width=(TOTAL0?Math.round((TOTAL0-pn)/TOTAL0*100):100)+'%';
+  const nota=$('#nota');nota.hidden=false;
+  nota.textContent=pn?'Corrige el contenido si hace falta y pulsa «Marcar revisado». Guarda el JSON cuando quieras; lo pendiente se conserva en el archivo.':'No queda nada pendiente. Guarda el JSON revisado.';
+  const cont=$('#lista');
+  if(!L.length){cont.innerHTML='<div class="empty">'+(pn?'Nada con ese filtro.':'Todo revisado.')+'</div>';return;}
+  cont.innerHTML=L.slice(0,LIM).map(([k,i,x])=>{
+    const du=Array.isArray(x.dudas)&&x.dudas.length?'<ul class="dudas">'+x.dudas.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'';
+    const motivo=x.rev?'<div class="motivo">'+esc(x.rev)+'</div>':(x.pend?'<div class="motivo">Pendiente de revisar</div>':'');
+    const meta=['t','r','s','pg','cls','tipo'].filter(f=>x[f]).map(f=>esc(x[f])).join(' · ');
+    return '<section class="card'+(pend(x)?'':' hecho')+'" data-k="'+esc(k)+'" data-i="'+i+'"><h2>'+esc(x.n)+' <span class="sec">'+esc(k)+(meta?' · '+meta:'')+'</span></h2>'+motivo+du
+      +'<div class="prev">'+(typeof x.d==='string'?limpia(x.d):'<i>Sin descripción en HTML</i>')+'</div>'
+      +'<div class="acts"><button class="btn" data-a="editar">Editar HTML</button><button class="btn ok" data-a="ok">'+(pend(x)?'Marcar revisado':'Ya revisado')+'</button>'+(x._rv?'<button class="btn" data-a="deshacer">Deshacer</button>':'')+'</div></section>';
+  }).join('')+(L.length>LIM?'<p class="empty"><button class="btn" id="mas">Mostrar '+Math.min(40,L.length-LIM)+' más ('+(L.length-LIM)+' restantes)</button></p>':'');
+}
+$('#lista').addEventListener('click',e=>{
+  if(e.target.id==='mas'){LIM+=40;pinta();return;}
+  const b=e.target.closest('button[data-a]');if(!b)return;
+  const c=b.closest('.card'),x=DATA[c.dataset.k][+c.dataset.i];
+  if(b.dataset.a==='editar'){
+    let t=c.querySelector('textarea');
+    if(t){x.d=t.value;t.remove();c.querySelector('.prev').innerHTML=limpia(x.d);b.textContent='Editar HTML';SUCIO=true;guardaBorrador();return;}
+    t=document.createElement('textarea');t.value=x.d||'';t.spellcheck=false;c.querySelector('.prev').after(t);b.textContent='Aplicar cambios';t.focus();return;}
+  if(b.dataset.a==='ok'){
+    const t=c.querySelector('textarea');if(t)x.d=t.value;
+    if(!pend(x))return;
+    x._rv={};for(const m of MARCAS)if(m in x){x._rv[m]=x[m];delete x[m];}
+    SUCIO=true;guardaBorrador();pinta();return;}
+  if(b.dataset.a==='deshacer'){Object.assign(x,x._rv||{});delete x._rv;SUCIO=true;guardaBorrador();pinta();}
+});
+for(const e of ['#q','#sec','#todo'])$(e).addEventListener('input',()=>{LIM=40;pinta();});
+$('#guardar').addEventListener('click',()=>{
+  const pn=cuentaPend();
+  if(pn&&!confirm('Quedan '+pn+' pendientes. Se guardan igualmente (siguen marcados). ¿Guardar?'))return;
+  const copia=JSON.parse(JSON.stringify(DATA));
+  for(const k of secciones())for(const x of copia[k])if(x&&typeof x==='object')delete x._rv;
+  const txt=JSON.stringify(copia,null,RAW.includes('\n ')?1:undefined)+(SIGUE?'\n':'');
+  const base=NOMBRE.replace(/\.json$/i,'').replace(/-revisado$/i,'');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=base+(pn?'-revisado-parcial':'-revisado')+'.json';
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  SUCIO=false;try{localStorage.removeItem(CLAVE());}catch{}
+});
+const fich=f=>{const r=new FileReader();r.onload=()=>abre(String(r.result),f.name);r.readAsText(f,'utf-8');};
+$('#abrir').addEventListener('click',()=>$('#fichero').click());
+$('#fichero').addEventListener('change',e=>{if(e.target.files[0])fich(e.target.files[0]);});
+const dz=$('#inicio');
+addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+addEventListener('dragleave',()=>dz.classList.remove('over'));
+addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');const f=e.dataTransfer.files[0];if(f)fich(f);});
+addEventListener('beforeunload',e=>{if(SUCIO){e.preventDefault();e.returnValue='';}});
+})();
+</script>
+</body>
+</html>

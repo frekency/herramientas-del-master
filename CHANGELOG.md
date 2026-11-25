@@ -4,6 +4,11 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.121.7] - 2026-11-25
+### Añadido
+- **Mesa: capa «Resumen del grupo»:** una tarjeta por jugador con vida (barra y PG temporales), espacios de conjuro y de pacto, recursos como la furia, y opcionalmente CA y agotamiento. Se actualiza sola al cambiar las fichas. Los jugadores solo ven nombres y cifras.
+- **Herramienta de revisión de JSON** (`tools/revision-json.html`): abre un .json del compendio, muestra lo pendiente de revisar y guarda el resultado.
+
 ## [1.121.6] - 2026-11-25
 ### Cambiado
 - **Tablas del compendio:** en pantallas de hasta 1000 px las tablas de 4 o más columnas (progresión de clases) se ven como una tarjeta por nivel; las de 3 columnas caben en 360 px y, si hace falta, se desplazan con sombra de aviso. Al imprimir salen siempre como tabla.

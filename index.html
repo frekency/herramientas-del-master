@@ -5147,6 +5147,22 @@ function mesaIniData(){
   const lista=s.order.map(id=>{const c=get(id);if(!c)return null;const m=cTpl(c);return {n:c.name,actual:id===cur,caido:c.hp<=0&&!isPC(c),color:fac(c.factionId).color,tok:(m&&typeof m.tok==='string'&&m.tok.length<=60000)?m.tok:'',oculto:!!c.oculto};}).filter(Boolean);
   return {tipo:'iniciativa',activo:!!s.active,ronda:s.active?s.round:0,lista,cuenta:Eventos.cuentaAtras(s.ev,Date.now())};
 }
+/* resumen del grupo para la mesa: solo cifras y nombres de los personajes de la campaña (nada de notas, registro ni datos del máster) */
+function mesaGrupoData(){
+  try{if(!pjCargado)pjLoad();}catch{}
+  const lista=(PJC||[]).filter(f=>f&&f.estado!=='retirado').slice(0,8).map(f=>{
+    const e=Ficha.espacios(f),su=f.slotsUsados||[];
+    return {n:f.nombre,cls:pjCls(f),col:pjCol(f),
+      pg:f.hp,max:Ficha.hpMax(f),tmp:f.temp||0,ca:f.ca||0,agot:f.agot||0,
+      esp:e.slots.map((m,i)=>({lv:i+1,max:m,uso:su[i]||0})).filter(x=>x.max>0),
+      pacto:e.pact?{nivel:e.pact.nivel,max:e.pact.n,uso:f.pactUsados||0}:null,
+      rec:(f.recursos||[]).map(r=>({n:r.n,max:r.max,uso:r.uso}))};
+  });
+  return {tipo:'grupo',lista};
+}
+function msGrupoResumen(){const n=(mesaGrupoData().lista||[]).length;return n?T('Ahora mismo: ')+n+' '+T(n===1?'personaje en la campaña':'personajes en la campaña'):T('La campaña aún no tiene personajes: crea uno en la sección Personajes.');}
+const msGrupoOn=()=>MS.capas.some(c=>c.visible&&c.tipo==='grupo');
+function mesaGrupoSend(){const S=window.__AppShell;if(S&&S.mesa&&(mesaEst.abierta||Object.values(mesaEst.otras||{}).some(v=>v&&v.abierta))&&msGrupoOn())S.mesa.enviar({...mesaGrupoData(),ventana:'todas'});}
 var mesaEst={abierta:false,que:'nada',titulo:'',congelado:false,telon:false,abiertas:[],otras:{}};
 /* ventana 1 = mesaEst; las demás (2 a 8) guardan su propio estado en mesaEst.otras */
 const mesaVent=n=>n===1?mesaEst:(mesaEst.otras[n]??={abierta:false,que:'nada',titulo:'',telon:false});
@@ -5166,7 +5182,7 @@ function mesaTelon(n){
 function mesaSendIni(abrir){const S=window.__AppShell;if(!S||!S.mesa||(mesaEst.congelado&&!abrir))return;S.mesa.enviar({...mesaIniData(),abrir:!!abrir});}
 /* ===== Estudio de la mesa: se prepara la escena (vista previa) y se envía a la ventana de los jugadores ===== */
 const MS={amb:[],web:{prov:'freesound',q:'',res:null,est:'',claves:{},solo0:true,cargando:false},webSuena:-1,vent:1,otros:{},nombre:'',fondo:'#0b0a09',fondo2:'',ang:180,fnid:'',fajuste:'cubrir',aspecto:'16:9',prop:true,fundido:400,capas:[],sel:null,live:false,pl:[],q:'',listo:false};
-const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},mapa:{x:0,y:0,w:100,h:100},ambiente:{x:0,y:0,w:100,h:100},cuentas:{x:72,y:76,w:25,h:19},dados:{x:60,y:30,w:38,h:62}};
+const MS_DEF={imagen:{x:5,y:5,w:62,h:90},texto:{x:10,y:38,w:80,h:24},iniciativa:{x:70,y:5,w:27,h:90},mapa:{x:0,y:0,w:100,h:100},ambiente:{x:0,y:0,w:100,h:100},cuentas:{x:72,y:76,w:25,h:19},dados:{x:60,y:30,w:38,h:62},grupo:{x:2,y:4,w:96,h:92}};
 const msId=()=>'c'+Math.random().toString(36).slice(2,9);
 const msNum=(v,a,b,d)=>{const n=Number(v);return Number.isFinite(n)?Math.min(b,Math.max(a,n)):d;};
 const msCol=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:d;
@@ -5180,6 +5196,7 @@ function msNorm(c){
     o.sonido=c.sonido===true;o.volumen=msNum(c.volumen,0,100,40);
     o.fuente=c.fuente==='archivo'?'archivo':'url';o.url=https(c.url);o.archivo=nm(c.archivo);o.credito=String(c.credito||'').replace(/[\u0000-\u001f]/g,' ').slice(0,200);}
   if(c.tipo==='iniciativa'){o.orient=c.orient==='h'?'h':'v';o.tokens=c.tokens!==false;}
+  if(c.tipo==='grupo'){o.pg=c.pg!==false;o.esp=c.esp!==false;o.rec=c.rec!==false;o.ca=c.ca===true;o.cols=Math.trunc(msNum(c.cols,0,4,0));}
   if(c.tipo==='mapa'){o.fondo=msCol(c.fondo,'#2b2f26');o.nid=typeof c.nid==='string'?c.nid.slice(0,80):'';o.ajuste=c.ajuste==='contener'?'contener':'cubrir';o.cuad=c.cuad!==false;o.cuadColor=msCol(c.cuadColor,'#ffffff');o.cuadOp=msNum(c.cuadOp,0.05,1,0.3);
     o.celda=msNum(c.celda,0.5,20,2.5);o.pantalla=msNum(c.pantalla,15,600,122);o.offx=msNum(c.offx,0,1,0);o.offy=msNum(c.offy,0,1,0);
     o.tokens=(Array.isArray(c.tokens)?c.tokens:[]).slice(0,60).map(msNormTok).filter(Boolean);}
@@ -5221,6 +5238,7 @@ const msNom=c=>{
   if(c.tipo==='imagen'){const it=c.nid&&cpGet(c.nid);return c.titulo||(it?cpName(it):T('Zona de imágenes'));}
   if(c.tipo==='texto')return (c.t||'').replace(/\s+/g,' ').trim().slice(0,28)||T('Texto');
   if(c.tipo==='dados')return T('Bandeja de dados');
+  if(c.tipo==='grupo')return T('Resumen del grupo');
   if(c.tipo==='mapa')return T('Mapa de combate');
   if(c.tipo==='ambiente')return T('Ambiente');
   if(c.tipo==='cuentas')return c.nombre||T('Cuentas atrás');
@@ -5272,10 +5290,10 @@ function msPrev(){
 }
 function msVivasPrev(){
   const f=$('#ms-prev');if(!f||!f.contentWindow||!MS.listo)return;const w=f.contentWindow,o=location.origin;
-  try{w.postMessage(mesaIniData(),o);w.postMessage({tipo:'cuentas',lista:cuParaMesa()},o);}catch{}
+  try{w.postMessage(mesaIniData(),o);w.postMessage({tipo:'cuentas',lista:cuParaMesa()},o);if(msGrupoOn())w.postMessage(mesaGrupoData(),o);}catch{}
 }
 window.addEventListener('message',e=>{const f=$('#ms-prev');if(f&&e.source===f.contentWindow&&e.origin===location.origin&&e.data&&e.data.mesaListo){MS.listo=true;msPrev();}});
-setInterval(()=>{const v=$('#view-mesa');if(v&&!v.hidden&&MS.capas.some(c=>c.visible&&(c.tipo==='iniciativa'||c.tipo==='cuentas')))msVivasPrev();},1000);
+setInterval(()=>{const v=$('#view-mesa');if(v&&!v.hidden&&MS.capas.some(c=>c.visible&&(c.tipo==='iniciativa'||c.tipo==='cuentas'||c.tipo==='grupo')))msVivasPrev();},1000);
 /* una ficha arrastrada en la vista previa vuelve aquí con su nueva casilla */
 window.addEventListener('message',e=>{const f=$('#ms-prev'),d=e.data&&e.data.mesaToken;if(!f||e.source!==f.contentWindow||e.origin!==location.origin||!d)return;
   const c=msCapa(d.capa),t=c&&c.tipo==='mapa'&&c.tokens.find(x=>x.id===d.id);if(!t||!Number.isFinite(d.x)||!Number.isFinite(d.y))return;
@@ -5294,6 +5312,7 @@ function msEnviar(rapido){
   if(MS.vent===1){mesaIni=false;mesaEst.congelado=false;}
   mesaEscIni=MS.capas.some(c=>c.visible&&c.tipo==='iniciativa');
   if(mesaEscIni)mesaSendIni(false);
+  mesaGrupoSend();
   cuentasMesa();msEstado();
 }
 function msLimpiar(){const S=window.__AppShell;if(!S||!S.mesa)return;if(MS.vent===1){mesaIni=false;mesaEscIni=false;mesaEst.congelado=false;}msEstV().que='nada';S.mesa.enviar({tipo:'limpiar',ventana:MS.vent});msEstado();mesaPanelRender();}
@@ -5399,6 +5418,7 @@ function msLibHTML(){
    +'<button type="button" class="btn sm" data-ms="add" data-t="imagen">'+ic('image')+' '+esc(T('Zona de imágenes'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="texto">'+ic('scroll')+' '+esc(T('Texto'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="iniciativa">'+ic('sword')+' '+esc(T('Orden de iniciativa'))+'</button>'
+   +'<button type="button" class="btn sm" data-ms="add" data-t="grupo">'+ic('people')+' '+esc(T('Resumen del grupo'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="cuentas">'+ic('hourglass')+' '+esc(T('Cuentas atrás'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="mapa">'+ic('map')+' '+esc(T('Mapa de combate'))+'</button>'
    +'<button type="button" class="btn sm" data-ms="add" data-t="ambiente">'+ic('wind')+' '+esc(T('Ambiente (vídeo y sonido)'))+'</button>'
@@ -5454,6 +5474,10 @@ function msInsp(){
     if(c.tipo==='iniciativa')p+='<p class="hint">'+esc(T('Muestra el orden del combate en curso. Nunca enseña PG, CA ni debilidades, y una criatura oculta sale como «Enemigo oculto».'))+'</p>'
       +sl('orient',T('Disposición'),[['v',T('Vertical (lista)')],['h',T('Horizontal (raíl de fichas)')]])+ck('tokens',T('Mostrar los tokens'))
       +(c.orient==='h'?'<div class="ms-acts"><button type="button" class="btn sm" data-ms="inipos" data-v="arriba">'+esc(T('Franja arriba'))+'</button><button type="button" class="btn sm" data-ms="inipos" data-v="abajo">'+esc(T('Franja abajo'))+'</button></div>':'');
+    if(c.tipo==='grupo')p+='<p class="hint">'+esc(T('Una tarjeta por jugador de la campaña, con su vida, sus espacios de conjuro y sus recursos (furia, inspiración…). Se actualiza sola cuando cambias la ficha. Los jugadores solo ven cifras, nunca tus notas.'))+'</p>'
+      +ck('pg',T('Vida'))+ck('esp',T('Espacios de conjuro'))+ck('rec',T('Recursos (furia, puntos de ki…)'))+ck('ca',T('Clase de armadura'))
+      +sl('cols',T('Columnas'),[[0,T('Automático')],[1,'1'],[2,'2'],[3,'3'],[4,'4']])
+      +'<p class="hint">'+esc(msGrupoResumen())+'</p>';
     if(c.tipo==='mapa')p+=msMapaInsp(c,n,sl,ck);
     if(c.tipo==='ambiente')p+='<p class="hint">'+esc(T('Un vídeo o una imagen animada en bucle sobre la escena y, aparte, un sonido. Ponlo a pantalla completa o solo en una zona, y guarda cada ambiente cuando lo tengas a tu gusto.'))+'</p>'
       +msAmbLibHTML(c)
@@ -8116,7 +8140,7 @@ function pjLoad(){pjCargado=true;
   const rd=raw=>{try{const a=JSON.parse(raw||'[]');return (Array.isArray(a)?a:[]).slice(0,200).map(Ficha.norm).filter(Boolean);}catch{return [];}};
   PJ=rd(Store.root.get(PJKEY));PJC=rd(Store.get(PJCKEY));
 }
-function pjGuardar(){try{Store.root.set(PJKEY,JSON.stringify(PJ));Store.set(PJCKEY,JSON.stringify(PJC));}catch{toast(T('No se pudo guardar'));}}
+function pjGuardar(){try{Store.root.set(PJKEY,JSON.stringify(PJ));Store.set(PJCKEY,JSON.stringify(PJC));}catch{toast(T('No se pudo guardar'));}try{mesaGrupoSend();}catch{}}
 /* ---------- diario del personaje: capítulos de su vida, solo para su jugador y el máster ----------
    Un diario por ficha de campaña, guardado en la copia local de la campaña y sincronizado como «dia:<id de la ficha>». */
 const DIAKEY='camp-diarios-v1',DIA_MAXCAP=100;
