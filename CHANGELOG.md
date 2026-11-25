@@ -4,6 +4,12 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.123.0] - 2026-11-25
+### Añadido
+- **Ficha reducida al pasar el ratón:** filas de los listados y enlaces a elementos del compendio (clases, conjuros, criaturas, reglas…) enseñan un resumen flotante. Solo con ratón.
+### Cambiado
+- **Listados del compendio:** ya no se despliegan; pulsar una fila abre directamente su página.
+
 ## [1.122.0] - 2026-11-25
 ### Cambiado
 - **Compendio de clases:** el listado es una cuadrícula con un recuadro por clase (dado de golpe, característica principal, salvaciones y subclase).

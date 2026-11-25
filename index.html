@@ -1640,6 +1640,14 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 .vs b{font-family:var(--f-num);color:var(--fg)}
 .vbody{padding:12px 14px}/* tabla de conjuros */
 .sptwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.hvcard{position:fixed;z-index:60;width:min(380px,calc(100vw - 16px));padding:12px 14px;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:8px;box-shadow:0 8px 28px rgb(0 0 0/.35);font-size:13.5px;line-height:1.45;pointer-events:none}
+.hvcard[hidden]{display:none}
+.hvcard h4{margin:0;font-size:17px;font-weight:600;color:var(--accent)}
+.hvcard .hvs{color:var(--muted);font-style:italic;margin:1px 0 6px}
+.hvcard .hvr{margin:1px 0}
+.hvcard p{margin:6px 0 0}
+.hvcard .hvf{margin-top:8px;padding-top:6px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+@media (hover:none),(pointer:coarse){.hvcard{display:none!important}}
 .clgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .clcard{display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--fg);text-decoration:none;position:relative}
 .clcard:hover,.clcard:focus-visible{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -3240,7 +3248,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.122</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.123</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -3447,6 +3455,8 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.123 <span>25 nov 2026</span></h3><ul>
+      <li><b>Ficha al pasar el ratón.</b> Cualquier elemento del compendio enseña un resumen flotante al señalarlo; los listados ya no se despliegan y abren su página.</li></ul></li>
     <li><h3>v1.122 <span>25 nov 2026</span></h3><ul>
       <li><b>Clases en recuadros.</b> El compendio de clases es una cuadrícula con un recuadro por clase.</li>
       <li><b>Tablas de clase limpias.</b> Las tablas de conjuros se rehacen desde la lista del SRD; las fichas tocadas llevan el aviso «Revisar».</li></ul></li>
@@ -7500,15 +7510,9 @@ function cmBody(x,tab=cmTab){
     +(tab==='clases'?(()=>{const l=compList('rasgos').filter(r=>r.tipo==='Subclase'&&fold(r.cls)===fold(x.n));return l.length?`<p><b>Subclases de manuales:</b> ${l.map(r=>esc(r.sub||r.base)+' <span class="tag">'+esc(r._src||'')+'</span>').join(', ')}</p>`:'';})():'');
   return `<div class="cmbody">${revBar(x)}${pendBar(tab==='subclases'?'rasgos':tab,x)}${head?`<p class="cmhead">${esc(head)}</p>`:''}${facts.filter(f=>f[1]).map(([l,v])=>`<p><b>${esc(l)}:</b> ${esc(v)}</p>`).join('')}<div class="cmwrap">${x.img&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img)?`<img class="cmimg" src="${x.img}" alt="" loading="lazy">`:''}${body}</div>${relTablas(tab,x)}<p class="cmsrc">Fuente: ${esc(x._full)}</p></div>`;
 }
-function toggleCompRow(r){
-  const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
-  if(nx?.classList.contains('spdet'))nx.remove();
-  r.setAttribute('aria-expanded',open);
-  if(open)r.insertAdjacentHTML('afterend',`<tr class="spdet"><td colspan="${CM_COLS[cmTab].length+1}"><div class="vbody sb" data-who="${esc(CM_RES[+r.dataset.i].n)}">${giveBar(cmTab,CM_RES[+r.dataset.i].n)}${itBar(cmTab,CM_RES[+r.dataset.i])}${cmBody(CM_RES[+r.dataset.i])}</div></td></tr>`);
-}
 for(const id of ['#cm-q','#cm-f1','#cm-f2','#cm-fu'])$(id).addEventListener('input',renderCompendio);
-$('#cm-list').addEventListener('click',e=>{if(e.target.closest('.spdet,a'))return;const r=e.target.closest('tr.sprow');if(r){toggleCompRow(r);addGoLink(r,cmTab,CM_RES[+r.dataset.i]?.n);}});
-$('#cm-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleCompRow(r);}});
+$('#cm-list').addEventListener('click',e=>hvGo(e,()=>cmTab,()=>CM_RES));
+$('#cm-list').addEventListener('keydown',e=>hvKey(e,()=>cmTab,()=>CM_RES));
 
 function extraAct(act,b,c,e){
   if(act.startsWith('rv')){rvAct(act,b);return;}
@@ -7829,21 +7833,11 @@ function renderCreatureView(){
   const th=(k,l,c='')=>`<th${c?` class="${c}"`:''}><button type="button" data-csort="${k}"${sort===k?' aria-sort="ascending"':''}>${l}</button></th>`;
   $('#vc-list').innerHTML=res.length?`<div class="sptwrap"><table class="sptable crtable"><thead><tr>${th('name','Nombre')}${th('ty','Tipo')}<th>Tamaño</th>${th('cr','VD','num')}${safe()?'':th('ac','CA','num')+th('hp','PG','num')}<th>Manual</th></tr></thead><tbody>${res.map((m,i)=>`<tr class="sprow" data-i="${i}" tabindex="0" aria-expanded="false"><td>${esc(m.n)}${goA('criaturas',m.n)}${m.id?'<span class="mine">mía</span>':''}${m.en&&m.en!==m.n?`<i class="ven">${esc(m.en)}</i>`:''}</td><td>${esc(tr(TYPE,m.ty||''))}</td><td>${esc(tr(SIZE,m.sz||''))}</td><td class="num">${esc(m.cr??'–')}</td>${safe()?'':`<td class="num">${m.ac??'–'}</td><td class="num">${m.hp??'–'}${m.hd?`<small>${esc(m.hd)}</small>`:''}</td>`}<td class="src">${crBadges(m)||'–'}</td></tr>`).join('')}</tbody></table></div>`:allBest().length?'<div class="empty">Nada coincide con esos filtros.</div>':'<div class="empty">No hay criaturas: activa el SRD u otro módulo en <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a>, o crea las tuyas desde el bestiario.</div>';
 }
-function toggleCreatureRow(r){
-  const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
-  if(nx?.classList.contains('spdet'))nx.remove();
-  r.setAttribute('aria-expanded',open);
-  if(!open)return;
-  const m=VC_RES[+r.dataset.i],k=tkey(m);
-  const facs=state.factions.map(f=>`<option value="${f.id}" ${!f.pc&&/enem/i.test(f.name)?'selected':''}>${esc(f.name)}</option>`).join('');
-  r.insertAdjacentHTML('afterend',`<tr class="spdet"><td colspan="7"><div class="vbody"><div class="inline"><select aria-label="Bando">${facs}</select><button class="btn sm primary" data-act="vadd" data-k="${esc(k)}">Añadir al combate</button></div><div class="vsb">${sbHTML(tpl(k),null)}</div></div></td></tr>`);
-}
 $('#vc-list').addEventListener('click',e=>{
   const h=e.target.closest('[data-csort]');if(h){$('#vc-sort').value=h.dataset.csort;renderCreatureView();return;}
-  if(e.target.closest('.spdet,a'))return;
-  const r=e.target.closest('tr.sprow');if(r){toggleCreatureRow(r);addGoLink(r,'criaturas',VC_RES[+r.dataset.i]?.n);}
+  hvGo(e,()=>'criaturas',()=>VC_RES);
 });
-$('#vc-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleCreatureRow(r);}});
+$('#vc-list').addEventListener('keydown',e=>hvKey(e,()=>'criaturas',()=>VC_RES));
 for(const id of ['#vc-q','#vc-src','#vc-cr','#vc-ty','#vc-sort'])$(id).addEventListener('input',renderCreatureView);
 function fillSpellFilters(){
   const cs=$('#vs-cls');if(cs.options.length>1||!SPELL_LIST.length)return;
@@ -7865,18 +7859,11 @@ function renderSpellView(){
 }
 for(const id of ['#vs-q','#vs-lv','#vs-cls','#vs-sch','#vs-fu','#vs-conc','#vs-rit','#vs-sort'])$(id).addEventListener('input',renderSpellView);
 let VS_RES=[];
-function toggleSpellRow(r){
-  const open=r.getAttribute('aria-expanded')!=='true',nx=r.nextElementSibling;
-  if(nx?.classList.contains('spdet'))nx.remove();
-  r.setAttribute('aria-expanded',open);
-  if(open)r.insertAdjacentHTML('afterend',`<tr class="spdet"><td colspan="7"><div class="vbody sb" data-who="${esc(VS_RES[+r.dataset.i].n)}">${giveBar('conjuros',VS_RES[+r.dataset.i].n)}${itBar('conjuros',VS_RES[+r.dataset.i])}${spellBody(VS_RES[+r.dataset.i])}</div></td></tr>`);
-}
 $('#vs-list').addEventListener('click',e=>{
   const h=e.target.closest('[data-vsort]');if(h){$('#vs-sort').value=h.dataset.vsort;renderSpellView();return;}
-  if(e.target.closest('.spdet,a'))return;
-  const r=e.target.closest('tr.sprow');if(r){toggleSpellRow(r);addGoLink(r,'conjuros',VS_RES[+r.dataset.i]?.n);}
+  hvGo(e,()=>'conjuros',()=>VS_RES);
 });
-$('#vs-list').addEventListener('keydown',e=>{const r=e.target.closest?.('tr.sprow');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleSpellRow(r);}});
+$('#vs-list').addEventListener('keydown',e=>hvKey(e,()=>'conjuros',()=>VS_RES));
 $('#vs-sch').innerHTML='<option value="">Cualquier escuela</option>'+Object.entries(SCHOOLS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
 addEventListener('hashchange',showView);
 
@@ -7888,7 +7875,67 @@ const slugOf=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fichaHref=(tab,n)=>`#compendio/${tab}/${slugOf(n)}`;
 const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="${T('Abrir la página de')} ${esc(n)}">↗</a>`;
 const goP=(tab,n)=>`<p class="golinkp"><a href="${fichaHref(tab,n)}">Abrir su página →</a></p>`;
-function addGoLink(r,tab,n){const d=r.nextElementSibling;if(n&&d?.classList.contains('spdet'))(d.querySelector('.vbody')||d.querySelector('td')).insertAdjacentHTML('afterbegin',goP(tab,n));}
+/* ---------- ficha reducida al pasar el ratón (solo con ratón; en móvil se abre la página directamente) ----------
+   Toda fila de un listado del compendio y todo enlace a un elemento (#compendio/…, #criaturas/…, #conjuros/…) la enseñan. */
+function hvGo(e,tab,res){
+  if(e.target.closest('a,button,select,input'))return;
+  const r=e.target.closest('tr.sprow'),x=r&&res()[+r.dataset.i];
+  if(x)location.hash=fichaHref(tab(),x.n);
+}
+function hvKey(e,tab,res){
+  const r=e.target.closest?.('tr.sprow');if(!r||(e.key!=='Enter'&&e.key!==' '))return;
+  e.preventDefault();const x=res()[+r.dataset.i];if(x)location.hash=fichaHref(tab(),x.n);
+}
+const HV={el:null,cur:null,t:0,x:0,y:0,ok:matchMedia('(hover:hover) and (pointer:fine)')};
+const hvText=h=>{const d=new DOMParser().parseFromString(String(h||'').replace(/<table[\s\S]*?<\/table>/g,' ').replace(/<\/(p|li|h\d|div)>|<br\s*\/?>/g,' '),'text/html');return (d.body.textContent||'').replace(/\s+/g,' ').trim();};
+const hvCut=(t,n)=>t.length>n?t.slice(0,n).replace(/\s+\S*$/,'')+'…':t;
+function hvOf(el){
+  const tr=el.closest('tr.sprow');
+  if(tr){
+    const l=tr.closest('#cm-list,#vc-list,#vs-list');if(!l)return null;
+    const tab=l.id==='cm-list'?cmTab:l.id==='vc-list'?'criaturas':'conjuros',res=l.id==='cm-list'?CM_RES:l.id==='vc-list'?VC_RES:VS_RES,x=res[+tr.dataset.i];
+    return x?{tab,x}:null;
+  }
+  const a=el.closest('a[href]');if(!a)return null;
+  const m=(a.getAttribute('href')||'').match(/^#(?:compendio\/)?([a-z]+)\/([^/?#]+)$/);if(!m||!CTABS.some(t=>t[0]===m[1]))return null;
+  let slug=m[2];try{slug=decodeURIComponent(slug);}catch{}
+  const x=fichaFind(m[1],slug);return x?{tab:m[1],x}:null;
+}
+function hvHTML(tab,x){
+  const row=(l,v)=>v?`<div class="hvr"><b>${esc(l)}:</b> ${esc(v)}</div>`:'';
+  let sub='',body='';
+  if(tab==='criaturas'){
+    sub=[tr(TYPE,x.ty||''),tr(SIZE,x.sz||''),x.cr!=null?'VD '+x.cr:''].filter(Boolean).join(' · ');
+    body=safe()?'':row('CA',x.ac!=null?String(x.ac):'')+row('PG',x.hp!=null?x.hp+(x.hd?' ('+x.hd+')':''):'');
+  }else if(tab==='conjuros'){
+    sub=[spLevel(x.lv),SCHOOLS[x.sch]].filter(Boolean).join(' · ');
+    body=row('Lanzamiento',x.ct)+row('Alcance',x.rg)+row('Componentes',x.comp)+row('Duración',x.dur)+`<p>${esc(hvCut(hvText(x.d),340))}</p>`;
+  }else{
+    sub=cmSub(tab,x)||'';
+    const info=tab==='clases'?[['Característica principal',x.info?.['Característica principal']],['Dado de golpe',(x.info?.['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,'')],['Salvaciones',x.info?.['Competencias en tiradas de salvación']],['Subclases',(x.sub||[]).join(', ')]]:[];
+    body=info.map(r=>row(r[0],r[1])).join('')||`<p>${esc(hvCut(hvText(x.d),380))}</p>`;
+  }
+  return `<h4>${esc(x.base||x.n)}</h4>${sub?`<div class="hvs">${esc(sub)}</div>`:''}${body}<div class="hvf">Clic para abrir su página</div>`;
+}
+function hvHide(){clearTimeout(HV.t);HV.cur=null;if(HV.el)HV.el.hidden=true;}
+function hvShow(el){
+  const it=hvOf(el);if(!it)return;
+  if(!HV.el){HV.el=document.createElement('div');HV.el.className='hvcard';HV.el.setAttribute('role','tooltip');document.body.append(HV.el);}
+  HV.el.innerHTML=hvHTML(it.tab,it.x);HV.el.hidden=false;
+  const w=HV.el.offsetWidth,h=HV.el.offsetHeight,vw=innerWidth,vh=innerHeight;
+  let l=HV.x+16,t=HV.y+18;if(l+w>vw-8)l=Math.max(8,HV.x-w-16);if(t+h>vh-8)t=Math.max(8,vh-h-8);
+  HV.el.style.left=l+'px';HV.el.style.top=t+'px';
+}
+document.addEventListener('mousemove',e=>{HV.x=e.clientX;HV.y=e.clientY;});
+document.addEventListener('mouseover',e=>{
+  if(!HV.ok.matches||!(e.target instanceof Element))return;
+  const el=e.target.closest('tr.sprow,a[href^="#"]');
+  if(el===HV.cur)return;
+  hvHide();if(!el)return;
+  HV.cur=el;HV.t=setTimeout(()=>{if(HV.cur===el&&el.isConnected)hvShow(el);},220);
+});
+document.addEventListener('mouseout',e=>{if(HV.cur&&!HV.cur.contains(e.relatedTarget))hvHide();});
+for(const ev of ['scroll','click','keydown','hashchange'])addEventListener(ev,hvHide,true);
 function route(){
   const [a,b,c]=location.hash.slice(1).split('/').map(s=>{try{return decodeURIComponent(s);}catch{return s;}});
   if(a==='criaturas'||a==='conjuros')return {page:'compendio',tab:a,slug:b||''};

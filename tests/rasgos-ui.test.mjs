@@ -29,9 +29,9 @@ const TAIL=`<script>
     const f=[...document.querySelectorAll('#cm-list tr.sprow')];
     ok('se busca por nombre',f.length>=1&&f.some(r=>/Ataque furtivo/.test(r.textContent)));
     f[0].click();await wait(200);
-    const det=document.querySelector('#cm-list .spdet');
-    ok('al abrir uno sale su texto sin botones de edición',!!det&&/dados|daño/i.test(det.textContent)&&!det.querySelector('[data-act="itclone"]'));
-    ok('la clase y el nivel salen en el detalle',!!det&&/Clase:/.test(det.textContent)&&/Nivel:/.test(det.textContent));
+    const det=document.querySelector('#fc-body');
+    ok('al abrir uno su página enseña el texto sin botones de edición',!!det&&/dados|daño/i.test(det.textContent)&&!det.querySelector('[data-act="itclone"]'));
+    ok('la clase y el nivel salen en su página',!!det&&/Clase:/.test(det.textContent)&&/Nivel:/.test(det.textContent));
     ok('el buscador global también los encuentra',searchAll('todo','manos rapidas').some(x=>x.ty==='rasgos'));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];

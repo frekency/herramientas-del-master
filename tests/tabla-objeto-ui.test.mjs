@@ -34,7 +34,7 @@ const TAIL=`<script>
     const fila=[...document.querySelectorAll('#cm-list tr.sprow')].find(r=>/Ficha de prueba/.test(r.textContent));
     ok('el objeto sale en el compendio',!!fila);
     fila.click();await wait(300);
-    const det=()=>document.querySelector('#cm-list tr.spdet');
+    const det=()=>document.querySelector('#fc-body');
     ok('la ficha se abre con su tabla incrustada',!!det()&&!!det().querySelector('.cmreltb table.tbro'));
     ok('la tabla enseña 6 filas con rangos y no 100',det().querySelectorAll('.cmreltb tbody tr').length===6&&/01–15|1–15/.test(det().querySelector('.cmreltb tbody tr').textContent));
     ok('no sale aparte en Tablas aleatorias',!compList('tablas').some(t=>t.rel&&0)&&true);
@@ -46,7 +46,7 @@ const TAIL=`<script>
     await go('#compendio/subclases');
     const sc=[...document.querySelectorAll('#cm-list tr.sprow')].find(r=>/Senda de prueba/.test(r.textContent));
     ok('las subclases tienen su propia pestaña',!!sc&&!!document.querySelector('.cmtabs a[href*="subclases"]'));
-    if(sc){sc.click();await wait(300);ok('la subclase enseña sus rasgos por nivel',/Nivel 3 · Furia de prueba/.test(document.querySelector('#cm-list tr.spdet').textContent));}
+    if(sc){sc.click();await wait(300);ok('la subclase enseña sus rasgos por nivel',/Nivel 3 · Furia de prueba/.test(document.querySelector('#fc-body').textContent));}
     await go('#compendio/rasgos');
     ok('ya no se mezclan con los rasgos de clase',![...document.querySelectorAll('#cm-list tr.sprow')].some(r=>/Senda de prueba \\(B/.test(r.textContent)&&/Subclase/.test(r.textContent)));
     await go('#compendio/objetos');
@@ -55,10 +55,10 @@ const TAIL=`<script>
     const srd=[...document.querySelectorAll('#cm-list tr.sprow')].find(r=>/^Ficha de pluma$/.test(r.querySelector('td').textContent.replace(/\\s*↗\\s*$/,'').trim()));
     ok('el SRD trae Ficha de pluma',!!srd);
     if(srd){srd.click();await wait(300);
-      const d2=document.querySelector('#cm-list tr.spdet'),bt=d2&&d2.querySelector('[data-act="cmtbhtml"]');
+      const d2=document.querySelector('#fc-body'),bt=d2&&d2.querySelector('[data-act="cmtbhtml"]');
       ok('la tabla del SRD tiene botón de tirada',!!bt);
       if(bt){bt.click();await wait(200);
-        ok('la ficha del SRD sigue abierta y da fila',!!document.querySelector('#cm-list tr.spdet')&&/^\\d+ → (Abanico|Ancla|Árbol|Bote cisne|Látigo|Pájaro) - (Infrecuente|Rara)$/.test(document.querySelector('#cm-list .cmtbres').textContent.trim()));}}
+        ok('la ficha del SRD sigue abierta y da fila',!!document.querySelector('#fc-body')&&/^\\d+ → (Abanico|Ancla|Árbol|Bote cisne|Látigo|Pájaro) - (Infrecuente|Rara)$/.test(document.querySelector('#fc-body .cmtbres').textContent.trim()));}}
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
