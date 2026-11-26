@@ -11107,7 +11107,7 @@ async function sbInit(){
     const u=session?.user||null,was=SB_USER?.id;SB_USER=u;document.documentElement.classList.toggle('con-sesion',!!u);if(u){try{Store.set('acceso-previo','1');}catch{}}
     if(ev==='PASSWORD_RECOVERY'||(INVITADO&&u&&ev==='SIGNED_IN')||acDebeCambiar()){setTimeout(()=>acOpen('newpass'),0);return;}
     if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(acBloqueado()){setTimeout(()=>{acOpen('in');introPlay();},0);}if(location.hash==='#modulos')renderMods();return;}
-    if(u.id!==was){SB_DM=null;dmCarga();setTimeout(acSignedIn,0);MDB.listo=false;setTimeout(mdbBajar,0);}   // fuera del callback, como pide supabase-js
+    if(u.id!==was){SB_DM=null;dmCarga();setTimeout(()=>acSignedIn(ev),0);MDB.listo=false;setTimeout(mdbBajar,0);}   // fuera del callback, como pide supabase-js
   });
   acEscritorio();
 }
@@ -11517,7 +11517,35 @@ async function acRetorno(r){
 function acEscritorio(){const a=window.__AppShell&&window.__AppShell.auth;if(!a)return;a.onRetorno(acRetorno);a.pendiente().then(r=>{if(r)acRetorno(r);}).catch(()=>{});}
 /* web sin datos en el navegador: si se cierra la pestaña con cambios sin subir, el navegador avisa */
 if(WEB_NUBE)addEventListener('beforeunload',e=>{if(typeof cpDirty!=='undefined'&&cpDirty||SC.busy){e.preventDefault();e.returnValue='';}});
-async function acSignedIn(){
+/* Web: refrescar la página equivale a salir y volver a entrar. Se sube lo pendiente y, si todo quedó guardado en la cuenta, se descarta lo que
+   esta pestaña tenía a medias (registro de campañas, fichas, estado de sincronización) y se baja de nuevo desde la cuenta. Si queda algo sin subir
+   (sin conexión, error), no se toca nada. La campaña abierta se recuerda para volver a ella. */
+const NUBE_CLAVES=()=>{
+  const dato=['combat-tracker-v1','combat-party-v1','combat-presets-v1','camp-notes-v1','camp-sync-v1','camp-fichas-v1','camp-config-v1','camp-grupos-v1','camp-homebrew-v1'];
+  const k=[SPKEY,SYNC_META,'sync-reload',DIAKEY,RELKEY,'combat-campaigns-v1'];
+  for(const [cl,v] of Object.entries(SYNC_KEYS))if(cl!=='preferencias'&&cl!=='modulos')k.push(v);
+  for(const c of Store.campaigns.list())for(const d of dato)k.push(c.id===Store.campaigns.BASE?d:'camp:'+c.id+':'+d);
+  return [...new Set(k.concat(dato))];
+};
+function nubeRecarga(){location.reload();}
+async function nubeRefresca(){
+  try{
+    if(!SB||!SB_USER||Store.campaigns.vista()||SP.busy||SC.busy||navigator.onLine===false)return false;
+    if(!(await spProbar()))return false;   // sistema antiguo sin versiones: no hay nada que reconstruir
+    await spRun('bg');
+    if(Store.campaigns.remote(Store.campaigns.active()))await scRun(false);
+    if(SP.busy||SC.busy||Sincro.pendientes(SP.l)||Sincro.pendientes(SC.l))return false;   // queda algo por subir: se deja todo como está
+    const rid=Store.campaigns.remote(Store.campaigns.active());
+    if(rid){try{localStorage.setItem('hdm-ult-camp',rid);}catch{}}
+    for(const k of NUBE_CLAVES())try{Store.root.remove(k);}catch{}
+    nubeRecarga();return true;
+  }catch{return false;}
+}
+async function acSignedIn(ev){
+  if(WEB_NUBE&&ev==='INITIAL_SESSION'){   // la pestaña ya tenía sesión: es un refresco (o una pestaña nueva, que parte de cero y no necesita nada)
+    let t0=0;const ahora=Date.now();try{t0=+sessionStorage.getItem('nube-inicio')||0;sessionStorage.setItem('nube-inicio',String(ahora));}catch{}
+    if(t0&&ahora-t0>45000&&await nubeRefresca())return;   // los refrescos seguidos (recargas de la propia sincronización) no repiten el proceso
+  }
   const {data}=await SB.from('perfiles').select('usuario').eq('user_id',SB_USER.id).maybeSingle();
   SB_NAME=data?.usuario||'';
   if(location.search.includes('code=')){let h='';try{h=sessionStorage.getItem('oauth-hash')||'';sessionStorage.removeItem('oauth-hash');}catch{}history.replaceState(null,'',location.pathname+(h||location.hash));showView();}
@@ -11528,7 +11556,7 @@ async function acSignedIn(){
   await syncPull();
   await scRemotas(true);
   if(WEB_NUBE){   // en la web la campaña local está vacía: se abre sola la primera campaña de la cuenta (tras recargar, ya queda activa y no se repite)
-    const C=Store.campaigns;if(C.active()===C.BASE){const r=C.list().find(c=>c.remoto);if(r&&C.select(r.id)){location.reload();return;}}
+    const C=Store.campaigns;if(C.active()===C.BASE){let ult='';try{ult=localStorage.getItem('hdm-ult-camp')||'';}catch{}const r=C.list().find(c=>c.remoto&&c.remoto===ult)||C.list().find(c=>c.remoto);if(r&&C.select(r.id)){location.reload();return;}}
   }
   scRun(false);
 }

@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.128.1] - 2026-11-26
+### Corregido
+- **Al refrescar la página en la web, el móvil vuelve a tener todo lo de la cuenta**, sin cerrar sesión y volver a entrar. Al refrescar se sube lo que haya pendiente y, si todo quedó guardado, se descarta lo que la pestaña tenía a medias (campañas, fichas y estado de sincronización) y se baja de nuevo desde la cuenta, volviendo a la campaña que estaba abierta. Si algo no se puede subir (sin conexión o con error), no se toca nada.
+
 ## [1.128.0] - 2026-11-26
 ### Añadido
 - **Armas, en el Compendio.** Sección nueva (Compendio › Armas) para revisar contra el manual las armas de los módulos activos: categoría (cuerpo a cuerpo o a distancia, sencillas o marciales), daño, propiedades con su alcance, maestría, peso y precio, rellenados desde el compendio. Cada arma se puede marcar como revisada, filtrar por módulo o por datos que faltan, y la tabla se copia para pegarla en una hoja de cálculo.
