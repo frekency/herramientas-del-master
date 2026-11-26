@@ -44,3 +44,13 @@ test('sin caracteres basura de la extracción del PDF (guion blando, carácter d
     assert.ok(!t.includes('­'),`${f}: guion blando`);
     assert.ok(!t.includes('�'),`${f}: carácter de sustitución`);}
 });
+
+test('compendio: peso numérico ≥ 0 y presente en armas, armaduras, herramientas y equipo con peso (tools/build_pesos.py)',()=>{
+  const o=json('datos/es/compendio.json').objetos;
+  for(const x of o)if('peso' in x)assert.ok(typeof x.peso==='number'&&Number.isFinite(x.peso)&&x.peso>=0&&x.peso<=9999,`${x.n}: peso ${x.peso}`);
+  for(const x of o.filter(x=>x.k==='arma'||x.k==='armadura'))assert.ok('peso' in x,`${x.n}: sin peso`);
+  const por=n=>o.find(x=>x.n===n);
+  assert.equal(por('Bastón').peso,2);assert.equal(por('Mochila').peso,2.5);assert.equal(por('Poción de curación').peso,0.25);assert.equal(por('Antorcha').peso,0.5);
+  assert.ok(o.filter(x=>x.k==='equipo'&&'peso' in x).length>=75,'equipo con peso');
+  assert.ok(o.filter(x=>'peso' in x).length>=150);
+});

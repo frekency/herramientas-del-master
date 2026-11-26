@@ -40,6 +40,8 @@ const TAIL=`<script>
     await click('[data-act="pjatqadd"]');
     ok('ataque añadido con sus botones de tirada',F().ataques.length===1&&!!body().querySelector('[data-pjdet="atq"] [data-roll="hit"]')&&!!body().querySelector('[data-pjdet="atq"] [data-roll="dmg"]'));
     // rasgos con usos
+    ok('el registro de cambios está en la pestaña del máster y no en Notas',/Registro de cambios/.test(document.querySelector('.pjpan[data-p="dm"]').textContent)&&!/Registro de cambios/.test(document.querySelector('.pjpan[data-p="notas"]').textContent));
+    ok('el máster tiene la pestaña Configuración DM con los formularios de rasgos y recursos',!!document.querySelector('.pjtab[data-t="dm"]')&&!!document.querySelector('.pjpan[data-p="dm"] #pjg-n')&&!!document.querySelector('.pjpan[data-p="dm"] #pjr-n'));
     document.getElementById('pjg-n').value='Recuperación arcana';document.getElementById('pjg-m').value='1';document.getElementById('pjg-t').value='Recupera espacios. **Una vez** al día.';
     await click('[data-act="pjrasadd"]');
     ok('rasgo con usos: crea el recurso y muestra su casilla',F().rasgos.length===1&&F().recursos.length===1&&!!body().querySelector('[data-pjdet="ras"] [data-act="pjrec"]'));
@@ -64,6 +66,8 @@ const TAIL=`<script>
     ok('el combate recibe habilidades, ataque y defensas',c.sk.startsWith('Arcanos')&&c.a.length===1&&c.re==='Fuego'&&c.la==='Élfico');
     // jugador: el apartado bloqueado no se toca, el de aprobación queda pendiente
     await rol('jugador');
+    ok('el jugador no ve el registro de cambios',!/Registro de cambios/.test(document.getElementById('pj-body').textContent));
+    ok('el jugador no tiene la pestaña ni los formularios del máster en la página',!document.querySelector('.pjtab[data-t="dm"]')&&!document.querySelector('[data-p="dm"]')&&!document.getElementById('pjg-n')&&!document.getElementById('pjr-n')&&!document.querySelector('[data-act="pjrasdel"],[data-act="pjrecdel"]'));
     await sel('[data-pjsk="sigilo"]','1');
     ok('jugador: habilidades bloqueadas',!F().habil.sigilo&&F().pendientes.length===0);
     document.getElementById('pja-n').value='Arco';await click('[data-act="pjatqadd"]');

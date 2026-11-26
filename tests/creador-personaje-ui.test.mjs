@@ -96,6 +96,7 @@ const TAIL=`<script>
     ok('características: reparto + trasfondo',f.car.fue===15&&f.car.con===14&&f.car.des===13&&f.car.sab===14&&f.car.car===11&&f.car.int===8);
     ok('competencias de clase y trasfondo',f.habil.atletismo===1&&f.habil.percepcion===1&&f.habil.perspicacia===1&&f.habil.religion===1);
     ok('salvaciones del guerrero, dote y alineamiento',f.salvac.join()==='fue,con'&&f.dotes.length===1&&f.dotes[0].includes('Iniciado en la magia')&&f.pers.alineamiento==='Legal bueno'&&f.pers.ideales==='Honor'&&f.pers.vinculos==='Mi hermana'&&f.pers.defectos==='Terca'&&f.pers.historia==='Soldado retirado'&&f.pers.personalidad==='Directa y leal');
+    ok('la ficha trae los rasgos de clase del nivel 1 con su texto (Estilo de combate, Maestría con armas, Tomar aliento) además de los de especie',['estilo de combate','maestria con armas','tomar aliento'].every(n=>f.rasgos.some(r=>fold(r.n)===n&&r.txt.length>20)));
     ok('el registro guarda el desglose',f.registro.length>=8&&f.registro.some(r=>r.d.includes('trasfondo Acólito')));
     ok('se abre la hoja del personaje',location.hash==='#personajes/'+f.id);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}

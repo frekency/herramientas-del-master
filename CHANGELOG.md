@@ -4,6 +4,13 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.127.0] - 2026-11-26
+### Cambiado
+- **Ficha del jugador rediseñada**: resumen fijo (retrato por estado, vida, recursos, descansos corto/largo, inspiración, salvaciones de muerte y cansancio) y pestañas Combate, Rasgos, Conjuros, Inventario y Notas, sobre fondo de cuero. La CA y la velocidad se calculan desde la clase, la armadura y el escudo; ya no se editan.
+- **Inventario con peso**: mochila separada de lo equipado, carga frente al límite, sintonía (máx. 3) y total de la bolsa. Pesos extraídos del compendio.
+- **Rasgos por nivel** al crear, subir de nivel o elegir subclase; las fichas anteriores los reciben al cargar. Especie, trasfondo y subclase quedan fijas una vez elegidas (solo el tamaño se edita); la subclase se elige de una lista.
+- **Pestaña «Configuración DM»** (solo máster): añadir recursos y rasgos propios y ver el registro de cambios.
+
 ## [1.126.0] - 2026-11-26
 ### Cambiado
 - **Los módulos viven en tu cuenta, iguales en la web y en la app de escritorio.** Lo que añades, cambias o quitas en un sitio se ve tal cual en el otro (fichas, páginas e ilustraciones incluidas). Cada dispositivo vigila la cuenta y baja los cambios solo; ya no hay módulos distintos en cada lado. La primera vez que un dispositivo se une, lo suyo que la cuenta no tenga se suma en lugar de perderse.
