@@ -39,7 +39,7 @@ const TAIL=`<script>
     paso('1');const r1=await nubeRefresca();paso('1 hecho');
     ok('con todo guardado en la cuenta se recarga una vez',r1===true&&recargas===1);
     ok('se descartan fichas, registro de campañas y estado de sincronización',Store.root.get(PJCKEY)==null&&Store.root.get('combat-campaigns-v1')==null&&Store.root.get(SPKEY)==null&&Store.root.get(PJKEY)==null);
-    ok('la campaña abierta se recuerda para volver a ella',localStorage.getItem('hdm-ult-camp')===rid);
+    ok('la campaña abierta se recuerda para volver a ella',Store.native.get('hdm-ult-camp')===rid);
     // 2) la subida falla: no se toca nada
     falla=true;recargas=0;prepara();
     const f=JSON.parse(Store.get(PJCKEY));f[0].nombre='Lyra editada';Store.set(PJCKEY,JSON.stringify(f));pjLoad();

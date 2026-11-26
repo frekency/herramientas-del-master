@@ -97,7 +97,7 @@ window.Store=(()=>{
     return n;};
   return{dump,restore,get:k=>B.get(map(k)),set:(k,v)=>B.set(map(k),v),remove:k=>B.remove(map(k)),
     root:{get:k=>B.get(k),set:(k,v)=>B.set(k,v),remove:k=>B.remove(k)},
-    native:{get:k=>localStorage.getItem(k)},
+    native:{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v)},
     campaigns};})();
 </script>
 <script id="ev-core">
@@ -11536,7 +11536,7 @@ async function nubeRefresca(){
     if(Store.campaigns.remote(Store.campaigns.active()))await scRun(false);
     if(SP.busy||SC.busy||Sincro.pendientes(SP.l)||Sincro.pendientes(SC.l))return false;   // queda algo por subir: se deja todo como está
     const rid=Store.campaigns.remote(Store.campaigns.active());
-    if(rid){try{localStorage.setItem('hdm-ult-camp',rid);}catch{}}
+    if(rid){try{Store.native.set('hdm-ult-camp',rid);}catch{}}
     for(const k of NUBE_CLAVES())try{Store.root.remove(k);}catch{}
     nubeRecarga();return true;
   }catch{return false;}
@@ -11556,7 +11556,7 @@ async function acSignedIn(ev){
   await syncPull();
   await scRemotas(true);
   if(WEB_NUBE){   // en la web la campaña local está vacía: se abre sola la primera campaña de la cuenta (tras recargar, ya queda activa y no se repite)
-    const C=Store.campaigns;if(C.active()===C.BASE){let ult='';try{ult=localStorage.getItem('hdm-ult-camp')||'';}catch{}const r=C.list().find(c=>c.remoto&&c.remoto===ult)||C.list().find(c=>c.remoto);if(r&&C.select(r.id)){location.reload();return;}}
+    const C=Store.campaigns;if(C.active()===C.BASE){let ult='';try{ult=Store.native.get('hdm-ult-camp')||'';}catch{}const r=C.list().find(c=>c.remoto&&c.remoto===ult)||C.list().find(c=>c.remoto);if(r&&C.select(r.id)){location.reload();return;}}
   }
   scRun(false);
 }
