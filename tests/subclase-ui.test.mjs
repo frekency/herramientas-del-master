@@ -59,7 +59,8 @@ const TAIL=`<script>
     ok('pjCA da la misma cifra que la hoja (la usan el combate y la mesa)',pjCA(PJ[0]).v===+caTxt());
     document.querySelector('#pj-body [data-pjdet="def"]').open=true;
     const op=id=>[...document.querySelectorAll('#pj-body #'+id+' option')].map(o=>o.value);
-    ok('estados, resistencias e inmunidades salen de las reglas',op('pjl-defensas-estados').includes('Derribado')&&op('pjl-defensas-res').includes('Fuego')&&op('pjl-defensas-vul').includes('Fuego')&&op('pjl-defensas-inm').includes('Envenenado')&&op('pjl-defensas-inm').includes('Veneno'));
+    ok('estados, resistencias e inmunidades salen de las reglas',op('pjl-defensas-estados').includes('Derribado')&&op('pjl-defensas-res').includes('Fuego')&&op('pjl-defensas-vul').includes('Fuego')&&op('pjl-defensas-inme').includes('Envenenado'));
+    ok('el selector de inmunidades a daño no mezcla estados, y el de estados no mezcla daños',op('pjl-defensas-inm').includes('Veneno')&&!op('pjl-defensas-inm').includes('Envenenado')&&!op('pjl-defensas-inme').includes('Veneno'));
   }catch(e){R.fail=String(e&&e.stack||e);}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -88,6 +89,6 @@ testNav('subclase: se elige de la lista de la clase y trae sus rasgos',{skip:!BR
     assert.equal(R.fail,undefined,R.fail);
     assert.deepEqual(R.err,[],'errores de JavaScript');
     assert.deepEqual(R.c.filter(c=>!c[1]).map(c=>c[0]),[],'comprobaciones que fallan');
-    assert.ok(R.c.length>=18,'el flujo se quedó a medias ('+R.c.length+')');
+    assert.ok(R.c.length>=19,'el flujo se quedó a medias ('+R.c.length+')');
   }finally{srv.close();try{rmSync(prof,{recursive:true,force:true});}catch{}}
 });

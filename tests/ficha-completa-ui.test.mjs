@@ -31,9 +31,9 @@ const TAIL=`<script>
     const chk=async(s,v)=>{const e=document.querySelector(s);if(!e)throw new Error('no hay '+s);e.checked=v;e.dispatchEvent(new Event('change',{bubbles:true}));await wait(150);};
     ok('la hoja pinta los apartados nuevos',['hab','atq','ras','def','otr','per'].every(k=>!!body().querySelector('[data-pjdet="'+k+'"]')));
     // habilidades
-    await sel('[data-pjsk="arcanos"]','2');
+    ok('habilidades y salvaciones no se editan a mano: no hay listas ni casillas y sí botones de tirada',!body().querySelector('[data-pjsk],[data-pjsv]')&&body().querySelectorAll('[data-roll="pjchk"]').length>=18);
+    {let r=Ficha.habilidadSet(F(),'arcanos',2).f;r=Ficha.salvacionSet(r,'con',true).f;PJC[PJC.findIndex(x=>x.id==='c1')]=r;pjSave();pjRender();await wait(200);}
     ok('pericia en Arcanos: +2 competencia x2 + INT 3',F().habil.arcanos===2&&Ficha.habBonus(F(),'arcanos')===3+4);
-    await chk('[data-pjsv="con"]',true);
     ok('salvación de CON competente',F().salvac.includes('con'));
     // ataques
     document.getElementById('pja-n').value='Daga';document.getElementById('pja-b').value='5';document.getElementById('pja-d').value='1d4+2';document.getElementById('pja-t').value='perforante';
@@ -68,7 +68,6 @@ const TAIL=`<script>
     await rol('jugador');
     ok('el jugador no ve el registro de cambios',!/Registro de cambios/.test(document.getElementById('pj-body').textContent));
     ok('el jugador no tiene la pestaña ni los formularios del máster en la página',!document.querySelector('.pjtab[data-t="dm"]')&&!document.querySelector('[data-p="dm"]')&&!document.getElementById('pjg-n')&&!document.getElementById('pjr-n')&&!document.querySelector('[data-act="pjrasdel"],[data-act="pjrecdel"]'));
-    await sel('[data-pjsk="sigilo"]','1');
     ok('jugador: habilidades bloqueadas',!F().habil.sigilo&&F().pendientes.length===0);
     document.getElementById('pja-n').value='Arco';await click('[data-act="pjatqadd"]');
     ok('jugador: el ataque queda pendiente',F().ataques.length===1&&F().pendientes.length===1);

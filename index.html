@@ -413,11 +413,12 @@ function norm(x){
   for(const r of Array.isArray(x.recursos)?x.recursos.slice(0,30):[]){if(!r||typeof r!=='object')continue;const max=int(r.max,0,99);
     f.recursos.push({id:txt(r.id,20)||'r'+f.recursos.length,n:txt(r.n,60),max,uso:int(r.uso,0,max),rec:['corto','largo'].includes(r.rec)?r.rec:'',...(txt(r.a,40)?{a:txt(r.a,40),cor:int(r.cor,0,max)}:{})});}
   f.dotes=(Array.isArray(x.dotes)?x.dotes:[]).slice(0,30).map(d=>txt(d,60)).filter(Boolean);
+  f.maestrias=(Array.isArray(x.maestrias)?x.maestrias:[]).slice(0,12).map(n=>txt(n,80)).filter(Boolean);   // tipos de arma elegidos para usar su propiedad de maestría
   {const vistos=new Set();f.conjuros=(Array.isArray(x.conjuros)?x.conjuros:[]).slice(0,200).map(d=>txt(d,60)).filter(d=>d&&!vistos.has(d.toLowerCase())&&vistos.add(d.toLowerCase()));}   // nombres de conjuros conocidos o preparados
   f.registro=(Array.isArray(x.registro)?x.registro:[]).slice(-200).filter(r=>r&&typeof r==='object').map(r=>({t:int(r.t,0,9e15),a:txt(r.a,30),d:txt(r.d,200),por:txt(r.por,40)}));
   if(f.origen==='campana')f.dm=(Array.isArray(x.dm)?x.dm:[]).slice(-300).filter(r=>r&&typeof r==='object'&&txt(r.txt,3000)).map((r,i)=>({id:txt(r.id,20)||'d'+i,t:int(r.t,0,9e15),tipo:['evento','nota','secreto'].includes(r.tipo)?r.tipo:'nota',txt:txt(r.txt,3000)}));
   for(const k of MON)f.mon[k]=int(x.mon&&x.mon[k],0,9999999);
-  f.inventario=(Array.isArray(x.inventario)?x.inventario:[]).slice(0,200).filter(i=>i&&typeof i==='object'&&txt(i.n,80)).map((i,k)=>({id:txt(i.id,20)||'i'+k,n:txt(i.n,80),q:int(i.q,0,99999,1),nota:txt(i.nota,200),eq:ubInv(i)==='equipado',ub:ubInv(i),peso:pesoKg(i.peso),sin:!!i.sin,sint:!!i.sint,uso:int(i.uso,0,999,0),ug:Math.min(int(i.ug,0,999,0),int(i.uso,0,999,0)),mun:!!i.mun}));
+  f.inventario=(Array.isArray(x.inventario)?x.inventario:[]).slice(0,200).filter(i=>i&&typeof i==='object'&&txt(i.n,80)).map((i,k)=>({id:txt(i.id,20)||'i'+k,n:txt(i.n,80),q:int(i.q,0,99999,1),nota:txt(i.nota,200),eq:ubInv(i)==='equipado',ub:ubInv(i),peso:pesoKg(i.peso),sin:!!i.sin,sint:!!i.sint,uso:int(i.uso,0,999,0),ug:Math.min(int(i.ug,0,999,0),int(i.uso,0,999,0)),mun:!!i.mun,cq:i.cq==null?null:int(i.cq,0,99999,0)}));
   if(f.origen==='campana')f.pendientes=normPendientes(x.pendientes);
   /* retrato: «tok» (token cuadrado) e «img» (retrato grande) como data URL de imagen; est: uno por estado activo (furia, forma salvaje…) que sustituye al base mientras dure */
   {const di=(v,max)=>typeof v==='string'&&/^data:image\/(webp|png|jpeg|gif);base64,[A-Za-z0-9+/=]+$/.test(v)&&v.length<=max?v:'';
@@ -500,7 +501,7 @@ function sincRecursos(f,datos){
    datos = {clave:{n,prog:{filas:[{rasgos}]}}} (como recursosClase); textos = entradas {cls,sub,nv,tipo,base|n,d} (COMP_SRD.rasgos). Si el rasgo ya tiene un recurso de clase con su nombre, lo enlaza (r). */
 function rasgosNivel(f,datos,textos){
   const g=sincRecursos(f,datos),hay=new Set(g.rasgos.map(r=>fold(r.n))),sc=fold(g.subclase||''),L=Array.isArray(textos)?textos:[],nuevos=[];
-  const limpio=h=>String(h||'').replace(/<table[\s\S]*?<\/table>/gi,'').replace(/<\/(p|li|h\d|tr|div)>|<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/[ \t]+/g,' ').replace(/\s*\n\s*/g,'\n').trim();
+  const limpio=h=>String(h||'').replace(/<table[\s\S]*?<\/table>/gi,'').replace(/<b>(?:<i>)?([^<]*?)(?:<\/i>)?<\/b>/gi,'**$1**').replace(/<li>/gi,'- ').replace(/<\/(p|li|h\d|tr|div)>|<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/[ \t]+/g,' ').replace(/\s*\n\s*/g,'\n').trim();
   const poner=(c,nm,e)=>{
     const k=fold(nm);if(!k||hay.has(k)||g.rasgos.length+nuevos.length>=MAX_RASGOS)return;hay.add(k);
     const q=g.recursos.find(r=>r.a&&r.a.startsWith(c+':')&&fold(r.n)===k);
@@ -609,22 +610,27 @@ function statblock(f,datos,eq,sp){
   v-=pen;
   // ataques
   const crit=d.critico<20?' Crítico '+d.critico+'–20.':'';
-  const maes=Object.keys(clases(f)).some(c=>datos&&datos[c]&&datos[c].prog&&datos[c].prog.cols.some(k=>k.id==='maestrias'));
+  const maesN=maestriaCupo(f,datos),maes=maesN>0,maesSel=new Set((f.maestrias||[]).map(fold));   // solo cuenta la maestría de las armas elegidas
   const rabia=d.dano.filter(x=>x.ab==='fue'&&x.estado).reduce((s,x)=>s+(parseInt(x.v)||0),0);
-  const acciones=[];
+  const acciones=[],autos=[];
   if(d.ataques>1)acciones.push({n:'Multiataque',t:'Realiza '+d.ataques+' ataques cuando haces la acción de atacar.'});
   for(const x of E.armas){
     const a=x.arma,pro=armaCompetente(f,datos,a),ab=a.dist?'des':a.props.includes('sutil')&&m('des')>m('fue')?'des':'fue';
     const alc='alcance '+(a.dist?a.alc.map(m1).join('/'):a.props.includes('gran_alcance')?'3':'1,5')+' m';
     const fijo=m(ab)+(ab==='fue'&&!a.dist?rabia:0),mt=/^(\d+)d(\d+)$/.exec(a.dano),prom=(mt?Math.floor(+mt[1]*(+mt[2]+1)/2):+a.dano)+fijo;
     const t='Tirada de ataque '+(a.dist?'a distancia':'cuerpo a cuerpo')+': '+sg(m(ab)+(pro?pb:0))+', '+alc+'. Acierto: '+prom+' ('+a.dano+(fijo?(fijo>0?' + ':' - ')+Math.abs(fijo):'')+') de daño '+a.tipo+'.'
-      +(a.props.includes('arrojadiza')&&a.alc?' Arrojadiza ('+a.alc.map(m1).join('/')+' m).':'')+(a.versatil?' A dos manos: '+a.versatil+'.':'')+(a.mae&&maes?' Maestría: '+a.mae+'.':'')+crit+(pro?'':' (sin competencia)');
+      +(a.props.includes('arrojadiza')&&a.alc?' Arrojadiza ('+a.alc.map(m1).join('/')+' m).':'')+(a.versatil?' A dos manos: '+a.versatil+'.':'')+(a.mae&&maes&&maesSel.has(fold(x.n))?' Maestría: '+a.mae+'.':'')+crit+(pro?'':' (sin competencia)');
     acciones.push({n:x.n,t});
+    const fs=fijo?(fijo>0?'+':'-')+Math.abs(fijo):'',pr=(a.props||[]).filter(q=>q!=='versatil').map(q=>String(q).replace(/_/g,' ')),
+      base={n:x.n,b:m(ab)+(pro?pb:0),tipo:a.tipo,alc,props:pr,mae:a.mae&&maes&&maesSel.has(fold(x.n))?a.mae:'',sinComp:!pro,dist:!!a.dist};
+    if(a.versatil){autos.push({...base,n:x.n+' · '+'una mano',dano:a.dano+fs});autos.push({...base,n:x.n+' · '+'dos manos',dano:a.versatil+fs});}
+    else autos.push({...base,dano:a.dano+fs});
   }
   {
     const ab=d.artes&&m('des')>m('fue')?'des':'fue',mt=/^(\d+)d(\d+)$/.exec(d.artes||''),fj=m(ab);
     const dano=mt?Math.floor(+mt[1]*(+mt[2]+1)/2)+fj+' ('+d.artes+(fj?(fj>0?' + ':' - ')+Math.abs(fj):'')+')':String(Math.max(1,1+m('fue')));
     acciones.push({n:'Ataque sin armas',t:'Tirada de ataque cuerpo a cuerpo: '+sg(m(ab)+pb)+', alcance 1,5 m. Acierto: '+dano+' de daño contundente.'+(d.artes?' Artes marciales.':'')});
+    autos.push({n:'Ataque sin armas',b:m(ab)+pb,dano:mt?d.artes+(fj?(fj>0?'+':'-')+Math.abs(fj):''):String(Math.max(1,1+m('fue'))),tipo:'contundente',alc:'alcance 1,5 m',props:[],mae:'',sinComp:false,dist:false});
   }
   for(const a of f.ataques)acciones.push({n:a.n,t:'Tirada de ataque: '+sg(a.b)+(a.dano?'. Acierto: '+a.dano+(a.tipo?' de daño '+a.tipo:''):'')+(a.nota?'. '+a.nota:'')});
   const adicionales=[],reacciones=[],libres=[],rasgos=[];
@@ -671,7 +677,7 @@ function statblock(f,datos,eq,sp){
     hab:HABIL.filter(([h])=>f.habil[h]).map(([h])=>({n:HAB_NOM[h],b:habBonus(f,h),pericia:f.habil[h]>1})),
     defensas:f.defensas,pp:pasiva(f,'percepcion'),idiomas:f.otras.idiomas.slice(),
     equipo:f.inventario.map(i=>(i.q>1?i.q+'× ':'')+i.n+(i.eq?' (equipado)':'')),
-    acciones,adicionales,reacciones,libres,rasgos,avisos,
+    acciones,autos,adicionales,reacciones,libres,rasgos,avisos,
   };
 }
 function activar(f,id,datos,ctx){
@@ -720,6 +726,12 @@ function subir(f,op,camp,ctx){
     else{let t=0;for(const [a,v] of Object.entries(m)){if(!AB.includes(a))return no('mejora_invalida');const q=int(v,1,2,0);if(!q)return no('mejora_invalida');if(g.car[a]+q>20)return no('tope_20');g.car[a]+=q;t+=q;}
       if(t!==2)return no('mejora_invalida');}
   }else if(m)return no('mejora_no_toca');
+  const cp=op.comp;   // competencia, pericia o salvación nueva que da este nivel
+  if(cp&&typeof cp==='object'){
+    if(cp.habil&&Object.hasOwn(HAB_AB,cp.habil)){const v=int(cp.nivel,1,2,1);if((g.habil[cp.habil]||0)>=v)return no('mejora_invalida');g.habil[cp.habil]=v;}
+    if(cp.salvac){if(!AB.includes(cp.salvac)||g.salvac.includes(cp.salvac))return no('mejora_invalida');g.salvac=AB.filter(x=>x===cp.salvac||g.salvac.includes(x));}
+    if(cp.idioma){const i=txt(cp.idioma,60);if(!i||g.otras.idiomas.some(x=>x.toLowerCase()===i.toLowerCase())||g.otras.idiomas.length>=40)return no('mejora_invalida');g.otras.idiomas.push(i);}   // los idiomas solo se amplían al subir de nivel
+  }
   g.niveles.push({c:op.c,hp});
   if(g.origen==='campana'&&camp&&camp.criterio!=='xp')g.concedidas--;
   g.hp=Math.min(hpMax(g),g.hp+Math.max(1,hp+mod(g.car.con)));
@@ -742,7 +754,7 @@ function editar(f,campo,valor,ctx){
   else if(campo==='magia.hab'){g.magia.hab=AB.includes(valor)?valor:'';}
   else if(campo.startsWith('mon.')&&MON.includes(campo.slice(4))){g.mon[campo.slice(4)]=int(valor,0,9999999);}
   else if(campo==='xp'){if(camp&&!(ctx&&ctx.rol==='dm'))return no('solo_dm');g.xp=int(valor,0,9999999);}
-  else if(campo.startsWith('car.')&&AB.includes(campo.slice(4))){if(camp)return no('bloqueado');g.car[campo.slice(4)]=int(valor,1,30,10);g.hp=Math.min(g.hp,hpMax(g));}
+  else if(campo.startsWith('car.'))return no('bloqueado');   // las características solo cambian al subir de nivel
   else return no('bloqueado');
   return ok(anota(g,ctx,'edicion',campo));
 }
@@ -1003,15 +1015,26 @@ function invUbicar(f,id,ub){const g=copia(f),e=g.inventario.find(i=>i.id===id);i
 function invPeso(f,id,kg){const g=copia(f),e=g.inventario.find(i=>i.id===id);if(!e)return no('no_existe');e.peso=pesoKg(kg);return ok(g);}
 /* Carga: capacidad = Fuerza × 7,5 kg (Fuerza × 15 lb); empujar, arrastrar o levantar, el doble. Las monedas pesan 50 = 0,5 kg (opts.monedas=false para no contarlas).
    nivel: 'normal' (hasta la capacidad), 'cargado' (hasta el doble) o 'maximo' (más del doble). Los objetos sin peso cuentan 0. */
-function carga(f,opts){const cm=!opts||opts.monedas!==false;let eq=0,mo=0;
-  for(const i of f.inventario){const w=pesoKg(i.peso)*int(i.q,0,99999,1);if(ubInv(i)==='equipado')eq+=w;else mo+=w;}
+function carga(f,opts){const cm=!opts||opts.monedas!==false,pf=opts&&opts.peso;let eq=0,mo=0;
+  for(const i of f.inventario){const w=pesoKg(pf?pf(i):i.peso)*int(i.q,0,99999,1);if(ubInv(i)==='equipado')eq+=w;else mo+=w;}
   const mon=cm?MON.reduce((a,k)=>a+int(f.mon&&f.mon[k],0,9999999,0),0)/100:0,r3=v=>Math.round(v*1000)/1000;
   const cap=r3(int(f.car&&f.car.fue,0,30,10)*7.5),tot=eq+mo+mon;
   return {total:r3(tot),equipado:r3(eq),mochila:r3(mo),monedas:r3(mon),capacidad:cap,pct:cap?Math.round(tot/cap*100):(tot?999:0),nivel:tot<=cap?'normal':tot<=cap*2?'cargado':'maximo'};}
-function sintonia(f){return {usadas:f.inventario.filter(i=>i.sin).length,max:3};}
+function sintonia(f){const objetos=f.inventario.filter(i=>i.sin);return {usadas:objetos.length,max:3,objetos,pendientes:f.inventario.filter(i=>i.sint&&!i.sin)};}
 /* valor de las monedas en piezas de oro (ppt=10, po=1, pe=0,5, pp=0,1, pc=0,01) */
 function oroTotal(f){const m=f.mon||{},v=(m.ppt||0)*10+(m.po||0)+(m.pe||0)*0.5+(m.pp||0)*0.1+(m.pc||0)*0.01;return Math.round(v*100)/100;}
 function invQuitar(f,id){const g=copia(f);if(!g.inventario.some(i=>i.id===id))return no('no_existe');g.inventario=g.inventario.filter(i=>i.id!==id);return ok(g);}
+function invContenido(f,id,q,cap){const g=copia(f),e=g.inventario.find(i=>i.id===id);if(!e)return no('no_existe');e.cq=int(q,0,int(cap,0,99999,99999),0);return ok(g);}
+/* Maestría con armas: cuántos tipos de arma puede dominar según clase y nivel (columna «Maestría con armas» de la tabla de clase; 2 si el rasgo existe sin columna) */
+function maestriaCupo(f,datos){let mx=0;const cl=clases(f);
+  for(const c of Object.keys(cl)){const p=datos&&datos[c]&&datos[c].prog;if(!p)continue;let v=0;
+    if((p.cols||[]).some(k=>k.id==='maestrias')){for(const r of p.filas)if(r.nv<=cl[c]&&r.v&&r.v.maestrias!=null)v=r.v.maestrias;}
+    else if(p.filas&&p.filas[0]&&(p.filas[0].rasgos||[]).some(x=>fold(x)==='maestria con armas'))v=2;
+    if(v>mx)mx=v;}
+  return mx;}
+function maestriaSet(f,n,on,cupo){const g=copia(f),k=fold(n),l=(g.maestrias||[]).filter(x=>fold(x)!==k);
+  if(on){if(l.length>=cupo)return no('sin_cupo');l.push(String(n).slice(0,80));}
+  g.maestrias=l;return ok(g);}
 function invCantidad(f,id,q){const g=copia(f),e=g.inventario.find(i=>i.id===id);if(!e)return no('no_existe');q=int(q,0,99999,e.q);if(q===0)g.inventario=g.inventario.filter(i=>i.id!==id);else e.q=q;return ok(g);}
 /* ---- lo que usa el combate ---- */
 /* El combate escribe aquí los PG que tiene la criatura (sin dejar anotación: un golpe no es una edición). */
@@ -1113,7 +1136,7 @@ function arbol(bases,grupos){
   for(const g of grupos)for(const f of g.fichas){const e=f.base&&por.get(f.base);const it={f,campana:g.campana,nombre:g.nombre};if(e)e.copias.push(it);else huerfanas.push(it);}
   return {nodos:[...por.values()],huerfanas};
 }
-return {carga,sintonia,oroTotal,invUbicar,invPeso,pesoKg,desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,retratoSet,retratoActual,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,recursosClase,sincRecursos,rasgosNivel,efectosClase,derivados,equipado,statblock,activar,desactivar,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
+return {carga,sintonia,oroTotal,invUbicar,invPeso,pesoKg,desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,retratoSet,retratoActual,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,invContenido,maestriaCupo,maestriaSet,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,recursosClase,sincRecursos,rasgosNivel,efectosClase,derivados,equipado,statblock,activar,desactivar,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
 })();
 </script>
 <script id="grupos-core">
@@ -2589,12 +2612,12 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pcpj{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;border-top:1px dashed var(--line);padding-top:6px}
 .pcpj select{max-width:100%}
 .pjabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
-.pjab{border:2px solid var(--pj);border-radius:18px 18px 30px 30px;padding:8px 6px 12px;text-align:center;background:color-mix(in srgb,var(--pj) 8%,var(--surface));display:flex;flex-direction:column;gap:2px;align-items:center}
-.pjab .k{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
-.pjab .m{font-size:30px;font-weight:800;line-height:1.05}
+.pjab{border:2px solid var(--pj);border-radius:20px;padding:12px 6px 14px;text-align:center;background:color-mix(in srgb,var(--pj) 8%,var(--surface));display:flex;flex-direction:column;gap:2px;align-items:center}
+.pjab .k{font-size:14px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.pjab .m{font-size:46px;font-weight:800;line-height:1.05}
 .pjab .sv{font-size:12px;color:var(--muted)}
 .pjab input{width:58px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--fg);padding:3px}
-.pjab .lk{font-size:13px;color:var(--muted)}
+.pjab .lk{font-size:20px;font-weight:600;color:var(--fg);padding:2px 14px;margin-top:2px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2,transparent)}
 .pjw{max-width:760px}
 .pjw-pasos{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .pjw-pasos button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;cursor:pointer;font:inherit}
@@ -2660,6 +2683,7 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pips{display:inline-flex;flex-wrap:wrap;gap:5px;align-items:center}
 .pip{width:20px;height:20px;border-radius:50%;border:2px solid var(--pj);background:var(--pj);cursor:pointer;padding:0}
 .pip.off{background:transparent}
+.pip:disabled{cursor:not-allowed;opacity:.45}
 /* ---- hoja del personaje: resumen a la izquierda y cinco pestañas; paleta propia (verde casi negro, crema, lila) en claro y oscuro */
 .pjrol{color-scheme:light;position:relative;border-radius:8px;padding:22px;background-color:#2a211c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(120% 90% at 50% 0%,rgb(255 255 255/.07),transparent 60%),linear-gradient(#2f251e,#211a15);box-shadow:inset 0 0 0 1px rgb(0 0 0/.4),inset 0 2px 14px rgb(0 0 0/.35),0 10px 24px -14px rgb(30 20 10/.5)}
 .pjrol::before{content:"";position:absolute;inset:8px;border:1.5px dashed rgb(226 200 156/.3);border-radius:4px;pointer-events:none}
@@ -2719,11 +2743,42 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjrol[data-tab=combate] .pjpan[data-p=combate],.pjrol[data-tab=rasgos] .pjpan[data-p=rasgos],.pjrol[data-tab=conjuros] .pjpan[data-p=conjuros],.pjrol[data-tab=inventario] .pjpan[data-p=inventario],.pjrol[data-tab=notas] .pjpan[data-p=notas],.pjrol[data-tab=dm] .pjpan[data-p=dm]{display:flex}
 .pjrol .pjbox{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;padding:12px 2px}
 .pjrol .pjbox>h3,.pjrol .pjbox>summary{font-variant:small-caps;letter-spacing:.08em;font-size:17px}
-.pjinvg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.pjinvg{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:22px;align-items:start}
+.pjinvg>.pjinve,.pjinvg>.pjinvl,.pjinvg>.pjinva{grid-column:1}
+.pjinvg>.pjinvb{grid-column:2;grid-row:1/span 3}
 .pjinvl,.pjinve,.pjinvb{display:flex;flex-direction:column;gap:6px;min-width:0}
 .pjit{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
-.pjit:first-child{border-top:0}.pjitn{flex:1 1 100%}
+.pjit:first-child{border-top:0}.pjitn{flex:1 1 0;min-width:0}
+.pjitp{flex:0 0 auto;margin-left:auto;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
 .pjitc{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;width:100%}
+.pjlist>.pjit{justify-content:flex-start;gap:6px 10px}
+.pjitq2{display:flex;gap:6px;flex:0 0 auto;margin-left:auto;min-width:0;align-items:center}
+.pjstep{display:flex;flex:0 0 auto;align-items:center;gap:4px}
+.pjstep .pjitq{flex:0 0 auto;min-width:0;width:44px;box-sizing:border-box;text-align:center;-moz-appearance:textfield;appearance:textfield}
+.pjstep .pjitq::-webkit-outer-spin-button,.pjstep .pjitq::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pjitw{flex:0 0 auto}
+.pjitr{flex:0 1 auto;min-width:0}
+.pjitr:empty{display:none}
+.pjitd{display:flex;flex:0 0 100%;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between}
+.pjite{display:flex;flex:1 1 0;flex-wrap:wrap;gap:6px 10px;align-items:center;min-width:0}
+.pjite:empty{display:none}
+.pjitk{flex:0 0 100%;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;margin:2px 0 0 4px;padding:2px 0 2px 12px;border-left:2px solid var(--line)}
+.pjitkh{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.pjitkr{display:flex;align-items:center;justify-content:space-between;gap:6px 10px}
+.pjitkn{font-size:13px;min-width:0}
+.pjrastxt>summary{cursor:pointer}
+.pjrastxt[open]>summary .pjrt-c,.pjrastxt:not([open])>summary .pjrt-o{display:none}
+.pjrt-o{font-size:12px;color:var(--muted);text-decoration:underline}
+.pjrtx p,.pjrtx ul{margin:4px 0}.pjrtx ul{padding-left:18px}
+.pjitw b{font-weight:600;color:var(--fg)}
+.pjtg{position:relative;display:inline-flex;flex-direction:row;align-items:center;gap:6px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--fg) 40%,transparent);border-radius:999px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+.pjtg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.pjtg:has(input:checked){background:color-mix(in srgb,var(--pj,var(--accent)) 24%,var(--surface));border-color:var(--pj,var(--accent));box-shadow:inset 0 0 0 1px var(--pj,var(--accent));color:var(--fg)}
+.pjtg:has(input:checked) svg{fill:currentColor;fill-opacity:.3}
+.pjtg.pjdis{opacity:.5;cursor:not-allowed}
+.pjtg:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+@media (pointer:coarse),(max-width:700px){.pjtg{min-height:44px;padding:4px 14px}}
+.pjsinl{list-style:none;margin:6px 0 0;padding:0;font-size:14px}.pjsinl li{padding:2px 0}
 .pjmon label{display:flex;flex-direction:column;font-size:12px;letter-spacing:.08em;color:var(--muted)}
 .pjtotal{margin:2px 0}.pjcargat{margin:2px 0;font-size:20px}.pjcargat b{font-size:26px;font-weight:500}
 .pjcarga{height:10px}.pjsint b.tope{color:var(--warn)}
@@ -2734,6 +2789,31 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjretvac{display:inline-block;border:1px dashed var(--line)}
 .pjrol .pjhab{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0 28px}
 .pjrol .pjhr{padding:7px 2px;border-bottom:1px solid var(--line);gap:6px}
+.pjrol .pjhpnum{white-space:nowrap}
+.pjrol .pjtmpv{display:inline;margin-left:10px;font-size:.55em;font-weight:700;color:#1f8a4c;vertical-align:.45em;letter-spacing:0}
+.pjrol .pjtmp{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--muted)}
+.pjrol .pjtmp input{width:72px;text-align:center;font-size:16px;color:var(--fg)}
+.pjrol .pjauto{display:grid;grid-template-columns:minmax(0,1fr) 108px 164px;column-gap:18px;align-items:center;justify-content:normal}
+.pjrol .pjatn{display:flex;flex-direction:column;min-width:0}
+.pjrol .pjlistn{flex:0 0 172px;max-width:100%}
+.pjrol .pjsubt{margin:10px 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg)}
+.pjrol .pjsubt small{margin-left:6px;font-size:11px;font-weight:400;letter-spacing:.02em;text-transform:none;color:var(--muted)}
+.pjrol .pjsubm{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
+.pjrol .pjsubt+.pjlist{margin-top:0}
+.pjrol .pjatt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.pjrol .pjatt small{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.pjrol .pjauto .pjatt .rl,.pjrol .pjauto .pjatt>b{box-sizing:border-box;min-width:96px;text-align:center;line-height:1.5}
+.pjrol .pjauto .pjatt>b{padding:1px 8px;border:1px solid transparent;font-weight:600}
+@media (max-width:560px){.pjrol .pjauto{grid-template-columns:108px minmax(0,1fr)}.pjrol .pjauto .pjatn{grid-column:1/-1;margin-bottom:2px}}
+.pjrol .act .rl{text-decoration:none;font-size:15px;padding:1px 8px;border:1px solid var(--line);border-radius:8px;color:var(--fg);background:none;cursor:pointer}
+.pjrol .act .rl:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pjrol .rl.pjrl{text-decoration:none;font-size:15px;padding:1px 8px;min-width:42px;text-align:center;border-radius:8px;border:1px solid var(--line);background:var(--surface-2,transparent);color:var(--fg);cursor:pointer}
+.pjrol .rl.pjrl:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pjrol .pjab .m .rl.pjrl,.pjrol .pjstv .rl.pjrl{font-size:inherit;font-weight:inherit;line-height:inherit;border:0;background:none;padding:0;min-width:0;color:inherit}
+.pjrol .pjab .m .rl.pjrl:hover,.pjrol .pjstv .rl.pjrl:hover{background:none;color:var(--accent)}
+.pjrol .pjhr .rl{margin-left:auto}
+.pjrol .pjhr .pjmk{flex:0 0 38px;text-align:center;color:var(--accent);font-size:15px;letter-spacing:-2px}
+.pjrol .pjsvl .pjmk{color:var(--accent);font-size:16px}
 .pjrol .pjhr select{appearance:none;-webkit-appearance:none;background:none;background-image:none;border:0;border-radius:0;padding:0;margin:0;width:38px;min-height:24px;text-align:center;text-align-last:center;color:var(--accent);font-size:15px;cursor:pointer;box-shadow:none}
 .pjrol .pjhr select option{background:#fffdf7;color:var(--fg)}
 .pjrol .pjhr b{font-size:17px;font-weight:600}
@@ -2747,7 +2827,7 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjfijo{display:inline-block;padding:6px 0;border-bottom:1px solid var(--line);min-width:120px}
 .pjelige{display:flex;flex-direction:column;gap:4px;font-variant:small-caps;letter-spacing:.06em;color:var(--accent)}
 .pjelige select{font-variant:normal;letter-spacing:0}
-@media (max-width:1100px){.pjinvg{grid-template-columns:1fr}}
+@media (max-width:1100px){.pjinvg{grid-template-columns:1fr}.pjinvg>.pjinvb{grid-column:1;grid-row:auto}}
 @media (max-width:860px){.pjlay{grid-template-columns:1fr}.pjres{position:static}.pjtabs{max-width:100%}.pjrol{padding:12px}}
 .pjlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .pjlist li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
@@ -3113,6 +3193,35 @@ html.app-escritorio .pagenav .nl{display:inline;margin-left:8px}/* navegación e
 .ucard:hover,.ucard:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
 .ucard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ucard[hidden]{display:none}
+/* inventario del compendio: tabla de armas para cotejar con el manual */
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.invh{display:flex;align-items:baseline;gap:8px;margin:22px 0 8px;font-size:15px}
+.invsc{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.invt{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}
+.invt th,.invt td{padding:7px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.invt tbody tr:last-child>*{border-bottom:0}
+.invt thead th{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);white-space:nowrap}
+.invt tbody th{font-weight:700;white-space:nowrap}
+.invt .invr{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.invt .invc{width:34px;padding-right:0}
+.invt .invc input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
+.invt .invsrc{color:var(--muted);font-size:12px}
+.invt .invnada{color:var(--muted)}
+.invt tbody tr:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.invt tr.invhecha>*{color:var(--muted)}
+.invt tr.invhecha>th{text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.invp{cursor:help;text-decoration:underline dotted color-mix(in srgb,var(--muted) 70%,transparent);text-underline-offset:3px}
+.invleg{margin-top:22px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 16px}
+.invleg>summary{cursor:pointer;font-weight:700}
+.invleg dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:12px 0 4px;font-size:13.5px}
+.invleg dt{font-weight:700}
+.invleg dd{margin:0;color:var(--muted)}
+@media(max-width:640px){.invleg dl{grid-template-columns:1fr;gap:0}.invleg dd{margin:0 0 8px}}
+.invfalta{color:var(--crit);font-weight:700}
+.invt td.invfalta{background:color-mix(in srgb,var(--crit) 10%,transparent)}
+label.f.invchk{flex-direction:row;align-items:center;gap:6px;font-size:13px;color:var(--fg);padding:0 4px}
+label.f.invchk input{width:auto}
+#view-armas .bfilters input[type=search]{flex:1 1 220px;min-width:0}
 .un{font-family:var(--f-display);font-weight:700;font-size:19px}
 .us{color:var(--accent);font-size:13px;font-weight:600;text-align:right}
 .ud{grid-column:1/-1;color:var(--muted);font-size:14px}
@@ -3612,7 +3721,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.127</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.128</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -3691,6 +3800,13 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="bfilters"><label class="f">Cuántos<select id="rv-n" aria-label="Cuántos elementos"><option>3</option><option selected>5</option><option>10</option><option>20</option><option>50</option></select></label><label class="f">Categoría a revisar<select id="rv-ty" aria-label="Categoría a revisar"></select></label><label class="f">Orden<select id="rv-o" aria-label="Orden"><option value="azar">Al azar</option><option value="az">Por nombre (A–Z)</option><option value="pg">Por página del manual</option></select></label></div>
   <div class="bfilters rvexp"><label class="f">Manual corregido<select id="rv-mod" aria-label="Manual"></select></label><button type="button" class="btn" data-act="rvbajar" title="Descarga el manual con tus correcciones y lo ya revisado, en el mismo formato que se importa">Descargar manual corregido (JSON)</button></div>
   <div id="rv-list"></div>
+</section>
+<section class="vpage" id="view-armas" hidden>
+  <div class="vhead"><h2>Compendio</h2><span class="pcsub" id="inv-count"></span></div>
+  <div class="cmtabs" role="tablist" aria-label="Apartados del compendio" data-cmnav></div>
+  <p class="modline">Tabla de armas de los módulos activos, ordenada como en el manual. Compara cada fila con tu libro y marca la casilla cuando esté <b>revisada</b>; lo que falte en el compendio sale como <span class="invfalta">?</span>. Cada arma tiene además su <a href="#compendio/objetos">ficha en Objetos</a> · <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Gestionar módulos</a>.</p>
+  <div class="bfilters"><input id="inv-q" type="search" placeholder="Buscar por nombre, propiedad o maestría" aria-label="Buscar armas"><select id="inv-g" aria-label="Categoría"></select><select id="inv-u" aria-label="Módulo"></select><label class="f invchk"><input type="checkbox" id="inv-p"> Solo sin revisar</label><label class="f invchk"><input type="checkbox" id="inv-f"> Solo con datos que faltan</label><button type="button" class="btn" data-act="invcopy" title="Copia la tabla visible como texto separado por tabuladores, lista para pegar en una hoja de cálculo">Copiar tabla</button></div>
+  <div id="inv-body"></div>
 </section>
 <section class="vpage" id="view-homebrew" hidden>
   <div class="vhead"><h2>Reglas homebrew</h2><span class="pcsub" id="hb-count"></span><button type="button" class="btn primary" data-act="itnew" data-ty="reglas" style="margin-left:auto">+ Nueva regla</button></div>
@@ -3819,6 +3935,9 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.128 <span>26 nov 2026</span></h3><ul>
+      <li><b>Armas, en el Compendio.</b> Sección nueva (Compendio › Armas) para cotejar con el manual las armas de los módulos activos: categoría (cuerpo a cuerpo o a distancia, sencillas o marciales), daño, propiedades con su alcance, maestría, peso y precio, ya rellenados desde el compendio. Marca cada arma como revisada, filtra por lo que falta o copia la tabla.</li>
+    </ul></li>
     <li><h3>v1.127 <span>26 nov 2026</span></h3><ul>
       <li><b>Ficha del jugador rediseñada.</b> Resumen fijo con retrato (uno por estado, como la furia), vida, recursos y descansos; pestañas Combate, Rasgos, Conjuros, Inventario y Notas sobre la pantalla de cuero. CA y velocidad se calculan solos desde la clase y el equipo.</li>
       <li><b>Inventario con peso.</b> Mochila aparte de lo equipado, carga contra el límite, sintonía máxima de 3 y total de la bolsa. Los pesos salen del compendio.</li>
@@ -5085,11 +5204,28 @@ function migrate(s){
 }
 function boot(data){
   state=migrate(data&&data.creatures?data:load()); refreshMods(); fixOrder(); render();
-  fetch(DATA_FILES.best).then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{
+  loadBestiario();
+}
+// Descarga del bestiario del SRD. Un fallo suelto de red (recarga a mitad, servidor ocupado) se reintenta antes de avisar,
+// y un error al procesar los datos no se hace pasar por «no se pudo cargar»: se deja en la consola con su causa real.
+async function loadBestiario(){
+  let d=null,fallo=null;
+  for(let n=0;n<3&&!d;n++){
+    if(n)await new Promise(r=>setTimeout(r,n*800));
+    try{const r=await fetch(DATA_FILES.best);if(!r.ok)throw new Error('HTTP '+r.status);d=await r.json();if(!Array.isArray(d))throw new Error('el bestiario no es una lista');}
+    catch(e){fallo=e;d=null;}
+  }
+  if(!d){
+    console.error('Bestiario del SRD: no se pudo descargar',fallo);
+    // solo molesta si hacía falta: con el SRD apagado y sin criaturas que dependan de él no se echa nada en falta
+    if(modOn('srd521')||state.creatures.some(c=>String(c.tpl||'').startsWith('srd:')))toast('No se pudo cargar el bestiario del SRD; tus criaturas siguen disponibles');
+    return;
+  }
+  try{
     SRD_ALL=d;refreshMods();
     for(const c of state.creatures){const m=cTpl(c);if(m&&!c._init){c.la=c.la||laMax(m);c.lr=c.lr||lrMax(m);c._init=1;}}
     render();if(location.hash==='#modulos')renderMods();if(!$('#view-campana').hidden)cpRenderDet();
-  }).catch(()=>toast('No se pudo cargar el bestiario del SRD; tus criaturas siguen disponibles'));
+  }catch(e){console.error('Bestiario del SRD: error al procesarlo',e);}
 }
 
 /* ---------- helpers ---------- */
@@ -5342,7 +5478,16 @@ function sbHTML(m,c,{compact=false}={}){
 }
 
 /* tiradas */
+/* Tirada de la ficha: 1d20 + bonificador. En el escritorio, con la mesa en vivo y una bandeja, cae en los dados 3D; si no, se tira aquí y sale el resultado. */
+function pjTirar(b){
+  const md=+b.dataset.mod||0,lbl=b.dataset.lbl||'',s=typeof pjGet==='function'?pjGet(pjSel):null,who=s?s.f.nombre:'';
+  const S=window.__AppShell;
+  if(S&&S.mesa&&typeof msVivo==='function'&&msVivo()&&MS.capas.some(c=>c.visible&&c.tipo==='dados')){MS.etq=(who?who+' · ':'')+lbl;S.mesa.enviar({tipo:'dados',notacion:'1d20'+(md?(md<0?'-':'+')+Math.abs(md):''),ventana:MS.vent});toast(T('Tirando')+'… '+lbl,2500);return;}
+  const a=d20(),tot=a+md,msg=(who?who+' · ':'')+lbl+': '+tot+' (d20 '+a+' '+sgn(md)+')'+(a===20?' · '+T('¡Natural 20!'):a===1?' · '+T('pifia'):'');
+  toast(msg,4200);
+}
 function doRoll(b){
+  if(b.dataset.roll==='pjchk')return pjTirar(b);
   const sb=b.closest('.sb'),who=sb?sb.dataset.who:'',cid=sb?sb.dataset.cid:'';
   const act=b.closest('.act')?.dataset.n||b.dataset.lbl||'';
   const k=b.dataset.roll;
@@ -6083,7 +6228,7 @@ function msTirar(prueba){
 function mesaResultado(r){
   if(!r||!Number.isFinite(r.total))return;
   const det=(r.dados||[]).map((v,k)=>v<0?'− '+(-v):(k?'+ ':'')+v).join(' ')+(r.mod?(r.mod<0?' − ':' + ')+Math.abs(r.mod):'');
-  const txt=r.notacion+' = '+r.total+(det?' ('+det+')':'');
+  const txt=(MS.etq?MS.etq+': ':'')+r.notacion+' = '+r.total+(det?' ('+det+')':'');MS.etq='';
   const e=$('#ms-dres');if(e)e.textContent=txt;
   toast(T('Dados')+': '+txt,5000);
 }
@@ -6368,6 +6513,16 @@ function bItem(k){
   if(ty==='criaturas')return tpl(k);
   const n=k.slice(ty.length+1);
   return ty==='conjuros'?SPELLS[n.toLowerCase()]||null:compFind(ty,n);
+}
+// peso en kg de un objeto del compendio: el campo `peso` o, si el módulo solo lo trae en la descripción («<b>Peso:</b> 2,5 kg» / «125 g»), sacado de ella
+function objPeso(x){
+  if(!x)return null;
+  if(x.peso!=null&&Number.isFinite(Number(x.peso)))return Number(x.peso);
+  const m=String(x.d||'').match(/Peso:<\/b>\s*([\d.,]+)\s*(kg|g)\b/i);
+  if(m){const v=parseFloat(m[1].replace(',','.'));if(Number.isFinite(v))return m[2].toLowerCase()==='g'?v/1000:v;}
+  // último recurso: el mismo objeto en el SRD (los datos de peso viven ahí aunque el módulo SRD esté desactivado)
+  const f=fold(x.n),s=COMP_SRD&&(COMP_SRD.objetos||[]).find(o=>fold(o.n)===f);
+  return s&&s.peso!=null&&Number.isFinite(Number(s.peso))?Number(s.peso):null;
 }
 function compFind(tab,n){const f=fold(n);return compList(tab).find(x=>fold(x.n)===f)||null;}
 function searchAll(ty,q,cat=''){
@@ -7899,8 +8054,106 @@ for(const id of ['#cm-q','#cm-f1','#cm-f2','#cm-fu'])$(id).addEventListener('inp
 $('#cm-list').addEventListener('click',e=>hvGo(e,()=>cmTab,()=>CM_RES));
 $('#cm-list').addEventListener('keydown',e=>hvKey(e,()=>cmTab,()=>CM_RES));
 
+/* ---------- inventario del compendio: las armas, para cotejarlas con el manual ---------- */
+const INV_GRUPOS=[['cc-sen','Armas cuerpo a cuerpo sencillas'],['ad-sen','Armas a distancia sencillas'],['cc-mar','Armas cuerpo a cuerpo marciales'],['ad-mar','Armas a distancia marciales']];
+const INV_PROP={ligera:'Ligera',sutil:'Sutil',pesada:'Pesada',dos_manos:'A dos manos',gran_alcance:'Gran alcance',arrojadiza:'Arrojadiza',municion:'Munición',recarga:'Recarga',versatil:'Versátil'};
+/* Qué hace cada propiedad en la mesa (resumen del manual de 2024); sale como pista en cada propiedad y en la leyenda de la tabla */
+const INV_EFECTO={
+  ligera:'Si atacas con un arma ligera con la acción de Atacar, puedes hacer un ataque extra como acción adicional con otra arma ligera distinta. A ese ataque no le sumas el modificador de característica al daño, salvo que sea negativo.',
+  sutil:'En ataque y daño puedes usar el modificador de Fuerza o de Destreza (el que prefieras), el mismo para los dos.',
+  pesada:'Tienes desventaja en las tiradas de ataque con ella si es cuerpo a cuerpo y tu Fuerza es menor de 13, o si es a distancia y tu Destreza es menor de 13.',
+  dos_manos:'Hacen falta dos manos para atacar con ella.',
+  gran_alcance:'Suma 1,5 m a tu alcance con ella (3 m en total) al atacar y para los ataques de oportunidad.',
+  arrojadiza:'Puedes lanzarla para hacer un ataque a distancia, con el mismo modificador de característica que usarías cuerpo a cuerpo. Entre paréntesis, su alcance normal y largo.',
+  municion:'Necesita munición para atacar a distancia, y cada ataque gasta una pieza. Cargarla exige una mano libre. Tras el combate, en 1 minuto recuperas la mitad de la gastada. Entre paréntesis, su alcance normal y largo.',
+  recarga:'Solo puedes disparar una pieza de munición con ella por cada acción, acción adicional o reacción, aunque tengas varios ataques.',
+  versatil:'Se puede usar a una mano o a dos: a una mano hace el daño normal y a dos manos, el daño que va entre paréntesis.'
+};
+let INV_OK=null;
+const invOk=()=>{if(!INV_OK){try{INV_OK=new Set(JSON.parse(Store.get('inv-armas-ok')||'[]'));}catch{INV_OK=new Set();}}return INV_OK;};
+const invSave=()=>{try{Store.set('inv-armas-ok',JSON.stringify([...invOk()]));}catch{}};
+const invNum=v=>String(Math.round(v*1000)/1000).replace('.',',');
+const invArmas=()=>compList('objetos').filter(x=>x.k==='arma'||x.arma);
+function invGrupo(x){
+  const a=x.arma,t=fold(x.t||'');
+  const mar=a?a.cat==='marcial':/marcial/.test(t),dist=a?!!a.dist:/distancia/.test(t);
+  return (dist?'ad-':'cc-')+(mar?'mar':'sen');
+}
+function invArmaPeso(x){   // en kg: del campo «peso» o, si el módulo solo lo trae en el texto («0,5 kg», «125 g», «—»), de ahí
+  if(x.peso!=null&&x.peso!==''&&!isNaN(+x.peso))return +x.peso;
+  const t=(/<b>Peso:<\/b>\s*([^<]*)/.exec(x.d||'')||[])[1];if(t==null)return null;
+  const m=/^\s*(\d+(?:[.,]\d+)?)\s*(kg|g|lb)?/i.exec(t);if(!m)return /^\s*[—–-]?\s*$/.test(t)?0:null;
+  const v=+m[1].replace(',','.'),u=(m[2]||'kg').toLowerCase();return u==='g'?v/1000:u==='lb'?v/2:v;
+}
+function invFila(x){
+  const a=x.arma||{},rango=a.alc?' (alcance '+a.alc.map(invNum).join('/')+' m)':'';
+  const propsL=(a.props||[]).map(p=>({k:p,t:(INV_PROP[p]||String(p).replace(/_/g,' '))+(p==='versatil'&&a.versatil?' ('+a.versatil+')':'')+(p==='arrojadiza'||p==='municion'?rango:'')})),props=propsL.map(q=>q.t);
+  const pre=x.precio||(/<b>Precio:<\/b>\s*([^<]+)/.exec(x.d||'')||[])[1]||'';
+  const peso=invArmaPeso(x),lb=PREFS.peso==='lb';
+  const f={n:x.n,g:invGrupo(x),dano:a.dano?(a.dano+(a.tipo?' '+a.tipo:'')+(a.versatil?' ('+a.versatil+' a dos manos)':'')):'',props:props.join(', '),propsL,mae:a.mae||'',
+    peso:peso==null?'':peso===0?'—':invNum(lb?peso*2:peso)+(lb?' lb':' kg'),precio:String(pre).trim(),fuente:(x._src||'')+(pgNum(x.pg)?', p. '+pgNum(x.pg):''),x};
+  f.falta=[!f.dano&&'daño',!f.mae&&'maestría',peso==null&&'peso',!f.precio&&'precio'].filter(Boolean);
+  return f;
+}
+function invFiltradas(){
+  const q=fold($('#inv-q').value),g=$('#inv-g').value,u=$('#inv-u').value,ok=invOk(),sr=$('#inv-p').checked,sf=$('#inv-f').checked;
+  return invArmas().map(invFila).filter(f=>
+    (!g||f.g===g)&&(!u||f.x._src===u||(f.x._also||[]).includes(u))&&
+    (!sr||!ok.has(fold(f.n)))&&(!sf||f.falta.length)&&
+    (!q||fold([f.n,f.dano,f.props,f.mae,f.precio].join(' ')).includes(q)))
+    .sort((a,b)=>a.n.localeCompare(b.n,'es'));
+}
+function invCuenta(){
+  const all=invArmas(),ok=invOk(),hechas=all.filter(x=>ok.has(fold(x.n))).length;
+  const c=$('#inv-count');if(c)c.textContent=all.length?all.length+' armas · '+hechas+' revisadas':'';
+  
+}
+function renderInv(){
+  const body=$('#inv-body');if(!body)return;
+  const todas=invArmas().map(invFila);
+  const keep=(sel,html)=>{const v=sel.value;sel.innerHTML=html;sel.value=[...sel.options].some(o=>o.value===v)?v:'';};
+  keep($('#inv-g'),'<option value="">Todas las categorías</option>'+INV_GRUPOS.map(([k,t])=>'<option value="'+k+'">'+t+' ('+todas.filter(f=>f.g===k).length+')</option>').join(''));
+  keep($('#inv-u'),'<option value="">Cualquier módulo</option>'+[...new Set(todas.flatMap(f=>[f.x._src,...(f.x._also||[])]).filter(Boolean))].map(m=>'<option>'+esc(m)+'</option>').join(''));
+  const l=invFiltradas(),ok=invOk();
+  invCuenta();
+  if(!todas.length){body.innerHTML='<div class="empty">No hay armas en los módulos activos. Activa el SRD 5.2.1 o un manual con equipo en <a href="#modulos">Módulos</a>.</div>';return;}
+  if(!l.length){body.innerHTML='<div class="empty">Nada con ese filtro.</div>';return;}
+  const falta=r=>'<td class="'+(r?'invr ':'')+'invfalta" title="Falta en el compendio">?</td>';
+  body.innerHTML=INV_GRUPOS.map(([k,t])=>{
+    const fs=l.filter(f=>f.g===k);if(!fs.length)return '';
+    return '<h3 class="invh">'+t+' <span class="pcsub">'+fs.length+'</span></h3><div class="invsc"><table class="invt"><thead><tr><th class="invc"><span class="sr-only">Revisada</span></th><th>Arma</th><th>Daño</th><th>Propiedades</th><th>Maestría</th><th class="invr">Peso</th><th class="invr">Precio</th><th>Fuente</th></tr></thead><tbody>'
+      +fs.map(f=>{const hecha=ok.has(fold(f.n));
+        return '<tr class="'+(hecha?'invhecha':'')+'" data-k="'+esc(fold(f.n))+'"><td class="invc"><input type="checkbox" class="invok" aria-label="Marcar «'+esc(f.n)+'» como revisada"'+(hecha?' checked':'')+'></td>'
+          +'<th scope="row">'+esc(f.n)+goA('objetos',f.n)+'</th>'
+          +(f.dano?'<td>'+esc(f.dano)+'</td>':falta())
+          +(f.props?'<td>'+f.propsL.map(q=>'<span class="invp" title="'+esc(INV_EFECTO[q.k]||'')+'">'+esc(q.t)+'</span>').join(', ')+'</td>':'<td class="invnada">—</td>')
+          +(f.mae?'<td>'+esc(f.mae)+'</td>':falta())
+          +(f.peso?'<td class="invr">'+esc(f.peso)+'</td>':falta(1))
+          +(f.precio?'<td class="invr">'+esc(f.precio)+'</td>':falta(1))
+          +'<td class="invsrc">'+esc(f.fuente)+(f.falta.length?' <span class="badge" title="Datos que faltan">sin '+esc(f.falta.join(', '))+'</span>':'')+'</td></tr>';}).join('')
+      +'</tbody></table></div>';}).join('')
+    +'<details class="invleg" open><summary>Propiedades de las armas <span class="pcsub">resumen para la mesa</span></summary><dl>'
+    +Object.keys(INV_EFECTO).map(k=>'<dt>'+esc(INV_PROP[k])+'</dt><dd>'+esc(INV_EFECTO[k])+'</dd>').join('')+'</dl></details>';
+}
+function invAct(act){
+  if(act==='invcopy'){
+    const g=Object.fromEntries(INV_GRUPOS),l=invFiltradas();
+    if(!l.length){toast('No hay filas que copiar');return;}
+    const t=[['Categoría','Arma','Daño','Propiedades','Maestría','Peso','Precio'],...l.map(f=>[g[f.g],f.n,f.dano,f.props,f.mae,f.peso,f.precio])].map(r=>r.join('\t')).join('\n');
+    navigator.clipboard?.writeText(t).then(()=>toast('Tabla copiada: '+l.length+' armas')).catch(()=>toast('No se pudo copiar'));
+  }
+}
+document.addEventListener('change',e=>{
+  const t=e.target;if(!t.closest)return;
+  if(t.matches('.invok')){
+    const tr=t.closest('tr'),ok=invOk();t.checked?ok.add(tr.dataset.k):ok.delete(tr.dataset.k);invSave();
+    if($('#inv-p').checked)renderInv();else{tr.classList.toggle('invhecha',t.checked);invCuenta();}
+  }else if(t.closest('#view-armas .bfilters'))renderInv();
+});
+$('#inv-q').addEventListener('input',renderInv);
 function extraAct(act,b,c,e){
   if(act.startsWith('rv')){rvAct(act,b);return;}
+  if(act.startsWith('inv')){invAct(act);return;}
   if(act.startsWith('md')){mdAct(act,b);return;}
   if(act.startsWith('cat')){catAct(act,b);return;}
   if(act.startsWith('ac')){acAct(act,b);return;}
@@ -7988,6 +8241,7 @@ function extraAct(act,b,c,e){
     case 'pjlvgo':{const s=pjGet(pjSel);if(!s||!pjLvl)break;const L=pjLvl,op={c:L.c,hp:L.hp};
       const pide=[4,8,12,16,19].includes(Ficha.nivelClase(s.f,L.c)+1)||(Ficha.CLASES[L.c].mej||[]).includes(Ficha.nivelClase(s.f,L.c)+1);
       if(pide)op.mejora=L.modo==='dote'?{dote:L.dote}:L.modo==='2'?{[L.a1]:2}:(L.a1===L.a2?{[L.a1]:2}:{[L.a1]:1,[L.a2]:1});
+      if(L.hab||L.sv||L.idi){op.comp={};if(L.hab){op.comp.habil=L.hab;op.comp.nivel=+L.habn||1;}if(L.sv)op.comp.salvac=L.sv;if(L.idi)op.comp.idioma=L.idi;}
       const rs=Ficha.subir(s.f,op,s.lista==='campana'?{criterio:pjCriterio()}:null,pjCtx());
       if(rs.ok&&(s.lista!=='campana'||PJROL==='dm'||pjPoliticas().datos!=='bloqueado'))rs.f=pjRasgosNivel(rs.f);   // los rasgos nuevos del nivel (no se añaden si el máster bloquea ese grupo al jugador: la subida no debe fallar)
       if(pjCommit(rs,s,'subida')){pjCerrar();toast(PJROL==='dm'||s.lista!=='campana'?T('¡Sube de nivel!'):T('Subida de nivel propuesta'));}break;}
@@ -8003,7 +8257,7 @@ function extraAct(act,b,c,e){
       pjCommit(b.dataset.act==='pjdano'?Ficha.dano(s.f,n,c):b.dataset.act==='pjcura'?Ficha.curar(s.f,n,c):Ficha.temporales(s.f,n,c),s);break;}
     case 'pjslot':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarSlot(s.f,+b.dataset.lv,pjCtx()):Ficha.devolverSlot(s.f,+b.dataset.lv,pjCtx()),s);break;}
     case 'pjpact':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarPact(s.f,pjCtx()):Ficha.devolverPact(s.f,pjCtx()),s);break;}
-    case 'pjrec':{const s=pjGet(pjSel);if(s)pjCommit(b.dataset.on==='1'?Ficha.usarRecurso(s.f,b.dataset.id,pjCtx()):Ficha.devolverRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
+    case 'pjrec':{const s=pjGet(pjSel);if(s&&b.dataset.on!=='1'&&pjRecBloq(s.f.recursos.find(x=>x.id===b.dataset.id))){toast(T('Se recupera al hacer el descanso'));break;}if(s)pjCommit(b.dataset.on==='1'?Ficha.usarRecurso(s.f,b.dataset.id,pjCtx()):Ficha.devolverRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
     case 'pjrecdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.quitarRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
     case 'pjtab':{const sh=b.closest('.pjsheet');if(!sh||!pjTabs().some(x=>x[0]===b.dataset.t))break;pjTab=b.dataset.t;sh.dataset.tab=pjTab;sh.querySelectorAll('.pjtab').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.t===pjTab)));if(b.classList.contains('pjfoto'))sh.querySelector('.pjmain')?.scrollIntoView({block:'start'});break;}
     case 'pjmuerte':{const s=pjGet(pjSel);if(!s)break;const k=b.dataset.k,n=+b.dataset.n;if(!['ex','fa'].includes(k))break;pjCommit(Ficha.editar(s.f,'muerte.'+k,s.f.muerte[k]===n?n-1:n,pjCtx()),s);break;}
@@ -8026,7 +8280,7 @@ function extraAct(act,b,c,e){
     case 'pjinvrec':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.invRecargar(s.f,b.dataset.id),s);break;}
     case 'pjinvcomp':{const s=pjGet(pjSel),c=$('#pji-c');if(!s||!c)break;const x=compFind('objetos',c.value);if(!x){toast(T('No está en el compendio'));break;}
       const mu=/munici/i.test((x.t||'')+' '+x.n),cg=/(\d+)\s+cargas/i.exec(String(x.d||'').replace(/<[^>]+>/g,' '));
-      if(pjCommit(Ficha.invAnadir(s.f,{n:x.n,q:1,nota:[x.t,x.r].filter(Boolean).join(', ').slice(0,200),peso:x.peso||0,sint:!!x.s,uso:cg?+cg[1]:0,mun:mu}),s))toast(T('Añadido')+': '+x.n);break;}
+      if(pjCommit(Ficha.invAnadir(s.f,{n:x.n,q:1,nota:[x.t,x.r].filter(Boolean).join(', ').slice(0,200),peso:objPeso(x)||0,sint:!!x.s,uso:cg?+cg[1]:0,mun:mu}),s))toast(T('Añadido')+': '+x.n);break;}
     case 'diaadd':{const s=pjGet(pjSel);if(!s)break;const d=diaGet(s.f.id);if(d.cap.length>=DIA_MAXCAP){toast(T('Demasiados capítulos'));break;}d.cap.push({id:uid(),t:'',x:'',f:diaHoy()});diaPon(s.f.id,d);pjRender();break;}
     case 'diadel':{const s=pjGet(pjSel);if(!s)break;const d=diaGet(s.f.id);d.cap=d.cap.filter(c=>c.id!==b.dataset.id);diaPon(s.f.id,d);pjRender();break;}
     case 'pjdmdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.dmQuitar(s.f,b.dataset.id,pjCtx()),s);break;}
@@ -8034,10 +8288,14 @@ function extraAct(act,b,c,e){
     case 'pjatqadd':{const s=pjGet(pjSel),n=$('#pja-n');if(!s||!n||!n.value.trim())break;pjCommit(Ficha.ataqueAnadir(s.f,{n:n.value,b:$('#pja-b').value,dano:$('#pja-d').value,tipo:$('#pja-t').value}),s);break;}
     case 'pjatqdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.ataqueQuitar(s.f,b.dataset.id),s);break;}
     case 'pjrasdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.rasgoQuitar(s.f,b.dataset.id),s);break;}
-    case 'pjlistadd':{const s=pjGet(pjSel),i=$('#pjl-'+b.dataset.c+'-'+b.dataset.k);if(!s||!i||!i.value.trim())break;pjCommit(Ficha.listaAnadir(s.f,b.dataset.c,b.dataset.k,i.value),s);break;}
+    case 'pjlistadd':{const s=pjGet(pjSel),i=$('#'+(b.dataset.i||'pjl-'+b.dataset.c+'-'+b.dataset.k));if(!s||!i||!i.value.trim())break;pjCommit(Ficha.listaAnadir(s.f,b.dataset.c,b.dataset.k,i.value),s);break;}
     case 'pjlistdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.listaQuitar(s.f,b.dataset.c,b.dataset.k,b.dataset.v),s);break;}
     case 'pjsprm':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.conjuroQuitar(s.f,b.dataset.n),s);break;}
     case 'pjinvadd':{const s=pjGet(pjSel),n=$('#pji-n'),q=$('#pji-q');if(!s||!n)break;pjCommit(Ficha.invAnadir(s.f,{n:n.value,q:q.value}),s);break;}
+    case 'pjinvstep':{const s=pjGet(pjSel);if(s){const it=s.f.inventario.find(x=>x.id===b.dataset.id);if(it)pjCommit(Ficha.invCantidad(s.f,b.dataset.id,it.q+Number(b.dataset.d)),s);}break;}
+    case 'pjmaeadd':{const s=pjGet(pjSel),v=$('#pjmae-s')?.value;if(!s||!v)break;if(!pjCommit(Ficha.maestriaSet(s.f,v,true,pjMaesCupo(s.f)),s))toast(T('Ya usas todas tus maestrías: quita una antes'));break;}
+    case 'pjmaedel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.maestriaSet(s.f,b.dataset.n,false,pjMaesCupo(s.f)),s);break;}
+    case 'pjinvcst':{const s=pjGet(pjSel);if(s){const it=s.f.inventario.find(x=>x.id===b.dataset.id),c=it&&pjInvCont(it);if(c)pjCommit(Ficha.invContenido(s.f,it.id,pjInvCqAct(it,c)+Number(b.dataset.d),c.cap),s);}break;}
     case 'pjinvdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.invQuitar(s.f,b.dataset.id),s);break;}
     case 'pjaceptar':case 'pjrechazar':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.resolver(s.f,b.dataset.id,act==='pjaceptar',pjCtx()),s);break;}
     case 'pjvisto':{try{Store.set(PJ_VISTO,String(Date.now()));}catch{}pjRender();pjAvisos();break;}
@@ -8158,7 +8416,7 @@ function showView(){
     if(CM_TABS.some(x=>x[0]===r.tab)&&cmTab!==r.tab){cmTab=r.tab;$('#cm-q').value='';$('#cm-f1').value=$('#cm-f2').value=$('#cm-fu').value='';}
   }
   const v2=viewOf(r);
-  const pages=['inicio','utilidades','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','homebrew','revision','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
+  const pages=['inicio','utilidades','campana','jugadores','encuentros','personajes','criaturas','conjuros','compendio','ficha','referencia','homebrew','revision','armas','tablas','modulos','mesa','cambios'],isPage=pages.includes(v2);
   for(const id of pages)$('#view-'+id).hidden=v2!==id;
   if(r.page==='campana')renderCampana();
   $('main.wrap').hidden=isPage;
@@ -8267,7 +8525,7 @@ addEventListener('hashchange',showView);
 /* ---------- compendio: rutas y páginas propias ----------
    #compendio/<apartado> es el listado; #compendio/<apartado>/<nombre> la página de un elemento.
    #criaturas y #conjuros siguen funcionando como alias. */
-const CTABS=[['criaturas','Criaturas','claw'],['conjuros','Conjuros','sparkle'],['objetos','Objetos','bag'],['dotes','Dotes','star'],['clases','Clases','shield'],['subclases','Subclases','shield'],['rasgos','Rasgos de clase','bolt'],['especies','Especies','people'],['trasfondos','Trasfondos','scroll'],['reglas','Reglas','book'],['tablas','Tablas aleatorias','d20']];
+const CTABS=[['criaturas','Criaturas','claw'],['conjuros','Conjuros','sparkle'],['objetos','Objetos','bag'],['dotes','Dotes','star'],['clases','Clases','shield'],['subclases','Subclases','shield'],['rasgos','Rasgos de clase','bolt'],['especies','Especies','people'],['trasfondos','Trasfondos','scroll'],['reglas','Reglas','book'],['armas','Armas','sword'],['tablas','Tablas aleatorias','d20']];
 const slugOf=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fichaHref=(tab,n)=>`#compendio/${tab}/${slugOf(n)}`;
 const goA=(tab,n)=>`<a class="golink" href="${fichaHref(tab,n)}" title="Abrir su página" aria-label="${T('Abrir la página de')} ${esc(n)}">↗</a>`;
@@ -8287,6 +8545,8 @@ const HV={el:null,cur:null,t:0,x:0,y:0,ok:matchMedia('(hover:hover) and (pointer
 const hvText=h=>{const d=new DOMParser().parseFromString(String(h||'').replace(/<table[\s\S]*?<\/table>/g,' ').replace(/<\/(p|li|h\d|div)>|<br\s*\/?>/g,' '),'text/html');return (d.body.textContent||'').replace(/\s+/g,' ').trim();};
 const hvCut=(t,n)=>t.length>n?t.slice(0,n).replace(/\s+\S*$/,'')+'…':t;
 function hvOf(el){
+  const dv=el.closest('[data-hv]');   // elemento suelto de la ficha: data-hv="objetos:Daga" (o "conjuros:…"); sin enlace a su página
+  if(dv){const k=dv.dataset.hv,p=k.indexOf(':'),tab=k.slice(0,p),x=itFind(tab,k.slice(p+1));return x?{tab,x,sinEnlace:true}:null;}
   const tr=el.closest('tr.sprow');
   if(tr){
     const l=tr.closest('#cm-list,#vc-list,#vs-list');if(!l)return null;
@@ -8298,7 +8558,7 @@ function hvOf(el){
   let slug=m[2];try{slug=decodeURIComponent(slug);}catch{}
   const x=fichaFind(m[1],slug);return x?{tab:m[1],x}:null;
 }
-function hvHTML(tab,x){
+function hvHTML(tab,x,sinEnlace){
   const row=(l,v)=>v?`<div class="hvr"><b>${esc(l)}:</b> ${esc(v)}</div>`:'';
   let sub='',body='';
   if(tab==='criaturas'){
@@ -8310,15 +8570,17 @@ function hvHTML(tab,x){
   }else{
     sub=cmSub(tab,x)||'';
     const info=tab==='clases'?[['Característica principal',x.info?.['Característica principal']],['Dado de golpe',(x.info?.['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,'')],['Salvaciones',x.info?.['Competencias en tiradas de salvación']],['Subclases',(x.sub||[]).join(', ')]]:[];
-    body=info.map(r=>row(r[0],r[1])).join('')||`<p>${esc(hvCut(hvText(x.d),380))}</p>`;
+    // objetos con datos «<b>Daño:</b> …»: un párrafo por dato (el precio ya va en el subtítulo)
+    const ps=tab==='objetos'&&/<p><b>/.test(x.d||'')?[...new DOMParser().parseFromString(String(x.d),'text/html').querySelectorAll('p')].map(p=>{const b=p.querySelector('b'),l=b?b.textContent.replace(/:\s*$/,'').trim():'',v=(p.textContent||'').replace(b?b.textContent:'','').replace(/\s+/g,' ').trim();return [l,v];}).filter(r=>r[1]&&fold(r[0])!=='precio'):[];
+    body=ps.length?ps.map(r=>`<p>${r[0]?`<b>${esc(r[0])}:</b> `:''}${esc(hvCut(r[1],220))}</p>`).join(''):info.map(r=>row(r[0],r[1])).join('')||`<p>${esc(hvCut(hvText(x.d),380))}</p>`;
   }
-  return `<h4>${esc(x.base||x.n)}</h4>${sub?`<div class="hvs">${esc(sub)}</div>`:''}${body}<div class="hvf">Clic para abrir su página</div>`;
+  return `<h4>${esc(x.base||x.n)}</h4>${sub?`<div class="hvs">${esc(sub)}</div>`:''}${body}${sinEnlace?'':'<div class="hvf">Clic para abrir su página</div>'}`;
 }
 function hvHide(){clearTimeout(HV.t);HV.cur=null;if(HV.el)HV.el.hidden=true;}
 function hvShow(el){
   const it=hvOf(el);if(!it)return;
   if(!HV.el){HV.el=document.createElement('div');HV.el.className='hvcard';HV.el.setAttribute('role','tooltip');document.body.append(HV.el);}
-  HV.el.innerHTML=hvHTML(it.tab,it.x);HV.el.hidden=false;
+  HV.el.innerHTML=hvHTML(it.tab,it.x,it.sinEnlace);HV.el.hidden=false;
   const w=HV.el.offsetWidth,h=HV.el.offsetHeight,vw=innerWidth,vh=innerHeight;
   let l=HV.x+16,t=HV.y+18;if(l+w>vw-8)l=Math.max(8,HV.x-w-16);if(t+h>vh-8)t=Math.max(8,vh-h-8);
   HV.el.style.left=l+'px';HV.el.style.top=t+'px';
@@ -8326,7 +8588,7 @@ function hvShow(el){
 document.addEventListener('mousemove',e=>{HV.x=e.clientX;HV.y=e.clientY;});
 document.addEventListener('mouseover',e=>{
   if(!HV.ok.matches||!(e.target instanceof Element))return;
-  const el=e.target.closest('tr.sprow,a[href^="#"]');
+  const el=e.target.closest('tr.sprow,a[href^="#"],[data-hv]');
   if(el===HV.cur)return;
   hvHide();if(!el)return;
   HV.cur=el;HV.t=setTimeout(()=>{if(HV.cur===el&&el.isConnected)hvShow(el);},220);
@@ -8342,10 +8604,10 @@ function route(){
   if(a==='personajes')return {page:'personajes',slug:b||''};
   return {page:a||'inicio'};
 }
-const viewOf=r=>r.page==='campana'&&(r.tab==='jugadores'||r.tab==='encuentros')?r.tab:r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'?r.tab:'compendio';
+const viewOf=r=>r.page==='campana'&&(r.tab==='jugadores'||r.tab==='encuentros')?r.tab:r.page!=='compendio'?r.page:r.slug?'ficha':r.tab==='criaturas'||r.tab==='conjuros'||r.tab==='armas'?r.tab:'compendio';
 const curView=()=>viewOf(route());
 function renderCmNav(tab){
-  const n={criaturas:allBest().length,conjuros:SPELL_LIST.length};for(const[k] of CM_TABS)n[k]=compList(k).length;
+  const n={criaturas:allBest().length,conjuros:SPELL_LIST.length};for(const[k] of CM_TABS)n[k]=compList(k).length;n.armas=invArmas().length;
   const html=ctabs().map(([k,l,i])=>`<a href="#compendio/${k}" role="tab" aria-selected="${k===tab}">${ic(i)} ${l}<span class="pcsub">${n[k]||''}</span></a>`).join('');
   document.querySelectorAll('[data-cmnav]').forEach(el=>el.innerHTML=html);
 }
@@ -8358,7 +8620,7 @@ function safeApply(){
 function esJug(){return Store.campaigns.rol()==='jugador';}
 /* Un jugador solo ve lo que viene en el Manual del Jugador (y el SRD, sin criaturas ni objetos mágicos): lo de la Guía del Máster, otros manuales o módulos del DM no. */
 function modVeJug(md){return !esJug()||md.ref==='mdj'||md.id==='mdj'||fold(String(md.n||'')).includes('manual del jugador');}
-const BLOQUE={campana:'campana',jugadores:'campana',encuentros:'campana',mesa:'campana',combate:'campana',personajes:'personajes',compendio:'compendio',criaturas:'compendio',conjuros:'compendio',ficha:'compendio',referencia:'compendio',homebrew:'compendio',utilidades:'utilidades',tablas:'utilidades',modulos:'utilidades',revision:'utilidades',cambios:'utilidades'};   // a qué bloque de la barra pertenece cada pantalla
+const BLOQUE={campana:'campana',jugadores:'campana',encuentros:'campana',mesa:'campana',combate:'campana',personajes:'personajes',compendio:'compendio',armas:'compendio',criaturas:'compendio',conjuros:'compendio',ficha:'compendio',referencia:'compendio',homebrew:'compendio',utilidades:'utilidades',tablas:'utilidades',modulos:'utilidades',revision:'utilidades',cambios:'utilidades'};   // a qué bloque de la barra pertenece cada pantalla
 function navSep(){const nv=$('.pagenav'),sep=nv&&nv.querySelector('.navsep');if(sep)sep.hidden=![...nv.querySelectorAll('a.sub.sv')].some(a=>!a.hidden);}
 function navCombat(){const d=$('#nav-cbpill');if(!d)return;const w=$('main.wrap'),en=state.active&&w&&w.hidden;d.hidden=!en;if(en){const c=state.creatures[state.turnIdx];d.textContent=T('Combate')+' · '+T('R')+state.round+(c?' · '+c.name:'');d.title=T('Volver al combate')+' (C)';}}
 const JUG_NO=['combate','encuentros','jugadores','mesa','tablas','modulos','revision'];   // pantallas que no son para el jugador
@@ -8398,7 +8660,7 @@ function refreshCompView(){
   const r=route();if(r.page!=='compendio'||!r.tab)return;
   renderCmNav(r.tab);
   const v=viewOf(r);
-  if(v==='ficha')renderFicha(r.tab,r.slug);else if(v==='compendio')renderCompendio();else if(v==='criaturas')renderCreatureView();else if(v==='conjuros')renderSpellView();
+  if(v==='ficha')renderFicha(r.tab,r.slug);else if(v==='compendio')renderCompendio();else if(v==='criaturas')renderCreatureView();else if(v==='conjuros')renderSpellView();else if(v==='armas')renderInv();
 }
 function fichaFind(tab,slug){
   if(tab==='criaturas')return allBest().find(m=>slugOf(m.n)===slug)||allBest().find(m=>m.en&&slugOf(m.en)===slug);
@@ -8657,6 +8919,7 @@ function pjStatM(f){
 function pjSyncRec(){
   const dd=pjDatosClase();if(!dd)return false;let cambio=false,tx=null;
   for(const L of [PJ,PJC])for(let i=0;i<L.length;i++){const g=Ficha.sincRecursos(L[i],dd);if(JSON.stringify(g.recursos)!==JSON.stringify(L[i].recursos)){L[i]=g;cambio=true;}
+    if(!L[i].otras.armas.length&&!L[i].otras.armaduras.length&&L[i].niveles[0]){const c=pjCompDeClase(L[i].niveles[0].c);if(c.armas.length||c.armaduras.length){L[i]={...L[i],otras:{...L[i].otras,armas:c.armas,armaduras:c.armaduras}};cambio=true;}}
     if(L[i].rsinc!==L[i].niveles.length+'|'+(L[i].subclase||'')){tx=tx||compList('rasgos',true);const r=Ficha.rasgosNivel(L[i],dd,tx);if(r!==L[i]){L[i]=r;cambio=true;}}}   // fichas anteriores: se les ponen los rasgos que les tocan
   return cambio;
 }
@@ -8682,9 +8945,19 @@ function diaSemilla(f,trasfondo,lugar){
   if(cap.length)diaPon(f.id,{cap});
 }
 /* usos y munición de un objeto del inventario */
+// resumen de una línea del objeto (daño, propiedades, CA, precio) leído del compendio
+function pjInvResumen(i){
+  const x=compFind('objetos',i.n);if(!x)return '';
+  const cap=s=>String(s).replace(/_/g,' '),p=[];
+  if(x.arma){p.push([x.arma.dano,x.arma.tipo].filter(Boolean).join(' '));if(x.arma.props&&x.arma.props.length)p.push(x.arma.props.map(cap).join(', '));}
+  else if(x.arm&&x.arm.bono!=null)p.push('CA '+(x.arm.tipo==='escudo'?'+':'')+x.arm.bono);
+  return p.filter(Boolean).join(' · ');
+}
+// Contenedor: «En un estuche para virotes de ballesta caben hasta 20 virotes.» → contiene 20 virotes (la info sale de la descripción del compendio)
+function pjInvCont(i){const x=compFind('objetos',i.n);if(!x||x.k==='magico')return null;const m=hvText(x.d).match(/caben hasta (\d+) ([a-záéíóúñ]{3,})\./i);return m?{n:m[2],cap:+m[1]*Math.max(1,i.q)}:null;}
+const pjInvCqAct=(i,c)=>i.cq==null?c.cap:Math.min(i.cq,c.cap);
 function pjInvExtra(i){
   let h='';
-  if(i.sint)h+='<span class="pjtag" title="'+esc(T('Requiere sintonización'))+'">'+esc(T('Sintonizable'))+'</span>';
   if(i.uso)h+='<span class="pjtag">'+esc(T('Usos'))+' '+(i.uso-i.ug)+'/'+i.uso+'</span><button type="button" class="btn sm" data-act="pjinvuso" data-id="'+esc(i.id)+'" data-d="1"'+(i.ug>=i.uso?' disabled':'')+'>'+esc(T('Usar'))+'</button><button type="button" class="btn sm ghost" data-act="pjinvrec" data-id="'+esc(i.id)+'"'+(i.ug?'':' disabled')+'>'+esc(T('Recargar'))+'</button>';
   if(i.mun)h+='<span class="pjtag">'+esc(T('Munición'))+'</span><button type="button" class="btn sm" data-act="pjinvuso" data-id="'+esc(i.id)+'" data-d="1"'+(i.q?'':' disabled')+'>'+esc(T('Gastar 1'))+'</button>';
   return h;
@@ -8745,8 +9018,10 @@ function pjRoute(slug){
   if(slug&&!pjGet(slug)){location.replace('#personajes');return;}
   pjSel=slug||null;pjEdit=null;pjRest=null;pjRender();
 }
+var pjReint=0;
 function pjRender(){
   if(!pjCargado)pjLoad();
+  try{if(pjSyncRec())pjGuardar();}catch{}   // recursos y rasgos de clase al día antes de pintar (los datos de clase pueden llegar después, con los módulos)
   const body=$('#pj-body');if(!body)return;
   $('#pj-count').textContent=(PJ.length+PJC.length)||'';
   const rs=$('#pj-rol');if(rs)rs.value=PJROL;
@@ -8754,7 +9029,10 @@ function pjRender(){
   const s=pjSel&&pjGet(pjSel);
   document.querySelector('#view-personajes .vhead .inline').hidden=!!s||pjEdit==='new';
   body.innerHTML=pjEdit==='new'?pjFormHTML():s?pjSheetHTML(s.f,s.lista):pjListHTML();
-  if(s){compLoad();if(COMP_SRD)fillCompDL();}   // objetos del compendio para el inventario
+  if(s){compLoad();if(COMP_SRD)fillCompDL();   // objetos del compendio para el inventario
+    const c0=s.f.niveles[0]&&s.f.niveles[0].c,dd=pjDatosClase();
+    if(c0&&!(dd&&dd[c0])&&pjReint<8){pjReint++;const id=s.f.id;setTimeout(()=>{if(pjSel===id&&curView()==='personajes')pjRender();},1000);}else if(dd&&dd[c0])pjReint=0;   // aún no hay datos de su clase: se reintenta hasta que lleguen
+  }
 }
 const PJEST={activo:'Activo',caido:'Caído',retirado:'Retirado'};
 /* Fichas de campaña de TODAS las campañas (la activa ya está cargada; las demás se leen sin cambiar de campaña). */
@@ -8891,7 +9169,7 @@ function pjwRasgosHTML(w,amb){
 const PJW_ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
 const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
 let PJW=null;
-function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',lugar:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
+function pjwNuevo(){return {paso:0,cls:'',cm:null,sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',lugar:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
 const pjwComp=(lista,n)=>compList(lista).find(x=>fold(x.n)===fold(n))||null;   // lo de tus módulos activos (y el SRD si está encendido)
 const pjwClase=k=>pjwComp('clases',CLSN[k]);
 const pjwAbKey=s=>{const f=fold(s);return Ficha.AB.find(a=>fold(({fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'})[a])===f)||'';};
@@ -8927,6 +9205,17 @@ function pjwValido(w,p){
 }
 const pjwTarj=(act,val,sel,tit,sub)=>'<button type="button" class="pjw-op'+(sel?' on':'')+'" data-act="pjw" data-w="'+act+'" data-v="'+esc(val)+'" aria-pressed="'+!!sel+'"><b>'+esc(tit)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</button>';
 const pjwPlano=h=>String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+/* Competencias con armas y armaduras: salen de la clase al elegirla; en el creador se marcan o desmarcan, y luego quedan fijas en la hoja. */
+const PJ_ARMAS=['Sencillas','Marciales'],PJ_ARMR=['Ligeras','Medias','Pesadas','Escudos'];
+function pjCompDeClase(cls){
+  const d=pjDatosClase(),i=(d&&d[cls]&&d[cls].info)||{},a=fold(i['Competencias con armas']||''),r=fold(i['Entrenamiento con armaduras']||'');
+  return {armas:PJ_ARMAS.filter(x=>a.includes(fold(x))),armaduras:PJ_ARMR.filter(x=>r.includes(fold(x)))};
+}
+function pjwCm(w){if(!Array.isArray(w.cm)){const c=pjCompDeClase(w.cls);w.cm=c.armas.map(x=>'a:'+x).concat(c.armaduras.map(x=>'r:'+x));}return w.cm;}
+function pjwCmHTML(w){
+  const l=pjwCm(w),g=(t,pre,L)=>'<div class="pjw-chips"><b style="min-width:90px">'+esc(T(t))+'</b>'+L.map(x=>'<label class="pjw-chip"><input type="checkbox" data-pjw="cm" value="'+pre+':'+x+'"'+(l.includes(pre+':'+x)?' checked':'')+'> '+esc(T(x))+'</label>').join('')+'</div>';
+  return '<h4>'+esc(T('Competencias con armas y armaduras'))+'</h4><p class="hint">'+esc(T('Vienen de la clase. Aquí puedes marcarlas; después no se podrán editar.'))+'</p>'+g('Armas','a',PJ_ARMAS)+g('Armaduras','r',PJ_ARMR);
+}
 function pjwPaso(w){
   const cargando=!COMP_SRD;
   if(cargando&&w.paso<2)return '<p class="hint" role="status">'+esc(T('Cargando el compendio…'))+'</p>';
@@ -8936,6 +9225,7 @@ function pjwPaso(w){
       +Object.keys(CLSN).map(k=>{const C=Ficha.CLASES[k],c=pjwClase(k);return pjwTarj('cls',k,w.cls===k,T(CLSN[k]),'d'+C.d+' · '+T('Salvaciones')+' '+C.sv.map(a=>ABK[a]).join('/')+(C.cast?' · '+T('Conjuros'):'')+(c&&c.info&&c.info['Característica principal']?' · '+c.info['Característica principal']:''));}).join('')+'</div>';
     if(w.cls&&h.n)s+='<h4>'+esc(T('Habilidades de clase'))+': '+esc(T('elige'))+' '+h.n+' ('+w.sk.length+'/'+h.n+')</h4><div class="pjw-chips">'
       +h.op.map(k=>'<label class="pjw-chip"><input type="checkbox" data-pjw="sk" value="'+k+'"'+(w.sk.includes(k)?' checked':'')+(!w.sk.includes(k)&&w.sk.length>=h.n?' disabled':'')+'> '+esc(T(Ficha.HAB_NOM[k]))+'</label>').join('')+'</div>';
+    if(w.cls)s+=pjwCmHTML(w);
     if(w.cls)s+=pjwRasgosHTML(w,'c');
     return s;
   }
@@ -9041,13 +9331,13 @@ function pjwCrear(w){
   const ahora=Date.now();
   const f=pjRasgosNivel(Ficha.norm({nombre:w.nombre.trim()||T('Sin nombre'),especie:w.esp,trasfondo:w.tf,car:R.fin,niveles:[{c:w.cls,hp:C.d}],habil:R.hab,salvac:C.sv,
     dotes:tf&&tf.dote?[tf.dote]:[],vel:R.vel||esp&&esp.vel||'9 m',rasgos:R.rasgos,tamano:/^(Mediano|Pequeño)$/.test(tam)?tam:'',pers:{alineamiento:w.alin,lugar:w.lugar,personalidad:w.personalidad,ideales:w.ideales,vinculos:w.vinculos,defectos:w.defectos,historia:w.historia},
-    otras:{herramientas:tf&&tf.herr?[tf.herr]:[],idiomas:pjwIdiomas(w).fijos.concat(w.idi)},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
+    otras:{armas:pjwCm(w).filter(x=>x[0]==='a').map(x=>x.slice(2)),armaduras:pjwCm(w).filter(x=>x[0]==='r').map(x=>x.slice(2)),herramientas:tf&&tf.herr?[tf.herr]:[],idiomas:pjwIdiomas(w).fijos.concat(w.idi)},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
     registro:R.origen.map(d=>({t:ahora,a:'creacion',d:d.slice(0,200),por:''}))}));
   (camp?PJC:PJ).push(f);pjSave();if(camp)diaSemilla(f,w.tf?T('Trasfondo')+': '+w.tf:'',w.lugar.trim());pjEdit=null;PJW=null;location.hash='personajes/'+f.id;
 }
 function pjwAct(b){
   const w=PJW,a=b.dataset.w,v=b.dataset.v;if(!w)return;
-  if(a==='cls'){if(w.cls!==v){w.cls=v;w.sk=[];w.idi=[];for(const k of Object.keys(w.el))if(k[0]==='c')delete w.el[k];}}
+  if(a==='cls'){if(w.cls!==v){w.cls=v;w.cm=null;w.sk=[];w.idi=[];for(const k of Object.keys(w.el))if(k[0]==='c')delete w.el[k];}}
   else if(a==='esp'){if(w.esp!==v){w.esp=v;for(const k of Object.keys(w.el))if(k[0]==='e')delete w.el[k];}}
   else if(a==='tf'){if(w.tf!==v){w.tf=v;w.tfa=['',''];}}
   else if(a==='tfm'){w.tfm=v==='111'?'111':'21';}
@@ -9065,6 +9355,7 @@ function pjwCambio(el){
   const w=PJW,k=el.dataset.pjw;if(!w)return false;
   if(k==='el'){const d=el.dataset.k;w.el[d]=el.value;if(d==='e:linaje'&&!pjwDefs(w,'e').some(x=>x.id==='apt'))delete w.el['e:apt'];}
   else if(k==='idi'){const I=pjwIdiomas(w),i=w.idi.indexOf(el.value);if(el.checked&&i<0&&w.idi.length<I.n)w.idi.push(el.value);else if(!el.checked&&i>=0)w.idi.splice(i,1);}
+  else if(k==='cm'){const l=pjwCm(w),i=l.indexOf(el.value);if(el.checked&&i<0)l.push(el.value);else if(!el.checked&&i>=0)l.splice(i,1);w.cm=l;}
   else if(k==='sk'){const i=w.sk.indexOf(el.value);if(el.checked&&i<0)w.sk.push(el.value);else if(!el.checked&&i>=0)w.sk.splice(i,1);}
   else if(k==='met'){w.met=el.value;w.asig={};w.pool=el.value==='std'?PJW_STD.slice():w.pool;if(el.value==='dados'&&w.pool===PJW_STD)w.pool=PJW_STD.slice();}
   else if(k==='asig')w.asig[el.dataset.a]=+el.value;
@@ -9084,30 +9375,63 @@ function pjFormHTML(){
     +'<button type="button" class="btn primary" data-act="pjw" data-w="sig"'+(pjwValido(w,w.paso)?'':' disabled')+'>'+esc(ult?T('Crear personaje'):T('Siguiente')+' →')+'</button></div></section>';
 }
 
-const pjPips=(max,usados,act,extra)=>{let s='<span class="pips">';for(let i=0;i<max;i++){const libre=i<max-usados;s+='<button type="button" class="pip'+(libre?'':' off')+'" data-act="'+act+'" data-on="'+(libre?1:0)+'"'+extra+' aria-label="'+esc(libre?T('Gastar'):T('Recuperar'))+'"></button>';}return s+'</span>';};
+const pjRecBloq=q=>!!q&&PJROL!=='dm'&&(q.rec==='corto'||q.rec==='largo');   // solo se recupera en un descanso
+const pjPips=(max,usados,act,extra,bloq)=>{let s='<span class="pips">';for(let i=0;i<max;i++){const libre=i<max-usados;s+='<button type="button" class="pip'+(libre?'':' off')+'" data-act="'+act+'" data-on="'+(libre?1:0)+'"'+extra+(bloq&&!libre?' disabled title="'+esc(T('Se recupera al hacer el descanso'))+'"':'')+' aria-label="'+esc(libre?T('Gastar'):T('Recuperar'))+'"></button>';}return s+'</span>';};
 /* ---- ficha completa: apartados plegables, todo opcional ---- */
-const PJ_ABIERTO=new Set(['hab','atq','ras']);
+const pjTir=(mod,lbl)=>'<button type="button" class="rl pjrl" data-roll="pjchk" data-mod="'+mod+'" data-lbl="'+esc(lbl)+'" title="'+esc(T('Tirar')+' d20 · '+lbl)+'">'+pjSgn(mod)+'</button>';
+const PJ_ABIERTO=new Set(['hab','atq','ras','def']);
 const pjDet=(id,titulo,cuerpo,tag)=>'<details class="pjbox pjdet" data-pjdet="'+id+'"'+(PJ_ABIERTO.has(id)?' open':'')+'><summary>'+esc(T(titulo))+(tag||'')+'</summary>'+cuerpo+'</details>';
 const PJ_DADO=/^\d{1,3}d\d{1,3}(?:\s?[+-]\s?\d{1,3})?$/i;
 function pjHabHTML(f){
-  const sv=Ficha.salvas(f),cl=f.niveles[0]?Ficha.CLASES[f.niveles[0].c].sv:[];
-  return '<p class="pcsub">'+esc(T('Percepción pasiva'))+' <b>'+Ficha.pasiva(f,'percepcion')+'</b> · '+esc(T('◆ competente, ◆◆ pericia.'))+'</p><div class="pjhab">'
+  const sv=Ficha.salvas(f);
+  return '<p class="pcsub">'+esc(T('Percepción pasiva'))+' <b>'+Ficha.pasiva(f,'percepcion')+'</b> · '+esc(T('◆ competente, ◆◆ pericia.'))+' '+esc(T('Cambian solo al subir de nivel.'))+'</p><div class="pjhab">'
    +Ficha.HABIL.map(([h,a])=>{const v=f.habil[h]||0,nom=T(Ficha.HAB_NOM[h]);
-     return '<label class="pjhr"><select data-pjsk="'+h+'" aria-label="'+esc(nom)+'">'+['◇','◆','◆◆'].map((t,i)=>'<option value="'+i+'"'+(v===i?' selected':'')+'>'+t+'</option>').join('')+'</select><span>'+esc(nom)+' <small class="pcsub">'+esc(T(ABK[a]))+'</small></span><b>'+pjSgn(Ficha.habBonus(f,h))+'</b></label>';}).join('')+'</div>'
-   +'<h3>'+esc(T('Salvaciones competentes'))+'</h3><div class="pjrow">'+Ficha.AB.map(a=>'<label class="pjsvl"><input type="checkbox" data-pjsv="'+a+'"'+(sv.includes(a)?' checked':'')+(cl.includes(a)?' disabled':'')+'><span class="d" aria-hidden="true"></span> '+esc(T(ABK[a]))+' <b>'+pjSgn(Ficha.salvBonus(f,a))+'</b></label>').join('')+'</div>';
+     return '<div class="pjhr"><span class="pjmk" aria-label="'+esc(v===2?T('pericia'):v?T('competente'):T('sin competencia'))+'">'+['◇','◆','◆◆'][v]+'</span><span>'+esc(nom)+' <small class="pcsub">'+esc(T(ABK[a]))+'</small></span>'+pjTir(Ficha.habBonus(f,h),nom)+'</div>';}).join('')+'</div>'
+   +'<h3>'+esc(T('Salvaciones competentes'))+'</h3><div class="pjrow">'+Ficha.AB.map(a=>'<span class="pjsvl"><span class="pjmk" aria-hidden="true">'+(sv.includes(a)?'◆':'◇')+'</span> '+esc(T(ABK[a]))+' '+pjTir(Ficha.salvBonus(f,a),T('Salvación')+' '+T(ABN[a]))+'</span>').join('')+'</div>';
 }
 function pjAtqHTML(f){
+  /* Ataques por defecto: los de las armas que lleva encima (equipadas), calculados igual que en el statblock, más los que añada el máster. */
+  let auto=[];try{auto=Ficha.statblock(f,pjDatosClase()||{},pjEq,()=>null).autos||[];}catch{}
+  const lia=a=>{const fijo=/^\d+$/.test(String(a.dano)),dd=PJ_DADO.test(a.dano)?'<button type="button" class="rl" data-roll="dmg" data-ex="'+esc(String(a.dano).replace(/\s/g,''))+'" data-ty="'+esc(String(a.tipo||'').toLowerCase())+'" title="'+esc(T('Tirar daño'))+'">'+esc(a.dano)+'</button>':'<b>'+esc(a.dano)+'</b>';
+    return '<li class="act pjauto" data-n="'+esc(a.n)+'"><span class="noi18n pjatn"><b>'+esc(a.n)+'</b>'+(a.props.length||a.alc?'<small class="pcsub">'+esc([a.alc].concat(a.props).concat(a.mae?['maestría '+a.mae]:[]).filter(Boolean).join(' · '))+(a.sinComp?' · sin competencia':'')+'</small>':'')+'</span>'
+     +'<span class="pjatt"><small>'+esc(T('Para acertar'))+'</small><button type="button" class="rl" data-roll="hit" data-mod="'+a.b+'" data-lbl="'+esc(a.n)+'" title="'+esc(T('Tirar ataque'))+'">1d20 '+pjSgn(a.b)+'</button></span>'
+     +'<span class="pjatt"><small>'+esc(T('Daño'))+(a.tipo?' · '+esc(a.tipo):'')+'</small>'+dd+'</span></li>';};
+  const base=auto.length?'<ul class="pjlist">'+auto.map(lia).join('')+'</ul>':'';
   const li=a=>{
     const d=PJ_DADO.test(a.dano)?'<button type="button" class="rl" data-roll="dmg" data-ex="'+esc(a.dano.replace(/\s/g,''))+'" data-ty="'+esc(a.tipo.toLowerCase())+'" title="'+esc(T('Tirar daño'))+'">'+esc(a.dano)+'</button>':esc(a.dano);
     return '<li class="act" data-n="'+esc(a.n)+'"><span class="noi18n" style="flex:1 1 220px;min-width:0"><b>'+esc(a.n)+'</b> <button type="button" class="rl" data-roll="hit" data-mod="'+a.b+'" title="'+esc(T('Tirar ataque'))+'">'+pjSgn(a.b)+'</button> '+d+(a.tipo?' '+esc(a.tipo):'')+(a.nota?' <small class="pcsub">'+esc(a.nota)+'</small>':'')+'</span>'
      +'<button type="button" class="btn sm danger" data-act="pjatqdel" data-id="'+esc(a.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></li>';};
-  return (f.ataques.length?'<ul class="pjlist">'+f.ataques.map(li).join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin ataques.'))+'</p>')
+  return (base?'<h4 class="pjsubt">'+esc(T('Automáticos'))+' <small>'+esc(T('según la clase y lo que lleva equipado'))+'</small></h4>'+base:'')
+   +'<h4 class="pjsubt pjsubm">'+esc(T('Manuales'))+' <small>'+esc(T('los añade el jugador o el máster'))+'</small></h4>'
+   +(f.ataques.length?'<ul class="pjlist">'+f.ataques.map(li).join('')+'</ul>':'<p class="pcsub">'+esc(T('Ninguno todavía'))+'</p>')
    +'<div class="pjrow"><input id="pja-n" data-pjenter maxlength="60" placeholder="'+esc(T('Nombre'))+'" aria-label="'+esc(T('Nombre'))+'" style="flex:1 1 140px"><input id="pja-b" type="number" min="-20" max="40" value="0" style="width:70px" aria-label="'+esc(T('Bonificador de ataque'))+'" title="'+esc(T('Bonificador de ataque'))+'">'
    +'<input id="pja-d" data-pjenter maxlength="40" placeholder="1d8+3" aria-label="'+esc(T('Daño'))+'" style="width:100px"><input id="pja-t" data-pjenter maxlength="30" placeholder="'+esc(T('Tipo de daño'))+'" aria-label="'+esc(T('Tipo de daño'))+'" style="width:120px"><button type="button" class="btn" data-act="pjatqadd">'+esc(T('Añadir'))+'</button></div>';
 }
+/* Dotes con su descripción, igual que los rasgos: el texto sale del compendio (dotes) y se pliega si es largo. */
+function pjDotesHTML(f){
+  if(!f.dotes.length)return '<p class="pcsub">'+esc(T('Ninguna todavía'))+'</p>';
+  let L=[];try{L=compList('dotes',true);}catch{}
+  const li=n=>{const d=L.find(x=>x&&fold(x.n||'')===fold(n)),t=d?String(d.d||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim():'';
+    return '<li><span style="flex:1 1 240px;min-width:0"><b class="noi18n">'+esc(n)+'</b>'+(d&&d.cat?' <small class="pcsub">'+esc(d.cat)+'</small>':'')+(d&&d.req?' <small class="pcsub">· '+esc(d.req)+'</small>':'')
+     +(t?(t.length>200?'<details class="pjrastxt"><summary class="noi18n"><span class="pjrt-c">'+esc(t.slice(0,170))+'…</span><span class="pjrt-o">'+esc(T('Ocultar'))+'</span></summary><span class="noi18n">'+(typeof rich==='function'?rich(t):esc(t))+'</span></details>':'<br><span class="noi18n">'+esc(t)+'</span>'):'')+'</span></li>';};
+  return '<ul class="pjlist">'+f.dotes.map(li).join('')+'</ul>';
+}
+// Maestría con armas: cuántos tipos de arma puede dominar por clase y nivel, y cuáles ha elegido (se marcan en el inventario)
+const pjMaesCupo=f=>{try{return Ficha.maestriaCupo(f,pjDatosClase()||{});}catch{return 0;}};
+const pjSoloBarb=f=>!!f.niveles.length&&f.niveles.every(n=>fold(n.c)==='barbaro');   // el bárbaro solo domina armas cuerpo a cuerpo
+function pjMaesResumen(f){
+  const n=pjMaesCupo(f);if(!n)return '';const l=f.maestrias||[],libre=l.length<n,sb=pjSoloBarb(f),sel=new Set(l.map(fold));
+  const op=[...new Map(compList('objetos').filter(x=>x.arma&&x.arma.mae&&!(sb&&x.arma.dist)&&!sel.has(fold(x.n))).map(x=>[fold(x.n),x.n])).values()].sort((a,b)=>a.localeCompare(b,'es'));
+  return '<div class="pjmaes noi18n"><b>'+esc(T('Maestrías elegidas'))+' '+Math.min(l.length,n)+'/'+n+':</b> '
+    +(l.length?l.map(m=>{const x=compFind('objetos',m);return '<span class="pjtag">'+esc(m)+(x&&x.arma&&x.arma.mae?' · '+esc(x.arma.mae):'')+' <button type="button" class="btn sm ghost" data-act="pjmaedel" data-n="'+esc(m)+'" aria-label="'+esc(T('Quitar')+': '+m)+'">×</button></span> ';}).join(''):'<span class="pcsub">'+esc(T('ninguna todavía'))+'</span>')
+    +(libre&&op.length?'<div class="pjrow"><select id="pjmae-s" aria-label="'+esc(T('Tipo de arma'))+'"><option value="">'+esc(T('Elegir tipo de arma…'))+'</option>'+op.map(o=>'<option>'+esc(o)+'</option>').join('')+'</select><button type="button" class="btn sm" data-act="pjmaeadd">'+esc(T('Añadir'))+'</button></div>':'')
+    +'<small class="pcsub">'+esc(T('También se pueden marcar con «Maestría» en el arma del inventario. Tras un descanso largo puedes cambiar una.'))+'</small></div>';
+}
+// texto de un rasgo: una línea por párrafo, «- » = viñeta, **negrita**
+function pjRasTxt(t){return String(t||'').replace(/N\.\? /g,'N.º ').split('\n').filter(l=>l.trim()).map(l=>/^- /.test(l)?rich(l):'<p class="pjrtp">'+rich(l)+'</p>').join('');}
 function pjRasHTML(f){
   const li=r=>{const q=r.r&&f.recursos.find(x=>x.id===r.r);
-    return '<li><span style="flex:1 1 240px;min-width:0"><b class="noi18n">'+esc(r.n)+'</b>'+(q?' <small class="pcsub">'+esc(q.rec==='corto'?T('Descanso corto'):q.rec==='largo'?T('Descanso largo'):T('Sin recarga'))+'</small> '+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"'):'')+(r.txt?(r.txt.length>200?'<details class="pjrastxt"><summary class="noi18n">'+esc(r.txt.slice(0,170).replace(/\s+/g,' '))+'…</summary><span class="noi18n">'+rich(r.txt)+'</span></details>':'<br><span class="noi18n">'+rich(r.txt)+'</span>'):'')+'</span>'
+    return '<li><span style="flex:1 1 240px;min-width:0"><b class="noi18n">'+esc(r.n)+'</b>'+(q?' <small class="pcsub">'+esc(q.rec==='corto'?T('Descanso corto'):q.rec==='largo'?T('Descanso largo'):T('Sin recarga'))+'</small> '+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"',pjRecBloq(q)):'')+(r.txt?(r.txt.length>200?'<details class="pjrastxt"><summary class="noi18n"><span class="pjrt-c">'+esc(r.txt.replace(/\*\*/g,'').replace(/^- /gm,'').replace(/N\.\? /g,'N.º ').replace(/\s+/g,' ').slice(0,170))+'…</span><span class="pjrt-o">'+esc(T('Ocultar'))+'</span></summary><div class="noi18n pjrtx">'+pjRasTxt(r.txt)+'</div></details>':'<div class="noi18n pjrtx">'+pjRasTxt(r.txt)+'</div>'):'')+(fold(r.n)==='maestria con armas'?pjMaesResumen(f):'')+'</span>'
      +(PJROL==='dm'?'<button type="button" class="btn sm danger" data-act="pjrasdel" data-id="'+esc(r.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button>':'')+'</li>';};
   return (f.rasgos.length?'<ul class="pjlist">'+f.rasgos.map(li).join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin rasgos.'))+'</p>');
 }
@@ -9115,14 +9439,25 @@ const PJ_LISTA={estados:'Estados',res:'Resistencias',inm:'Inmunidades',vul:'Vuln
 /* Opciones de estados, resistencias, inmunidades y vulnerabilidades: salen de las reglas del compendio (estados) y de su tabla «Tipos de daño». */
 function pjOpcionesLista(k){
   let R=[];try{R=compList('reglas',true);}catch{}
-  const est=[...new Set(R.filter(x=>x&&fold(x.cat||'')==='estados').map(x=>x.n))].sort((a,b)=>a.localeCompare(b,'es'));
+  let est=[...new Set(R.filter(x=>x&&fold(x.cat||'')==='estados').map(x=>x.n))].sort((a,b)=>a.localeCompare(b,'es'));
+  if(!est.length)est=['Agarrado','Apresado','Asustado','Aturdido','Cansancio','Cegado','Derribado','Ensordecido','Envenenado','Hechizado','Incapacitado','Inconsciente','Invisible','Paralizado','Petrificado'];   // los estados de las reglas 2024; sin el SRD activo no hay otra fuente
   const tr=R.find(x=>x&&fold(x.n||'')==='tipos de dano'),dm=[];
   if(tr)for(const m of String(tr.d||'').matchAll(/<tr><td>([^<]+)<\/td>/g))dm.push(m[1].trim());
   const dano=dm.length?dm:Object.values(DMG).map(v=>v[0].toUpperCase()+v.slice(1));
   return k==='estados'?[['',est]]:k==='inm'?[['Estados',est],['Tipos de daño',dano]]:k==='res'||k==='vul'?[['',dano]]:null;
 }
+/* Las inmunidades se muestran en dos filas, cada una con su propio selector: a tipos de daño y a estados (las dos se guardan en la misma lista). */
+function pjInmunidadesHTML(f){
+  const [[,est],[,dano]]=pjOpcionesLista('inm'),L=f.defensas.inm,fila=(t,op,id)=>'<div class="pjrow"><b class="pjlistn">'+esc(T(t))+'</b>'
+    +L.filter(v=>op.includes(v)).map(v=>'<button type="button" class="chip noi18n" data-act="pjlistdel" data-c="defensas" data-k="inm" data-v="'+esc(v)+'" title="'+esc(T('Quitar'))+'">'+esc(v)+' ×</button>').join('')
+    +'<select id="'+id+'" aria-label="'+esc(T(t))+'" style="flex:1 1 160px;min-width:140px"><option value="">'+esc(T('Elige…'))+'</option>'+op.filter(v=>!L.includes(v)).map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')+'</select>'
+    +'<button type="button" class="btn sm" data-act="pjlistadd" data-c="defensas" data-k="inm" data-i="'+id+'">'+esc(T('Añadir'))+'</button></div>';
+  const resto=L.filter(v=>!est.includes(v)&&!dano.includes(v));   // valores escritos antes a mano: se conservan y se pueden quitar
+  return fila('Inmunidades a daño',dano,'pjl-defensas-inm')+fila('Inmunidades a estados',est,'pjl-defensas-inme')
+    +(resto.length?'<div class="pjrow"><b class="pjlistn">'+esc(T('Otras'))+'</b>'+resto.map(v=>'<button type="button" class="chip noi18n" data-act="pjlistdel" data-c="defensas" data-k="inm" data-v="'+esc(v)+'" title="'+esc(T('Quitar'))+'">'+esc(v)+' ×</button>').join('')+'</div>':'');
+}
 function pjListaHTML(f,campo,claves){
-  return claves.map(k=>'<div class="pjrow"><b style="min-width:112px">'+esc(T(PJ_LISTA[k]))+'</b>'+f[campo][k].map(v=>'<button type="button" class="chip noi18n" data-act="pjlistdel" data-c="'+campo+'" data-k="'+k+'" data-v="'+esc(v)+'" title="'+esc(T('Quitar'))+'">'+esc(v)+' ×</button>').join('')
+  return claves.map(k=>campo==='defensas'&&k==='inm'?pjInmunidadesHTML(f):campo==='otras'&&k==='idiomas'?'<div class="pjrow"><b class="pjlistn">'+esc(T(PJ_LISTA[k]))+'</b>'+(f.otras.idiomas.length?f.otras.idiomas.map(v=>'<span class="chip noi18n">'+esc(v)+'</span>').join(''):'<span class="pcsub">'+esc(T('Ninguno todavía'))+'</span>')+'<small class="pcsub">'+esc(T('Se amplían al subir de nivel.'))+'</small></div>':campo==='otras'&&(k==='armas'||k==='armaduras')?'<div class="pjrow"><b class="pjlistn">'+esc(T(PJ_LISTA[k]))+'</b>'+(k==='armas'?PJ_ARMAS:PJ_ARMR).map(x=>'<span class="pjsvl"><span class="pjmk" aria-hidden="true">'+(f.otras[k].includes(x)?'◆':'◇')+'</span> '+esc(T(x))+'</span>').join('')+'</div>':'<div class="pjrow"><b class="pjlistn">'+esc(T(PJ_LISTA[k]))+'</b>'+f[campo][k].map(v=>'<button type="button" class="chip noi18n" data-act="pjlistdel" data-c="'+campo+'" data-k="'+k+'" data-v="'+esc(v)+'" title="'+esc(T('Quitar'))+'">'+esc(v)+' ×</button>').join('')
    +(()=>{const g=campo==='defensas'?pjOpcionesLista(k):null;
      return g?'<select id="pjl-'+campo+'-'+k+'" aria-label="'+esc(T(PJ_LISTA[k]))+'" style="flex:1 1 160px;min-width:140px"><option value="">'+esc(T('Elige…'))+'</option>'
        +g.map(([t,L])=>{const o=L.filter(v=>!f[campo][k].includes(v)).map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');return t?'<optgroup label="'+esc(T(t))+'">'+o+'</optgroup>':o;}).join('')+'</select>'
@@ -9221,14 +9556,14 @@ function pjSheetHTML(f,lista){
    +'<p class="pjcls"><b>'+esc(pjCls(f))+'</b>'+(new Set(f.niveles.map(n=>n.c)).size>1?' · '+esc(T('Nivel'))+' '+N:'')+(f.subclase?' · '+esc(f.subclase):'')+'</p>'
    +(!f.subclase&&f.niveles[0]&&Ficha.nivelClase(f,f.niveles[0].c)>=3&&pjSubclases(f).length?'<label class="pjelige">'+esc(T('Toca elegir subclase'))+pjSubSel(f)+'</label>':'')
    +'<p class="pjorg noi18n"><i>'+esc([f.especie,f.trasfondo].filter(Boolean).join(' · '))+'</i> <span class="pjtag">'+esc(camp?T('De campaña'):T('Libre'))+'</span></p>'
-   +'<div class="pjvida"><span class="pjlbl">'+esc(T('Puntos de vida'))+'</span><div class="pjrow"><span class="pjhpnum">'+f.hp+' / '+mx+'</span>'+(f.temp?'<span class="pjtag">+'+f.temp+' '+esc(T('temporales'))+'</span>':'')+'<span class="pjstate">'+esc(T(pjEstado(f.hp,mx)))+'</span>'
+   +'<div class="pjvida"><span class="pjlbl">'+esc(T('Puntos de vida'))+'</span><div class="pjrow"><span class="pjhpnum">'+f.hp+' / '+mx+(f.temp?'<b class="pjtmpv" title="'+esc(T('PG temporales'))+'">+'+f.temp+'</b>':'')+'</span>'+'<span class="pjstate">'+esc(T(pjEstado(f.hp,mx)))+'</span>'
    +'<label class="pjinsp" title="'+esc(T('Inspiración'))+'"><input type="checkbox" data-pjchk="insp"'+(f.insp?' checked':'')+'><svg viewBox="0 0 24 30" width="22" height="27" aria-hidden="true"><path d="M12 2C12 2 4 12.5 4 19a8 8 0 0 0 16 0C20 12.5 12 2 12 2Z"/></svg><span>'+esc(T('Insp.'))+'</span></label></div>'
    +'<div class="pjhp"><i class="'+pjHpCls(pct)+'" style="width:'+pct+'%"></i></div>'
-   +'<div class="pjrow"><input id="pj-amt" type="number" min="1" value="1" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn sm danger" data-act="pjdano">'+esc(T('Daño'))+'</button><button type="button" class="btn sm" data-act="pjcura">'+esc(T('Curar'))+'</button><button type="button" class="btn sm" data-act="pjtemp">'+esc(T('Temporales'))+'</button></div></div>'
+   +'<div class="pjrow"><input id="pj-amt" type="number" min="1" value="1" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn sm danger" data-act="pjdano">'+esc(T('Daño'))+'</button><button type="button" class="btn sm" data-act="pjcura">'+esc(T('Curar'))+'</button></div><label class="pjtmp" title="'+esc(T('PG temporales: se escriben aquí, no en la cantidad de daño. Ponlos a 0 para quitarlos'))+'">'+esc(T('PG temporales'))+'<input type="number" min="0" max="999" data-pjtmp value="'+f.temp+'" aria-label="'+esc(T('PG temporales'))+'"></label></div>'
    +'<ul class="pjfilas">'
    +(esp.nivelCaster||esp.pact?'<li><span>'+esc(T('Espacios'))+'</span><span class="pjgrupos">'+esp.slots.map((n,i)=>n?'<span class="pjgr"><small>'+['I','II','III','IV','V','VI','VII','VIII','IX'][i]+'</small>'+pjPips(n,f.slotsUsados[i],'pjslot',' data-lv="'+(i+1)+'"')+'</span>':'').join('')
      +(esp.pact?'<span class="pjgr"><small>'+esc(T('Pacto'))+'</small>'+pjPips(esp.pact.n,f.pactUsados,'pjpact','')+'</span>':'')+'</span></li>':'')
-   +f.recursos.map(q=>'<li><span>'+esc(q.n)+'</span>'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"')+'</li>').join('')
+   +f.recursos.map(q=>'<li><span>'+esc(q.n)+'</span>'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"',pjRecBloq(q))+'</li>').join('')
    +Object.entries(dg).map(([c,q])=>'<li title="'+esc(T(CLSN[c]))+'"><span>'+esc(T('Dados de golpe'))+' <small class="pcsub">'+q.quedan+'d'+q.d+'</small></span>'+dots(q.total,q.usados)+'</li>').join('')
    +'</ul>'
    +'<div class="pjdesc"><span class="pjlbl">'+esc(T('Descanso'))+'</span><button type="button" class="btn sm" data-act="pjshort" title="'+esc(T('Descanso corto'))+'">'+esc(T('Corto'))+'</button><button type="button" class="btn sm" data-act="pjlong" data-confirm title="'+esc(T('Descanso largo'))+'">'+esc(T('Largo'))+'</button></div>'
@@ -9237,20 +9572,20 @@ function pjSheetHTML(f,lista){
    +['ex','fa'].map(k=>'<div class="pjmrow '+k+'"><span>'+esc(T(k==='ex'?'Éxitos':'Fallos'))+'</span><span class="pjcirc">'+[1,2,3].map(n=>'<button type="button" class="pjc'+(f.muerte[k]>=n?' on':'')+'" data-act="pjmuerte" data-k="'+k+'" data-n="'+n+'" aria-pressed="'+(f.muerte[k]>=n)+'" aria-label="'+esc(T(k==='ex'?'Éxito':'Fallo'))+' '+n+'"></button>').join('')+'</span></div>').join('')+'<div class="pjmrow cans"><span>'+esc(T('Cansancio'))+'</span><span class="pjcirc pjcans6">'+[1,2,3,4,5,6].map(n=>'<button type="button" class="pjc'+(f.agot>=n?' on':'')+'" data-act="pjagot" data-n="'+n+'" aria-pressed="'+(f.agot>=n)+'" aria-label="'+esc(T('Cansancio'))+' '+n+'"></button>').join('')+'</span></div></div>'
    +'<div class="pjrow pjacc"><button type="button" class="btn sm primary" data-act="pjlevel">'+esc(T('Subir de nivel'))+'</button><button type="button" class="btn sm" data-act="pjstat">'+esc(T('Statblock'))+'</button><button type="button" class="btn sm" data-act="pjexport">'+esc(T('Exportar'))+'</button><button type="button" class="btn sm" data-act="pjprint">'+esc(T('Imprimir / guardar PDF'))+'</button></div></aside>';
   // ---- franja de datos fijos
-  const cc=pjCA(f),st=(l,v,u)=>'<div class="pjst"><span class="pjstl">'+esc(T(l))+'</span><b class="pjstv">'+esc(v)+(u?'<small>'+esc(u)+'</small>':'')+'</b></div>',vm=/^([\d.,]+)\s*(.*)$/.exec(String(cc.vel||f.vel).trim());
-  const franja='<div class="pjstrip">'+st('CA',cc.v)+st('Velocidad',vm?vm[1]:cc.vel,vm?vm[2]:'')+st('Iniciativa',pjSgn(Ficha.mod(f.car.des)))+st('Competencia',pjSgn(pb))+st('Percepción pasiva',Ficha.pasiva(f,'percepcion'))+'</div>';
+  const cc=pjCA(f),st=(l,v,u)=>'<div class="pjst"><span class="pjstl">'+esc(T(l))+'</span><b class="pjstv">'+(String(v).startsWith('<button')?v:esc(v))+(u?'<small>'+esc(u)+'</small>':'')+'</b></div>',vm=/^([\d.,]+)\s*(.*)$/.exec(String(cc.vel||f.vel).trim());
+  const franja='<div class="pjstrip">'+st('CA',cc.v)+st('Velocidad',vm?vm[1]:cc.vel,vm?vm[2]:'')+st('Iniciativa',pjTir(Ficha.mod(f.car.des),T('Iniciativa')))+st('Competencia',pjSgn(pb))+st('Percepción pasiva',Ficha.pasiva(f,'percepcion'))+'</div>';
   const abs='<div class="pjabs">'+Ficha.AB.map(a=>{const v=f.car[a],m=Ficha.mod(v),sv=Ficha.salvBonus(f,a);
-    return '<div class="pjab"><span class="k">'+esc(T(ABK[a]))+'</span><span class="m">'+pjSgn(m)+'</span>'+(camp?'<span class="lk">'+v+'</span>':'<input type="number" min="1" max="30" data-pjf="car.'+a+'" value="'+v+'" aria-label="'+esc(T(ABN[a]))+'">')
-     +'<span class="sv">'+esc(T('Salvación'))+' '+pjSgn(sv)+(saves.includes(a)?' ●':'')+'</span></div>';}).join('')+'</div>';
+    return '<div class="pjab"><span class="k">'+esc(T(ABK[a]))+'</span><span class="m">'+pjTir(m,T('Prueba de')+' '+T(ABN[a]))+'</span>'+'<span class="lk" title="'+esc(T('Cambia solo al subir de nivel'))+'">'+v+'</span>'
+     +'</div>';}).join('')+'</div>';
   // ---- paneles
   const pCombate=abs+pjEfectosHTML(f)
    +pjDet('hab','Habilidades y salvaciones',pjHabHTML(f),pjPend(f,'habil','salvac'))+pjDet('atq','Ataques',pjAtqHTML(f),pjPend(f,'ataques'))
    +pjDet('def','Estados, resistencias y vulnerabilidades',pjListaHTML(f,'defensas',Ficha.DEFS),pjPend(f,'defensas'));
-  const pRecursosDM='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist">'+f.recursos.map(q=>'<li><span><b>'+esc(q.n)+'</b> <small class="pcsub">'+esc(recarga(q))+(q.cor?' · '+esc(T('1 en descanso corto')):'')+(q.a?' · '+esc(T('de la clase')):'')+'</small></span><span class="pjrow">'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"')+(q.a?'':'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(q.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button>')+'</span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
+  const pRecursosDM='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist">'+f.recursos.map(q=>'<li><span><b>'+esc(q.n)+'</b> <small class="pcsub">'+esc(recarga(q))+(q.cor?' · '+esc(T('1 en descanso corto')):'')+(q.a?' · '+esc(T('de la clase')):'')+'</small></span><span class="pjrow">'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"',pjRecBloq(q))+(q.a?'':'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(q.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button>')+'</span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
    +'<div class="pjrow"><input id="pjr-n" placeholder="'+esc(T('Nombre'))+'" maxlength="60"><input id="pjr-m" type="number" min="1" max="99" value="1" aria-label="'+esc(T('Usos'))+'"><select id="pjr-r" aria-label="'+esc(T('Recarga'))+'"><option value="largo">'+esc(T('Descanso largo'))+'</option><option value="corto">'+esc(T('Descanso corto'))+'</option><option value="">'+esc(T('Sin recarga'))+'</option></select><button type="button" class="btn sm" data-act="pjrecnew">'+esc(T('Añadir'))+'</button></div></div>';
-  const pRecursos=f.recursos.length?'<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3><ul class="pjlist">'+f.recursos.map(q=>'<li><span><b>'+esc(q.n)+'</b> <small class="pcsub">'+esc(recarga(q))+(q.cor?' · '+esc(T('1 en descanso corto')):'')+'</small></span>'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"')+'</li>').join('')+'</ul></div>':'';
+  const pRecursos=f.recursos.length?'<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3><ul class="pjlist">'+f.recursos.map(q=>'<li><span><b>'+esc(q.n)+'</b> <small class="pcsub">'+esc(recarga(q))+(q.cor?' · '+esc(T('1 en descanso corto')):'')+'</small></span>'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"',pjRecBloq(q))+'</li>').join('')+'</ul></div>':'';
   const pRasgos=pjDet('ras','Rasgos y características de clase',pjRasHTML(f),pjPend(f,'rasgos'))+pRecursos
-   +'<div class="pjbox"><h3>'+esc(T('Dotes'))+'</h3><div class="pjrow">'+(f.dotes.length?f.dotes.map(d=>'<span class="pjtag noi18n">'+esc(d)+'</span>').join(''):'<span class="pcsub">'+esc(T('Ninguna todavía'))+'</span>')+'</div></div>'
+   +'<div class="pjbox"><h3>'+esc(T('Dotes'))+'</h3>'+pjDotesHTML(f)+'</div>'
    +pjDet('otr','Idiomas y competencias',pjListaHTML(f,'otras',Ficha.OTRAS),pjPend(f,'otras'));
   const pConjuros=(esp.nivelCaster||esp.pact?'<div class="pjbox"><h3>'+esc(T('Espacios de conjuro'))+'</h3><ul class="pjlist">'
      +esp.slots.map((n,i)=>n?'<li><span>'+esc(T('Nivel'))+' '+(i+1)+'</span>'+pjPips(n,f.slotsUsados[i],'pjslot',' data-lv="'+(i+1)+'"')+'</li>':'').join('')
@@ -9288,16 +9623,25 @@ function pjSheetHTML(f,lista){
 }
 /* Pestaña Inventario: mochila y lo que va encima por separado, bolsa con total en oro, carga contra capacidad y sintonía (máx. 3). */
 function pjInventarioHTML(f){
-  const c=Ficha.carga(f),si=Ficha.sintonia(f),oro=Ficha.oroTotal(f);
+  const pesoDe=i=>{const p=objPeso(compFind('objetos',i.n));return p!=null?p:i.peso;};   // el peso se lee del compendio; lo copiado al inventario es solo respaldo
+  const c=Ficha.carga(f,{peso:pesoDe}),si=Ficha.sintonia(f),oro=Ficha.oroTotal(f);
   const kg=n=>String(Math.round(n*100)/100).replace('.',',')+' kg';
-  const fila=i=>'<li class="pjit"><span class="pjitn noi18n">'+esc(i.n)+(i.nota?'<small class="pcsub"> · '+esc(i.nota)+'</small>':'')+'</span>'+pjInvExtra(i)
-    +'<span class="pjitc"><label class="pcsub">'+esc(T('Peso'))+' <input type="number" step="0.1" min="0" max="9999" data-pjinvp="'+esc(i.id)+'" value="'+i.peso+'" style="width:70px" aria-label="'+esc(T('Peso en kg'))+'"></label>'
-    +'<span class="pcsub pjitw">'+esc(kg(i.peso*i.q))+'</span>'
-    +'<label class="chk pcsub"><input type="checkbox" data-pjinvm="eq" data-id="'+esc(i.id)+'"'+(i.eq?' checked':'')+'> '+esc(T('Equipado'))+'</label>'
-    +'<label class="chk pcsub"><input type="checkbox" data-pjinvm="sin" data-id="'+esc(i.id)+'"'+(i.sin?' checked':'')+'> '+esc(T('Sintonizado'))+'</label>'
-    +'<input type="number" min="0" max="99999" data-pjinvq="'+esc(i.id)+'" value="'+i.q+'" style="width:70px" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn sm danger" data-act="pjinvdel" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button></span></li>';
+  const maesCupo=pjMaesCupo(f),maesSel=new Set((f.maestrias||[]).map(fold)),soloBarb=pjSoloBarb(f);
+  const hv=i=>compFind('objetos',i.n)?' data-hv="objetos:'+esc(i.n)+'"':'';   // ficha emergente del compendio al pasar el ratón
+  const fila=i=>'<li class="pjit"><span class="pjitn noi18n"'+hv(i)+'>'+esc(i.n)+(i.nota?'<small class="pcsub"> · '+esc(i.nota)+'</small>':'')+'</span>'
+    +(()=>{const x=compFind('objetos',i.n);return x&&x.precio?'<span class="pjitp noi18n"'+hv(i)+'>'+esc(x.precio)+'</span>':'';})()
+    +'<span class="pjitc"><label class="pjtg pjeq" title="'+esc(T('Equipado'))+'"><input type="checkbox" data-pjinvm="eq" data-id="'+esc(i.id)+'"'+(i.eq?' checked':'')+'><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>'+esc(T('Equipado'))+'</span></label>'
+    +(()=>{const x=compFind('objetos',i.n);if(!x||!x.arma||!x.arma.mae)return '';
+      if(!maesCupo||(soloBarb&&x.arma.dist))return '<span class="pjtg pjma pjdis" title="'+esc(maesCupo?T('Tu clase solo domina armas cuerpo a cuerpo'):T('Tu clase no tiene maestría con armas'))+'"><span aria-hidden="true">⚔</span><span>'+esc(T('Maestría'))+': '+esc(x.arma.mae)+'</span></span>';
+      const on=maesSel.has(fold(i.n)),lleno=!on&&maesSel.size>=maesCupo;
+      return '<label class="pjtg pjma'+(lleno?' pjdis':'')+'" title="'+esc(T('Maestría con armas')+' ('+maesSel.size+'/'+maesCupo+')')+'"><input type="checkbox" data-pjinvm="mae" data-id="'+esc(i.id)+'"'+(on?' checked':'')+(lleno?' disabled':'')+'><span aria-hidden="true">⚔</span><span>'+esc(T('Maestría'))+': '+esc(x.arma.mae)+'</span></label>';})()
+    +(i.sint||i.sin?'<label class="pjtg pjsn" title="'+esc(T('Requiere sintonización'))+'"><input type="checkbox" data-pjinvm="sin" data-id="'+esc(i.id)+'"'+(i.sin?' checked':'')+'><span aria-hidden="true">◆</span><span>'+esc(T('Sintonizado'))+'</span></label>':'')
+    +'<span class="pcsub pjitw" title="'+esc(T('El peso se corrige en el compendio'))+'">'+esc(T('Peso'))+' <b>'+esc(kg(pesoDe(i)*i.q))+'</b></span>'
+    +'<span class="pjitd"><span class="pjite">'+(()=>{const r=pjInvResumen(i);return r?'<span class="pcsub pjitr noi18n"'+hv(i)+'>'+esc(r)+'</span>':'';})()+pjInvExtra(i)+'</span><span class="pjitq2"><span class="pjstep"><button type="button" class="btn sm" data-act="pjinvstep" data-d="-1" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Menos')+': '+i.n)+'">−</button><input class="pjitq" type="number" min="0" max="99999" data-pjinvq="'+esc(i.id)+'" value="'+i.q+'" aria-label="'+esc(T('Cantidad')+': '+i.n)+'"><button type="button" class="btn sm" data-act="pjinvstep" data-d="1" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Más')+': '+i.n)+'">+</button></span><button type="button" class="btn sm danger" data-act="pjinvdel" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Quitar')+': '+i.n)+'">×</button></span></span></span>'
+    +(()=>{const c=pjInvCont(i);if(!c)return '';const a=pjInvCqAct(i,c),nm=c.n.charAt(0).toUpperCase()+c.n.slice(1);return '<span class="pjitk"><span class="pjitkh">'+esc(T('Contiene'))+':</span><span class="pjitkr"><span class="pjitkn">'+esc(nm)+' <small class="pcsub">'+esc(T('máx.'))+' '+c.cap+'</small></span><span class="pjstep"><button type="button" class="btn sm" data-act="pjinvcst" data-d="-1" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Menos')+': '+nm)+'"'+(a<=0?' disabled':'')+'>−</button><input class="pjitq" type="number" min="0" max="'+c.cap+'" data-pjinvc="'+esc(i.id)+'" value="'+a+'" aria-label="'+esc(nm+': '+i.n)+'"><button type="button" class="btn sm" data-act="pjinvcst" data-d="1" data-id="'+esc(i.id)+'" aria-label="'+esc(T('Más')+': '+nm)+'"'+(a>=c.cap?' disabled':'')+'>+</button></span></span></span>';})()
+    +'</li>';
   const lista=(t,ub,vacio)=>{const L=f.inventario.filter(i=>(i.ub==='equipado')===(ub==='equipado'));
-    return '<div class="pjbox"><h3>'+esc(T(t))+' <span class="pjtag">'+L.length+'</span> <small class="pcsub">'+esc(kg(L.reduce((a,i)=>a+i.peso*i.q,0)))+'</small></h3>'+(L.length?'<ul class="pjlist">'+L.map(fila).join('')+'</ul>':'<p class="pcsub">'+esc(T(vacio))+'</p>')+'</div>';};
+    return '<div class="pjbox"><h3>'+esc(T(t))+' <span class="pjtag">'+L.length+'</span> <small class="pcsub">'+esc(kg(L.reduce((a,i)=>a+pesoDe(i)*i.q,0)))+'</small></h3>'+(L.length?'<ul class="pjlist">'+L.map(fila).join('')+'</ul>':'<p class="pcsub">'+esc(T(vacio))+'</p>')+'</div>';};
   const cls=c.nivel==='normal'?(c.pct>75?'warn':'ok'):'crit';
   const bolsa='<div class="pjbox"><h3>'+esc(T('Bolsa'))+pjPend(f,'mon')+'</h3><div class="pjrow pjmon">'+Ficha.MON.slice().reverse().map(k=>'<label>'+k.toUpperCase()+'<input type="number" min="0" max="9999999" data-pjf="mon.'+k+'" value="'+f.mon[k]+'" style="width:84px"></label>').join('')+'</div>'
    +'<p class="pjtotal">'+esc(T('En total'))+': <b>'+String(oro).replace('.',',')+' po</b></p>'
@@ -9305,11 +9649,13 @@ function pjInventarioHTML(f){
    +'<p class="pjcargat"><b>'+esc(kg(c.total))+'</b> / '+esc(kg(c.capacidad))+'</p>'
    +'<p class="pcsub">'+esc(T('Encima'))+' '+esc(kg(c.equipado))+' · '+esc(T('Mochila'))+' '+esc(kg(c.mochila))+(c.monedas?' · '+esc(T('Monedas'))+' '+esc(kg(c.monedas)):'')+'</p>'
    +(c.nivel==='normal'?'':'<p class="pjwarn">'+esc(c.nivel==='cargado'?T('Llevas más de tu capacidad de carga (Fuerza × 7,5 kg).'):T('Más del doble de tu capacidad: no podrías levantarlo ni empujarlo.'))+'</p>')
-   +'<p class="pjsint"><span>'+esc(T('Sintonía'))+'</span> <b class="'+(si.usadas>=si.max?'tope':'')+'">'+si.usadas+' / '+si.max+'</b> <span class="pjdots" aria-hidden="true">'+'◆'.repeat(si.usadas)+'<i>'+'◆'.repeat(si.max-si.usadas)+'</i></span></p></div>';
+   +'<p class="pjsint"><span>'+esc(T('Sintonía'))+'</span> <b class="'+(si.usadas>=si.max?'tope':'')+'">'+si.usadas+' / '+si.max+'</b> <span class="pjdots" aria-hidden="true">'+'◆'.repeat(si.usadas)+'<i>'+'◆'.repeat(Math.max(0,si.max-si.usadas))+'</i></span></p>'
+   +(si.objetos.length?'<ul class="pjsinl">'+si.objetos.map(i=>'<li><span aria-hidden="true">◆</span> <span class="noi18n">'+esc(i.n)+'</span></li>').join('')+'</ul>':'')
+   +(si.pendientes.length?'<p class="pcsub">'+esc(T('Sin sintonizar'))+': <span class="noi18n">'+si.pendientes.map(i=>esc(i.n)).join(', ')+'</span></p>':'')+'</div>';
   const alta='<div class="pjbox"><h3>'+esc(T('Añadir'))+pjPend(f,'inventario')+'</h3>'
    +'<div class="pjrow"><input id="pji-c" list="cm-obj-dl" maxlength="80" placeholder="'+esc(T('Busca un objeto del compendio'))+'" aria-label="'+esc(T('Objeto del compendio'))+'" style="flex:1 1 200px"><button type="button" class="btn" data-act="pjinvcomp">'+esc(T('Añadir del compendio'))+'</button></div>'
    +'<div class="pjrow"><input id="pji-n" maxlength="80" placeholder="'+esc(T('Objeto'))+'" aria-label="'+esc(T('Objeto'))+'" style="flex:1 1 200px"><input id="pji-q" type="number" min="1" max="99999" value="1" style="width:78px" aria-label="'+esc(T('Cantidad'))+'"><button type="button" class="btn" data-act="pjinvadd">'+esc(T('Añadir'))+'</button></div></div>';
-  return '<div class="pjinvg"><div class="pjinvl">'+lista('Mochila','mochila','Nada en la mochila.')+alta+'</div><div class="pjinve">'+lista('Encima','equipado','Nada equipado.')+'</div><div class="pjinvb">'+bolsa+'</div></div>';
+  return '<div class="pjinvg"><div class="pjinve">'+lista('Encima','equipado','Nada equipado.')+'</div><div class="pjinvl">'+lista('Mochila','mochila','Nada en la mochila.')+'</div><div class="pjinva">'+alta+'</div><div class="pjinvb">'+bolsa+'</div></div>';
 }
 function pjRestHTML(f,dg){
   const q=pjRest.dados,usados={};for(const x of q)usados[x.c]=(usados[x.c]||0)+1;
@@ -9337,6 +9683,11 @@ function pjLevelHTML(){
      +(L.modo==='2'?'<div class="row">'+ab('a1',L.a1)+'</div>':L.modo==='11'?'<div class="row">'+ab('a1',L.a1)+ab('a2',L.a2)+'</div>':'<label>'+esc(T('Dote'))+'<input data-pjl="dote" list="pj-dotes" value="'+esc(L.dote)+'" maxlength="60"></label><datalist id="pj-dotes">'+(typeof compList==='function'?compList('dotes').slice(0,200).map(d=>'<option value="'+esc(d.n)+'">').join(''):'')+'</datalist>')
      +'</fieldset>';
   }
+  h+='<fieldset style="border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:8px"><legend>'+esc(T('Competencias nuevas (solo si este nivel las da)'))+'</legend><div class="row">'
+   +'<label>'+esc(T('Habilidad'))+'<select data-pjl="hab"><option value="">—</option>'+Ficha.HABIL.map(([k])=>'<option value="'+k+'"'+(L.hab===k?' selected':'')+'>'+esc(T(Ficha.HAB_NOM[k]))+(f.habil[k]===2?' ◆◆':f.habil[k]?' ◆':'')+'</option>').join('')+'</select></label>'
+   +'<label>'+esc(T('Pasa a'))+'<select data-pjl="habn"><option value="1"'+(L.habn!=='2'?' selected':'')+'>'+esc(T('Competencia'))+'</option><option value="2"'+(L.habn==='2'?' selected':'')+'>'+esc(T('Pericia'))+'</option></select></label>'
+   +'<label>'+esc(T('Salvación'))+'<select data-pjl="sv"><option value="">—</option>'+Ficha.AB.filter(a=>!Ficha.salvas(f).includes(a)).map(a=>'<option value="'+a+'"'+(L.sv===a?' selected':'')+'>'+esc(T(ABN[a]))+'</option>').join('')+'</select></label>'
+   +'<label>'+esc(T('Idioma'))+'<select data-pjl="idi"><option value="">—</option>'+PJW_IDI_STD.concat(PJW_IDI_RAROS).filter(i=>!f.otras.idiomas.some(x=>x.toLowerCase()===i.toLowerCase())).map(i=>'<option value="'+esc(i)+'"'+(L.idi===i?' selected':'')+'>'+esc(i)+'</option>').join('')+'</select></label></div></fieldset>';
   return h+'<div class="pjrow"><button type="button" class="btn primary" data-act="pjlvgo"'+(puede.ok?'':' disabled')+'>'+esc(T('Subir'))+'</button><button type="button" class="btn ghost" data-act="pjclose">'+esc(T('Cancelar'))+'</button></div>';
 }
 function pjLevelAbrir(){
@@ -9365,15 +9716,15 @@ document.addEventListener('change',e=>{
     else if(el.dataset.pjcfg!==undefined){pjCfgSet({criterio:el.value==='xp'?'xp':'hito'});pjRender();}
     else if(el.dataset.pjperm!==undefined){if(Object.hasOwn(Ficha.POLITICAS_DEFECTO,el.dataset.pjperm)&&Ficha.POLITICAS.includes(el.value))pjCfgSet({permisos:{...pjPoliticas(),[el.dataset.pjperm]:el.value}});pjRender();}
     else if(el.id==='pj-rol'){PJROL=Store.campaigns.rol()==='jugador'||el.value==='jugador'?'jugador':'dm';try{Store.root.set('pj-rol',PJROL);}catch{}pjRender();}
-    else if(el.dataset.pjsk!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.habilidadSet(s.f,el.dataset.pjsk,el.value),s);}
-    else if(el.dataset.pjsv!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.salvacionSet(s.f,el.dataset.pjsv,el.checked),s);}
     else if(el.dataset.pjsplv!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.conjuroNivel(s.f,el.dataset.n,el.value),s);}
     else if(el.dataset.pjspprep!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.conjuroPreparar(s.f,el.dataset.n,el.checked),s);}
     else if(el.dataset.pjret){const [k,t]=el.dataset.pjret.split('|'),fl=el.files&&el.files[0];el.value='';if(fl)pjRetFile(fl,t).then(u=>{if(!u)return;const s=pjGet(pjSel);if(!s)return;const r=Ficha.retratoSet(s.f,k,t,u);if(r.ok)pjCommit(r,s);else toast(T('La imagen es demasiado grande'));});}
     else if(el.dataset.pjsub){const s=pjGet(pjSel);if(!s)return;const r=Ficha.editar(s.f,'subclase',el.value,pjCtx());if(r.ok)r.f=pjRasgosNivel(r.f);pjCommit(r,s);}
-    else if(el.dataset.pjinvp!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.invPeso(s.f,el.dataset.pjinvp,el.value),s);}
+    else if(el.dataset.pjtmp!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.fijarPG(s.f,s.f.hp,el.value),s);}
     else if(el.dataset.pjchk==='insp'){const s=pjGet(pjSel);if(s)pjCommit(Ficha.editar(s.f,'insp',el.checked,pjCtx()),s);}
+    else if(el.dataset.pjinvm==='mae'){const s=pjGet(pjSel),it=s&&s.f.inventario.find(x=>x.id===el.dataset.id);if(it&&!pjCommit(Ficha.maestriaSet(s.f,it.n,el.checked,pjMaesCupo(s.f)),s)){el.checked=!el.checked;toast(T('Ya usas todas tus maestrías: quita una antes'));}}
     else if(el.dataset.pjinvm){const s=pjGet(pjSel);if(s&&!pjCommit(Ficha.invMarcar(s.f,el.dataset.id,el.dataset.pjinvm,el.checked),s)){el.checked=!el.checked;toast(T('Solo se pueden sintonizar 3 objetos'));}}
+    else if(el.dataset.pjinvc!==undefined){const s=pjGet(pjSel),it=s&&s.f.inventario.find(x=>x.id===el.dataset.pjinvc),c=it&&pjInvCont(it);if(c)pjCommit(Ficha.invContenido(s.f,it.id,el.value,c.cap),s);}
     else if(el.dataset.pjinvq!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.invCantidad(s.f,el.dataset.pjinvq,el.value),s);}
   }else if(el.closest('#pjmodal')){
     if(el.dataset.pjl!==undefined&&pjLvl){const k=el.dataset.pjl;

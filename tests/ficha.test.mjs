@@ -14,7 +14,7 @@ test('derivados: modificador, competencia y PG máximos con Con retroactiva',()=
   assert.equal(F.mod(14),2);assert.equal(F.mod(7),-2);
   assert.equal(F.prof(f),2);assert.equal(F.hpMax(f),8);
   f=sube(f,4);assert.equal(F.nivel(f),5);assert.equal(F.prof(f),3);
-  const antes=F.hpMax(f);f=F.editar(f,'car.con',16).f;assert.equal(F.hpMax(f),antes+5);
+  const antes=F.hpMax(f);assert.equal(F.editar(f,'car.con',16).error,'bloqueado');f={...f,car:{...f.car,con:16}};assert.equal(F.hpMax(f),antes+5);
 });
 
 test('norm: sanea y no confía en nada',()=>{
@@ -106,7 +106,7 @@ test('campaña: lo bloqueado no se toca a mano; en una ficha libre sí',()=>{
   assert.equal(F.editar(c,'hp',1).error,'bloqueado');
   assert.equal(F.bajar(c).error,'bloqueado');
   assert.equal(F.editar(c,'nombre','Otra').f.nombre,'Otra');
-  assert.equal(F.editar(l,'car.fue',20).f.car.fue,20);
+  assert.equal(F.editar(l,'car.fue',20).error,'bloqueado');   // ni siquiera en una ficha libre: solo cambian al subir de nivel
   assert.equal(F.bajar(sube(l,1)).f.niveles.length,1);
   assert.equal(F.editar(l,'__proto__',1).error,'bloqueado');
 });

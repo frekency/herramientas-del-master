@@ -43,7 +43,9 @@ test('carga: capacidad FUE×7,5, equipado/mochila, monedas y niveles',()=>{
 });
 test('sintonia y oroTotal',()=>{
   const f=pj({inventario:[{n:'A',sin:true},{n:'B',sin:true},{n:'C'}],mon:{ppt:1,po:2,pe:2,pp:10,pc:100}});
-  assert.deepEqual(F.sintonia(f),{usadas:2,max:3});
+  const s=F.sintonia(f);
+  assert.equal(s.usadas,2);assert.equal(s.max,3);
+  assert.deepEqual(s.objetos.map(i=>i.n),['A','B']);assert.equal(s.pendientes.length,0);
   assert.equal(F.oroTotal(f),15);
   assert.equal(F.oroTotal(pj()),0);
 });
