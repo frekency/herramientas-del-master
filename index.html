@@ -11296,8 +11296,10 @@ async function spRun(modo){
     acStatus('Guardado en tu cuenta a las '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
   }catch(err){acStatus('No se ha podido sincronizar tus datos: '+(err&&err.message||err));}
   finally{SP.busy=false;}
-  if(cambiadas.length){let otra=false;try{otra=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}
-    if(!otra){try{sessionStorage.setItem('sync-reload','1');}catch{}location.reload();}}
+  if(!cambiadas.length){try{sessionStorage.removeItem('sync-reload');}catch{}}   // sin cambios, se libera el aviso para que la próxima bajada sí recargue
+  else{let otra=false;try{otra=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}
+    if(!otra){try{sessionStorage.setItem('sync-reload','1');}catch{}location.reload();}
+    else{try{if(cambiadas.includes('fichas')){pjLoad();if(curView()==='personajes')pjRender();}}catch{}}}   // sin recargar, al menos se vuelven a leer las fichas bajadas
 }
 const spNombre=k=>T(SP_NOM[k]||'Datos');
 const spCuando=t=>t?new Date(t).toLocaleString():'—';
@@ -11343,6 +11345,7 @@ function startSync(){
   syncT=setInterval(()=>{if(!SB_USER||syncBusy)return;if(Object.entries(SYNC_KEYS).some(([cl,k])=>lsRaw(k)!==lastRaw[cl])){syncBusy=true;syncPush().finally(()=>{syncBusy=false;});}},4000);
 }
 addEventListener('visibilitychange',()=>{if(document.hidden&&SB_USER&&!syncBusy)syncPush();});
+let spVisto=0;addEventListener('visibilitychange',()=>{if(!document.hidden&&SB_USER&&SP.v2&&Date.now()-spVisto>15000){spVisto=Date.now();spRun('login');}});   // al volver a la app (móvil en segundo plano) se baja lo nuevo de la cuenta
 addEventListener('online',()=>{if(SB_USER&&!syncBusy)syncPush();});   // al volver internet, lo editado sin conexión se sube ya
 
 /* ---------- catálogo de la comunidad ---------- */

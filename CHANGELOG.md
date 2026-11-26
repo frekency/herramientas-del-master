@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.127.1] - 2026-11-26
+### Corregido
+- **Los datos de la cuenta llegan al móvil al refrescar o al volver a la app.** Si la bajada no recargaba la página, las fichas se quedaban sin leer; ahora se vuelven a leer, el aviso de recarga se libera cuando no hay cambios y la app baja lo nuevo de la cuenta al volver a primer plano.
+
 ## [1.127.0] - 2026-11-26
 ### Cambiado
 - **Ficha del jugador rediseñada**: resumen fijo (retrato por estado, vida, recursos, descansos corto/largo, inspiración, salvaciones de muerte y cansancio) y pestañas Combate, Rasgos, Conjuros, Inventario y Notas, sobre fondo de cuero. La CA y la velocidad se calculan desde la clase, la armadura y el escudo; ya no se editan.
