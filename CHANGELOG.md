@@ -4,6 +4,15 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.125.0] - 2026-11-26
+### Cambiado
+- **El SRD 5.2.1 viene apagado.** La herramienta se prueba con el Manual del Jugador 2024 como módulo (Módulos › Añadir mi copia). Los datos del SRD siguen en el proyecto y se pueden volver a encender con el ajuste `combat-srd`.
+### Añadido
+- **Revisor de JSON** (`tools/revision-json.html`): cuadro de página editable en cada ficha (con aviso cuando es página del SRD), casilla para ver todos los elementos y no solo los pendientes.
+### Corregido
+- Conjuro «Zona de la verdad»: su descripción arrastraba un glosario entero.
+- Test de revisión de JSON estable bajo carga (espera por sondeo en lugar de tiempos fijos).
+
 ## [1.124.0] - 2026-11-25
 ### Añadido
 - **Recursos de clase desde los datos:** furia, inspiración bárdica, forma salvaje, acción súbita, canalizar divinidad, etc. se crean, ajustan y recargan solos según clase, nivel y características; descanso corto y largo devuelven lo que toca.

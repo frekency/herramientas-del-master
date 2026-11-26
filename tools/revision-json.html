@@ -35,10 +35,17 @@ input[type=search],select{min-height:40px;border:1px solid var(--line);border-ra
 .prev th{background:var(--surface-2)}
 .prev h3,.prev h4{margin:.8em 0 .3em}
 textarea{width:100%;min-height:260px;font:13px/1.4 ui-monospace,Consolas,monospace;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:8px;margin-top:8px}
+.pgl{display:inline-flex;align-items:center;gap:6px;font-size:14px;margin-left:auto}.pgl input{width:5em;padding:5px 8px;border:1px solid var(--bd,#bbb);border-radius:6px;background:transparent;color:inherit;font:inherit}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .empty{text-align:center;color:var(--muted);padding:40px 0}
 .dudas{margin:4px 0 8px 18px;color:var(--muted);font-size:14px}
 .nota{color:var(--muted);font-size:13px;margin:0 0 14px}
+.prev[contenteditable=true]{outline:2px solid var(--accent);outline-offset:2px;cursor:text}
+.prev[contenteditable=true] th,.prev[contenteditable=true] td{min-width:3ch;min-height:1.4em}
+.prev[contenteditable=true] td:empty::after,.prev[contenteditable=true] th:empty::after{content:"\200b"}
+.tb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;position:sticky;top:64px;z-index:3;background:var(--surface);padding:6px;border:1px solid var(--line);border-radius:8px}
+.tb .btn{min-height:34px;padding:0 10px;font-size:14px}
+.tb small{color:var(--muted);margin-left:auto}
 </style>
 </head>
 <body>
@@ -48,7 +55,7 @@ textarea{width:100%;min-height:260px;font:13px/1.4 ui-monospace,Consolas,monospa
   <input type="file" id="fichero" accept=".json,application/json" hidden>
   <input type="search" id="q" placeholder="Buscar por nombre" aria-label="Buscar por nombre" hidden>
   <select id="sec" aria-label="Sección" hidden></select>
-  <label class="stat" id="lvt" hidden><input type="checkbox" id="todo"> mostrar también lo revisado</label>
+  <label class="stat" id="lvt" hidden><input type="checkbox" id="todo"> mostrar todos los elementos (también los revisados)</label>
   <span class="stat" id="cnt"></span>
   <div class="bar" id="barra" hidden><i></i></div>
   <button class="btn primary" id="guardar" disabled style="margin-left:auto">Guardar JSON revisado</button>
@@ -90,7 +97,7 @@ function lista(){
   const q=$('#q').value.trim().toLowerCase(),s=$('#sec').value,todo=$('#todo').checked,out=[];
   for(const k of secciones()){if(s&&k!==s)continue;
     DATA[k].forEach((x,i)=>{if(!x||typeof x!=='object')return;
-      if(!(pend(x)||(todo&&x._rv)))return;
+      if(!(pend(x)||todo))return;
       if(q&&!String(x.n||'').toLowerCase().includes(q))return;
       out.push([k,i,x]);});}
   return out;
@@ -113,27 +120,70 @@ function pinta(){
   cont.innerHTML=L.slice(0,LIM).map(([k,i,x])=>{
     const du=Array.isArray(x.dudas)&&x.dudas.length?'<ul class="dudas">'+x.dudas.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'';
     const motivo=x.rev?'<div class="motivo">'+esc(x.rev)+'</div>':(x.pend?'<div class="motivo">Pendiente de revisar</div>':'');
-    const meta=['t','r','s','pg','cls','tipo'].filter(f=>x[f]).map(f=>esc(x[f])).join(' · ');
+    const meta=['t','r','s','cls','tipo'].filter(f=>x[f]).map(f=>esc(x[f])).concat(x.fte==='SRD'?['SRD']:[]).join(' · ');
     return '<section class="card'+(pend(x)?'':' hecho')+'" data-k="'+esc(k)+'" data-i="'+i+'"><h2>'+esc(x.n)+' <span class="sec">'+esc(k)+(meta?' · '+meta:'')+'</span></h2>'+motivo+du
       +'<div class="prev">'+(typeof x.d==='string'?limpia(x.d):'<i>Sin descripción en HTML</i>')+'</div>'
-      +'<div class="acts"><button class="btn" data-a="editar">Editar HTML</button><button class="btn ok" data-a="ok">'+(pend(x)?'Marcar revisado':'Ya revisado')+'</button>'+(x._rv?'<button class="btn" data-a="deshacer">Deshacer</button>':'')+'</div></section>';
+      +'<div class="acts"><button class="btn primary" data-a="editar">Editar</button><button class="btn" data-a="html">Ver HTML</button><button class="btn ok" data-a="ok">'+(pend(x)?'Marcar revisado':'Ya revisado')+'</button>'+(x._rv?'<button class="btn" data-a="deshacer">Deshacer</button>':'')+'<label class="pgl">'+(x.fte==='SRD'?'Página del SRD':'Página')+' <input data-pg value="'+esc(x.pg)+'" inputmode="numeric" aria-label="'+(x.fte==='SRD'?'Página del SRD':'Página del libro')+' de '+esc(x.n)+'"></label></div></section>';
   }).join('')+(L.length>LIM?'<p class="empty"><button class="btn" id="mas">Mostrar '+Math.min(40,L.length-LIM)+' más ('+(L.length-LIM)+' restantes)</button></p>':'');
+}
+const visual=c=>c.querySelector('.prev').isContentEditable;
+let CELDA=null;
+document.addEventListener('selectionchange',()=>{const n=getSelection().anchorNode,el=n&&(n.nodeType===1?n:n.parentElement),cel=el&&el.closest&&el.closest('.prev[contenteditable=true] td,.prev[contenteditable=true] th');if(cel)CELDA=cel;});
+$('#lista').addEventListener('mousedown',e=>{if(e.target.closest('.tb button'))e.preventDefault();});
+/* lo que escribe el navegador al editar (estilos, spans, saltos sueltos) se limpia antes de guardar */
+function limpiaEdicion(html){
+  const d=new DOMParser().parseFromString(String(html||''),'text/html');
+  d.querySelectorAll('[contenteditable],[spellcheck]').forEach(e=>{e.removeAttribute('contenteditable');e.removeAttribute('spellcheck');});
+  d.querySelectorAll('[style]').forEach(e=>e.removeAttribute('style'));
+  d.querySelectorAll('span,font').forEach(e=>e.replaceWith(...e.childNodes));
+  d.querySelectorAll('td,th').forEach(e=>{e.innerHTML=e.innerHTML.replace(/\u200b/g,'').replace(/(<br\s*\/?>\s*)+$/,'').trim();});
+  d.querySelectorAll('div').forEach(e=>{if(!e.attributes.length)e.replaceWith(...e.childNodes);});
+  return limpia(d.body.innerHTML);
+}
+function aplicaVisual(c,x){
+  const prev=c.querySelector('.prev');
+  x.d=limpiaEdicion(prev.innerHTML);
+  prev.contentEditable='false';prev.innerHTML=limpia(x.d);
+  const tb=c.querySelector('.tb');if(tb)tb.remove();
+  SUCIO=true;guardaBorrador();
+}
+function tablaOp(c,op){
+  const cel=CELDA&&c.contains(CELDA)?CELDA:null;
+  if(!cel){alert('Haz clic primero dentro de una celda de la tabla.');return;}
+  const fila=cel.parentElement,tabla=fila.closest('table'),filas=[...tabla.rows],ci=[...fila.cells].indexOf(cel);
+  const nueva=(ref)=>{const e=document.createElement(ref.tagName.toLowerCase());return e;};
+  if(op==='fila+'){const r=document.createElement('tr');for(const k of fila.cells)r.append(nueva(k));fila.after(r);}
+  else if(op==='fila-'){if(filas.length<=1){alert('La tabla se quedaría sin filas.');return;}fila.remove();CELDA=null;}
+  else if(op==='col+'){for(const r of filas){const ref=r.cells[Math.min(ci,r.cells.length-1)];if(ref)ref.after(nueva(ref));}}
+  else if(op==='col-'){if(fila.cells.length<=1){alert('La tabla se quedaría sin columnas.');return;}for(const r of filas)if(r.cells[ci])r.cells[ci].remove();CELDA=null;}
 }
 $('#lista').addEventListener('click',e=>{
   if(e.target.id==='mas'){LIM+=40;pinta();return;}
   const b=e.target.closest('button[data-a]');if(!b)return;
   const c=b.closest('.card'),x=DATA[c.dataset.k][+c.dataset.i];
+  const prev=c.querySelector('.prev');
   if(b.dataset.a==='editar'){
+    if(visual(c)){aplicaVisual(c,x);b.textContent='Editar';return;}
+    const t=c.querySelector('textarea');if(t){x.d=t.value;t.remove();c.querySelector('[data-a=html]').textContent='Ver HTML';}
+    prev.contentEditable='true';prev.spellcheck=true;
+    prev.insertAdjacentHTML('beforebegin','<div class="tb"><button class="btn" data-a="neg"><b>N</b> Negrita</button><button class="btn" data-a="fila+">+ Fila debajo</button><button class="btn" data-a="fila-">− Fila</button><button class="btn" data-a="col+">+ Columna a la derecha</button><button class="btn" data-a="col-">− Columna</button><small>Haz clic en una celda y escribe. Los botones de fila y columna actúan sobre la celda donde estás.</small></div>');
+    b.textContent='Aplicar cambios';prev.focus();return;}
+  if(b.dataset.a==='html'){
     let t=c.querySelector('textarea');
-    if(t){x.d=t.value;t.remove();c.querySelector('.prev').innerHTML=limpia(x.d);b.textContent='Editar HTML';SUCIO=true;guardaBorrador();return;}
-    t=document.createElement('textarea');t.value=x.d||'';t.spellcheck=false;c.querySelector('.prev').after(t);b.textContent='Aplicar cambios';t.focus();return;}
+    if(t){x.d=t.value;t.remove();prev.innerHTML=limpia(x.d);b.textContent='Ver HTML';SUCIO=true;guardaBorrador();return;}
+    if(visual(c)){aplicaVisual(c,x);c.querySelector('[data-a=editar]').textContent='Editar';}
+    t=document.createElement('textarea');t.value=x.d||'';t.spellcheck=false;prev.after(t);b.textContent='Aplicar HTML';t.focus();return;}
+  if(b.dataset.a==='neg'){prev.focus();document.execCommand('bold');return;}
+  if(b.dataset.a==='fila+'||b.dataset.a==='fila-'||b.dataset.a==='col+'||b.dataset.a==='col-'){tablaOp(c,b.dataset.a);return;}
   if(b.dataset.a==='ok'){
     const t=c.querySelector('textarea');if(t)x.d=t.value;
+    if(visual(c))aplicaVisual(c,x);
     if(!pend(x))return;
     x._rv={};for(const m of MARCAS)if(m in x){x._rv[m]=x[m];delete x[m];}
     SUCIO=true;guardaBorrador();pinta();return;}
   if(b.dataset.a==='deshacer'){Object.assign(x,x._rv||{});delete x._rv;SUCIO=true;guardaBorrador();pinta();}
 });
+$('#lista').addEventListener('input',e=>{const i=e.target.closest('input[data-pg]');if(!i)return;const c=i.closest('.card'),x=DATA[c.dataset.k][+c.dataset.i],v=i.value.trim();if(v)x.pg=v;else delete x.pg;SUCIO=true;guardaBorrador();});
 for(const e of ['#q','#sec','#todo'])$(e).addEventListener('input',()=>{LIM=40;pinta();});
 $('#guardar').addEventListener('click',()=>{
   const pn=cuentaPend();
