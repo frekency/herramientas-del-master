@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.125.1] - 2026-11-26
+### Corregido
+- **Asistente de personaje:** las especies, los trasfondos y las clases salen de tus módulos activos (por ejemplo el Manual del Jugador) y ya no solo del SRD.
+
 ## [1.125.0] - 2026-11-26
 ### Cambiado
 - **El SRD 5.2.1 viene apagado.** La herramienta se prueba con el Manual del Jugador 2024 como módulo (Módulos › Añadir mi copia). Los datos del SRD siguen en el proyecto y se pueden volver a encender con el ajuste `combat-srd`.

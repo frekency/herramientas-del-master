@@ -3675,6 +3675,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
     <li><h3>v1.125 <span>26 nov 2026</span></h3><ul>
+      <li><b>Asistente de personaje con tus módulos.</b> Especies, trasfondos y clases salen de los módulos activos, no solo del SRD.</li>
       <li><b>El SRD viene apagado.</b> Se prueba con el Manual del Jugador 2024 como módulo (en Módulos, «Añadir mi copia»). Sin módulos activos, la herramienta te lleva a Módulos.</li>
       <li><b>Revisor de JSON.</b> Cada ficha tiene su cuadro de página editable y puedes ver todos los elementos, no solo los pendientes.</li>
       <li><b>Zona de la verdad.</b> Su descripción ya no arrastra un glosario entero.</li></ul></li>
@@ -8729,7 +8730,7 @@ const PJW_ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia
 const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
 let PJW=null;
 function pjwNuevo(){return {paso:0,cls:'',sk:[],esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',lugar:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
-const pjwComp=(lista,n)=>((COMP_SRD&&COMP_SRD[lista])||[]).find(x=>fold(x.n)===fold(n))||null;
+const pjwComp=(lista,n)=>compList(lista).find(x=>fold(x.n)===fold(n))||null;   // lo de tus módulos activos (y el SRD si está encendido)
 const pjwClase=k=>pjwComp('clases',CLSN[k]);
 const pjwAbKey=s=>{const f=fold(s);return Ficha.AB.find(a=>fold(({fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'})[a])===f)||'';};
 const pjwHabKey=s=>{const f=fold(s).replace(/^conocimiento arcano$/,'arcanos');return Object.keys(Ficha.HAB_NOM).find(k=>fold(Ficha.HAB_NOM[k])===f)||'';};
@@ -8777,12 +8778,12 @@ function pjwPaso(w){
     return s;
   }
   const B1=()=>{
-    const L=(COMP_SRD.especies||[]);const e=pjwComp('especies',w.esp);
+    const L=compList('especies');const e=pjwComp('especies',w.esp);
     return '<p class="hint">'+esc(T('Sus rasgos (visión, resistencias, conjuros…) se anotan en la hoja al terminar.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('esp',x.n,w.esp===x.n,x.n,String(x.vel||'')+' · '+String(x.tam||'').split(' (')[0])).join('')+'</div>'
       +(e?'<div class="pjw-det"><h4>'+esc(e.n)+'</h4>'+e.d+'</div>':'')+(e?pjwRasgosHTML(w,'e'):'');
   };
   const B2=()=>{
-    const L=(COMP_SRD.trasfondos||[]),tf=pjwComp('trasfondos',w.tf);
+    const L=compList('trasfondos'),tf=pjwComp('trasfondos',w.tf);
     let s='<p class="hint">'+esc(T('El trasfondo da una dote de origen, dos competencias en habilidades, una herramienta y 3 puntos de característica que repartes tú.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('tf',x.n,w.tf===x.n,x.n,x.dote)).join('')+'</div>';
     if(tf){
       const op=pjwOpcTf(tf);
