@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.126.0] - 2026-11-26
+### Cambiado
+- **Los módulos viven en tu cuenta, iguales en la web y en la app de escritorio.** Lo que añades, cambias o quitas en un sitio se ve tal cual en el otro (fichas, páginas e ilustraciones incluidas). Cada dispositivo vigila la cuenta y baja los cambios solo; ya no hay módulos distintos en cada lado. La primera vez que un dispositivo se une, lo suyo que la cuenta no tenga se suma en lugar de perderse.
+
 ## [1.125.1] - 2026-11-26
 ### Corregido
 - **Asistente de personaje:** las especies, los trasfondos y las clases salen de tus módulos activos (por ejemplo el Manual del Jugador) y ya no solo del SRD.
