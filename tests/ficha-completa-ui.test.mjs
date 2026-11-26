@@ -47,7 +47,8 @@ const TAIL=`<script>
     ok('rasgo con usos: crea el recurso y muestra su casilla',F().rasgos.length===1&&F().recursos.length===1&&!!body().querySelector('[data-pjdet="ras"] [data-act="pjrec"]'));
     // listas libres
     document.getElementById('pjl-defensas-res').value='Fuego';await click('[data-act="pjlistadd"][data-k="res"]');
-    document.getElementById('pjl-otras-idiomas').value='Élfico';await click('[data-act="pjlistadd"][data-k="idiomas"]');
+    ok('los idiomas no se añaden a mano: no hay campo y se amplían al subir de nivel',!document.getElementById('pjl-otras-idiomas'));
+    {const r=Ficha.listaAnadir(F(),'otras','idiomas','Élfico').f;PJC[PJC.findIndex(x=>x.id==='c1')]=r;pjSave();pjRender();await wait(200);}
     ok('resistencia e idioma',F().defensas.res[0]==='Fuego'&&F().otras.idiomas[0]==='Élfico');
     // personalidad
     await typeIn('[data-pjf="pers.historia"]','Nació en un faro.');

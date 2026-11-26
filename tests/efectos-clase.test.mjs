@@ -134,7 +134,9 @@ test('x.arma / x.arm del compendio coinciden con las tablas (si no, node tools/e
 });
 
 test('statblock: Guerrero con cota de malla, escudo y espada larga',()=>{
-  const f=pj('guerrero',5,{fue:16,des:12,con:14},inv('Cota de malla','Escudo','Espada larga'),'Campeón');
+  const f0=pj('guerrero',5,{fue:16,des:12,con:14},inv('Cota de malla','Escudo','Espada larga'),'Campeón');
+  assert.doesNotMatch(F.statblock(f0,datos,eq).acciones.find(a=>a.n==='Espada larga').t,/Maestría/);   // sin elegir esa arma no hay maestría
+  const f=F.maestriaSet(f0,'Espada larga',true,F.maestriaCupo(f0,datos)).f;
   const s=F.statblock(f,datos,eq);
   assert.equal(s.ca.v,16+2);assert.match(s.ca.o,/Cota de malla, escudo/);
   assert.equal(s.vel,'9 m');assert.equal(s.ini.v,1);
