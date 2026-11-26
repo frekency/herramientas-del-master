@@ -37,6 +37,10 @@ const WEB_NUBE=typeof location!=='undefined'&&location.protocol==='https:'&&!win
 /* En la web el navegador solo guarda lo esencial (sessionStorage: sesión y ajustes pequeños). Lo grande (los módulos, varios MB) vive en la
    cuenta (tabla modulos_usuario) y aquí solo en memoria mientras la pestaña está abierta; se vuelve a bajar al entrar. */
 if(WEB_NUBE){
+  /* sessionStorage solo guarda datos mientras la propia app recarga la página (cambiar de campaña, bajar la cuenta...): lo marca recarga().
+     Al abrir la pestaña o refrescarla a mano se vacía, salvo el bloqueo de pantalla y el aviso de acceso previo, y todo se baja de la cuenta. */
+  try{const interna=sessionStorage.getItem('recarga-interna');sessionStorage.removeItem('recarga-interna');
+    if(!interna){const guarda=['bloqueo-v1','acceso-previo','oauth-hash'].map(k=>[k,sessionStorage.getItem(k)]);sessionStorage.clear();for(const [k,v] of guarda)if(v!=null)sessionStorage.setItem(k,v);}}catch{}
   const BIG=new Map();
   window.__StoreBackend={
     get:k=>BIG.has(k)?BIG.get(k):sessionStorage.getItem(k),
@@ -47,6 +51,7 @@ if(WEB_NUBE){
     keys:()=>{const o=new Set(BIG.keys());for(let i=0;i<sessionStorage.length;i++)o.add(sessionStorage.key(i));return [...o];}};
 }
 if(WEB_NUBE)document.documentElement.classList.add('web-nube');
+const recarga=()=>{try{sessionStorage.setItem('recarga-interna','1');}catch{}location.reload();};   // recarga de la propia app: conserva los datos de la pestaña
 window.Store=(()=>{
   const B=window.__StoreBackend||{get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v),remove:k=>localStorage.removeItem(k),
     keys:()=>{const o=[];for(let i=0;i<localStorage.length;i++)o.push(localStorage.key(i));return o;}};
@@ -56,7 +61,7 @@ window.Store=(()=>{
   const load=()=>{if(idx)return idx;let v=null;try{v=JSON.parse(B.get(IDX)||'null');}catch(e){}
     if(!v||!Array.isArray(v.list)||!v.list.some(c=>c&&c.id===BASE))v={v:1,active:BASE,list:[{id:BASE,nombre:'Mi campaña',creado:Date.now()}].concat((v&&Array.isArray(v.list)?v.list:[]).filter(c=>c&&c.id!==BASE))};
     if(!v.list.some(c=>c.id===v.active))v.active=BASE;return idx=v;};
-  const save=()=>B.set(IDX,JSON.stringify(idx));
+  const save=()=>{B.set(IDX,JSON.stringify(idx));try{if(typeof WEB_NUBE!=='undefined'&&WEB_NUBE){const a=idx.list.find(c=>c.id===idx.active);if(a&&/^[0-9a-f-]{36}$/.test(a.remoto||''))localStorage.setItem('hdm-ult-camp',a.remoto);}}catch(e){}};   // la web olvida el registro al refrescar: así vuelve a la campaña abierta
   const map=k=>{const a=load().active;return a!==BASE&&SCOPED.has(k)?'camp:'+a+':'+k:k;};
   const clean=n=>String(n==null?'':n).replace(/\s+/g,' ').trim().slice(0,60);
   const campaigns={
@@ -6870,7 +6875,7 @@ document.addEventListener('click',e=>{
     case 'openio':$('#io-text').value=JSON.stringify(backupData(),null,1);$('#iomodal').hidden=false;bkPrefs();syncModalOpen();break;
     case 'bkdl':{bkBajar(bkTexto(),Copia.nombre(Date.now()));toast(T('Copia descargada'));break;}
     case 'bkcancel':bkPend=null;$('#bk-res').innerHTML='';break;
-    case 'bkrestore':{if(!bkPend)break;bkBajar(bkTexto(),Copia.nombre(Date.now(),'antes-de-restaurar'));const n=Store.restore(bkPend.datos,bkPend.campanas);bkPend=null;toast(T('Copia restaurada')+' ('+n+')');setTimeout(()=>location.reload(),700);break;}
+    case 'bkrestore':{if(!bkPend)break;bkBajar(bkTexto(),Copia.nombre(Date.now(),'antes-de-restaurar'));const n=Store.restore(bkPend.datos,bkPend.campanas);bkPend=null;toast(T('Copia restaurada')+' ('+n+')');setTimeout(()=>recarga(),700);break;}
     case 'updbuscar':{if(UPD){updManual=true;window.__AppShell.actualizar.buscar();}break;}
     case 'updinstalar':{if(UPD)window.__AppShell.actualizar.instalar();break;}
     case 'updabrir':{if(UPD)window.__AppShell.actualizar.abrir();break;}
@@ -7438,11 +7443,11 @@ function grpAct(act,b){
     case 'grpdel':{const r=Grupos.borrar(GRP,b.dataset.id);if(!r.ok){toast(T(r.error==='tiene_jugadores'?'Mueve antes a los jugadores a otro grupo':'Debe quedar al menos un grupo de jugadores'));break;}GRP=r.lista;grpSave();renderParty();break;}
     case 'grprm':{const r=Grupos.quitar(GRP,b.dataset.id);if(r.ok){GRP=r.lista;grpSave();renderParty();}break;}
     case 'grpcombat':if(g)grpAlCombate(g);break;
-    case 'grpvistasalir':{Store.campaigns.verComo(null);location.hash='#jugadores';location.reload();break;}
+    case 'grpvistasalir':{Store.campaigns.verComo(null);location.hash='#jugadores';recarga();break;}
     case 'grpvercomo':{
       const m=GRP.flatMap(x=>x.miembros).find(x=>x.id===b.dataset.id);if(!m||Store.campaigns.rol()==='jugador')break;
       Store.campaigns.verComo({m:m.id,n:m.n||'',pj:m.pj||''});
-      location.hash=m.pj?'#personajes/'+m.pj:'#inicio';location.reload();break;}
+      location.hash=m.pj?'#personajes/'+m.pj:'#inicio';recarga();break;}
     case 'grpcuenta':{
       const m=GRP.flatMap(x=>x.miembros).find(x=>x.id===b.dataset.id);if(!m||m.usuario)break;
       const base=String(m.n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9_.-]+/g,'').slice(0,24);
@@ -8304,7 +8309,7 @@ function extraAct(act,b,c,e){
     case 'pjestado':{const s=pjGet(pjSel);if(!s)break;const r=Ficha.cambiarEstado(s.f,b.dataset.e,pjCtx());
       if(r.ok&&b.dataset.e!=='activo'){const d=Grupos.dueno(GRP,s.f.id);if(d){GRP=Grupos.asignarPj(GRP,d.m.id,'').lista;grpSave();}}   // el jugador queda libre para elegir otro
       pjCommit(r,s);break;}
-    case 'pjircamp':{if(Store.campaigns.select(b.dataset.camp)){try{location.hash='personajes/'+b.dataset.id;}catch{}location.reload();}break;}
+    case 'pjircamp':{if(Store.campaigns.select(b.dataset.camp)){try{location.hash='personajes/'+b.dataset.id;}catch{}recarga();}break;}
     case 'pjdel':{const s=pjGet(pjSel);if(!s)break;const arr=s.lista==='campana'?PJC:PJ,i=arr.findIndex(x=>x.id===s.f.id);if(i>=0)arr.splice(i,1);pjSave();location.hash='personajes';toast(T('Personaje borrado'));break;}
     case 'epevnew':epDraft.eventos.push(epEvNuevo());epRenderDet();break;
     case 'epevrm':epDraft.eventos.splice(+b.dataset.i,1);epRenderDet();break;
@@ -8348,7 +8353,7 @@ function extraAct(act,b,c,e){
     case 'scinvcopia':{const c=b.dataset.c;try{navigator.clipboard.writeText(c).then(()=>toast(T('Código copiado')),()=>toast(c));}catch{toast(c);}break;}
     case 'scinvdel':{SB.from('invitaciones_campana').delete().eq('codigo',b.dataset.c).then(()=>scInvCarga());break;}
     case 'scforzar':scForzar(b.dataset.d);break;
-    case 'campgo':if(Store.campaigns.select(b.dataset.id))location.reload();break;
+    case 'campgo':if(Store.campaigns.select(b.dataset.id))recarga();break;
     case 'campdel':{const C=Store.campaigns,id=b.dataset.id,c=C.list().find(x=>x.id===id);if(!c)break;
       const rid=C.remote(id),propia=!!rid&&C.rol(id)!=='jugador'&&!!SB_USER;
       campDelPend={id,rid,propia,nombre:c.nombre};
@@ -8358,8 +8363,8 @@ function extraAct(act,b,c,e){
     case 'delok':{const p=campDelPend;if(!p||$('#del-in').value.trim()!==p.nombre.trim())break;
       const C=Store.campaigns;$('#del-ok').disabled=true;
       const fin=()=>{const was=C.active()===p.id;$('#delmodal').hidden=true;campDelPend=null;syncModalOpen();
-        if(p.id===C.BASE){C.vaciar(p.id);toast(T('Campaña borrada'));location.reload();return;}   // la local no sale de la lista: se queda vacía
-        if(C.remove(p.id)){toast(T('Campaña borrada'));if(was)location.reload();else renderCamps();}};
+        if(p.id===C.BASE){C.vaciar(p.id);toast(T('Campaña borrada'));recarga();return;}   // la local no sale de la lista: se queda vacía
+        if(C.remove(p.id)){toast(T('Campaña borrada'));if(was)recarga();else renderCamps();}};
       if(p.propia){SB.from('campanas').delete().eq('id',p.rid).then(({error})=>{if(error){toast(T('No se ha podido borrar de tu cuenta')+': '+error.message,6000);$('#del-ok').disabled=false;return;}fin();});break;}
       if(p.rid)scSoltar(p.rid);
       fin();break;}
@@ -10973,7 +10978,7 @@ if(window.__AppShell){/* modo app: título con la campaña, tooltips con la barr
   tb();new MutationObserver(tb).observe(R,{attributes:true,attributeFilter:['data-theme','data-skin']});
   matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>setTimeout(tb,50));
 }
-$('#camp').addEventListener('change',e=>{const v=e.target.value;if(v==='__mgr'){renderCamps();campOpen();return;}if(Store.campaigns.select(v))location.reload();});
+$('#camp').addEventListener('change',e=>{const v=e.target.value;if(v==='__mgr'){renderCamps();campOpen();return;}if(Store.campaigns.select(v))recarga();});
 $('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-camp]');if(!i)return;if(!Store.campaigns.rename(i.dataset.camp,i.value))toast('Pon un nombre a la campaña');renderCamps();});
 /* Descarga de la app de escritorio: solo en la web; elige el archivo según el sistema desde la última versión publicada en GitHub */
 (()=>{
@@ -10992,7 +10997,7 @@ $('#camp-list').addEventListener('change',e=>{const i=e.target.closest('[data-ca
 })();
 $('#camp-form').addEventListener('submit',e=>{e.preventDefault();const n=$('#camp-new').value;
   (async()=>{try{const id=Store.campaigns.create(n);Store.campaigns.select(id);if(WEB_NUBE&&SB_USER)await scVincular(id);   // en la web la campaña nace ya en la cuenta
-    toast('Campaña creada');location.reload();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}})();});
+    toast('Campaña creada');recarga();}catch(err){toast(T('No se ha podido crear la campaña')+': '+err.message);}})();});
 $('#del-in').addEventListener('input',e=>{const p=campDelPend;$('#del-ok').disabled=!(p&&e.target.value.trim()===p.nombre.trim());});
 $('#del-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(!$('#del-ok').disabled)$('#del-ok').click();}});
 $('#camp-join').addEventListener('submit',e=>{e.preventDefault();scUnirse($('#camp-code').value);});
@@ -11107,7 +11112,7 @@ async function sbInit(){
     const u=session?.user||null,was=SB_USER?.id;SB_USER=u;document.documentElement.classList.toggle('con-sesion',!!u);if(u){try{Store.set('acceso-previo','1');}catch{}}
     if(ev==='PASSWORD_RECOVERY'||(INVITADO&&u&&ev==='SIGNED_IN')||acDebeCambiar()){setTimeout(()=>acOpen('newpass'),0);return;}
     if(!u){SB_NAME='';clearInterval(syncT);renderAcct();if(acBloqueado()){setTimeout(()=>{acOpen('in');introPlay();},0);}if(location.hash==='#modulos')renderMods();return;}
-    if(u.id!==was){SB_DM=null;dmCarga();setTimeout(()=>acSignedIn(ev),0);MDB.listo=false;setTimeout(mdbBajar,0);}   // fuera del callback, como pide supabase-js
+    if(u.id!==was){SB_DM=null;dmCarga();setTimeout(acSignedIn,0);MDB.listo=false;setTimeout(mdbBajar,0);}   // fuera del callback, como pide supabase-js
   });
   acEscritorio();
 }
@@ -11412,7 +11417,7 @@ async function scRemotas(auto){
    for(const c of Store.campaigns.list()){if(!c.remoto)continue;const f=data.find(x=>x.id===c.remoto);if(!f)continue;
      const quiere=f.rol==='jugador'?'jugador':'master';
      if((c.rol==='jugador')!==(quiere==='jugador')){Store.campaigns.setRol(c.id,quiere);if(c.id===Store.campaigns.active())cambio=true;}}
-   if(cambio){location.reload();return;}}
+   if(cambio){recarga();return;}}
   const ya=new Set(Store.campaigns.list().map(c=>c.remoto).filter(Boolean));let libres=data.filter(c=>!ya.has(c.id));
   if(auto){   // al iniciar sesión, las campañas de la cuenta que faltan aquí se añaden solas; su contenido baja al abrirlas
     const sol=new Set(scSoltadas()),nuevas=libres.filter(c=>!sol.has(c.id));
@@ -11465,7 +11470,7 @@ async function scForzar(dir){
     SC.since=null;scSave();ok=true;
   }catch(err){toast(T('No se ha podido completar')+': '+(err&&err.message||err),7000);}
   finally{SC.busy=false;}
-  if(ok){await scRun(true);location.reload();}
+  if(ok){await scRun(true);recarga();}
 }
 /* ---- invitaciones: el máster da un código (caduca a los 7 días, 10 usos) y el jugador lo canjea en «Unirme con un código» ---- */
 const SC_INV={l:[]};
@@ -11517,35 +11522,7 @@ async function acRetorno(r){
 function acEscritorio(){const a=window.__AppShell&&window.__AppShell.auth;if(!a)return;a.onRetorno(acRetorno);a.pendiente().then(r=>{if(r)acRetorno(r);}).catch(()=>{});}
 /* web sin datos en el navegador: si se cierra la pestaña con cambios sin subir, el navegador avisa */
 if(WEB_NUBE)addEventListener('beforeunload',e=>{if(typeof cpDirty!=='undefined'&&cpDirty||SC.busy){e.preventDefault();e.returnValue='';}});
-/* Web: refrescar la página equivale a salir y volver a entrar. Se sube lo pendiente y, si todo quedó guardado en la cuenta, se descarta lo que
-   esta pestaña tenía a medias (registro de campañas, fichas, estado de sincronización) y se baja de nuevo desde la cuenta. Si queda algo sin subir
-   (sin conexión, error), no se toca nada. La campaña abierta se recuerda para volver a ella. */
-const NUBE_CLAVES=()=>{
-  const dato=['combat-tracker-v1','combat-party-v1','combat-presets-v1','camp-notes-v1','camp-sync-v1','camp-fichas-v1','camp-config-v1','camp-grupos-v1','camp-homebrew-v1'];
-  const k=[SPKEY,SYNC_META,'sync-reload',DIAKEY,RELKEY,'combat-campaigns-v1'];
-  for(const [cl,v] of Object.entries(SYNC_KEYS))if(cl!=='preferencias'&&cl!=='modulos')k.push(v);
-  for(const c of Store.campaigns.list())for(const d of dato)k.push(c.id===Store.campaigns.BASE?d:'camp:'+c.id+':'+d);
-  return [...new Set(k.concat(dato))];
-};
-function nubeRecarga(){location.reload();}
-async function nubeRefresca(){
-  try{
-    if(!SB||!SB_USER||Store.campaigns.vista()||SP.busy||SC.busy||navigator.onLine===false)return false;
-    if(!(await spProbar()))return false;   // sistema antiguo sin versiones: no hay nada que reconstruir
-    await spRun('bg');
-    if(Store.campaigns.remote(Store.campaigns.active()))await scRun(false);
-    if(SP.busy||SC.busy||Sincro.pendientes(SP.l)||Sincro.pendientes(SC.l))return false;   // queda algo por subir: se deja todo como está
-    const rid=Store.campaigns.remote(Store.campaigns.active());
-    if(rid){try{Store.native.set('hdm-ult-camp',rid);}catch{}}
-    for(const k of NUBE_CLAVES())try{Store.root.remove(k);}catch{}
-    nubeRecarga();return true;
-  }catch{return false;}
-}
-async function acSignedIn(ev){
-  if(WEB_NUBE&&ev==='INITIAL_SESSION'){   // la pestaña ya tenía sesión: es un refresco (o una pestaña nueva, que parte de cero y no necesita nada)
-    let t0=0;const ahora=Date.now();try{t0=+sessionStorage.getItem('nube-inicio')||0;sessionStorage.setItem('nube-inicio',String(ahora));}catch{}
-    if(t0&&ahora-t0>45000&&await nubeRefresca())return;   // los refrescos seguidos (recargas de la propia sincronización) no repiten el proceso
-  }
+async function acSignedIn(){
   const {data}=await SB.from('perfiles').select('usuario').eq('user_id',SB_USER.id).maybeSingle();
   SB_NAME=data?.usuario||'';
   if(location.search.includes('code=')){let h='';try{h=sessionStorage.getItem('oauth-hash')||'';sessionStorage.removeItem('oauth-hash');}catch{}history.replaceState(null,'',location.pathname+(h||location.hash));showView();}
@@ -11556,7 +11533,7 @@ async function acSignedIn(ev){
   await syncPull();
   await scRemotas(true);
   if(WEB_NUBE){   // en la web la campaña local está vacía: se abre sola la primera campaña de la cuenta (tras recargar, ya queda activa y no se repite)
-    const C=Store.campaigns;if(C.active()===C.BASE){let ult='';try{ult=Store.native.get('hdm-ult-camp')||'';}catch{}const r=C.list().find(c=>c.remoto&&c.remoto===ult)||C.list().find(c=>c.remoto);if(r&&C.select(r.id)){location.reload();return;}}
+    const C=Store.campaigns;if(C.active()===C.BASE){let ult='';try{ult=Store.native.get('hdm-ult-camp')||'';}catch{}const r=C.list().find(c=>c.remoto&&c.remoto===ult)||C.list().find(c=>c.remoto);if(r&&C.select(r.id)){recarga();return;}}
   }
   scRun(false);
 }
@@ -11677,7 +11654,7 @@ async function spRun(modo){
   finally{SP.busy=false;}
   if(!cambiadas.length){try{sessionStorage.removeItem('sync-reload');}catch{}}   // sin cambios, se libera el aviso para que la próxima bajada sí recargue
   else{let otra=false;try{otra=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}
-    if(!otra){try{sessionStorage.setItem('sync-reload','1');}catch{}location.reload();}
+    if(!otra){try{sessionStorage.setItem('sync-reload','1');}catch{}recarga();}
     else{try{if(cambiadas.includes('fichas')){pjLoad();if(curView()==='personajes')pjRender();}}catch{}}}   // sin recargar, al menos se vuelven a leer las fichas bajadas
 }
 const spNombre=k=>T(SP_NOM[k]||'Datos');
@@ -11702,7 +11679,7 @@ async function syncPull(){
   }
   lsSet(SYNC_META,meta);
   let again=false;try{again=!!sessionStorage.getItem('sync-reload');sessionStorage.removeItem('sync-reload');}catch{}
-  if(changed&&!again){try{sessionStorage.setItem('sync-reload','1');}catch{}location.reload();return;}
+  if(changed&&!again){try{sessionStorage.setItem('sync-reload','1');}catch{}recarga();return;}
   await syncPush(preferLocal);startSync();
 }
 async function syncPush(all=false){

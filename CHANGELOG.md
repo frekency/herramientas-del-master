@@ -4,6 +4,10 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.128.2] - 2026-11-26
+### Cambiado
+- **La web ya no guarda tus datos en la pestaña entre refrescos.** Al abrir o refrescar la página, el navegador solo conserva el inicio de sesión (más el bloqueo de pantalla) y todo —campañas, personajes, ajustes— se baja de la cuenta, igual que al volver a entrar. Los datos de la pestaña solo sobreviven a las recargas que provoca la propia app (cambiar de campaña, bajar la cuenta). Sustituye al proceso de reconstrucción al refrescar de la 1.128.1.
+
 ## [1.128.1] - 2026-11-26
 ### Corregido
 - **Al refrescar la página en la web, el móvil vuelve a tener todo lo de la cuenta**, sin cerrar sesión y volver a entrar. Al refrescar se sube lo que haya pendiente y, si todo quedó guardado, se descarta lo que la pestaña tenía a medias (campañas, fichas y estado de sincronización) y se baja de nuevo desde la cuenta, volviendo a la campaña que estaba abierta. Si algo no se puede subir (sin conexión o con error), no se toca nada.
