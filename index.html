@@ -407,7 +407,8 @@ function norm(x){
     car:{},niveles:[],xp:int(x.xp,0,9999999),concedidas:int(x.concedidas,0,20),hp:0,temp:int(x.temp,0,999),dgUsados:{},slotsUsados:Array(9).fill(0),
     pactUsados:0,agot:int(x.agot,0,6),activos:Object.fromEntries(Object.entries(x.activos&&typeof x.activos==='object'?x.activos:{}).filter(([k,v])=>v===true&&/^[a-z_]{1,24}$/.test(k)).slice(0,10)),recursos:[],dotes:[],conjuros:[],mon:{},inventario:[],pendientes:[],notas:txt(x.notas,5000),registro:[],dm:[],
     habil:{},salvac:[],ataques:[],rasgos:[],magia:{hab:'',niv:{},prep:[],sp:[]},defensas:{},otras:{},pers:{},
-    subclase:txt(x.subclase,80),rsinc:txt(x.rsinc,40),tamano:txt(x.tamano,20),insp:!!x.insp,pgn:int(x.pgn,0,5),esinc:txt(x.esinc,200),lin:{v:{},insp:false},muerte:{ex:int(x.muerte&&x.muerte.ex,0,3),fa:int(x.muerte&&x.muerte.fa,0,3)}};
+    subclase:txt(x.subclase,80),rsinc:txt(x.rsinc,40),tamano:txt(x.tamano,20),insp:!!x.insp,pgn:int(x.pgn,0,5),esinc:txt(x.esinc,200),lin:{v:{},insp:false},muerte:{ex:int(x.muerte&&x.muerte.ex,0,3),fa:int(x.muerte&&x.muerte.fa,0,3)},
+    muertes:(Array.isArray(x.muertes)?x.muertes:[]).filter(m=>m&&typeof m==='object').slice(-20).map(m=>({t:int(m.t,0,9e15,0),causa:txt(m.causa,200),nota:txt(m.nota,300),vuelta:int(m.vuelta,0,9e15,0),via:txt(m.via,80)}))};
   for(const a of AB)f.car[a]=int(x.car&&x.car[a],1,30,10);
   for(const n of Array.isArray(x.niveles)?x.niveles.slice(0,20):[])if(n&&Object.hasOwn(CLASES,n.c))f.niveles.push({c:n.c,hp:f.niveles.length?int(n.hp,1,CLASES[n.c].d,1):CLASES[n.c].d});
   const cl=clases(f);
@@ -455,9 +456,39 @@ function norm(x){
 const ok=f=>({ok:true,f}),no=error=>({ok:false,error});
 const copia=f=>norm(JSON.parse(JSON.stringify(f)));
 function anota(f,ctx,a,d){f.registro.push({t:(ctx&&ctx.ahora)||Date.now(),a,d:txt(d,200),por:txt(ctx&&ctx.quien,40)});if(f.registro.length>200)f.registro.splice(0,f.registro.length-200);return f;}
-function dano(f,n,ctx){n=int(n,1,9999);const g=copia(f);let r=n;const t=Math.min(g.temp,r);g.temp-=t;r-=t;g.hp=Math.max(0,g.hp-r);return ok(anota(g,ctx,'dano',n+' (temp '+t+')'));}
-function curar(f,n,ctx){n=int(n,1,9999);const g=copia(f);g.hp=Math.min(hpMax(g),g.hp+n);return ok(anota(g,ctx,'cura',String(n)));}
-function temporales(f,n,ctx){const g=copia(f);g.temp=Math.max(g.temp,int(n,0,999));return ok(anota(g,ctx,'temporales',String(g.temp)));}
+/* Daño: primero los PG temporales. Al llegar a 0 no se muere: se cae inconsciente y empiezan las salvaciones contra muerte (muerte.ex / muerte.fa). Si lo que sobra del golpe al llegar a 0 es igual o mayor
+   que los PG máximos, muerte instantánea. Con 0 PG, cada daño es un fallo (dos si es crítico: opt.critico) y quita el estado estable; con 3 fallos el personaje está muerto. */
+/* Un personaje está muerto con 3 fallos en las salvaciones contra muerte (o muerte instantánea) o con 6 niveles de cansancio. Su ficha queda bloqueada hasta que lo devuelvan a la vida (revivir). */
+const muerto=f=>!!f&&(f.muerte.fa>=3||f.agot>=6);
+/* Cada muerte se anota en f.muertes (fecha, causa y, si el máster la escribe, una nota) y se conserva aunque luego lo devuelvan a la vida. */
+function muerteReg(g,causa,ctx){g.muertes=(g.muertes||[]).concat([{t:(ctx&&ctx.ahora)||Date.now(),causa:txt(causa,200),nota:'',vuelta:0,via:''}]).slice(-20);}
+function dano(f,n,ctx,opt){n=int(n,1,9999);const g=copia(f);if(muerto(g))return no('muerto');
+  const mx=hpMax(g);let r=n,nota='',causa='';const t=Math.min(g.temp,r);g.temp-=t;r-=t;
+  if(g.hp<=0){
+    if(r>0){if(r>=mx){g.muerte.fa=3;nota=' · muerte instantánea';causa='Muerte instantánea: recibió '+r+' de daño estando a 0 PG, igual o más que sus PG máximos ('+mx+')';}
+      else{g.muerte.fa=Math.min(3,g.muerte.fa+(opt&&opt.critico?2:1));g.muerte.ex=0;nota=' · fallo'+(opt&&opt.critico?'s (crítico)':'');if(g.muerte.fa>=3)causa='Tercer fallo: recibió '+r+' de daño estando a 0 PG';}}
+  }else{
+    const hp0=g.hp,sobra=r-g.hp;g.hp=Math.max(0,g.hp-r);
+    if(g.hp===0){g.muerte={ex:0,fa:0};if(sobra>=mx){g.muerte.fa=3;nota=' · muerte instantánea';causa='Muerte instantánea: un solo golpe de '+n+' de daño con '+hp0+' PG; lo que sobró al llegar a 0 ('+sobra+') igualó o superó sus PG máximos ('+mx+')';}}
+  }
+  if(causa)muerteReg(g,causa,ctx);
+  return ok(anota(g,ctx,'dano',n+' (temp '+t+')'+nota));}
+function curar(f,n,ctx){n=int(n,1,9999);const g=copia(f);if(muerto(g))return no('muerto');const era=g.hp<=0;g.hp=Math.min(hpMax(g),g.hp+n);if(era&&g.hp>0)g.muerte={ex:0,fa:0};return ok(anota(g,ctx,'cura',String(n)));}
+/* Salvación contra muerte con el resultado del d20: 10+ éxito, 9- fallo, 1 natural = 2 fallos, 20 natural = recupera 1 PG. 3 éxitos = estable, 3 fallos = muerto. */
+function salvMuerte(f,d,ctx){d=int(d,1,20);const g=copia(f);if(muerto(g))return no('muerto');if(g.hp>0)return no('no_a_cero');if(g.muerte.ex>=3)return no('estable');
+  let r;if(d===20){g.hp=1;g.muerte={ex:0,fa:0};r='recupera 1 PG';}else if(d===1){g.muerte.fa=Math.min(3,g.muerte.fa+2);r='2 fallos';}else if(d>=10){g.muerte.ex++;r='éxito';}else{g.muerte.fa++;r='fallo';}
+  if(g.muerte.fa>=3)muerteReg(g,'Tres fallos en las salvaciones contra muerte'+(d===1?' (la última fue una pifia: un 1 natural cuenta como 2 fallos)':''),ctx);
+  return ok(anota(g,ctx,'muerte','d20 '+d+': '+r));}
+/* El máster anota quién o qué lo mató, dónde... en la última muerte (si la ficha es anterior y no la tiene, se crea con la causa de la regla). */
+function notaMuerte(f,texto,ctx){if(!muerto(f))return no('no_muerto');const g=copia(f);
+  if(!g.muertes.length||g.muertes[g.muertes.length-1].vuelta)muerteReg(g,g.agot>=6?'Cansancio de nivel 6':'Tres fallos en las salvaciones contra muerte o muerte instantánea',ctx);
+  g.muertes[g.muertes.length-1].nota=txt(texto,300);return ok(anota(g,ctx,'nota_muerte',txt(texto,120)));}
+/* Devolver a la vida (lo decide el máster: con un conjuro o a mano): vuelve con los PG indicados (pg:'max' = todos), sin fallos ni éxitos; si murió de cansancio queda en el nivel 5. */
+function revivir(f,o,ctx){const g=copia(f);if(!muerto(g))return no('no_muerto');const mx=hpMax(g);
+  g.hp=o&&o.pg==='max'?mx:Math.max(1,Math.min(mx,int(o&&o.pg,1,9999,1)));g.muerte={ex:0,fa:0};if(g.agot>=6)g.agot=5;
+  const u=g.muertes[g.muertes.length-1];if(u&&!u.vuelta){u.vuelta=(ctx&&ctx.ahora)||Date.now();u.via=txt((o&&o.via)||'a mano',80);}
+  return ok(anota(g,ctx,'revivir',txt((o&&o.via)||'a mano',80)+' · '+g.hp+' PG'));}
+function temporales(f,n,ctx){if(muerto(f))return no('muerto');const g=copia(f);g.temp=Math.max(g.temp,int(n,0,999));return ok(anota(g,ctx,'temporales',String(g.temp)));}
 function usarSlot(f,lv,ctx){const g=copia(f),e=espacios(g);lv=int(lv,1,9);if(g.slotsUsados[lv-1]>=e.slots[lv-1])return no('sin_espacio');g.slotsUsados[lv-1]++;return ok(anota(g,ctx,'espacio','nivel '+lv));}
 function usarPact(f,ctx){const g=copia(f),e=espacios(g);if(!e.pact||g.pactUsados>=e.pact.n)return no('sin_espacio');g.pactUsados++;return ok(anota(g,ctx,'pacto','nivel '+e.pact.nivel));}
 function usarRecurso(f,id,ctx){const g=copia(f),r=g.recursos.find(x=>x.id===id);if(!r)return no('no_existe');if(r.uso>=r.max)return no('agotado');r.uso++;return ok(anota(g,ctx,'recurso',r.n));}
@@ -762,7 +793,7 @@ function desactivar(f,id,ctx){
   const g=copia(f);delete g.activos[id];return ok(anota(g,ctx,'estado terminado',id));
 }
 function descansoCorto(f,dados,ctx){
-  const g=copia(f);let cura=0;
+  if(muerto(f))return no('muerto');const g=copia(f);let cura=0;
   for(const x of Array.isArray(dados)?dados:[]){const q=dg(g)[x&&x.c];if(!q||q.quedan<1)return no('sin_dados');const v=Number(x.v);if(!Number.isInteger(v)||v<1||v>q.d)return no('dado_invalido');
     g.dgUsados[x.c]++;cura+=Math.max(0,v+mod(g.car.con));}
   g.hp=Math.min(hpMax(g),g.hp+cura);g.pactUsados=0;for(const r of g.recursos){if(r.rec==='corto')r.uso=0;else if(r.cor)r.uso=Math.max(0,r.uso-r.cor);}g.activos={};
@@ -770,7 +801,7 @@ function descansoCorto(f,dados,ctx){
   return ok(anota(g,ctx,'descanso corto','+'+cura+' PG'));
 }
 function descansoLargo(f,ctx){
-  const g=copia(f);g.hp=hpMax(g);let gasto=0;for(const q of Object.values(dg(g)))gasto+=q.usados;
+  if(muerto(f))return no('muerto');const g=copia(f);g.hp=hpMax(g);let gasto=0;for(const q of Object.values(dg(g)))gasto+=q.usados;
   let recup=Math.max(1,Math.floor(nivel(g)/2));
   for(const c of Object.keys(g.dgUsados)){const r=Math.min(g.dgUsados[c],recup);g.dgUsados[c]-=r;recup-=r;}
   g.slotsUsados=g.slotsUsados.map(()=>0);g.pactUsados=0;for(const r of g.recursos)if(r.rec)r.uso=0;g.agot=Math.max(0,g.agot-1);g.activos={};
@@ -831,6 +862,7 @@ function editar(f,campo,valor,ctx){
   else if(campo==='xp'){if(camp&&!(ctx&&ctx.rol==='dm'))return no('solo_dm');g.xp=int(valor,0,9999999);}
   else if(campo.startsWith('car.'))return no('bloqueado');   // las características solo cambian al subir de nivel
   else return no('bloqueado');
+  if(!muerto(f)&&muerto(g))muerteReg(g,campo==='agot'?'Cansancio de nivel 6':'Tres fallos marcados a mano en las salvaciones contra muerte',ctx);
   return ok(anota(g,ctx,'edicion',campo));
 }
 /* ---- exportar / importar ---- */
@@ -985,7 +1017,7 @@ function desdeRoliando(t,res){
      propuesta  → el cambio queda pendiente hasta que el máster lo acepte o lo rechace
      bloqueado  → solo el máster
    El jugador trabaja sobre la vista (valores aprobados + sus propuestas); el resto de la aplicación usa los valores aprobados. */
-const GRUPO_DE={hp:'pg',temp:'pg',agot:'pg',dgUsados:'gasto',slotsUsados:'gasto',pactUsados:'gasto',recursos:'gasto',activos:'gasto',maestrias:'gasto',maesCambio:'gasto',dec:'gasto',nombre:'identidad',ret:'identidad',rsinc:'texto',especie:'identidad',trasfondo:'identidad',
+const GRUPO_DE={muertes:'pg',hp:'pg',temp:'pg',agot:'pg',dgUsados:'gasto',slotsUsados:'gasto',pactUsados:'gasto',recursos:'gasto',activos:'gasto',maestrias:'gasto',maesCambio:'gasto',dec:'gasto',nombre:'identidad',ret:'identidad',rsinc:'texto',especie:'identidad',trasfondo:'identidad',
   ca:'datos',vel:'datos',notas:'texto',subclase:'identidad',tamano:'identidad',insp:'pg',muerte:'pg',inventario:'inventario',mon:'monedas',conjuros:'conjuros',niveles:'progreso',car:'progreso',dotes:'progreso',xp:'progreso',concedidas:'progreso',
   habil:'progreso',salvac:'progreso',ataques:'datos',rasgos:'datos',otras:'datos',magia:'conjuros',defensas:'pg',pers:'texto',lin:'identidad',pgn:'progreso',esinc:'texto'};
 const POLITICAS=['libre','propuesta','bloqueado'];
@@ -1277,7 +1309,7 @@ function arbol(bases,grupos){
   for(const g of grupos)for(const f of g.fichas){const e=f.base&&por.get(f.base);const it={f,campana:g.campana,nombre:g.nombre};if(e)e.copias.push(it);else huerfanas.push(it);}
   return {nodos:[...por.values()],huerfanas};
 }
-return {carga,sintonia,oroTotal,invUbicar,invPeso,pesoKg,desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,retratoSet,retratoActual,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,invContenido,maestriaCupo,maestriaSet,decisiones,decisionCerrar,conjuroSustituir,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,recursosClase,sincRecursos,rasgosNivel,espItems,sincEspecie,efectosClase,derivados,equipado,statblock,activar,desactivar,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
+return {carga,sintonia,oroTotal,invUbicar,invPeso,pesoKg,desdeRoliando,conflictos,HAB_NOM,HABIL,PERS,OTRAS,DEFS,salvas,salvBonus,habBonus,pasiva,magia,habilidadSet,salvacionSet,ataqueAnadir,ataqueQuitar,rasgoAnadir,rasgoQuitar,retratoSet,retratoActual,conjuroNivel,conjuroPreparar,listaAnadir,listaQuitar,cambiar,vista,resolver,resolverTodos,retirar,invAnadir,invQuitar,invMarcar,invUsar,invRecargar,invCantidad,invContenido,maestriaCupo,maestriaSet,decisiones,decisionCerrar,conjuroSustituir,normPoliticas,POLITICAS_DEFECTO,POLITICAS,GRUPO_DE,MON,aCampana,cambiarEstado,sustituir,arbol,fijarPG,fijarEspacios,lanzar,conjuroAnadir,conjuroQuitar,comoCombatiente,AB,XP,CLASES,dmAnotar,dmQuitar,devolverSlot,devolverPact,devolverRecurso,nuevoRecurso,quitarRecurso,recursosClase,sincRecursos,rasgosNivel,espItems,sincEspecie,efectosClase,derivados,equipado,statblock,activar,desactivar,norm,mod,nivel,nivelClase,prof,clases,hpMax,dg,espacios,dano,curar,salvMuerte,muerto,revivir,notaMuerte,temporales,usarSlot,usarPact,usarRecurso,descansoCorto,descansoLargo,puedeSubir,conceder,subir,bajar,editar,exportar,importar};
 })();
 </script>
 <script id="grupos-core">
@@ -2087,7 +2119,11 @@ dialog::backdrop{background:transparent;overflow:hidden;overscroll-behavior:cont
 @media (hover:none),(pointer:coarse){.hvcard{display:none!important}}
 .pjefs{flex-wrap:wrap;gap:6px}
 .pjef{display:inline-block;padding:3px 10px;border:1px solid var(--line);border-radius:99px;font-size:13px;line-height:1.35;background:var(--surface)}
-.pjef.on{border-color:var(--accent);color:var(--accent)}
+.pjef{border-color:color-mix(in srgb,var(--ok,#3f8f4f) 70%,var(--line));background:color-mix(in srgb,var(--ok,#3f8f4f) 10%,var(--surface));color:color-mix(in srgb,var(--ok,#3f8f4f) 80%,var(--fg))}
+.pjef.on{border-color:var(--ok,#3f8f4f);color:color-mix(in srgb,var(--ok,#3f8f4f) 80%,var(--fg))}
+.pjef.aviso{border-color:var(--warn,#b8860b);background:color-mix(in srgb,var(--warn,#b8860b) 10%,var(--surface));color:var(--warn,#b8860b)}
+.pjbien{background:var(--ok,#3f8f4f);border-color:var(--ok,#3f8f4f);color:#fff}
+.pjbien:hover{background:color-mix(in srgb,var(--ok,#3f8f4f) 85%,#000)}
 .pjest{flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .cpref{margin:14px 0}
 .cpref .f{margin:6px 0}
@@ -2537,12 +2573,23 @@ html:not([lang]) #loading [lang="es"],html[lang="es"] #loading [lang="es"],html[
 .evlist{display:flex;flex-wrap:wrap;gap:6px}
 .epev{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--surface-2)}
 .epev textarea{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--fg);min-height:48px;font:inherit}
-.pjgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.pjgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;align-items:stretch}
 .pjsec{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
 .pjsec h3{margin:0;font-size:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .pjsec h3 label{font-size:12px;color:var(--muted);font-weight:500;display:flex;gap:6px;align-items:center}
 .pjcard{--pj:#c9a14a;display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-left:6px solid var(--pj);border-radius:16px;background:var(--surface);text-decoration:none;color:var(--fg)}
 .pjcard:hover{background:color-mix(in srgb,var(--pj) 8%,var(--surface))}
+.pjav{position:relative}
+.pjav.pjtok img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.pjav.pjico .ic{width:26px;height:26px;color:var(--pj);stroke-width:1.9}
+.pjclsb{position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;background:var(--pj);border:2px solid var(--surface);display:grid;place-items:center;color:#fff}
+.pjclsb .ic{width:11px;height:11px;stroke-width:2.2}
+.pjcard{min-height:76px}
+.pjnm{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.pjnm b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pjnm .pjtag{flex:none}
+.pjfoto .pjav.pjico{background:color-mix(in srgb,var(--pj) 30%,var(--surface-2))}
+.pjfoto .pjav.pjico .ic{width:68px;height:68px;color:color-mix(in srgb,var(--pj) 80%,#fff);stroke-width:1.5}
 .pjav{flex:none;width:48px;height:48px;border-radius:50%;background:color-mix(in srgb,var(--pj) 28%,var(--surface));border:2px solid var(--pj);display:grid;place-items:center;font-weight:800;font-size:20px}
 .pjtx{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
 .pjtx small{color:var(--muted)}
@@ -2768,22 +2815,74 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjab .sv{font-size:12px;color:var(--muted)}
 .pjab input{width:58px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--fg);padding:3px}
 .pjab .lk{font-size:20px;font-weight:600;color:var(--fg);padding:2px 14px;margin-top:2px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2,transparent)}
-.pjw{max-width:760px}
-.pjw-pasos{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.pjw-pasos button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;cursor:pointer;font:inherit}
-.pjw-pasos button.on{background:var(--accent);color:var(--on-accent,#fff);border-color:var(--accent)}
-.pjw-pasos button.hecho{color:var(--fg)}
-.pjw-pasos span{font-weight:700}
+.pjw{max-width:none;width:100%;box-sizing:border-box;padding:20px 24px 0;gap:14px}   /* ocupa todo el contenedor central; el pie fijo llega hasta los bordes de la tarjeta */
+.pjbox .pjw-cab{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap}
+.pjbox .pjw-cab h3{font-size:20px;font-weight:500;letter-spacing:-.01em}
+.pjw-cab .pjw-cnt{margin-left:auto;font-size:13px;color:var(--muted)}
+.pjw-pasos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.pjw-pasos li{min-width:0}
+.pjw-pasos button{width:100%;min-height:46px;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:12px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px}
+.pjw-pasos button:hover:not(.on){border-color:var(--accent);color:var(--fg)}
+.pjw-pasos button span{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-size:13px;font-weight:700}
+.pjw-pasos button i{font-style:normal;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pjw-pasos button.on{background:var(--accent);color:var(--accent-fg,#fff);border-color:var(--accent);font-weight:600}
+.pjw-pasos button.on span{background:color-mix(in srgb,var(--accent-fg,#fff) 22%,transparent);color:var(--accent-fg,#fff)}
+.pjw-pasos button.hecho{color:var(--fg);border-color:color-mix(in srgb,var(--ok) 50%,var(--line))}
+.pjw-pasos button.hecho span{background:var(--ok);color:var(--accent-fg,#fff)}
+.pjw-pasos button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pjw-cuerpo{min-width:0}
+.pjw-fl{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.pjw-bl{border:1px solid var(--line);border-radius:14px;min-width:0}
+.pjw-bl-cab{width:100%;min-height:54px;display:flex;align-items:center;gap:12px;padding:10px 14px;background:transparent;border:0;border-radius:14px;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.pjw-bl-cab:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.pjw-bl-cab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pjw-bl-cab b{font-size:15px;font-weight:600;flex:none}
+.pjw-bl-cab::after{content:'▾';flex:none;color:var(--muted);transition:transform .15s}
+.pjw-bl.abierto>.pjw-bl-cab::after{transform:rotate(180deg)}
+.pjw-bl-n{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);font-size:13px;font-weight:700}
+.pjw-bl-res{flex:1;min-width:0;text-align:right;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pjw-bl.hecho .pjw-bl-n{background:var(--ok);color:var(--accent-fg,#fff)}
+.pjw-bl.hecho .pjw-bl-res{color:var(--fg)}
+.pjw-bl.act{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pjw-bl.act .pjw-bl-n{background:var(--accent);color:var(--accent-fg,#fff)}
+.pjw-bl.act>.pjw-bl-cab{cursor:default}
+.pjw-bl-cu{padding:2px 16px 16px}
+.pjw-bl-cu>h4:first-child,.pjw-bl-cu>.pjw-ras>h4:first-child,.pjw-bl-cu>.pjw-cj>:is(h3,h4):first-child{display:none}   /* el título ya está en la cabecera del bloque */
+.pjw-bl-cu>.pjw-ras,.pjw-bl-cu>.pjw-cj{border:0;padding:0;margin:0}
+.pjw-bl-cu>.hint:first-child{margin-top:2px}
+.pjw-fuente{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.pjw-bl-cu>.pjw-fuente{margin-top:10px}
+.pjw-cls .pjw-fte{grid-column:1/-1;justify-self:start;margin-top:6px;font-style:normal;font-size:11.5px;line-height:1.5;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff}
+.pjw-cls .pjw-fte.otro{background:#fff;color:#111;font-weight:600}   /* distinto del Manual del Jugador: se nota de un vistazo */
+.pjw-eqg{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.pjw-eqg .pjw-op small{line-height:1.45}
+@media (max-width:720px){.pjw-bl-res{display:none}.pjw-bl-cab b{flex:1}.pjw-bl-cu{padding:2px 12px 14px}}
+.pjw-cuerpo>.hint:first-child{font-size:15px;margin:2px 0 0;color:var(--fg)}
+.pjw-cuerpo>h3{font-size:17px;font-weight:600;margin:22px 0 2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+@media (max-width:720px){.pjw{padding:14px 14px 0}.pjw-pasos{display:flex;gap:6px}.pjw-pasos li{flex:0 0 auto}.pjw-pasos li:has(.on){flex:1 1 auto}.pjw-pasos button:not(.on){padding:8px;justify-content:center}.pjw-pasos button:not(.on) i{display:none}}
 .pjw-seg{display:flex;gap:6px;margin:6px 0}
 .pjw-bono{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;max-width:420px}
 .pjw-bono li{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
 .pjw-bono li.on{border-color:var(--accent)}
 .pjw-bono .nm{flex:1;font-weight:600}
 .pjw-n{font-weight:800;color:var(--accent)}
-.pjw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:8px 0}
-.pjw-op{text-align:left;border:1px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:8px;padding:8px 10px;cursor:pointer;font:inherit;display:grid;gap:2px}
+.pjw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:12px 0}
+.pjw-op{position:relative;text-align:left;border:1px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:12px;padding:10px 34px 10px 14px;min-height:56px;cursor:pointer;font:inherit;display:grid;gap:2px;align-content:center}
 .pjw-op small{color:var(--muted)}
-.pjw-op.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pjw-op:hover{border-color:var(--accent)}
+.pjw-op.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--card,transparent))}
+.pjw-op.on::after{content:'✓';position:absolute;top:8px;right:9px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg,#fff);font-size:12px;font-weight:800}
+.pjw-op:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pjw-cls{grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:14px;row-gap:1px;min-height:84px;padding:14px 38px 14px 16px;background:color-mix(in srgb,var(--pj) 72%,#000);border-color:color-mix(in srgb,var(--pj) 72%,#000);color:#fff}
+.pjw-cls .ic{grid-row:1/3;width:34px;height:34px;stroke-width:1.9}
+.pjw-cls b{font-size:17px;color:#fff;align-self:end}
+.pjw-cls small{color:#fff;opacity:.9;font-size:12.5px;align-self:start;line-height:1.3}
+.pjw-cls b:last-child{grid-row:1/3;align-self:center}
+.pjw-cls:hover{background:color-mix(in srgb,var(--pj) 82%,#000);border-color:color-mix(in srgb,var(--pj) 82%,#000)}
+.pjw-cls.on{border-color:var(--fg);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--fg);background:color-mix(in srgb,var(--pj) 72%,#000)}
+.pjw-cls.on::after{background:#fff;color:#111;top:10px;right:10px}
+.pjw-cls:not(.on){opacity:.88}
+.pjw-cls.on,.pjw-cls:hover{opacity:1}
 .pjw-fijos{margin:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .pjw-chip.fijo{background:var(--surface-2,transparent);border-color:var(--accent)}
 .pjw-ras{margin:12px 0}
@@ -2796,19 +2895,45 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjw-opc{display:grid;grid-template-columns:auto 1fr;gap:0 8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
 .pjw-opc.on{border-color:var(--accent)}
 .pjw-opc small{grid-column:2;color:var(--muted)}
-.pjw-chips{display:flex;flex-wrap:wrap;gap:6px}
-.pjw-chip{border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.pjw-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.pjw-chip{display:inline-flex;align-items:center;gap:7px;min-height:36px;box-sizing:border-box;border:1px solid var(--line);border-radius:999px;padding:4px 14px 4px 10px;cursor:pointer}
+.pjw-chip:hover{border-color:var(--accent)}
+.pjw-chip:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.pjw-chip:has(input:disabled:not(:checked)){opacity:.5;cursor:not-allowed}
+.pjw-chip.fijo{cursor:default}
+.pjw-chip:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 .pjw-det{border-left:3px solid var(--accent);padding:2px 10px;margin:8px 0;max-height:240px;overflow:auto}
-.pjw-car{border-collapse:collapse;margin:8px 0}
-.pjw-car th,.pjw-car td{padding:4px 10px;text-align:left}
-.pjw-pie{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+.pjw-met{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;margin:14px 0 4px}
+.pjw-met .pjw-mo{position:relative;display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:12px;row-gap:2px;min-height:68px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;color:var(--fg);font-size:inherit}
+.pjw-met .pjw-mo:hover{border-color:var(--accent)}
+.pjw-met .pjw-mo.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.pjw-met .pjw-mo input{grid-row:1/3;width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.pjw-met .pjw-mo b{font-size:15px;font-weight:600}
+.pjw-met .pjw-mo small{grid-column:2;color:var(--muted);font-size:12.5px;line-height:1.35}
+.pjw-met .pjw-mo:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.pjw-acc{display:flex;gap:10px;align-items:center;margin:10px 0}
+.pjw-cuerpo .hint{max-width:none;font-size:14px;line-height:1.5}
+.pjw-cuerpo>p[role=status]{font-size:15px;margin:10px 0}
+.pjw-car tbody th{font-size:15px}
+.pjw-car td b{font-size:16px}
+.pjw-car select{min-width:100px;padding:8px 30px 8px 10px;font-size:15px}
+.pjw-car .btn.sm{min-width:38px;min-height:38px;font-size:16px}
+.pjw-car{border-collapse:collapse;margin:12px 0;width:100%}
+.pjw-car th,.pjw-car td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line)}
+.pjw-car thead th{font-size:12px;color:var(--muted);font-weight:600}
+.pjw-pie{position:sticky;bottom:0;z-index:4;margin:20px -24px 0;padding:12px 24px;gap:10px;background:var(--surface);border-top:1px solid var(--line);border-radius:0 0 18px 18px;flex-wrap:nowrap}   /* siempre a mano, aunque el paso sea largo */
+.pjw-falta{flex:1;min-width:0;font-size:13px;color:var(--warn);font-weight:600}
+.pjw-falta.ok{color:var(--ok)}
+@media (max-width:720px){.pjw-pie{margin-inline:-14px;padding-inline:14px;flex-wrap:wrap}.pjw-falta{flex:1 0 100%;order:-1}}
 .pjw-orig{margin:10px 0}
 .pjw-orig ul{margin:6px 0;padding-left:18px;display:grid;gap:2px}
 .pjw-det2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:8px 0}
 .pjw .f textarea{width:100%;box-sizing:border-box;resize:vertical}
 /* paso Detalles: secciones con título y campos con caja visible (antes solo llevaban la línea inferior y todo se veía un bloque continuo) */
-.pjw-sec{border:1px solid var(--line);border-radius:12px;padding:14px 16px 16px;margin:14px 0 0}
-.pjw-sec>h4{margin:0 0 2px;font-size:15px}
+.pjw-sec,.pjw-ras,.pjw-cj{border:1px solid var(--line);border-radius:12px;padding:14px 16px 16px;margin:14px 0 0}
+.pjw-sec>h4,.pjw-ras>h4,.pjw-cj>h4,.pjw-cj>h3{margin:0 0 2px;font-size:15px}
+.pjw-sec>h4:not(:first-child),.pjw-cj>h4:not(:first-child),.pjw-cj>h5{margin-top:14px}
+.pjw-sec>.hint,.pjw-ras>.hint,.pjw-cj>.hint{margin:2px 0 8px}
 .pjw-sec>.hint{margin:0 0 12px}
 .pjw-sec>h4+.pjw-c{margin-top:8px}
 .pjw-gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
@@ -2855,15 +2980,18 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pjhoja{--bg:#202227;--surface:#282a31;--surface-2:#2f323a;--line:rgb(255 255 255/.14);--fg:#ebe7dc;--muted:#a3a6b0;--accent:#9db8ff;--accent-fg:#10131c;--ok:#7fcf8f;--warn:#e6bb57;--crit:#ff7a6b;color-scheme:dark;background-color:var(--bg);background-image:linear-gradient(rgb(255 255 255/.05),rgb(0 0 0/.14));box-shadow:0 1px 0 rgb(255 255 255/.08) inset,0 2px 3px rgb(0 0 0/.5),0 18px 30px -12px rgb(0 0 0/.7);}:root:not([data-theme="light"]) .pjfoto{background:#4a4f60}}
 :root[data-theme="dark"] .pjhoja{--bg:#202227;--surface:#282a31;--surface-2:#2f323a;--line:rgb(255 255 255/.14);--fg:#ebe7dc;--muted:#a3a6b0;--accent:#9db8ff;--accent-fg:#10131c;--ok:#7fcf8f;--warn:#e6bb57;--crit:#ff7a6b;color-scheme:dark;background-color:var(--bg);background-image:linear-gradient(rgb(255 255 255/.05),rgb(0 0 0/.14));box-shadow:0 1px 0 rgb(255 255 255/.08) inset,0 2px 3px rgb(0 0 0/.5),0 18px 30px -12px rgb(0 0 0/.7);}
 :root[data-theme="dark"] .pjfoto{background:#4a4f60}
-.pjhoja::before,.pjhoja::after{content:"";position:absolute;top:9px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8695a 0 25%,#b8342a 60%,#7d2019);box-shadow:1px 3px 4px rgb(0 0 0/.5)}
+.pjhoja::before,.pjhoja::after{content:"";position:absolute;top:9px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--pj) 65%,#fff) 0 25%,var(--pj) 60%,color-mix(in srgb,var(--pj) 55%,#000));box-shadow:1px 3px 4px rgb(0 0 0/.5)}   /* chinchetas del color de la clase */
 .pjhoja::before{left:22px}.pjhoja::after{right:22px}
+/* El color de la clase (--pj) solo toca unos detalles de la hoja: chinchetas, borde de las características, línea del nombre, pestaña activa y el icono del retrato. El resto sigue con la paleta clara/oscura de siempre. */
+.pjtab[aria-selected=true]{border-bottom-color:color-mix(in srgb,var(--pj) 75%,#000)}
+.pjrol .pjname{border-bottom-color:color-mix(in srgb,var(--pj) 85%,transparent)}
 .pjlay{display:grid;grid-template-columns:minmax(250px,310px) minmax(0,1fr);gap:22px;align-items:start}
 .pjres{display:flex;flex-direction:column;gap:12px;position:sticky;top:8px}
 .pjrethd{display:flex;justify-content:space-between;align-items:flex-start}
 .pjfoto{width:128px;height:128px;padding:4px;border:0;cursor:pointer;background:#1c2740;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);display:grid;place-items:center}
 .pjfoto img{width:100%;height:100%;object-fit:cover;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .pjfoto.est{background:var(--accent)}
-.pjfoto .pjav{width:100%;height:100%;border-radius:0;border:0;background:var(--surface-2);color:var(--fg);font-size:44px}
+.pjfoto .pjav{width:100%;height:100%;border-radius:0;border:0;background:var(--surface-2);color:var(--fg);font-size:44px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .pjrol .pjname{font-size:34px;font-weight:700;line-height:1.1;background:transparent;border:0;border-bottom:3px solid color-mix(in srgb,var(--fg) 45%,transparent);border-radius:0;padding:2px 0;color:var(--fg);width:100%}
 .pjcls,.pjorg{margin:0}.pjcls{font-variant:small-caps;letter-spacing:.04em;font-size:17px}.pjorg{color:var(--muted)}
 .pjlbl{font-variant:small-caps;letter-spacing:.1em;color:var(--muted);font-size:13px}
@@ -3018,7 +3146,7 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjsplv .pjlist li{padding:6px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);justify-content:flex-start}
 .pjsplv .pjlist li:last-child{border-bottom:0}
 .pjspn{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:1px}
-.pjspcab,.pjsplv .pjsptab li{display:grid;grid-template-columns:minmax(120px,1.6fr) 92px 76px 84px minmax(120px,1.5fr) 176px;column-gap:14px;align-items:center;justify-content:normal}
+.pjspcab,.pjsplv .pjsptab li{display:grid;grid-template-columns:minmax(120px,1.6fr) 92px 76px 84px minmax(120px,1.5fr) 112px;column-gap:14px;align-items:center;justify-content:normal}
 .pjspcab{margin-top:12px;padding:8px 0 6px;border-bottom:1px solid var(--line)}
 .pjspcab span{font-variant:small-caps;letter-spacing:.08em;font-size:13px;color:var(--muted)}
 .pjsplv .pjsptab li{padding:7px 0;flex-wrap:nowrap}
@@ -3032,7 +3160,49 @@ html.printing #printdoc{display:block;font:10.5pt/1.35 Georgia,'Times New Roman'
 .pjsp-sub{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:4px;font-size:13px;color:var(--muted)}
 .pjsiempre{border-color:var(--ok,#3f8f4f);color:var(--ok,#3f8f4f);white-space:nowrap}
 .pjspc.ctl label{white-space:nowrap;display:flex;align-items:center;gap:6px}
-.pjspn b[data-hv],.pjatn b[data-hv],.pjsp-f[data-hv],.pjspc small b[data-hv]{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:var(--muted);cursor:help}
+.pjrol .pjbox.pjmbox{border:2px solid var(--crit,#c0392b);border-radius:14px;padding:16px 18px;gap:10px;background:color-mix(in srgb,var(--crit,#c0392b) 9%,var(--surface))}
+.pjrol .pjbox.pjmbox.estable{border-color:var(--ok,#3f8f4f);background:color-mix(in srgb,var(--ok,#3f8f4f) 9%,var(--surface))}
+.pjrol .pjbox.pjmbox.muerto{background:color-mix(in srgb,var(--crit,#c0392b) 18%,var(--surface))}
+.pjmuertobox{border:2px solid var(--crit,#c0392b);border-radius:14px;padding:16px 20px;margin-bottom:12px;background:color-mix(in srgb,var(--crit,#c0392b) 16%,var(--surface));display:grid;gap:6px}
+.pjmuertobox h2{margin:0;font-size:24px;letter-spacing:.05em;text-transform:uppercase;color:var(--crit,#c0392b)}
+.pjmuertobox p{margin:0;font-size:14px;line-height:1.5;text-wrap:pretty}
+.pjmuertotag{background:var(--crit,#c0392b)!important;border-color:var(--crit,#c0392b)!important;color:#fff!important;font-weight:700;text-transform:uppercase;letter-spacing:.06em;width:max-content}
+.pjvuelto{margin:0;font-size:12px;line-height:1.4;color:var(--muted);text-wrap:pretty}
+.pjmnota{font-style:italic}
+.pjmhist .pjlist li{align-items:flex-start}
+.pjresmuerto{display:flex;flex-direction:column;gap:8px}
+.pjresmuerto .pjname{font-size:22px}
+.pjmuerto .pjfoto img,.pjmuerto .pjfoto .pjav{filter:grayscale(1)}
+.pjmuerto .pjpan:not([data-p="dm"]) :is(input,select,textarea,button){pointer-events:none;opacity:.7}
+.pjcard.pjmuertoc{filter:grayscale(.85);opacity:.8}
+.pjrevl{display:grid;gap:8px}
+.pjrevl .btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;height:auto;padding:10px 14px}
+.pjrevl .btn small{color:var(--muted);font-weight:400}
+.pjrev label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.pjmbox h3{margin:0;font-size:20px;line-height:1.2}
+.pjmcnt{display:flex;gap:24px;font-size:16px}
+.pjmcnt b{font-size:22px;margin-left:4px}
+.pjmex{color:var(--ok,#3f8f4f)}
+.pjmfa{color:var(--crit,#c0392b)}
+.pjmest{margin:0;font-size:14px;line-height:1.5;color:var(--fg);text-wrap:pretty}
+.pjmayuda{margin:6px 0 4px;font-size:12px;color:var(--muted)}
+.pjmayuda summary{cursor:pointer;color:var(--muted)}
+.pjmayuda ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:5px;line-height:1.5;text-wrap:pretty}
+.pjmayuda li b{color:var(--fg)}
+.pjestl{list-style:none;margin:0;padding:0;display:grid}
+.pjestf{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:4px 18px;padding:12px 0;border-top:1px solid var(--line)}
+.pjestf:first-child{border-top:0;padding-top:2px}
+.pjestn{display:flex;flex-direction:column;align-items:flex-start;gap:5px;font-size:14px}
+.pjestc ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:13px;line-height:1.45;color:var(--fg)}
+.pjestc ul li b{font-weight:700}
+.pjestc p{margin:0}
+.pjpen{border-color:var(--crit,#c0392b);color:var(--crit,#c0392b);white-space:nowrap}
+.pjrol .pjbox.pjestados{border-color:color-mix(in srgb,var(--crit,#c0392b) 55%,var(--line));background:color-mix(in srgb,var(--crit,#c0392b) 6%,var(--surface))}
+.pjrol .pjbox.pjestados>h3{color:var(--crit,#c0392b)}
+.pjestn b{color:var(--crit,#c0392b)}
+.pjestn .pjsiempre{color:var(--ok,#3f8f4f)}
+@media (max-width:560px){.pjestf{grid-template-columns:1fr}}
+.pjestn b[data-hv],.pjspn b[data-hv],.pjatn b[data-hv],.pjsp-f[data-hv],.pjspc small b[data-hv]{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:var(--muted);cursor:help}
 .pjsp-f{color:var(--accent);font-size:11px;font-variant:small-caps;letter-spacing:.06em}
 @container pjconj (max-width:720px){.pjspcab{display:none}.pjsplv .pjsptab li{grid-template-columns:minmax(0,1fr) auto;row-gap:4px}
   .pjsptab .pjspc:not(.pjspn):not(.ctl){grid-column:1/-1;flex-direction:row;align-items:baseline;gap:8px}
@@ -3945,7 +4115,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
 </style>
 
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="i-rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.3"/></filter><symbol id="i-bq-camp" viewBox="0 0 24 24"><path d="M2 20 12 4l10 16z"/><path d="M12 4 8.5 20"/><path d="M1 20h22"/></symbol><symbol id="i-bq-pj" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol><symbol id="i-bq-comp" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 7h6"/></symbol><symbol id="i-bq-util" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol><symbol id="i-sword" viewBox="0 0 24 24"><path d="M14.5 3.5h6v6L9.5 20.5l-6-6z"/><path d="M5.5 12.5l6 6M3 21l3-3"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol><symbol id="i-d20" viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M12 7.5l-5 8.5h10z"/><path d="M12 2.5v5M3.5 7.3L7 16M20.5 7.3L17 16M7 16l5 5.5 5-5.5"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.5M4.5 12h.5M4.5 18h.5"/></symbol><symbol id="i-books" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M15.2 5.6l3.6-.9 3.4 14.6-3.6.9z"/></symbol><symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5L12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5L12 11.5l8.5-4M12 11.5v9"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 012-2h13v14H6a2 2 0 00-2 2.5z"/><path d="M4 19.5A1.5 1.5 0 006 21h13v-4"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.6-3.8 3.6-6 7.5-6s6.9 2.2 7.5 6"/></symbol><symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/><circle cx="12" cy="12" r="6.5"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol><symbol id="i-claw" viewBox="0 0 24 24"><path d="M12 12.5c-3 0-5.5 2.7-5.5 5.1 0 1.7 1.3 2.4 2.9 2.4 1.1 0 1.7-.6 2.6-.6s1.5.6 2.6.6c1.6 0 2.9-.7 2.9-2.4 0-2.4-2.5-5.1-5.5-5.1z"/><ellipse cx="5.6" cy="10" rx="1.7" ry="2.2"/><ellipse cx="9.4" cy="5.9" rx="1.7" ry="2.3"/><ellipse cx="14.6" cy="5.9" rx="1.7" ry="2.3"/><ellipse cx="18.4" cy="10" rx="1.7" ry="2.2"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.5 7.5 0 019.5 4.5a7.5 7.5 0 1010 10z"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></symbol><symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-8 7 8 7"/></symbol><symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l8 7-8 7"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l1 12.5h-15z"/><path d="M9 8V6.5a3 3 0 016 0V8"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></symbol><symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.3-3.4 2.7-5.5 6-5.5s5.7 2.1 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.6.2 4.3 2 4.5 4.9"/></symbol><symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 4h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2z"/><path d="M6 4a2 2 0 00-2 2v1h2M18 4a2 2 0 012 2v1h-2M9 9h6M9 13h6"/></symbol><symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M7 3h10M7 21h10M8 3c0 4 4 5.5 4 9s-4 5-4 9M16 3c0 4-4 5.5-4 9s4 5 4 9"/></symbol><symbol id="i-spiral" viewBox="0 0 24 24"><path d="M13 12a1 1 0 1 1-2 0 2.5 2.5 0 1 1 5 0 4 4 0 1 1-8 0 5.5 5.5 0 1 1 11 0"/></symbol><symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0112 7.2 4.3 4.3 0 0119.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="i-move" viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6M4 7h4M4 17h4"/></symbol><symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol><symbol id="i-area" viewBox="0 0 24 24"><path d="M4 20h16L4 4z"/><path d="M4 14h3M4 10h2M10 20v-2M14 20v-3"/></symbol><symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol><symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5l9 16H3z"/><path d="M12 10v4M12 17h.01"/></symbol><symbol id="i-speech" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4.5 3.5V16H4z"/></symbol><symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 10-3-3M3 12h15a3 3 0 11-3 3M3 16h7"/></symbol><symbol id="i-disengage" viewBox="0 0 24 24"><path d="M14 5l5 5-5 5"/><path d="M19 10H9a5 5 0 000 10h1"/></symbol><symbol id="i-fog" viewBox="0 0 24 24"><path d="M8 5h8M4 9h13M7 13h13M4 17h10"/></symbol><symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 01-5 5L4 17l3 3 5.5-5.5a4 4 0 005-5L15 12l-2.5-.5L12 9z"/></symbol><symbol id="i-grab" viewBox="0 0 24 24"><path d="M8 12V7a1.5 1.5 0 013 0v4M11 11V5.5a1.5 1.5 0 013 0V11M14 11V7a1.5 1.5 0 013 0v6a7 7 0 01-7 7h-.5A5.5 5.5 0 014 14.5V12a1.5 1.5 0 013 0v1"/></symbol><symbol id="i-chain" viewBox="0 0 24 24"><path d="M10 14l-2 2a3 3 0 01-4-4l3-3a3 3 0 014 0M14 10l2-2a3 3 0 014 4l-3 3a3 3 0 01-4 0M9.5 14.5l5-5"/></symbol><symbol id="i-scared" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 9.5h.01M15.5 9.5h.01"/><circle cx="12" cy="15.5" r="1.8"/></symbol><symbol id="i-daze" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8.5l2 2m0-2l-2 2M14 8.5l2 2m0-2l-2 2M9 16h6"/></symbol><symbol id="i-battery" viewBox="0 0 24 24"><path d="M3 8h15v8H3zM20.5 11v2M6 11v2"/></symbol><symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V5M6 11l6-6 6 6"/></symbol><symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></symbol><symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3"/><path d="M7.5 15h9"/></symbol><symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol><symbol id="i-zzz" viewBox="0 0 24 24"><path d="M4 7h5l-5 6h5M12 12h4l-4 5h4M16.5 4h3.5l-3.5 4.5H20"/></symbol><symbol id="i-ghost" viewBox="0 0 24 24"><path d="M6 20V10a6 6 0 0112 0v10l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5z"/><path d="M10 10h.01M14 10h.01"/></symbol><symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M10 5l2 2 2-2M10 19l2-2 2 2"/></symbol><symbol id="i-rock" viewBox="0 0 24 24"><path d="M4 18l3-8 4-4 5 2 4 5-1 5z"/><path d="M7 10l5 3 4-5M12 13l-1 5"/></symbol><symbol id="i-plusc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></symbol><symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></symbol><symbol id="i-wall" viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 12h18M9 6v6M15 12v6"/></symbol><symbol id="i-burst" viewBox="0 0 24 24"><path d="M12 2.5l1.8 5 4.9-2.3-2.3 4.9 5 1.8-5 1.8 2.3 4.9-4.9-2.3-1.8 5-1.8-5-4.9 2.3 2.3-4.9-5-1.8 5-1.8-2.3-4.9 4.9 2.3z"/></symbol><symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/></symbol><symbol id="i-cup" viewBox="0 0 24 24"><path d="M5 9h11v5a5 5 0 01-5 5h-1a5 5 0 01-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 010 5H16M8 3.5v2.5M11 3v3M14 3.5v2.5"/></symbol><symbol id="i-cone" viewBox="0 0 24 24"><path d="M12 3L5 19M12 3l7 16"/><ellipse cx="12" cy="19" rx="7" ry="2"/></symbol><symbol id="i-sphere" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="8.5" ry="3"/></symbol><symbol id="i-cyl" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/></symbol><symbol id="i-line" viewBox="0 0 24 24"><path d="M4 12h16M4 8.5v7M20 8.5v7"/></symbol><symbol id="i-emanate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/></symbol><symbol id="i-jump" viewBox="0 0 24 24"><path d="M3 20h18M6 17c2-9 10-9 12 0"/><path d="M15.5 14.5l2.5 2.5 2-3"/></symbol><symbol id="i-ladder" viewBox="0 0 24 24"><path d="M8 3v18M16 3v18M8 7h8M8 12h8M8 17h8"/></symbol><symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></symbol><symbol id="i-feather" viewBox="0 0 24 24"><path d="M20 4C12 4 6 10 6 18v2.5M6 18l7-7M10 14h5.5M13 11h4.5"/><path d="M20 4c0 7-4 12-10 13"/></symbol><symbol id="i-rubble" viewBox="0 0 24 24"><path d="M3 19l4-5 3 3 4-7 3 4 4 5z"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></symbol><symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol><symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 01-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z"/></symbol><symbol id="i-bubbles" viewBox="0 0 24 24"><circle cx="9" cy="15" r="4"/><circle cx="16" cy="8" r="2.5"/><circle cx="17" cy="16" r="1.5"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 018 0v2.5M12 14.5v2.5"/></symbol><symbol id="i-fall" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5M5 21h14"/></symbol></defs></svg><div id="loading" class="noi18n" role="status" aria-live="polite"><div class="ld">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="i-rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.3"/></filter><symbol id="i-bq-camp" viewBox="0 0 24 24"><path d="M2 20 12 4l10 16z"/><path d="M12 4 8.5 20"/><path d="M1 20h22"/></symbol><symbol id="i-bq-pj" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol><symbol id="i-bq-comp" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 7h6"/></symbol><symbol id="i-bq-util" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol><symbol id="i-sword" viewBox="0 0 24 24"><path d="M14.5 3.5h6v6L9.5 20.5l-6-6z"/><path d="M5.5 12.5l6 6M3 21l3-3"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol><symbol id="i-d20" viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M12 7.5l-5 8.5h10z"/><path d="M12 2.5v5M3.5 7.3L7 16M20.5 7.3L17 16M7 16l5 5.5 5-5.5"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.5M4.5 12h.5M4.5 18h.5"/></symbol><symbol id="i-books" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M15.2 5.6l3.6-.9 3.4 14.6-3.6.9z"/></symbol><symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5L12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5L12 11.5l8.5-4M12 11.5v9"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 012-2h13v14H6a2 2 0 00-2 2.5z"/><path d="M4 19.5A1.5 1.5 0 006 21h13v-4"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.6-3.8 3.6-6 7.5-6s6.9 2.2 7.5 6"/></symbol><symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/><circle cx="12" cy="12" r="6.5"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol><symbol id="i-claw" viewBox="0 0 24 24"><path d="M12 12.5c-3 0-5.5 2.7-5.5 5.1 0 1.7 1.3 2.4 2.9 2.4 1.1 0 1.7-.6 2.6-.6s1.5.6 2.6.6c1.6 0 2.9-.7 2.9-2.4 0-2.4-2.5-5.1-5.5-5.1z"/><ellipse cx="5.6" cy="10" rx="1.7" ry="2.2"/><ellipse cx="9.4" cy="5.9" rx="1.7" ry="2.3"/><ellipse cx="14.6" cy="5.9" rx="1.7" ry="2.3"/><ellipse cx="18.4" cy="10" rx="1.7" ry="2.2"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.5 7.5 0 019.5 4.5a7.5 7.5 0 1010 10z"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></symbol><symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-8 7 8 7"/></symbol><symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l8 7-8 7"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l1 12.5h-15z"/><path d="M9 8V6.5a3 3 0 016 0V8"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></symbol><symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.3-3.4 2.7-5.5 6-5.5s5.7 2.1 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.6.2 4.3 2 4.5 4.9"/></symbol><symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 4h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2z"/><path d="M6 4a2 2 0 00-2 2v1h2M18 4a2 2 0 012 2v1h-2M9 9h6M9 13h6"/></symbol><symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M7 3h10M7 21h10M8 3c0 4 4 5.5 4 9s-4 5-4 9M16 3c0 4-4 5.5-4 9s4 5 4 9"/></symbol><symbol id="i-spiral" viewBox="0 0 24 24"><path d="M13 12a1 1 0 1 1-2 0 2.5 2.5 0 1 1 5 0 4 4 0 1 1-8 0 5.5 5.5 0 1 1 11 0"/></symbol><symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0112 7.2 4.3 4.3 0 0119.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="i-move" viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6M4 7h4M4 17h4"/></symbol><symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol><symbol id="i-area" viewBox="0 0 24 24"><path d="M4 20h16L4 4z"/><path d="M4 14h3M4 10h2M10 20v-2M14 20v-3"/></symbol><symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol><symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5l9 16H3z"/><path d="M12 10v4M12 17h.01"/></symbol><symbol id="i-speech" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4.5 3.5V16H4z"/></symbol><symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 10-3-3M3 12h15a3 3 0 11-3 3M3 16h7"/></symbol><symbol id="i-disengage" viewBox="0 0 24 24"><path d="M14 5l5 5-5 5"/><path d="M19 10H9a5 5 0 000 10h1"/></symbol><symbol id="i-fog" viewBox="0 0 24 24"><path d="M8 5h8M4 9h13M7 13h13M4 17h10"/></symbol><symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 01-5 5L4 17l3 3 5.5-5.5a4 4 0 005-5L15 12l-2.5-.5L12 9z"/></symbol><symbol id="i-grab" viewBox="0 0 24 24"><path d="M8 12V7a1.5 1.5 0 013 0v4M11 11V5.5a1.5 1.5 0 013 0V11M14 11V7a1.5 1.5 0 013 0v6a7 7 0 01-7 7h-.5A5.5 5.5 0 014 14.5V12a1.5 1.5 0 013 0v1"/></symbol><symbol id="i-chain" viewBox="0 0 24 24"><path d="M10 14l-2 2a3 3 0 01-4-4l3-3a3 3 0 014 0M14 10l2-2a3 3 0 014 4l-3 3a3 3 0 01-4 0M9.5 14.5l5-5"/></symbol><symbol id="i-scared" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 9.5h.01M15.5 9.5h.01"/><circle cx="12" cy="15.5" r="1.8"/></symbol><symbol id="i-daze" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8.5l2 2m0-2l-2 2M14 8.5l2 2m0-2l-2 2M9 16h6"/></symbol><symbol id="i-battery" viewBox="0 0 24 24"><path d="M3 8h15v8H3zM20.5 11v2M6 11v2"/></symbol><symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V5M6 11l6-6 6 6"/></symbol><symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></symbol><symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3"/><path d="M7.5 15h9"/></symbol><symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol><symbol id="i-zzz" viewBox="0 0 24 24"><path d="M4 7h5l-5 6h5M12 12h4l-4 5h4M16.5 4h3.5l-3.5 4.5H20"/></symbol><symbol id="i-ghost" viewBox="0 0 24 24"><path d="M6 20V10a6 6 0 0112 0v10l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5z"/><path d="M10 10h.01M14 10h.01"/></symbol><symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M10 5l2 2 2-2M10 19l2-2 2 2"/></symbol><symbol id="i-rock" viewBox="0 0 24 24"><path d="M4 18l3-8 4-4 5 2 4 5-1 5z"/><path d="M7 10l5 3 4-5M12 13l-1 5"/></symbol><symbol id="i-plusc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></symbol><symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></symbol><symbol id="i-wall" viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 12h18M9 6v6M15 12v6"/></symbol><symbol id="i-burst" viewBox="0 0 24 24"><path d="M12 2.5l1.8 5 4.9-2.3-2.3 4.9 5 1.8-5 1.8 2.3 4.9-4.9-2.3-1.8 5-1.8-5-4.9 2.3 2.3-4.9-5-1.8 5-1.8-2.3-4.9 4.9 2.3z"/></symbol><symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/></symbol><symbol id="i-cup" viewBox="0 0 24 24"><path d="M5 9h11v5a5 5 0 01-5 5h-1a5 5 0 01-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 010 5H16M8 3.5v2.5M11 3v3M14 3.5v2.5"/></symbol><symbol id="i-cone" viewBox="0 0 24 24"><path d="M12 3L5 19M12 3l7 16"/><ellipse cx="12" cy="19" rx="7" ry="2"/></symbol><symbol id="i-sphere" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="8.5" ry="3"/></symbol><symbol id="i-cyl" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/></symbol><symbol id="i-line" viewBox="0 0 24 24"><path d="M4 12h16M4 8.5v7M20 8.5v7"/></symbol><symbol id="i-emanate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/></symbol><symbol id="i-jump" viewBox="0 0 24 24"><path d="M3 20h18M6 17c2-9 10-9 12 0"/><path d="M15.5 14.5l2.5 2.5 2-3"/></symbol><symbol id="i-ladder" viewBox="0 0 24 24"><path d="M8 3v18M16 3v18M8 7h8M8 12h8M8 17h8"/></symbol><symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></symbol><symbol id="i-feather" viewBox="0 0 24 24"><path d="M20 4C12 4 6 10 6 18v2.5M6 18l7-7M10 14h5.5M13 11h4.5"/><path d="M20 4c0 7-4 12-10 13"/></symbol><symbol id="i-rubble" viewBox="0 0 24 24"><path d="M3 19l4-5 3 3 4-7 3 4 4 5z"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></symbol><symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol><symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 01-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z"/></symbol><symbol id="i-bubbles" viewBox="0 0 24 24"><circle cx="9" cy="15" r="4"/><circle cx="16" cy="8" r="2.5"/><circle cx="17" cy="16" r="1.5"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 018 0v2.5M12 14.5v2.5"/></symbol><symbol id="i-fall" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5M5 21h14"/></symbol><symbol id="i-cls-barbaro" viewBox="0 0 24 24"><g transform="rotate(35 12 12)"><path d="M12 2v20"/><path d="M11 5.5L4 3.5Q2 7.5 4 11.5L11 9.5"/><path d="M13 5.5L20 3.5Q22 7.5 20 11.5L13 9.5"/></g></symbol><symbol id="i-cls-bardo" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></symbol><symbol id="i-cls-brujo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 2.5l5.58 17.19L2.96 9.06h18.08L6.42 19.69z"/></symbol><symbol id="i-cls-clerigo" viewBox="0 0 24 24"><path d="M12 3v18M6.5 9h11"/><path d="M4.5 4.5l2 2M19.5 4.5l-2 2M4.5 19.5l2-2M19.5 19.5l-2-2"/></symbol><symbol id="i-cls-druida" viewBox="0 0 24 24"><path d="M5 19C5 10 11 4 20 4c0 9-6 15-15 15z"/><path d="M5 19L14 10"/></symbol><symbol id="i-cls-explorador" viewBox="0 0 24 24"><path d="M5 3c8 3 8 15 0 18"/><path d="M5 3v18M3 12h17M17 9l3 3-3 3"/></symbol><symbol id="i-cls-guerrero" viewBox="0 0 24 24"><path d="M3 7l6-2 6 2v5c0 3.5-2.5 6-6 7-3.5-1-6-3.5-6-7z"/><path d="M19 2.5v14.5M16.5 17h5M19 17v4"/></symbol><symbol id="i-cls-hechicero" viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"/></symbol><symbol id="i-cls-mago" viewBox="0 0 24 24"><path d="M7 16.5C8.5 11 10 7 12 4.5c1.5-1.5 3.5-1 4.5.5-1.5 0-2.5 1-2.8 2.5.8 3 2.3 6 3.3 9"/><path d="M3 18.5c0-1.2 4-2 9-2s9 .8 9 2-4 2-9 2-9-.8-9-2z"/><path d="M8.4 13.6c2.5.8 5.3.8 7.6 0M11.6 8.6v3M10.1 10.1h3"/></symbol><symbol id="i-cls-monje" viewBox="0 0 24 24"><path d="M8 20c-2-2-3-4-3-6V9a1.5 1.5 0 0 1 3 0v3M8 9V6a1.5 1.5 0 0 1 3 0v6M11 5.5a1.5 1.5 0 0 1 3 0V12M14 7a1.5 1.5 0 0 1 3 0v8c0 3-2 5-5 5H8"/></symbol><symbol id="i-cls-paladin" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v8M8.5 11.5h7"/></symbol><symbol id="i-cls-picaro" viewBox="0 0 24 24"><path d="M3 9c3-2 6-2 9-1 3-1 6-1 9 1-.5 4-2 7-5 7-2 0-3-1-4-2-1 1-2 2-4 2-3 0-4.5-3-5-7z"/><path d="M7 11.2c.8.6 2 .8 3 .4M17 11.2c-.8.6-2 .8-3 .4"/></symbol></defs></svg><div id="loading" class="noi18n" role="status" aria-live="polite"><div class="ld">
   <svg class="d20" viewBox="0 0 48 48" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M24 3 43 14v20L24 45 5 34V14Z M24 3 13 30h22Z M5 14l8 16M43 14l-8 16M13 30l11 15 11-15"/></svg>
   <b><span lang="es">Herramientas del Máster</span><span lang="en">Dungeon Master Tools</span><span lang="fr">Outils du MJ</span><span lang="pt">Ferramentas do Mestre</span><span lang="it">Strumenti del Master</span><span lang="de">Spielleiter-Werkzeuge</span></b>
   <span><span lang="es">Cargando…</span><span lang="en">Loading…</span><span lang="fr">Chargement…</span><span lang="pt">Carregando…</span><span lang="it">Caricamento…</span><span lang="de">Wird geladen …</span></span>
@@ -3977,7 +4147,7 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   </div>
 </header>
 
-<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.129</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
+<nav class="pagenav" aria-label="Secciones" data-blk=""><button type="button" class="navsearch" data-act="openbest" title="Buscar criaturas, conjuros, objetos, dotes, clases, especies y trasfondos"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> <span>Buscar</span> <span class="nk noi18n">Ctrl K</span></button><a href="#campana" class="main" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-bq-camp"/></svg> <span>Campaña</span></a><a href="#personajes" class="main" data-blk="personajes"><svg class="ic" aria-hidden="true"><use href="#i-bq-pj"/></svg> <span>Personajes</span> <span class="navbadge" id="nav-pjb" hidden></span></a><a href="#compendio" class="main" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-bq-comp"/></svg> <span>Compendio</span></a><a href="#utilidades" class="main" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-bq-util"/></svg> <span>Utilidades</span></a><button type="button" class="btn sm navpill noi18n" id="nav-cbpill" data-act="gocombate" hidden></button><span class="navsep"></span><a href="#combate" class="sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-sword"/></svg> Combate</a><a href="#mesa" class="sbmesa sub" data-blk="campana"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg> Ventana de mesa</a><a href="#referencia" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Referencia</a><a href="#homebrew" class="sub" data-blk="compendio"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg> Homebrew</a><a href="#tablas" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-d20"/></svg> Tablas</a><a href="#modulos" class="sub" data-blk="utilidades"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg> Módulos</a><a href="#revision" id="nav-rv" class="sub" data-blk="utilidades" hidden><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> Revisión</a><details class="navmore" id="navmore"><summary class="btn sm ghost"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> <span>Más</span></summary><div class="navmore-body"><button type="button" class="btn sm ghost lkbtn" id="safe-btn" data-act="safetoggle" title="Modo seguro: oculta PG, CA, estadísticas y ataques de las criaturas (para enseñar la pantalla a los jugadores)" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-eyeoff"/></svg><span class="nl">Modo seguro</span></button><button type="button" class="btn sm ghost lkbtn" id="lock-btn" data-act="lock" aria-label="Bloquear"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span class="nl">Bloquear</span></button><a href="#cambios" class="navver" title="Historial de cambios">v1.130</a></div></details><button type="button" class="btn sm acct" id="acct-btn" data-act="acopen" hidden><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg> Entrar</button><button type="button" class="btn sm navtoggle" data-act="navtoggle" aria-expanded="false" aria-label="Secciones"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg> <span>Menú</span></button></nav>
 <div id="sesbar" class="sesbar" role="status" hidden></div>
 <div id="relbar" class="sesbar" role="status" hidden></div>
 <div id="vistabar" class="vistabar" role="status" hidden><span></span><button type="button" class="btn sm" data-act="grpvistasalir">Salir de esta vista</button></div>
@@ -4189,6 +4359,12 @@ html.app-escritorio.sb-min[data-view="mini"] .rmain{grid-template-columns:42px m
   <div class="vhead"><h2>Historial de cambios</h2><span class="pcsub" id="cl-count"></span>
     <a class="btn" href="#inicio" style="margin-left:auto">← Inicio</a></div>
   <ol class="changelog" id="changelog-full">
+    <li><h3>v1.130 <span>27 nov 2026</span></h3><ul>
+      <li><b>Salvaciones contra muerte.</b> A 0 PG se cae inconsciente: botón para tirar la salvación (éxitos y fallos, 1 y 20 naturales, crítico y muerte instantánea) con la regla desplegable.</li>
+      <li><b>Personaje muerto.</b> Con tres fallos o cansancio 6 la ficha se bloquea; el máster anota la causa y puede devolverlo a la vida. El historial de muertes se conserva.</li>
+      <li><b>Estados que te afectan.</b> El cansancio con sus penalizadores por nivel y cada estado marcado con lo que provoca.</li>
+      <li><b>Creador por bloques.</b> Se pliegan al completarse, el pie dice qué falta, el equipo inicial se elige (A, B o C) y cada clase indica su manual de origen.</li>
+      <li><b>Tarjetas de personaje</b> con token o icono de clase, barra de PG y color de clase.</li></ul></li>
     <li><h3>v1.129 <span>27 nov 2026</span></h3><ul>
       <li><b>Conjuros por niveles.</b> La lista de la ficha se agrupa en Trucos, Nivel I… sin elegir el nivel (lo da el compendio), con cabecera de columnas y fichas emergentes del compendio sobre el conjuro, Concentración y Ritual.</li>
       <li><b>Siempre preparados.</b> Los conjuros que da la especie, un rasgo o una dote no cuentan para los que eliges y dicen de dónde vienen. Bardo, hechicero y brujo cambian los preparados solo al subir de nivel.</li>
@@ -5723,6 +5899,7 @@ function pjTirar(b){
   toast(msg,4200);
 }
 function doRoll(b){
+  if(typeof pjGet==='function'&&pjSel&&b.closest&&b.closest('.pjsheet')){const s=pjGet(pjSel);if(s&&Ficha.muerto(s.f)){toast(T('Personaje muerto: no puede tirar.'));return;}}
   if(b.dataset.roll==='pjchk')return pjTirar(b);
   const sb=b.closest('.sb'),fi=!sb&&typeof pjGet==='function'?pjGet(pjSel):null,who=sb?sb.dataset.who:(fi&&fi.f?fi.f.nombre:''),cid=sb?sb.dataset.cid:'';   // fi: la tirada sale de la hoja del personaje, no del combate
   const act=b.closest('.act')?.dataset.n||b.dataset.lbl||'';
@@ -8354,6 +8531,8 @@ document.addEventListener('change',e=>{
 });
 $('#inv-q').addEventListener('input',renderInv);
 function extraAct(act,b,c,e){
+  if(act.startsWith('pj')&&act!=='pjtab'&&act!=='pjrevivir'&&act!=='pjmuertenota'&&b.closest&&b.closest('.pjsheet')&&pjSel){   // ficha de un personaje muerto: bloqueada
+    const s=pjGet(pjSel);if(s&&Ficha.muerto(s.f)){toast(T('Personaje muerto: la ficha está bloqueada. Solo se puede ver el inventario.'));return;}}
   if(act.startsWith('rv')){rvAct(act,b);return;}
   if(act.startsWith('inv')){invAct(act);return;}
   if(act.startsWith('md')){mdAct(act,b);return;}
@@ -8458,11 +8637,26 @@ function extraAct(act,b,c,e){
     case 'pjtempquitar':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.fijarPG(s.f,s.f.hp,0),s);break;}
     case 'pjdano':case 'pjcura':case 'pjtemp':{const s=pjGet(pjSel);if(!s)break;const n=$('#pj-amt').value,c=pjCtx();
       if(b.dataset.act==='pjtemp'&&s.f.temp>0&&(parseInt(n,10)||0)<=s.f.temp){toast(T('Ya tienes más PG temporales; no se acumulan, te quedas con el mayor'));break;}   // regla: no se suman, vale el mayor
-      pjCommit(b.dataset.act==='pjdano'?Ficha.dano(s.f,n,c):b.dataset.act==='pjcura'?Ficha.curar(s.f,n,c):Ficha.temporales(s.f,n,c),s);break;}
+      if(b.dataset.act==='pjdano'){const r=Ficha.dano(s.f,n,c);
+        if(r.ok&&pjCommit(r,s)){const g=r.f,antes=s.f;
+          if(g.muerte.fa>=3&&antes.muerte.fa<3)toast(g.nombre+': '+T(antes.hp<=0?'ha recibido el tercer fallo: ha muerto':'ha muerto: el daño que sobra al llegar a 0 PG iguala o supera sus PG máximos (muerte instantánea)'),6000);
+          else if(g.hp<=0&&antes.hp>0)toast(g.nombre+': '+T('cae inconsciente a 0 PG; empieza a tirar salvaciones contra muerte en su turno'),5200);
+          else if(g.hp<=0&&antes.hp<=0)toast(g.nombre+': '+g.muerte.fa+'/3 '+T('fallos contra muerte'),4200);}
+        else if(!r.ok)pjCommit(r,s);
+        break;}
+      pjCommit(b.dataset.act==='pjcura'?Ficha.curar(s.f,n,c):Ficha.temporales(s.f,n,c),s);break;}
+    case 'pjsalvm':{const s=pjGet(pjSel);if(!s)break;const a=d20(),r=Ficha.salvMuerte(s.f,a,pjCtx());
+      if(!r.ok){pjCommit(r,s);break;}
+      if(pjCommit(r,s)){const g=r.f,m=g.muerte,res=a===20?T('¡Natural 20! Recupera 1 PG y vuelve en sí'):a===1?T('Pifia: cuenta como 2 fallos'):a>=10?T('Éxito'):T('Fallo');
+        toast(g.nombre+' · '+T('salvación contra muerte')+': d20 '+a+' · '+res+(g.hp>0?'':' ('+m.ex+'/3 '+T('éxitos')+', '+m.fa+'/3 '+T('fallos')+')')+(m.fa>=3?' · '+T('ha muerto'):m.ex>=3?' · '+T('queda estable'):''),6000);}
+      break;}
     case 'pjslot':{const s=pjGet(pjSel);if(s&&b.dataset.on!=='1'){toast(T('Se recupera al hacer el descanso'));break;}if(s)pjCommit(b.dataset.on==='1'?Ficha.usarSlot(s.f,+b.dataset.lv,pjCtx()):Ficha.devolverSlot(s.f,+b.dataset.lv,pjCtx()),s);break;}
     case 'pjpact':{const s=pjGet(pjSel);if(s&&b.dataset.on!=='1'){toast(T('Se recupera al hacer el descanso'));break;}if(s)pjCommit(b.dataset.on==='1'?Ficha.usarPact(s.f,pjCtx()):Ficha.devolverPact(s.f,pjCtx()),s);break;}
     case 'pjrec':{const s=pjGet(pjSel);if(s&&b.dataset.on!=='1'&&pjRecBloq(s.f.recursos.find(x=>x.id===b.dataset.id))){toast(T('Se recupera al hacer el descanso'));break;}if(s)pjCommit(b.dataset.on==='1'?Ficha.usarRecurso(s.f,b.dataset.id,pjCtx()):Ficha.devolverRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
     case 'pjrecdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.quitarRecurso(s.f,b.dataset.id,pjCtx()),s);break;}
+    case 'pjmuertenota':{const s=pjGet(pjSel);if(!s||PJROL!=='dm')break;if(pjCommit(Ficha.notaMuerte(s.f,($('#pjmuerte-nota')||{}).value,pjCtx()),s))toast(T('Anotado en el historial de muertes'));break;}
+    case 'pjrevivir':{const s=pjGet(pjSel);if(!s||PJROL!=='dm')break;const pg=b.dataset.pg==='mano'?($('#pjrev-pg')||{}).value:b.dataset.pg;
+      if(pjCommit(Ficha.revivir(s.f,{pg,via:b.dataset.via},pjCtx()),s)){pjTab='combate';pjRender();toast(s.f.nombre+': '+T('vuelve a la vida')+' ('+b.dataset.via+')',5000);}break;}
     case 'pjtab':{const sh=b.closest('.pjsheet');if(!sh||!pjTabs().some(x=>x[0]===b.dataset.t))break;pjTab=b.dataset.t;sh.dataset.tab=pjTab;sh.querySelectorAll('.pjtab').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.t===pjTab)));if(b.classList.contains('pjfoto'))sh.querySelector('.pjmain')?.scrollIntoView({block:'start'});break;}
     case 'pjmuerte':{const s=pjGet(pjSel);if(!s)break;const k=b.dataset.k,n=+b.dataset.n;if(!['ex','fa'].includes(k))break;pjCommit(Ficha.editar(s.f,'muerte.'+k,s.f.muerte[k]===n?n-1:n,pjCtx()),s);break;}
     case 'pjagot':{const s=pjGet(pjSel);if(!s)break;const n=+b.dataset.n;pjCommit(Ficha.editar(s.f,'agot',s.f.agot===n?n-1:n,pjCtx()),s);break;}
@@ -8502,7 +8696,6 @@ function extraAct(act,b,c,e){
     case 'pjrasdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.rasgoQuitar(s.f,b.dataset.id),s);break;}
     case 'pjlistadd':{const s=pjGet(pjSel),i=$('#'+(b.dataset.i||'pjl-'+b.dataset.c+'-'+b.dataset.k));if(!s||!i||!i.value.trim())break;pjCommit(Ficha.listaAnadir(s.f,b.dataset.c,b.dataset.k,i.value),s);break;}
     case 'pjlistdel':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.listaQuitar(s.f,b.dataset.c,b.dataset.k,b.dataset.v),s);break;}
-    case 'pjsprm':{const s=pjGet(pjSel);if(s)pjCommit(Ficha.conjuroQuitar(s.f,b.dataset.n),s);break;}
     case 'pjinvadd':{const s=pjGet(pjSel),n=$('#pji-n'),q=$('#pji-q');if(!s||!n)break;pjCommit(Ficha.invAnadir(s.f,{n:n.value,q:q.value}),s);break;}
     case 'pjinvdir':pjInvOrdSet(pjInvOrd.k,-pjInvOrd.d);pjRender();break;
     case 'pjinvstep':{const s=pjGet(pjSel);if(s){const it=s.f.inventario.find(x=>x.id===b.dataset.id);if(it)pjCommit(Ficha.invCantidad(s.f,b.dataset.id,it.q+Number(b.dataset.d)),s);}break;}
@@ -9164,7 +9357,7 @@ const CLSN={barbaro:'Bárbaro',bardo:'Bardo',brujo:'Brujo',clerigo:'Clérigo',dr
 const CLSC={barbaro:'#d0453c',bardo:'#c15fa8',brujo:'#7a4bd0',clerigo:'#d9b24a',druida:'#4f9a5a',explorador:'#6f9a3a',guerrero:'#b07a45',hechicero:'#e0663f',mago:'#3d7bd9',monje:'#3aa3a3',paladin:'#e0c060',picaro:'#7c8798'};
 const ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
 const ABK={fue:'FUE',des:'DES',con:'CON',int:'INT',sab:'SAB',car:'CAR'};
-const PJERR={ya_esta:'Ya tienes ese conjuro',mae_bloqueada:'La maestría elegida solo se cambia tras un descanso largo',ya_activo:'Ya está activo',sin_espacio:'No quedan espacios de ese nivel',agotado:'Recurso agotado',sin_dados:'No quedan dados de golpe',dado_invalido:'Resultado de dado no válido',faltan_xp:'Aún no tiene la experiencia necesaria',sin_hito:'El máster aún no ha concedido la subida',nivel_maximo:'Ya es de nivel 20',falta_mejora:'Este nivel exige una mejora de característica o una dote',mejora_invalida:'La mejora no es válida',mejora_no_toca:'Este nivel no da mejora',tope_20:'Una característica no puede pasar de 20',bloqueado:'En un personaje de campaña eso solo cambia al subir de nivel',solo_dm:'Solo el máster puede hacerlo',hp_invalido:'El resultado de PG no es válido',clase_invalida:'Clase no válida',nada_que_devolver:'No hay nada que devolver',vacio:'Escribe algo primero',solo_campana:'Solo en personajes de campaña',sin_nombre:'Ponle un nombre',demasiados:'Hay demasiados',no_existe:'No existe'};
+const PJERR={ya_esta:'Ya tienes ese conjuro',mae_bloqueada:'La maestría elegida solo se cambia tras un descanso largo',ya_activo:'Ya está activo',sin_espacio:'No quedan espacios de ese nivel',agotado:'Recurso agotado',sin_dados:'No quedan dados de golpe',dado_invalido:'Resultado de dado no válido',faltan_xp:'Aún no tiene la experiencia necesaria',sin_hito:'El máster aún no ha concedido la subida',nivel_maximo:'Ya es de nivel 20',falta_mejora:'Este nivel exige una mejora de característica o una dote',mejora_invalida:'La mejora no es válida',mejora_no_toca:'Este nivel no da mejora',tope_20:'Una característica no puede pasar de 20',bloqueado:'En un personaje de campaña eso solo cambia al subir de nivel',solo_dm:'Solo el máster puede hacerlo',hp_invalido:'El resultado de PG no es válido',clase_invalida:'Clase no válida',nada_que_devolver:'No hay nada que devolver',vacio:'Escribe algo primero',solo_campana:'Solo en personajes de campaña',sin_nombre:'Ponle un nombre',demasiados:'Hay demasiados',no_existe:'No existe',muerto:'El personaje está muerto: la ficha está bloqueada hasta que el máster lo devuelva a la vida',no_a_cero:'Solo se tira con 0 PG',no_muerto:'El personaje no está muerto',estable:'Ya está estable'};
 var PJROL=(()=>{try{return Store.campaigns.rol()==='jugador'||Store.root.get('pj-rol')==='jugador'?'jugador':'dm';}catch{return 'dm';}})();   // el rol sale de la campaña; el máster puede probar la vista de jugador
 var PJ=[],PJC=[],pjCargado=false,pjSel=null,pjEdit=null,pjRest=null,pjLvl=null,pjModo='';
 function pjLoad(){pjCargado=true;
@@ -9181,6 +9374,66 @@ function pjDatosClase(){
 function pjRasgosNivel(f){const dd=pjDatosClase();if(!dd)return f;try{return Ficha.rasgosNivel(f,dd,compList('rasgos',true));}catch{return f;}}
 const EF_EN={'salv:muerte':'salvaciones contra muerte','prueba:atletismo':'Atletismo','ataque':'tu siguiente ataque','salv:des':'salvaciones de Destreza','salv:fue':'salvaciones de Fuerza','prueba:fue':'pruebas de Fuerza','ataque:fue':'ataques con Fuerza','iniciativa':'iniciativa'};
 /* efectos de los rasgos de clase: estados con botón y lo que está siempre activo, cada cosa con su origen */
+/* Estados que te afectan: el cansancio con sus penalizadores según el nivel y cada estado marcado con lo que provoca (el texto de su regla en el compendio). */
+function pjEstadoLineas(n){   // [[título,texto]] de la regla de un estado, sin la frase de introducción
+  let r=null;try{r=compFind('reglas',n);}catch{}
+  if(!r||!r.d)return [];
+  const doc=new DOMParser().parseFromString(String(r.d),'text/html'),out=[];
+  for(const p of doc.body.querySelectorAll('p,li')){
+    const b=p.querySelector('b,strong,i'),k=b?b.textContent.trim():'',t=p.textContent.trim();
+    if(!t||(!k&&/(mientras|cuando) (tengas|est[eé]s)|experimentar[aá]s/i.test(t)))continue;
+    out.push(k?[k.replace(/\.$/,''),t.slice(k.length).trim()]:['',t]);}
+  return out;
+}
+/* Salvaciones contra muerte: qué pasa al llegar a 0 PG, con lo que queda según las marcas, y la regla completa desplegable. */
+function pjMuerteAyuda(f){
+  const ex=f.muerte.ex,fa=f.muerte.fa;
+  if(f.hp>0&&!ex&&!fa)return '';   // con PG solo se enseña si hay marcas puestas a mano en los círculos de la izquierda: lo que se marca allí se refleja aquí
+  const mx=Ficha.hpMax(f),pl=(n,u,m)=>n+' '+(n===1?u:m),con=f.hp>0,muerto=fa>=3,estable=!muerto&&!con&&ex>=3;
+  const cl=muerto?' muerto':estable?' estable':'',tit=muerto?'Ha muerto':estable?'Estable':con?'Salvaciones contra muerte':'A 0 PG: inconsciente, no muerto';
+  let est='';
+  if(con&&!muerto)est=T('Tiene PG, así que estas marcas no cuentan todavía; solo importan a 0 PG. Al curarle se ponen a 0.');
+  else if(muerto)est=T('No se le puede curar ni dañar. Solo la magia (Revivir, Resurrección…) o el máster pueden devolverle a la vida; entonces quita los fallos.');
+  else if(estable)est=T('Sigue inconsciente con 0 PG pero ya no tira salvaciones. Si recibe daño vuelve a tirar; si nadie lo cura, recupera 1 PG tras 1d4 horas.');
+  else est=T('Al empezar su turno tira 1d20: 10 o más es un éxito y 9 o menos un fallo.')+' '
+    +T('Si falla')+': '+(fa+1>=3?T('muere'):T(3-(fa+1)===1?'le quedará':'le quedarán')+' '+pl(3-(fa+1),T('fallo'),T('fallos'))+' '+T('antes de morir'))+'. '
+    +T('Si acierta')+': '+(ex+1>=3?T('queda estable'):T(3-(ex+1)===1?'le faltará':'le faltarán')+' '+pl(3-(ex+1),T('éxito'),T('éxitos'))+' '+T('para estabilizarse'))+'. '
+    +T('Con un 1 natural son 2 fallos y con un 20 natural recupera 1 PG.');
+  const li=(k,t)=>'<li><b>'+esc(T(k))+'.</b> '+esc(T(t))+'</li>';
+  return '<div class="pjbox pjmbox'+cl+'" role="status"><h3>'+esc(T(tit))+'</h3>'
+    +'<div class="pjmcnt"><span class="pjmex">'+esc(T('Éxitos'))+' <b>'+ex+'/3</b></span><span class="pjmfa">'+esc(T('Fallos'))+' <b>'+fa+'/3</b></span></div>'
+    +'<p class="pjmest">'+esc(est)+'</p>'
+    +(!muerto&&!estable&&!con?'<div class="pjrow"><button type="button" class="btn primary" data-act="pjsalvm">'+esc(T('Tirar salvación contra muerte'))+'</button></div>':'')
+    +'<details class="pjmayuda"><summary>'+esc(T('Cómo funcionan'))+'</summary><ul>'
+    +li('A 0 PG no mueres','Caes inconsciente. Al empezar cada uno de tus turnos tiras 1d20 sin modificadores.')
+    +li('10 o más','1 éxito.')+li('9 o menos','1 fallo.')
+    +li('20 natural','Recuperas 1 PG y vuelves en ti; éxitos y fallos vuelven a 0.')
+    +li('1 natural','Cuenta como 2 fallos.')
+    +li('3 éxitos','Quedas estable: inconsciente con 0 PG y sin más tiradas. Si nadie te cura, recuperas 1 PG tras 1d4 horas.')
+    +li('3 fallos','Mueres.')
+    +li('Daño a 0 PG','Cada vez que lo recibes es 1 fallo; un crítico, 2 fallos. También te quita el estado estable.')
+    +li('Muerte instantánea','Si el daño que sobra al llegar a 0 PG es igual o mayor que tus PG máximos ('+mx+'), mueres sin tirar. Ahora mismo, un solo golpe de '+(f.temp+mx)+' o más te mataría.')
+    +li('Curación','Cualquier curación te levanta con esos PG y pone éxitos y fallos a 0. Un aliado puede estabilizarte con la acción Ayudar: prueba de Sabiduría (Medicina) CD 10.')
+    +'</ul></details></div>';
+}
+function pjEstadosHTML(f){
+  const ests=f.defensas.estados||[],ag=f.agot||0,hayC=ests.some(e=>fold(e)==='cansancio');
+  if(!ests.length&&!ag)return '';
+  const num=v=>String(v).replace('.',','),inm=n=>f.defensas.inm.some(x=>fold(x)===fold(n));
+  const fila=(n,etq,cuerpo)=>'<li class="pjestf"><span class="pjestn"><b class="noi18n"'+pjHv('reglas',n)+'>'+esc(n)+'</b>'+(etq||'')+'</span><div class="pjestc">'+cuerpo+'</div></li>';
+  const lista=L=>'<ul>'+L.map(([k,t])=>'<li>'+(k?'<b>'+esc(k)+'.</b> ':'')+esc(t)+'</li>').join('')+'</ul>';
+  let h='';
+  if(ag>0||hayC){
+    const L=ag>0?[[T('Tiradas de d20'),'−'+2*ag+' '+T('al resultado')+' (2 × '+T('nivel')+' '+ag+'): '+T('pruebas, ataques y salvaciones')+'.'],
+      [T('Velocidad'),'−'+num(1.5*ag)+' m (1,5 m × '+T('nivel')+' '+ag+').'],
+      ...(ag>=6?[[T('Nivel 6'),T('mueres')+'.']]:[]),[T('Se quita'),T('1 nivel por descanso largo; con 0 el estado termina')+'.']]:pjEstadoLineas('Cansancio');
+    h+=fila('Cansancio',(ag>0?'<span class="pjtag pjpen">'+esc(T('Nivel'))+' '+ag+' / 6</span>':'<span class="pcsub">'+esc(T('Sin niveles: se marcan arriba'))+'</span>')+(inm('Cansancio')?'<span class="pjtag pjsiempre">'+esc(T('Inmune'))+'</span>':''),lista(L));
+  }
+  for(const n of ests){if(fold(n)==='cansancio')continue;
+    const L=pjEstadoLineas(n);
+    h+=fila(n,inm(n)?'<span class="pjtag pjsiempre">'+esc(T('Inmune'))+'</span>':'',inm(n)?'<p class="pcsub">'+esc(T('Eres inmune a este estado: no te afecta.'))+'</p>':L.length?lista(L):'<p class="pcsub">'+esc(T('Sin texto de esta regla en el compendio.'))+'</p>');}
+  return '<div class="pjbox pjestados"><h3>'+esc(T('Estados que te afectan'))+'</h3><ul class="pjestl">'+h+'</ul></div>';
+}
 function pjEfectosHTML(f){
   const dd=pjDatosClase();if(!dd)return '';
   const d=Ficha.derivados(f,dd);
@@ -9189,7 +9442,7 @@ function pjEfectosHTML(f){
   let h='<div class="pjbox"><h3>'+esc(T('Efectos de clase'))+'</h3>';
   if(d.estados.length)h+='<div class="pjrow pjest">'+d.estados.map(e=>{
     const q=e.gasta&&f.recursos.find(r=>r.a===e.gasta),sin=q&&q.uso>=q.max;
-    return e.activo?'<button type="button" class="btn sm primary" data-act="pjdes" data-id="'+esc(e.id)+'" title="'+esc(e.o)+'">'+esc(e.n)+' · '+esc(T('activo'))+' ✕</button>'
+    return e.activo?'<button type="button" class="btn sm pjbien" data-act="pjdes" data-id="'+esc(e.id)+'" title="'+esc(e.o)+'">'+esc(e.n)+' · '+esc(T('activo'))+' ✕</button>'
       :'<button type="button" class="btn sm" data-act="pjact" data-id="'+esc(e.id)+'"'+(sin?' disabled':'')+' title="'+esc(e.o+(e.cond?' — '+e.cond:'')+(e.dur?' · '+e.dur:''))+'">'+esc(T(e.inst?'Usar':'Activar'))+' '+esc(e.n.toLowerCase())+(q?' <small>('+(q.max-q.uso)+')</small>':'')+'</button>';}).join('')+'</div>';
   const w=[];
   for(const x of d.ca)w.push(chip('CA '+x.v+' '+T('sin armadura'),x.o+(x.cond?' — '+x.cond:'')));
@@ -9201,7 +9454,7 @@ function pjEfectosHTML(f){
   if(d.critico<20)w.push(chip(T('Crítico')+' '+d.critico+'–20',T('Crítico mejorado')));
   for(const x of d.inmune)w.push(chip(T('Inmune')+': '+x.estados.join(', '),x.o,x.estado?'on':''));
   for(const x of d.cd)w.push(chip(x.n+' CD '+x.v,x.o));
-  for(const x of d.avisos)w.push(chip(x.txt,x.o,x.estado?'on':''));
+  for(const x of d.avisos)w.push(chip(x.txt,x.o,'aviso'));
   h+=(w.length?'<div class="pjrow pjefs">'+w.join('')+'</div>':'')+'<p class="pcsub">'+esc(T('Cada efecto muestra su origen al pasar el ratón. Los activos solo valen mientras dura el estado; se terminan con un descanso.'))+'</p></div>';
   return h;
 }
@@ -9311,9 +9564,11 @@ function pjCommit(res,s,via){
   pjSave();pjRender();pjDecRefrescar();return true;
 }
 const pjHpCls=p=>p>50?'ok':p>25?'warn':'crit';
-const pjEstado=(hp,mx)=>{const p=mx?hp/mx:0;return hp<=0?'Inconsciente':p>=1?'Intacto':p>=.75?'Rasguñado':p>=.5?'Magullado':p>=.25?'Tocado':'Al borde';};
+const pjEstado=(hp,mx,muerto)=>{const p=mx?hp/mx:0;return muerto?'Muerto':hp<=0?'Inconsciente':p>=1?'Intacto':p>=.75?'Rasguñado':p>=.5?'Magullado':p>=.25?'Tocado':'Al borde';};
 const pjCls=f=>Object.entries(Ficha.clases(f)).map(([c,n])=>T(CLSN[c])+' '+n).join(' / ')||T('Sin clase');
 const pjCol=f=>f.niveles[0]?CLSC[f.niveles[0].c]:'#c9a14a';
+/* Icono de la clase principal (sprite i-cls-…); sin clase conocida, el de persona. */
+const pjClsIco=(f,cl)=>'<svg class="ic'+(cl?' '+cl:'')+'" aria-hidden="true"><use href="#i-'+(f.niveles[0]&&CLSC[f.niveles[0].c]?'cls-'+f.niveles[0].c:'user')+'"/></svg>';
 const pjSgn=n=>(n>=0?'+':'')+n;
 function pjRoute(slug){
   if(!pjCargado)pjLoad();
@@ -9331,6 +9586,7 @@ function pjRender(){
   const s=pjSel&&pjGet(pjSel);
   document.querySelector('#view-personajes .vhead .inline').hidden=!!s||pjEdit==='new';
   body.innerHTML=pjEdit==='new'?pjFormHTML():s?pjSheetHTML(s.f,s.lista):pjListHTML();
+  if(pjEdit==='new'&&PJW&&PJW.scr){PJW.scr=false;const e=body.querySelector('.pjw-bl.act');if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'});}   // al completar un bloque, la vista baja hasta el siguiente
   if(s){fillCompDL();   // objetos del compendio para el inventario
     const c0=s.f.niveles[0]&&s.f.niveles[0].c,dd=pjDatosClase();
     if(c0&&!(dd&&dd[c0])&&pjReint<8){pjReint++;const id=s.f.id;setTimeout(()=>{if(pjSel===id&&curView()==='personajes')pjRender();},1000);}else if(dd&&dd[c0])pjReint=0;   // aún no hay datos de su clase: se reintenta hasta que lleguen
@@ -9348,11 +9604,16 @@ function pjGruposCamp(){
   });
 }
 function pjCard(f,extra){
-  const mx=Ficha.hpMax(f),pct=mx?Math.round(100*f.hp/mx):0,camp=f.origen==='campana',d=camp?Grupos.dueno(GRP,f.id):null,b=camp&&f.base?PJ.find(x=>x.id===f.base):null;
+  const mx=Ficha.hpMax(f),pct=mx?Math.round(100*f.hp/mx):0,camp=f.origen==='campana',d=camp?Grupos.dueno(GRP,f.id):null,b=camp&&f.base?PJ.find(x=>x.id===f.base):null,muerto=Ficha.muerto(f);
+  const rt0=Ficha.retratoActual(f);   // el token del personaje (o el del estado activo); sin token, el icono de su clase
   const tags=(camp&&f.estado!=='activo'?'<span class="pjtag pjtag-'+f.estado+'">'+esc(T(PJEST[f.estado]))+'</span>':'')
     +(camp&&f.pendientes.length&&PJROL==='dm'?'<span class="pjtag pjtag-pend">'+f.pendientes.length+' '+esc(T(f.pendientes.length===1?'cambio pendiente':'cambios pendientes'))+'</span>':'')
     +(d?'<span class="pcsub">'+esc(T('Lo lleva'))+' <span class="noi18n">'+esc(d.m.n)+'</span></span>':'')+(b?'<span class="pcsub">'+esc(T('Versión base'))+': <span class="noi18n">'+esc(b.nombre)+'</span></span>':'');
-  return '<a class="pjcard'+(camp&&f.estado!=='activo'?' pjapagado':'')+'" href="#personajes/'+esc(f.id)+'" style="--pj:'+pjCol(f)+'"><span class="pjav">'+esc((f.nombre.trim()[0]||'?').toUpperCase())+'</span><span class="pjtx"><b class="noi18n">'+esc(f.nombre)+'</b><small>'+esc(pjCls(f))+(f.especie?' · '+esc(f.especie):'')+'</small>'+(tags?'<span class="pjtags">'+tags+'</span>':'')+'<span class="pjhp mini"><i class="'+pjHpCls(pct)+'" style="width:'+pct+'%"></i></span></span></a>';
+  return '<a class="pjcard'+(muerto?' pjmuertoc':camp&&f.estado!=='activo'?' pjapagado':'')+'" href="#personajes/'+esc(f.id)+'" style="--pj:'+pjCol(f)+'">'
+    +'<span class="pjav'+(rt0.tok?' pjtok':' pjico')+'">'+(rt0.tok?'<img src="'+esc(rt0.tok)+'" alt=""><span class="pjclsb">'+pjClsIco(f)+'</span>':pjClsIco(f))+'</span>'
+    +'<span class="pjtx"><span class="pjnm"><b class="noi18n">'+esc(f.nombre)+'</b>'+(muerto?'<span class="pjtag pjmuertotag">'+esc(T('Muerto'))+'</span>':'')+'</span>'
+    +'<small>'+esc(pjCls(f))+(f.especie?' · '+esc(f.especie):'')+'</small>'+(tags?'<span class="pjtags">'+tags+'</span>':'')
+    +'<span class="pjhp mini"><i class="'+pjHpCls(pct)+'" style="width:'+pct+'%"></i></span></span></a>';
 }
 /* Una versión de campaña de un personaje: enlace si es de la campaña actual; si no, cambia de campaña y la abre. */
 function pjChip(c){
@@ -9561,7 +9822,7 @@ function pjwRasgosHTML(w,amb){
 const PJW_ABN={fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'};
 const PJW_ALIN=['','Legal bueno','Neutral bueno','Caótico bueno','Legal neutral','Neutral','Caótico neutral','Legal malvado','Neutral malvado','Caótico malvado','Sin alineamiento'];
 let PJW=null;
-function pjwNuevo(){return {paso:0,cls:'',cm:null,hc:[],ht:[],sk:[],tr:[],cp:[],pp:[],mi:{},esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',lugar:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
+function pjwNuevo(){return {paso:0,act:'',ab:'',scr:false,eqc:'',eqt:'',cls:'',cm:null,hc:[],ht:[],sk:[],tr:[],cp:[],pp:[],mi:{},esp:'',tf:'',tfm:'21',tfa:['',''],met:'std',pool:PJW_STD.slice(),idi:[],el:{},asig:{},compra:{fue:8,des:8,con:8,int:8,sab:8,car:8},nombre:'',alin:'',lugar:'',personalidad:'',ideales:'',vinculos:'',defectos:'',historia:'',donde:'libre'};}
 const pjwComp=(lista,n)=>compList(lista).find(x=>fold(x.n)===fold(n))||null;   // lo de tus módulos activos
 const pjwClase=k=>pjwComp('clases',CLSN[k]);
 const pjwAbKey=s=>{const f=fold(s);return Ficha.AB.find(a=>fold(({fue:'Fuerza',des:'Destreza',con:'Constitución',int:'Inteligencia',sab:'Sabiduría',car:'Carisma'})[a])===f)||'';};
@@ -9590,8 +9851,8 @@ function pjwBase(w){
 const pjwGastado=w=>Ficha.AB.reduce((s,a)=>s+PJW_COSTE[w.compra[a]],0);
 function pjwFinal(w){const b=pjwBase(w),n=pjwBono(w),o={};for(const a of Ficha.AB)o[a]=Math.min(20,(b[a]||0)+(n[a]||0));return o;}
 function pjwValido(w,p){
-  if(p===0){const h=pjwHabClase(w.cls);return !!w.cls&&(!h.n||w.sk.length===h.n)&&!pjwPend(w,'c').length&&pjwCjOk(w)&&pjwHerrOk(w,'hc');}
-  if(p===1){const tf=pjwComp('trasfondos',w.tf);if(!w.esp||!tf||!pjwIdiOk(w)||pjwPend(w,'e').length||!pjwMiOk(w)||!pjwHerrOk(w,'ht'))return false;return w.tfm==='111'||!!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
+  if(p===0){const h=pjwHabClase(w.cls);return !!w.cls&&(!h.n||w.sk.length===h.n)&&!pjwPend(w,'c').length&&pjwCjOk(w)&&pjwHerrOk(w,'hc')&&pjwEqOk(w,'c');}
+  if(p===1){const tf=pjwComp('trasfondos',w.tf);if(!w.esp||!tf||!pjwIdiOk(w)||pjwPend(w,'e').length||!pjwMiOk(w)||!pjwHerrOk(w,'ht')||!pjwEqOk(w,'t'))return false;return w.tfm==='111'||!!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]);}
   if(p===2){if(w.met==='tabla')return !!PJW_TABLA[w.cls];if(w.met==='compra')return pjwGastado(w)<=PJW_PUNTOS;const u=Ficha.AB.map(a=>w.asig[a]);return u.every(i=>i!==undefined&&i>=0)&&new Set(u).size===6;}
   return true;
 }
@@ -9638,54 +9899,149 @@ function pjwHerrHTML(w,k){
       +'<div class="pjw-chips" role="group" aria-label="'+esc(T(C.pl))+'">'+e.pool.map(x=>{const on=e.sel.includes(x);return '<label class="pjw-chip"><input type="checkbox" data-pjw="'+k+'" value="'+esc(x)+'"'+(on?' checked':'')+(!on&&lleno?' disabled':'')+'> '+esc(x)+'</label>';}).join('')+'</div>';}
   return s;
 }
+/* Flujo guiado: cada bloque se pliega al completarse y se abre el siguiente; solo se ven los bloques hasta el primero pendiente (que va siempre abierto).
+   Los hechos se reabren pulsando su cabecera (w.ab). Al cambiar el bloque activo se marca w.scr para llevar la vista hasta él tras pintar. */
+function pjwBloques(w,L){
+  const i0=L.findIndex(b=>!b.hecho),act=i0<0?'':L[i0].id,vis=i0<0?L:L.slice(0,i0+1);
+  if(act!==w.act){if(w.act)w.scr=true;w.ab='';w.act=act;}
+  return '<div class="pjw-fl">'+vis.map((b,i)=>{
+    const ab=b.id===act||b.id===w.ab;
+    return '<section class="pjw-bl'+(b.hecho?' hecho':'')+(b.id===act?' act':'')+(ab?' abierto':'')+'" data-bl="'+b.id+'"><button type="button" class="pjw-bl-cab" data-act="pjw" data-w="bl" data-v="'+b.id+'" aria-expanded="'+ab+'"><span class="pjw-bl-n" aria-hidden="true">'+(b.hecho?'✓':i+1)+'</span><b>'+esc(T(b.t))+'</b>'+(b.res?'<span class="pjw-bl-res">'+esc(b.res)+'</span>':'')+'</button>'+(ab?'<div class="pjw-bl-cu">'+b.html+'</div>':'')+'</section>';}).join('')+'</div>';
+}
+const pjwHerrRes=(w,k)=>{const H=pjwHerr(w);return H.fijas.filter(x=>x.k===k).map(x=>x.n).concat(...H.elec.filter(e=>e.k===k).map(e=>e.sel)).join(', ');};
+/* Equipo inicial: la clase y el trasfondo dan a elegir entre opciones «(A) objetos y N po, o (B) N po» (el guerrero tiene tres). La elegida pasa al inventario y el oro a la bolsa.
+   Los objetos «el mismo que arriba» o «de tu elección» se resuelven con la herramienta que se haya elegido en su apartado. k: 'c' clase, 't' trasfondo. */
+const pjwCap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function pjwEqOpc(txt){
+  const t=String(txt||'');if(!/\([A-Ca-c]\)/.test(t))return [];
+  const p=t.split(/\(([A-Ca-c])\)/),o=[];
+  for(let i=1;i+1<p.length;i+=2){
+    const cuerpo=p[i+1].replace(/(?:[\s,;]+o)?[\s,;.]*$/,'').trim(),items=[];let po=0;
+    for(const x of cuerpo.split(/,\s*|\s+y\s+(?=\d+\s*po\b)/).map(x=>x.trim()).filter(Boolean)){const m=/^(\d+)\s*po$/i.exec(x);if(m)po+=+m[1];else items.push(x);}
+    o.push({k:p[i].toUpperCase(),items,po});
+  }
+  return o;
+}
+const pjwEqClave=k=>k==='c'?'eqc':'eqt';
+function pjwEqOps(w,k){
+  if(k==='c'){const c=w.cls&&pjwClase(w.cls);return pjwEqOpc(c&&c.info&&c.info['Equipo inicial']);}
+  const tf=pjwComp('trasfondos',w.tf);return pjwEqOpc(tf&&tf.equipo);
+}
+const pjwEqOk=(w,k)=>{const o=pjwEqOps(w,k);return !o.length||o.some(x=>x.k===w[pjwEqClave(k)]);};
+function pjwEqLista(w,o,k){
+  const sel=((k==='c'?w.hc:w.ht)||[]).slice(0,1),out=[];
+  for(const x of o.items){
+    if(/mism[oa]s? que arriba|de tu elecci[oó]n|que has elegido/i.test(x)){
+      if(sel.length)out.push({n:sel[0],q:1});else out.push({n:pjwCap(x.replace(/\s*\([^)]*\)/,'')),q:1});continue;}
+    const m=/^(\d+)\s+(.+)$/.exec(x);
+    out.push(m?{n:pjwCap(m[2]),q:+m[1]}:{n:pjwCap(x),q:1});
+  }
+  return out;
+}
+function pjwEqSel(w,k){const o=pjwEqOps(w,k).find(x=>x.k===w[pjwEqClave(k)]);return o?{k:o.k,items:pjwEqLista(w,o,k),po:o.po}:null;}
+const pjwEqTxt=(s)=>{const t=s.items.map(i=>(i.q>1?i.q+'× ':'')+i.n).join(', ');return t+(s.po?(t?' + ':'')+s.po+' po':'');};
+const pjwEqRes=(w,k)=>{const s=pjwEqSel(w,k);return s?T('Opción')+' '+s.k+(s.items.length?'':' · '+s.po+' po'):'';};
+function pjwEqHTML(w,k){
+  const O=pjwEqOps(w,k),sel=w[pjwEqClave(k)];
+  return '<p class="hint">'+esc(T('Elige una de las opciones. Lo elegido se añade al inventario, y el oro a la bolsa, al crear el personaje.'))+'</p><div class="pjw-grid pjw-eqg" role="group" aria-label="'+esc(T('Equipo inicial'))+'">'
+    +O.map(o=>pjwTarj(pjwEqClave(k),o.k,sel===o.k,T('Opción')+' '+o.k+(o.items.length?'':' · '+T('solo oro')),o.items.length?pjwEqTxt({items:pjwEqLista(w,o,k),po:o.po}):o.po+' po '+T('para comprar tu equipo'))).join('')+'</div>';
+}
+/* todo lo elegido (clase y trasfondo): objetos con su origen y el oro total */
+function pjwEqFinal(w){
+  const items=[],de={c:T('clase')+' '+(CLSN[w.cls]||''),t:T('trasfondo')+' '+w.tf};let po=0;
+  for(const k of ['c','t']){const s=pjwEqSel(w,k);if(!s)continue;po+=s.po;for(const i of s.items)items.push({n:i.n,q:i.q,de:T('Equipo inicial')+' ('+de[k]+')'});}
+  return {items,po};
+}
+/* De qué manual sale lo que se ofrece: la creación sigue el Manual del Jugador 2024; lo que venga de otro manual o compendio se indica con su origen (x._book, x._src y x._also vienen de compList). */
+const PJW_BASE='Manual del Jugador 2024';
+const pjwEsBase=x=>!x||!x._book||/manual del jugador/i.test(x._book);
+const pjwFte=x=>pjwEsBase(x)?'':String(x._src||x._book||'');
+function pjwFuenteNota(k){
+  const c=pjwClase(k);if(!c)return '';const otras=(c._also||[]).filter(Boolean);
+  return '<p class="pjw-fuente">'+(pjwEsBase(c)?esc(T('Versión del'))+' <b>'+esc(PJW_BASE)+'</b>':esc(T('Versión de otro manual'))+': <b>'+esc(c._book||c._src)+'</b>')+(otras.length?'. '+esc(T('También la incluyen'))+': '+esc(otras.join(', '))+'.':'.')+'</p>';
+}
+/* Texto corto de cada clase en su tarjeta: dado de golpe y característica principal, para decidir sin salir del paso. */
+function pjwClsSub(k){
+  const c=pjwClase(k),i=(c&&c.info)||{},dg=String(i['Dado de puntos de golpe']||'').replace(/ (por nivel|per ).*/i,'').trim(),pr=String(i['Característica principal']||'').trim();
+  return [dg&&(T('Dado de golpe')+' '+dg),pr].filter(Boolean).join(' · ');
+}
+/* Lo que falta para poder pasar al siguiente paso, dicho en claro (el botón «Siguiente» sigue mandando en pjwValido). */
+function pjwFalta(w,p){
+  const f=[];
+  if(p===0){
+    if(!w.cls)return [T('Elige una clase')];
+    const h=pjwHabClase(w.cls);
+    if(h.n&&w.sk.length!==h.n)f.push(T('Habilidades de clase')+' ('+w.sk.length+'/'+h.n+')');
+    if(pjwPend(w,'c').length)f.push(T('Rasgos con elecciones'));
+    if(!pjwCjOk(w))f.push(T('Conjuros de nivel 1'));
+    if(!pjwHerrOk(w,'hc'))f.push(T('Competencias con herramientas'));
+    if(!pjwEqOk(w,'c'))f.push(T('Equipo inicial'));
+  }else if(p===1){
+    if(!w.esp)f.push(T('Especie'));
+    if(!w.tf)f.push(T('Trasfondo'));
+    if(pjwPend(w,'e').length)f.push(T('Rasgos con elecciones'));
+    if(w.tf&&w.tfm!=='111'&&!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]))f.push(T('Puntos de característica del trasfondo'));
+    if(w.tf&&!pjwHerrOk(w,'ht'))f.push(T('Herramienta del trasfondo'));
+    if(!pjwIdiOk(w))f.push(T('Idiomas')+' ('+w.idi.length+'/'+pjwIdiomas(w).n+')');
+    if(!pjwMiOk(w))f.push(T('Conjuros de tu origen'));
+    if(w.tf&&!pjwEqOk(w,'t'))f.push(T('Equipo del trasfondo'));
+  }else if(p===2){
+    if(w.met==='compra'){if(pjwGastado(w)>PJW_PUNTOS)f.push(T('Te pasas de puntos'));}
+    else if(w.met!=='tabla'&&!(Ficha.AB.every(a=>w.asig[a]>=0)&&new Set(Ficha.AB.map(a=>w.asig[a])).size===6))f.push(T('Asigna un valor a cada característica'));
+  }
+  return f;
+}
 function pjwPaso(w){
   if(w.paso===0){
-    const h=pjwHabClase(w.cls);
-    let s='<p class="hint">'+esc(T('Paso 1 del Manual del Jugador: elige tu clase. Marca tu forma de jugar: el dado de golpe, las salvaciones y el lanzamiento de conjuros salen de ella.'))+'</p><div class="pjw-grid">'
-      +Object.keys(CLSN).map(k=>{const C=Ficha.CLASES[k],c=pjwClase(k);return pjwTarj('cls',k,w.cls===k,T(CLSN[k]),'d'+C.d+' · '+T('Salvaciones')+' '+C.sv.map(a=>ABK[a]).join('/')+(C.cast?' · '+T('Conjuros'):'')+(c&&c.info&&c.info['Característica principal']?' · '+c.info['Característica principal']:''));}).join('')+'</div>';
-    if(w.cls&&h.n)s+='<h4>'+esc(T('Habilidades de clase'))+': '+esc(T('elige'))+' '+h.n+' ('+w.sk.length+'/'+h.n+')</h4><div class="pjw-chips">'
-      +h.op.map(k=>'<label class="pjw-chip"><input type="checkbox" data-pjw="sk" value="'+k+'"'+(w.sk.includes(k)?' checked':'')+(!w.sk.includes(k)&&w.sk.length>=h.n?' disabled':'')+'> '+esc(T(Ficha.HAB_NOM[k]))+'</label>').join('')+'</div>';
-    if(w.cls)s+=pjwCmHTML(w)+pjwHerrHTML(w,'hc');
-    if(w.cls)s+=pjwRasgosHTML(w,'c');
-    if(w.cls)s+=pjwCjHTML(w);
-    return s;
+    const h=pjwHabClase(w.cls),L=[];
+    L.push({id:'cls',t:'Clase',hecho:!!w.cls,res:w.cls?T(CLSN[w.cls])+(pjwFte(pjwClase(w.cls))?' · '+pjwFte(pjwClase(w.cls)):''):'',html:'<div class="pjw-grid">'
+      +Object.keys(CLSN).map(k=>'<button type="button" class="pjw-op pjw-cls'+(w.cls===k?' on':'')+'" style="--pj:'+CLSC[k]+'" data-act="pjw" data-w="cls" data-v="'+esc(k)+'" aria-pressed="'+(w.cls===k)+'"><svg class="ic" aria-hidden="true"><use href="#i-cls-'+k+'"/></svg><b>'+esc(T(CLSN[k]))+'</b>'+(pjwClsSub(k)?'<small>'+esc(pjwClsSub(k))+'</small>':'')+'<em class="pjw-fte'+(pjwEsBase(pjwClase(k))?'':' otro')+'">'+esc((pjwClase(k)&&pjwClase(k)._book)||PJW_BASE)+'</em>'+'</button>').join('')+'</div>'+(w.cls?pjwFuenteNota(w.cls):'')});
+    if(w.cls){
+      L.push({id:'cm',t:'Competencias con armas y armaduras',hecho:true,res:pjwCm(w).map(x=>T(x.slice(2))).join(', '),html:pjwCmHTML(w)});
+      if(h.n)L.push({id:'sk',t:'Habilidades de clase',hecho:w.sk.length===h.n,res:w.sk.map(k=>T(Ficha.HAB_NOM[k])).join(', '),html:'<p class="hint" role="status">'+esc(T('Elige')+' '+h.n+' · '+w.sk.length+' / '+h.n)+'</p><div class="pjw-chips">'
+        +h.op.map(k=>'<label class="pjw-chip"><input type="checkbox" data-pjw="sk" value="'+k+'"'+(w.sk.includes(k)?' checked':'')+(!w.sk.includes(k)&&w.sk.length>=h.n?' disabled':'')+'> '+esc(T(Ficha.HAB_NOM[k]))+'</label>').join('')+'</div>'});
+      if(pjwDefs(w,'c').length)L.push({id:'ras',t:'Rasgos de clase con elección',hecho:!pjwPend(w,'c').length,res:pjwElegidas(w).filter(x=>x.amb==='c').map(x=>x.op.n).join(' · '),html:pjwRasgosHTML(w,'c')});
+      {const hh=pjwHerrHTML(w,'hc');if(hh)L.push({id:'hc',t:'Competencias con herramientas',hecho:pjwHerrOk(w,'hc'),res:pjwHerrRes(w,'hc'),html:hh});}
+      if(pjwCjCupo(w))L.push({id:'cj',t:'Conjuros',hecho:pjwCjOk(w),res:w.tr.length||w.cp.length?w.tr.length+' '+T('trucos')+' · '+w.cp.length+' '+T('conjuros'):'',html:pjwCjHTML(w)});
+      if(pjwEqOps(w,'c').length)L.push({id:'eqc',t:'Equipo inicial',hecho:pjwEqOk(w,'c'),res:pjwEqRes(w,'c'),html:pjwEqHTML(w,'c')});
+    }
+    return '<p class="hint">'+esc(T('Paso 1 del Manual del Jugador: elige tu clase. Vas de arriba abajo: cada bloque se pliega al completarlo y se abre el siguiente; pulsa uno hecho para cambiarlo.'))+'</p>'+pjwBloques(w,L);
   }
-  const B1=()=>{
-    const L=compList('especies');const e=pjwComp('especies',w.esp);
-    return '<p class="hint">'+esc(T('Sus rasgos (visión, resistencias, conjuros…) se anotan en la hoja al terminar.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('esp',x.n,w.esp===x.n,x.n,String(x.vel||'')+' · '+String(x.tam||'').split(' (')[0])).join('')+'</div>'
-      +(e?'<div class="pjw-det"><h4>'+esc(e.n)+'</h4>'+e.d+'</div>':'')+(e?pjwRasgosHTML(w,'e'):'');
-  };
-  const B2=()=>{
-    const L=compList('trasfondos'),tf=pjwComp('trasfondos',w.tf);
-    let s='<p class="hint">'+esc(T('El trasfondo da una dote de origen, dos competencias en habilidades, una herramienta y 3 puntos de característica que repartes tú.'))+'</p><div class="pjw-grid">'+L.map(x=>pjwTarj('tf',x.n,w.tf===x.n,x.n,x.dote)).join('')+'</div>';
+  if(w.paso===1){
+    const L=[],e=pjwComp('especies',w.esp),tf=pjwComp('trasfondos',w.tf),I=pjwIdiomas(w);
+    L.push({id:'esp',t:'Especie',hecho:!!w.esp,res:e?e.n+' · '+String(e.vel||''):'',html:'<p class="hint">'+esc(T('Sus rasgos (visión, resistencias, conjuros…) se anotan en la hoja al terminar.'))+'</p><div class="pjw-grid">'
+      +compList('especies').map(x=>pjwTarj('esp',x.n,w.esp===x.n,x.n,String(x.vel||'')+' · '+String(x.tam||'').split(' (')[0]+(pjwFte(x)?' · '+pjwFte(x):''))).join('')+'</div>'+(e?'<div class="pjw-det"><h4>'+esc(e.n)+'</h4>'+e.d+'</div>':'')});
+    if(w.esp&&pjwDefs(w,'e').length)L.push({id:'erg',t:'Linaje y rasgos de la especie',hecho:!pjwPend(w,'e').length,res:pjwElegidas(w).filter(x=>x.amb==='e').map(x=>x.op.n).join(' · '),html:pjwRasgosHTML(w,'e')});
+    if(w.esp||w.tf)L.push({id:'tf',t:'Trasfondo',hecho:!!w.tf,res:w.tf,html:'<p class="hint">'+esc(T('El trasfondo da una dote de origen, dos competencias en habilidades, una herramienta y 3 puntos de característica que repartes tú.'))+'</p><div class="pjw-grid">'
+      +compList('trasfondos').map(x=>pjwTarj('tf',x.n,w.tf===x.n,x.n,x.dote+(pjwFte(x)?' · '+pjwFte(x):''))).join('')+'</div>'
+      +(tf?'<div class="pjw-det"><h4>'+esc(tf.n)+'</h4><p><b>'+esc(T('Dote'))+':</b> '+esc(tf.dote)+' · <b>'+esc(T('Habilidades'))+':</b> '+esc(tf.hab)+' · <b>'+esc(T('Herramienta'))+':</b> '+esc(tf.herr)+'</p></div>':'')});
     if(tf){
       const op=pjwOpcTf(tf);
-      s+='<div class="pjw-det"><h4>'+esc(tf.n)+'</h4><p><b>'+esc(T('Dote'))+':</b> '+esc(tf.dote)+' · <b>'+esc(T('Habilidades'))+':</b> '+esc(tf.hab)+' · <b>'+esc(T('Herramienta'))+':</b> '+esc(tf.herr)+'</p>'
-       +'<p><b>'+esc(T('Equipo'))+':</b> '+esc(tf.equipo)+'</p></div>'
-       +'<h4>'+esc(T('Puntos de característica del trasfondo'))+'</h4><p class="hint">'+esc(T('El trasfondo ofrece estas características. Reparte +2 y +1 entre ellas, o +1 a las tres.'))+'</p>'
-       +'<div class="pjw-seg" role="group" aria-label="'+esc(T('Cómo repartir'))+'">'+[['21','+2 y +1'],['111','+1 a las tres']].map(([k,l])=>'<button type="button" class="btn sm'+(w.tfm===k?' primary':' ghost')+'" data-act="pjw" data-w="tfm" data-v="'+k+'" aria-pressed="'+(w.tfm===k)+'">'+esc(T(l))+'</button>').join('')+'</div>'
-       +'<ul class="pjw-bono">'+op.map(a=>{
+      L.push({id:'tfp',t:'Puntos de característica del trasfondo',hecho:w.tfm==='111'||!!(w.tfa[0]&&w.tfa[1]&&w.tfa[0]!==w.tfa[1]),res:w.tfm==='111'?'+1 '+T('a las tres'):w.tfa[0]&&w.tfa[1]?'+2 '+ABK[w.tfa[0]]+' · +1 '+ABK[w.tfa[1]]:'',html:'<p class="hint">'+esc(T('El trasfondo ofrece estas características. Reparte +2 y +1 entre ellas, o +1 a las tres.'))+'</p>'
+        +'<div class="pjw-seg" role="group" aria-label="'+esc(T('Cómo repartir'))+'">'+[['21','+2 y +1'],['111','+1 a las tres']].map(([k,l])=>'<button type="button" class="btn sm'+(w.tfm===k?' primary':' ghost')+'" data-act="pjw" data-w="tfm" data-v="'+k+'" aria-pressed="'+(w.tfm===k)+'">'+esc(T(l))+'</button>').join('')+'</div>'
+        +'<ul class="pjw-bono">'+op.map(a=>{
           const n=w.tfm==='111'?1:w.tfa[0]===a?2:w.tfa[1]===a?1:0;
           const bt=(g,l)=>{const i=g==='b2'?0:1,sel=w.tfa[i]===a,otra=w.tfa[1-i]===a,lleno=!!w.tfa[i]&&!sel;
             return '<button type="button" class="btn sm'+(sel?' primary':' ghost')+'" data-act="pjw" data-w="'+g+'" data-v="'+a+'" aria-pressed="'+sel+'"'+(lleno||otra?' disabled':'')+'>'+l+'</button>';};
           return '<li class="'+(n?'on':'')+'"><span class="nm">'+esc(T(PJW_ABN[a]))+'</span>'+(w.tfm==='111'?'<span class="pjw-n">+1</span>':bt('b2','+2')+bt('b1','+1'))+'</li>';}).join('')+'</ul>'
-       +(w.tfm==='21'?'<p class="hint" role="status">'+(w.tfa[0]&&w.tfa[1]?'✓ '+esc(T('Reparto completo')):esc(T('Falta por repartir'))+': '+[w.tfa[0]?'':'+2',w.tfa[1]?'':'+1'].filter(Boolean).join(' y '))+'</p>':'');
+        +(w.tfm==='21'?'<p class="hint" role="status">'+(w.tfa[0]&&w.tfa[1]?'✓ '+esc(T('Reparto completo')):esc(T('Falta por repartir'))+': '+[w.tfa[0]?'':'+2',w.tfa[1]?'':'+1'].filter(Boolean).join(' y '))+'</p>':'')});
+      {const hh=pjwHerrHTML(w,'ht');if(hh)L.push({id:'tfh',t:'Herramienta del trasfondo',hecho:pjwHerrOk(w,'ht'),res:pjwHerrRes(w,'ht'),html:hh});}
+      L.push({id:'idi',t:'Idiomas',hecho:pjwIdiOk(w),res:I.fijos.concat(w.idi).map(T).join(', '),html:'<p class="hint">'+esc(T('Todos los personajes saben común; elige dos idiomas más de la tabla «Idiomas estándar»')+(w.cls==='picaro'?' '+T('y otro más, estándar o inusual (el pícaro).'):'.'))+'</p>'
+        +'<p class="pjw-fijos">'+I.fijos.map(i=>'<span class="pjw-chip fijo">'+esc(T(i))+'</span>').join('')+(PJW_IDI_CLASE[w.cls]?' <small class="pcsub">'+esc(T('Fijos'))+': '+esc(T('común y el idioma de tu clase'))+'</small>':'')+'</p>'
+        +'<div class="pjw-chips" role="group" aria-label="'+esc(T('Idiomas'))+'">'+I.pool.map(i=>{const on=w.idi.includes(i);return '<label class="pjw-chip"><input type="checkbox" data-pjw="idi" value="'+esc(i)+'"'+(on?' checked':'')+(!on&&w.idi.length>=I.n?' disabled':'')+'> '+esc(T(i))+'</label>';}).join('')+'</div>'
+        +'<p class="hint" role="status">'+w.idi.length+' / '+I.n+'</p>'});
+      {const mh=pjwMiHTML(w);if(mh)L.push({id:'mi',t:'Conjuros de tu origen',hecho:pjwMiOk(w),res:pjwMiLista(w).map(q=>q.lista+': '+q.tr.concat(q.c?[q.c]:[]).join(', ')).join(' · ')||pjwCjEsp(w).map(x=>x.n).join(', '),html:mh});}
+      if(pjwEqOps(w,'t').length)L.push({id:'eqt',t:'Equipo del trasfondo',hecho:pjwEqOk(w,'t'),res:pjwEqRes(w,'t'),html:pjwEqHTML(w,'t')});
     }
-    return s;
-  };
-  const B3=()=>{const I=pjwIdiomas(w);
-    return '<h3>'+esc(T('Idiomas'))+'</h3><p class="hint">'+esc(T('Todos los personajes saben común; elige dos idiomas más de la tabla «Idiomas estándar»')+(w.cls==='picaro'?' '+T('y otro más, estándar o inusual (el pícaro).'):'.'))+'</p>'
-      +'<p class="pjw-fijos">'+I.fijos.map(i=>'<span class="pjw-chip fijo">'+esc(T(i))+'</span>').join('')+(PJW_IDI_CLASE[w.cls]?' <small class="pcsub">'+esc(T('Fijos'))+': '+esc(T('común y el idioma de tu clase'))+'</small>':'')+'</p>'
-      +'<div class="pjw-chips" role="group" aria-label="'+esc(T('Idiomas'))+'">'+I.pool.map(i=>{const on=w.idi.includes(i);return '<label class="pjw-chip"><input type="checkbox" data-pjw="idi" value="'+esc(i)+'"'+(on?' checked':'')+(!on&&w.idi.length>=I.n?' disabled':'')+'> '+esc(T(i))+'</label>';}).join('')+'</div>'
-      +'<p class="hint" role="status">'+w.idi.length+' / '+I.n+'</p>';};
-  if(w.paso===1)return '<p class="hint">'+esc(T('Paso 2 del Manual del Jugador: determina tu origen. Elige la especie y el trasfondo.'))+'</p><h3>'+esc(T('Especie'))+'</h3>'+B1()+'<h3>'+esc(T('Trasfondo'))+'</h3>'+B2()+pjwHerrHTML(w,'ht')+B3()+pjwMiHTML(w);
+    return '<p class="hint">'+esc(T('Paso 2 del Manual del Jugador: determina tu origen. Elige la especie y el trasfondo; el resto se va abriendo según lo que elijas.'))+'</p>'+pjwBloques(w,L);
+  }
   if(w.paso===2){
     const fin=pjwFinal(w),b=pjwBase(w),n=pjwBono(w);
-    let s='<p class="hint">'+esc(T('Paso 3: puntuaciones de característica. Asigna los valores y se suman los puntos del trasfondo (máximo 20).'))+'</p><div class="pjrow">'
-      +[['std','Conjunto estándar'],['dados','Tirar 4d6'],['compra','Compra de puntos'],['tabla','Tabla predefinida de la clase']].map(([k,l])=>'<label><input type="radio" name="pjw-met" data-pjw="met" value="'+k+'"'+(w.met===k?' checked':'')+'> '+esc(T(l))+'</label>').join('')
-      +(w.met==='dados'?'<button type="button" class="btn sm" data-act="pjw" data-w="tirar">'+esc(T('Volver a tirar'))+'</button>':'')+'</div>';
+    let s='<p class="hint">'+esc(T('Paso 3: puntuaciones de característica. Asigna los valores y se suman los puntos del trasfondo (máximo 20).'))+'</p><div class="pjw-met" role="radiogroup" aria-label="'+esc(T('Cómo obtener las características'))+'">'
+      +[['std','Conjunto estándar','15, 14, 13, 12, 10 y 8: tú los repartes'],['dados','Tirar 4d6','Seis tiradas, se descarta el dado más bajo'],['compra','Compra de puntos','27 puntos para subir cada característica'],['tabla','Tabla predefinida de la clase','Ya repartido para tu clase']].map(([k,l,d])=>'<label class="pjw-mo'+(w.met===k?' on':'')+'"><input type="radio" name="pjw-met" data-pjw="met" value="'+k+'"'+(w.met===k?' checked':'')+'><b>'+esc(T(l))+'</b><small>'+esc(T(d))+'</small></label>').join('')
+      +'</div>'+(w.met==='dados'?'<div class="pjw-acc"><button type="button" class="btn" data-act="pjw" data-w="tirar">'+esc(T('Volver a tirar'))+'</button></div>':'');
     if(w.met==='compra')s+='<p role="status"><b>'+esc(T('Puntos gastados'))+': '+pjwGastado(w)+' / '+PJW_PUNTOS+'</b></p>';
-    else if(w.met==='tabla')s+='<p class="hint">'+esc(T('Reparto recomendado por el Manual del Jugador para')+' '+T(CLSN[w.cls])+' ('+T('conjunto estándar por clase')+'): '+T('los valores más altos van a las características principales.'))+'</p><div class="ms-acts"><button type="button" class="btn sm ghost" data-act="pjw" data-w="ajustar">'+esc(T('Ajustarlo a mano'))+'</button></div>';
+    else if(w.met==='tabla')s+='<p class="hint">'+esc(T('Reparto recomendado por el Manual del Jugador para')+' '+T(CLSN[w.cls])+' ('+T('conjunto estándar por clase')+'): '+T('los valores más altos van a las características principales.'))+'</p><div class="pjw-acc"><button type="button" class="btn" data-act="pjw" data-w="ajustar">'+esc(T('Ajustarlo a mano'))+'</button></div>';
     else s+='<p class="hint">'+esc(T('Valores'))+': '+w.pool.slice().sort((x,y)=>y-x).join(', ')+'</p>';
     s+='<table class="pjw-car"><thead><tr><th>'+esc(T('Característica'))+'</th><th>'+esc(T('Base'))+'</th><th>'+esc(T('Trasfondo'))+'</th><th>'+esc(T('Total'))+'</th><th>'+esc(T('Mod.'))+'</th></tr></thead><tbody>'
       +Ficha.AB.map(a=>{
@@ -9740,6 +10096,9 @@ function pjwResumen(w){
   o.push(T('Salvaciones')+': '+C.sv.map(a=>ABK[a]).join(', ')+' ('+T('clase')+' '+CLSN[w.cls]+')');
   o.push(T('Dado de golpe')+' d'+C.d+' · '+T('PG de nivel 1')+' '+Math.max(1,C.d+Math.floor((fin.con-10)/2)));
   if(tf&&tf.dote)o.push(T('Dote de origen')+': '+tf.dote+' ('+T('trasfondo')+' '+w.tf+')');
+  {const c=pjwClase(w.cls);o.push(T('Clase')+' '+CLSN[w.cls]+': '+T('versión')+' '+(pjwEsBase(c)?PJW_BASE:String(c._book||c._src)));}
+  const EQ=pjwEqFinal(w);
+  for(const k of ['c','t']){const s=pjwEqSel(w,k);if(s)o.push(T('Equipo inicial')+' ('+T(k==='c'?'clase':'trasfondo')+' '+(k==='c'?CLSN[w.cls]:w.tf)+'): '+T('opción')+' '+s.k+' — '+pjwEqTxt(s));}
   {const H=pjwHerr(w);for(const x of H.fijas)o.push(T('Herramienta')+': '+x.n+' ('+x.de+')');for(const e of H.elec)if(e.sel.length)o.push(T('Herramienta')+': '+e.sel.join(', ')+' ('+e.de+')');}
   if(esp)o.push(T('Especie')+' '+esp.n+': '+T('velocidad')+' '+esp.vel+' · '+String(esp.tam||'').split(' (')[0]);
   const nom=k=>T(Ficha.HAB_NOM[k]),delT=Object.keys(hab).filter(k=>!w.sk.includes(k)&&!horig[k]),delE=Object.keys(horig);
@@ -9756,7 +10115,7 @@ function pjwResumen(w){
     ['Idiomas',pjwIdiomas(w).fijos.concat(w.idi).map(T).join(', ')],
     ['Dotes y mejoras',tf&&tf.dote?T('Dote de origen')+' ('+T('trasfondo')+'): '+tf.dote:'—'],
     ['Herramientas',pjwHerrFinal(w).join(', ')||'—'],
-    ['Equipo',tf&&tf.equipo||'—'],
+    ['Equipo',EQ.items.length||EQ.po?pjwEqTxt(EQ):'—'],
     ['Especie',esp?esp.n+' · '+T('velocidad')+' '+((el.find(x=>x.amb==='e'&&x.op.vel)||{op:{}}).op.vel||esp.vel)+' · '+String(esp.tam||'').split(' (')[0]:'—'],
     ['Puntos de golpe',T('Nivel 1')+': '+Math.max(1,C.d+Math.floor((fin.con-10)/2))+' ('+T('dado de golpe')+' d'+C.d+')']
   ].filter(b=>b[1]);
@@ -9775,16 +10134,21 @@ function pjwCrear(w){
     otras:{armas:pjwCm(w).filter(x=>x[0]==='a').map(x=>x.slice(2)),armaduras:pjwCm(w).filter(x=>x[0]==='r').map(x=>x.slice(2)),herramientas:pjwHerrFinal(w),idiomas:pjwIdiomas(w).fijos.concat(w.idi)},origen:camp?'campana':'libre',campana:camp?Store.campaigns.active():'',
     registro:R.origen.map(d=>({t:ahora,a:'creacion',d:d.slice(0,200),por:''}))}));
   f=Ficha.sincEspecie(f,esp);   // rasgos fijos y elegidos de la especie, con sus recursos y efectos
+  {const E=pjwEqFinal(w);   // equipo inicial elegido (clase y trasfondo): los objetos al inventario y el oro a la bolsa
+    for(const i of E.items){const r=Ficha.invAnadir(f,{n:i.n,q:i.q,nota:i.de});if(r.ok)f=r.f;}
+    if(E.po)f.mon=Object.assign({},f.mon,{po:((f.mon&&f.mon.po)||0)+E.po});}
   for(const q of cmi){   // Iniciado en la magia: un rasgo con su texto y el uso diario del conjuro de nivel 1 como recurso
     const r=Ficha.rasgoAnadir(f,{n:'Iniciado en la magia ('+q.lista+')',txt:'Lista de conjuros: '+q.lista+'. Aptitud mágica: '+q.aptN+'. Trucos: '+q.tr.join(', ')+'.'+(q.c?' Conjuro de nivel 1: '+q.c+', siempre preparado; puedes lanzarlo una vez sin gastar espacio de conjuro y recuperas ese uso tras un descanso largo.':'')+' Al subir de nivel puedes cambiar uno de estos conjuros por otro del mismo nivel de la lista.',max:q.c?1:0,rec:'largo'});
     if(r.ok)f=r.f;}
   (camp?PJC:PJ).push(f);pjSave();if(camp)diaSemilla(f,w.tf?T('Trasfondo')+': '+w.tf:'',w.lugar.trim());pjEdit=null;PJW=null;location.hash='personajes/'+f.id;
 }
 function pjwAct(b){
-  const w=PJW,a=b.dataset.w,v=b.dataset.v;if(!w)return;
-  if(a==='cls'){if(w.cls!==v){w.cls=v;w.cm=null;w.hc=[];w.sk=[];w.tr=[];w.cp=[];w.pp=[];w.idi=[];for(const k of Object.keys(w.el))if(k[0]==='c')delete w.el[k];}}
+  const w=PJW,a=b.dataset.w,v=b.dataset.v;if(!w)return;const p0=w.paso;
+  if(a==='bl'){w.ab=w.ab===v?'':v;}
+  else if(a==='eqc'||a==='eqt'){w[a]=v;}
+  else if(a==='cls'){if(w.cls!==v){w.cls=v;w.eqc='';w.cm=null;w.hc=[];w.sk=[];w.tr=[];w.cp=[];w.pp=[];w.idi=[];for(const k of Object.keys(w.el))if(k[0]==='c')delete w.el[k];}}
   else if(a==='esp'){if(w.esp!==v){w.esp=v;for(const k of Object.keys(w.el))if(k[0]==='e')delete w.el[k];pjwCjAjusta(w);}}
-  else if(a==='tf'){if(w.tf!==v){w.tf=v;w.ht=[];w.tfa=['',''];pjwCjAjusta(w);}}
+  else if(a==='tf'){if(w.tf!==v){w.tf=v;w.eqt='';w.ht=[];w.tfa=['',''];pjwCjAjusta(w);}}
   else if(a==='tfm'){w.tfm=v==='111'?'111':'21';}
   else if(a==='b2'||a==='b1'){const i=a==='b2'?0:1;w.tfa[i]=w.tfa[i]===v?'':v;if(w.tfa[1-i]===v)w.tfa[1-i]='';}
   else if(a==='tirar'){w.pool=Array.from({length:6},()=>{const d=[1,2,3,4].map(()=>1+Math.floor(Math.random()*6)).sort((x,y)=>y-x);return d[0]+d[1]+d[2];});w.asig={};}
@@ -9794,6 +10158,7 @@ function pjwAct(b){
   else if(a==='sig'){if(pjwValido(w,w.paso)&&w.paso<PJW_PASOS.length-1)w.paso++;else if(w.paso===PJW_PASOS.length-1)return pjwCrear(w);}
   else if(a==='atras'){if(w.paso>0)w.paso--;}
   else if(a==='ir'){const p=+v;if(p<=w.paso||PJW_PASOS.slice(0,p).every((_,i)=>pjwValido(w,i)))w.paso=p;}
+  if(w.paso!==p0){w.act='';w.ab='';w.scr=false;window.scrollTo({top:0});}   // paso nuevo: los bloques empiezan de cero y se sube al principio
   pjRender();
 }
 function pjwCambio(el){
@@ -9827,13 +10192,14 @@ function pjwCambio(el){
 }
 function pjFormHTML(){
   if(!PJW)PJW=pjwNuevo();
-  const w=PJW,ult=w.paso===PJW_PASOS.length-1;
-  return '<section class="pjbox pjw" aria-labelledby="pjw-h"><h3 id="pjw-h">'+esc(T('Nuevo personaje'))+'</h3>'
-    +'<ol class="pjw-pasos">'+PJW_PASOS.map((p,i)=>'<li><button type="button" data-act="pjw" data-w="ir" data-v="'+i+'" class="'+(i===w.paso?'on':i<w.paso?'hecho':'')+'"'+(i===w.paso?' aria-current="step"':'')+'><span>'+(i+1)+'</span> '+esc(T(p))+'</button></li>').join('')+'</ol>'
-    +'<div class="pjw-cuerpo">'+pjwPaso(w)+'</div>'
-    +'<div class="pjrow pjw-pie"><button type="button" class="btn ghost" data-act="pjcancel">'+esc(T('Cancelar'))+'</button><span style="flex:1"></span>'
+  const w=PJW,ult=w.paso===PJW_PASOS.length-1,cuerpo=pjwPaso(w),ok=pjwValido(w,w.paso),fa=ok?[]:pjwFalta(w,w.paso);
+  return '<section class="pjbox pjw" aria-labelledby="pjw-h"><header class="pjw-cab"><h3 id="pjw-h">'+esc(T('Nuevo personaje'))+'</h3><span class="pjw-cnt">'+esc(T('Paso')+' '+(w.paso+1)+' '+T('de')+' '+PJW_PASOS.length+' · '+T(PJW_PASOS[w.paso]))+'</span></header>'
+    +'<ol class="pjw-pasos">'+PJW_PASOS.map((p,i)=>'<li><button type="button" data-act="pjw" data-w="ir" data-v="'+i+'" class="'+(i===w.paso?'on':i<w.paso?'hecho':'')+'"'+(i===w.paso?' aria-current="step"':'')+'><span>'+(i<w.paso?'✓':i+1)+'</span><i>'+esc(T(p))+'</i></button></li>').join('')+'</ol>'
+    +'<div class="pjw-cuerpo">'+cuerpo+'</div>'
+    +'<div class="pjrow pjw-pie"><button type="button" class="btn ghost" data-act="pjcancel">'+esc(T('Cancelar'))+'</button>'
+    +'<span class="pjw-falta'+(ok?' ok':'')+'" role="status">'+esc(ok?'✓ '+T(ult?'Todo listo para crear el personaje':'Paso completo'):fa.length?T('Falta')+': '+fa.join(' · '):'')+'</span>'
     +(w.paso>0?'<button type="button" class="btn" data-act="pjw" data-w="atras">← '+esc(T('Atrás'))+'</button>':'')
-    +'<button type="button" class="btn primary" data-act="pjw" data-w="sig"'+(pjwValido(w,w.paso)?'':' disabled')+'>'+esc(ult?T('Crear personaje'):T('Siguiente')+' →')+'</button></div></section>';
+    +'<button type="button" class="btn primary" data-act="pjw" data-w="sig"'+(ok?'':' disabled')+'>'+esc(ult?T('Crear personaje'):T('Siguiente')+' →')+'</button></div></section>';
 }
 
 const pjRecBloq=q=>!!q&&(q.rec==='corto'||q.rec==='largo');   // solo se recupera en un descanso, también para el máster; lo «Sin recarga» sí se devuelve a mano
@@ -9932,8 +10298,9 @@ const PJ_LISTA={estados:'Estados',res:'Resistencias',inm:'Inmunidades',vul:'Vuln
 /* Opciones de estados, resistencias, inmunidades y vulnerabilidades: salen de las reglas del compendio (estados) y de su tabla «Tipos de daño». */
 function pjOpcionesLista(k){
   let R=[];try{R=compList('reglas',true);}catch{}
-  let est=[...new Set(R.filter(x=>x&&fold(x.cat||'')==='estados').map(x=>x.n))].sort((a,b)=>a.localeCompare(b,'es'));
-  if(!est.length)est=['Agarrado','Apresado','Asustado','Aturdido','Cansancio','Cegado','Derribado','Ensordecido','Envenenado','Hechizado','Incapacitado','Inconsciente','Invisible','Paralizado','Petrificado'];   // los estados de las reglas 2024; sin ninguna regla cargada no hay otra fuente
+  const E24=['Agarrado','Apresado','Asustado','Aturdido','Cansancio','Cegado','Derribado','Ensordecido','Envenenado','Hechizado','Incapacitado','Inconsciente','Invisible','Paralizado','Petrificado'];   // los estados de las reglas 2024
+  /* los 15 de siempre más los que traigan tus módulos: no faltan aunque la copia cargada del manual sea anterior o los traiga con otra categoría */
+  const est=[...new Set(E24.concat(R.filter(x=>x&&fold(x.cat||'')==='estados').map(x=>x.n)))].sort((a,b)=>a.localeCompare(b,'es'));
   const tr=R.find(x=>x&&fold(x.n||'')==='tipos de dano'),dm=[];
   if(tr)for(const m of String(tr.d||'').matchAll(/<tr><td>([^<]+)<\/td>/g))dm.push(m[1].trim());
   const dano=dm.length?dm:Object.values(DMG).map(v=>v[0].toUpperCase()+v.slice(1));
@@ -9996,7 +10363,7 @@ function pjMagiaHTML(f){
     return '<li class="act" data-n="'+esc(n)+'">'
       +cel('Nombre','<b class="noi18n"'+pjHv('conjuros',n)+'>'+esc(n)+'</b>'+(sp&&SCHOOLS[sp.sch]?'<small>'+esc(SCHOOLS[sp.sch])+'</small>':'')+'','pjspn')
       +cel('Alcance',sp?'<span title="'+esc(sp.rg||'')+'">'+esc(pjSpAlc(sp.rg))+'</span>':'')+cel('Imp. / CD',imp)+cel('Daño',dano)+cel('Notas',sp?pjSpNotas(sp):'')
-      +'<span class="pjspc ctl">'+est+'<button type="button" class="btn sm danger" data-act="pjsprm" data-n="'+esc(n)+'" aria-label="'+esc(T('Quitar'))+'">×</button></span>'
+      +'<span class="pjspc ctl">'+est+'</span>'   // los conjuros no se borran desde la hoja: cambiarlos es una decisión (subida de nivel o descanso) con su propia pantalla
       +(siempre?'<span class="pjsp-sub"><span class="pjtag pjsiempre">'+esc(T('Siempre preparado'))+'</span>'+(por?'<span class="noi18n">'+esc(T('por'))+' '+esc(por)+'</span>':'')+'</span>':'')+'</li>';};
   const niveles=Object.keys(grupos).map(Number).sort((x,y)=>x-y);
   /* La aptitud mágica sale de la clase (o de la dote/especie al crear el personaje) y no se elige en la hoja: aquí solo se resume. Si aún no hay ninguna y la ficha ya tiene conjuros, se deja fijar una vez. */
@@ -10013,7 +10380,13 @@ function pjMagiaHTML(f){
 let pjTab='combate';
 const PJ_TABS=[['combate','Combate'],['rasgos','Rasgos'],['conjuros','Conjuros'],['inventario','Inventario'],['notas','Notas']];
 /* La última pestaña, «Configuración DM», solo existe para el máster: el jugador ni la ve en pantalla ni la tiene en la página. */
-const pjTabs=()=>PJROL==='dm'?[...PJ_TABS,['dm','Configuración DM']]:PJ_TABS;
+/* Un personaje muerto solo enseña el inventario (y, al máster, Configuración DM para devolverlo a la vida). */
+/* Sin conjuros, sin espacios de conjuro y sin aptitud mágica (de clase, dote o especie) la pestaña Conjuros estaría vacía y no se enseña.
+   El máster sigue pudiendo añadir un conjuro desde Configuración DM; en cuanto lo hace, la pestaña aparece. */
+const pjTieneMagia=f=>{const e=Ficha.espacios(f);return f.conjuros.length>0||e.nivelCaster>0||!!e.pact||!!Ficha.magia(f);};
+const pjTabs=f=>{const s=f?{f}:pjSel&&typeof pjGet==='function'?pjGet(pjSel):null,
+  b=s&&Ficha.muerto(s.f)?PJ_TABS.filter(x=>x[0]==='inventario'):s&&!pjTieneMagia(s.f)?PJ_TABS.filter(x=>x[0]!=='conjuros'):PJ_TABS;
+  return PJROL==='dm'?[...b,['dm','Configuración DM']]:b;};
 /* Subclases que se pueden elegir: las de la clase principal (de los módulos); se eligen del nivel 3 en adelante y no se escriben a mano. */
 function pjSubclases(f){
   const dd=pjDatosClase(),c=f.niveles[0]&&f.niveles[0].c,d=dd&&dd[c];if(!d)return [];
@@ -10065,7 +10438,8 @@ function pjCA(f){
 }
 /* Pestaña «Configuración DM»: lo que solo toca el máster (añadir recursos y rasgos propios). */
 function pjConfigDMHTML(f,recursos,registro){
-  return '<p class="pcsub">'+esc(T('Solo la ves tú como máster. Lo que añadas aquí aparece en la hoja del jugador; los rasgos de clase ya se ponen solos por nivel.'))+'</p>'+recursos
+  if(Ficha.muerto(f))return pjNotaMuerteHTML(f)+pjRevivirHTML(f)+pjMuertesHTML(f)+registro;   // muerto: solo se puede devolver a la vida
+  return pjMuertesHTML(f)+'<p class="pcsub">'+esc(T('Solo la ves tú como máster. Lo que añadas aquí aparece en la hoja del jugador; los rasgos de clase ya se ponen solos por nivel.'))+'</p>'+recursos
    +'<div class="pjbox"><h3>'+esc(T('Añadir un rasgo'))+'</h3><div class="pjrow"><input id="pjg-n" data-pjenter maxlength="80" placeholder="'+esc(T('Nombre'))+'" aria-label="'+esc(T('Nombre'))+'" style="flex:1 1 160px"><input id="pjg-m" type="number" min="0" max="99" value="0" style="width:70px" aria-label="'+esc(T('Usos'))+'" title="'+esc(T('Usos (0 = sin usos)'))+'">'
    +'<select id="pjg-r" aria-label="'+esc(T('Recarga'))+'"><option value="largo">'+esc(T('Descanso largo'))+'</option><option value="corto">'+esc(T('Descanso corto'))+'</option><option value="">'+esc(T('Sin recarga'))+'</option></select></div>'
    +'<textarea id="pjg-t" maxlength="2000" placeholder="'+esc(T('Descripción'))+'" aria-label="'+esc(T('Descripción'))+'"></textarea><div class="pjrow"><button type="button" class="btn" data-act="pjrasadd">'+esc(T('Añadir'))+'</button></div></div>'
@@ -10094,6 +10468,42 @@ function pjRetratosHTML(f){
   return '<div class="pjbox"><h3>'+esc(T('Retrato'))+'</h3><p class="pcsub">'+esc(T('El token es el cuadrado pequeño (combate y mesa); el retrato grande sale en la hoja. Cada estado puede traer los suyos y los sustituye mientras está activo; si falta uno, se usa el normal.'))+'</p>'
     +fila('','')+ests.map(x=>fila(x[0],x[1])).join('')+'</div>';
 }
+/* Personaje muerto: aviso claro arriba, resumen reducido y, al máster, las formas de devolverlo a la vida. */
+const pjFecha=t=>t?new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}):'';
+function pjMuertoBanner(f){
+  const u=f.muertes[f.muertes.length-1],hay=u&&!u.vuelta,causa=hay?u.causa:f.agot>=6?'Cansancio de nivel 6':'Tres fallos en las salvaciones contra muerte o muerte instantánea';
+  return '<div class="pjmuertobox" role="alert"><h2>'+esc(T('Personaje muerto'))+'</h2><p><b class="noi18n">'+esc(f.nombre)+'</b> · <span class="noi18n">'+esc(causa)+'</span>'+(hay&&u.t?' · '+esc(pjFecha(u.t)):'')+'.</p>'
+    +(hay&&u.nota?'<p class="pjmnota noi18n">'+esc(u.nota)+'</p>':'')
+    +'<p>'+esc(T('La ficha está bloqueada: solo se puede ver el inventario. No admite daño, curación, descansos, tiradas ni cambios.'))+'</p>'
+    +'<p>'+esc(PJROL==='dm'?T('Para devolverlo a la vida, abre Configuración DM y elige un conjuro (Revivir, Alzar a los muertos, Resurrección…) o hazlo a mano.'):T('Solo el máster puede devolverlo a la vida.'))+'</p></div>';
+}
+/* Historial de muertes: se conserva siempre, también después de revivir. */
+function pjMuertesHTML(f){
+  if(!f.muertes.length)return '';
+  return '<div class="pjbox pjmhist"><h3>'+esc(T('Historial de muertes'))+' <small class="pcsub">'+f.muertes.length+'</small></h3><ul class="pjlist">'
+    +f.muertes.slice().reverse().map(m=>'<li><span class="noi18n"><b>'+esc(pjFecha(m.t))+'</b> · '+esc(m.causa)+(m.nota?'<br><i>'+esc(m.nota)+'</i>':'')
+      +'<br><small class="pcsub">'+(m.vuelta?esc(T('Volvió a la vida'))+' · '+esc(m.via)+' · '+esc(pjFecha(m.vuelta)):esc(T('No ha vuelto')))+'</small></span></li>').join('')+'</ul></div>';
+}
+function pjMuertoAside(f,foto,N){
+  return '<aside class="pjres pjresmuerto"><div class="pjrethd"><span class="pjfoto">'+(foto?'<img src="'+foto+'" alt="">':'<span class="pjav pjico">'+pjClsIco(f)+'</span>')+'</span>'
+    +'<a class="btn sm ghost" href="#personajes">← '+esc(T('Personajes'))+'</a></div>'
+    +'<b class="pjname noi18n">'+esc(f.nombre)+'</b>'
+    +'<p class="pjcls"><b>'+esc(pjCls(f))+'</b>'+(new Set(f.niveles.map(n=>n.c)).size>1?' · '+esc(T('Nivel'))+' '+N:'')+(f.subclase?' · '+esc(f.subclase):'')+'</p>'
+    +'<p class="pjorg noi18n"><i>'+esc([pjEspNombre(f),f.trasfondo].filter(Boolean).join(' · '))+'</i></p>'
+    +'<span class="pjtag pjmuertotag">'+esc(T('Muerto'))+'</span></aside>';
+}
+const PJ_REVIVIR=[['Revivir',3,'1','Muerto hace un minuto como mucho.'],['Alzar a los muertos',5,'1','Hasta 10 días muerto.'],['Resurrección',7,'max','Hasta un siglo muerto; vuelve con todos los PG.'],['Resurrección verdadera',9,'max','Hasta 200 años muerto; vuelve con todos los PG.']];
+function pjNotaMuerteHTML(f){
+  const u=f.muertes[f.muertes.length-1];
+  return '<div class="pjbox"><h3>'+esc(T('Cómo murió'))+'</h3><p class="pcsub">'+esc(T('Quién o qué lo mató, dónde y cuándo. Queda en el historial de muertes para siempre.'))+'</p>'
+    +'<textarea id="pjmuerte-nota" maxlength="300" aria-label="'+esc(T('Cómo murió'))+'" placeholder="'+esc(T('Ej.: aliento de fuego del dragón rojo en la cima del volcán'))+'">'+esc(u&&!u.vuelta?u.nota:'')+'</textarea>'
+    +'<div class="pjrow"><button type="button" class="btn" data-act="pjmuertenota">'+esc(T('Guardar'))+'</button></div></div>';
+}
+function pjRevivirHTML(f){
+  return '<div class="pjbox pjrev"><h3>'+esc(T('Devolver a la vida'))+'</h3><p class="pcsub">'+esc(T('Elige cómo vuelve. Se quitan las marcas de la muerte y la ficha se desbloquea. Si murió de cansancio, queda en el nivel 5. Revisa el conjuro: puede dejar penalizadores.'))+'</p>'
+    +'<div class="pjrevl">'+PJ_REVIVIR.map(([n,lv,pg,d])=>'<button type="button" class="btn" data-act="pjrevivir" data-via="'+esc(n)+'" data-pg="'+pg+'"><b class="noi18n"'+pjHv('conjuros',n)+'>'+esc(n)+'</b><small>'+esc(T('Conjuro de nivel'))+' '+lv+' · '+(pg==='max'?esc(T('todos los PG')):'1 '+esc(T('PG')))+' · '+esc(T(d))+'</small></button>').join('')+'</div>'
+    +'<div class="pjrow"><label>'+esc(T('A mano (decide el máster): PG con los que vuelve'))+'<input id="pjrev-pg" type="number" min="1" max="999" value="1"></label><button type="button" class="btn primary" data-act="pjrevivir" data-via="'+esc(T('A mano'))+'" data-pg="mano">'+esc(T('Devolver a la vida'))+'</button></div></div>';
+}
 function pjSheetHTML(f,lista){
   const camp=f.origen==='campana',N=Ficha.nivel(f),mx=Ficha.hpMax(f),pb=Ficha.prof(f),pct=mx?Math.round(100*f.hp/mx):0,col=pjCol(f);
   const saves=Ficha.salvas(f),dg=Ficha.dg(f),esp=Ficha.espacios(f);
@@ -10101,18 +10511,20 @@ function pjSheetHTML(f,lista){
   const rt=Ficha.retratoActual(f),foto=rt.img||rt.tok;
   const dots=(n,u)=>'<span class="pjdots" aria-hidden="true">'+'◆'.repeat(Math.max(0,n-u))+'<i>'+'◆'.repeat(Math.min(n,u))+'</i></span>';
   const recarga=r=>r.rec==='corto'?T('Descanso corto'):r.rec==='largo'?T('Descanso largo'):T('Sin recarga');
-  if(!pjTabs().some(x=>x[0]===pjTab))pjTab='combate';
+  if(!pjTabs(f).some(x=>x[0]===pjTab))pjTab=pjTabs(f)[0][0];
   // ---- avisos (campaña, propuestas)
-  let av=pjRelHTML(f)+pjPendientesHTML(f);
+  const dead=Ficha.muerto(f);
+  let av=(dead?pjMuertoBanner(f):'')+pjRelHTML(f)+pjPendientesHTML(f);
   if(camp)av+='<p class="pjlock">'+esc(T('Este personaje pertenece a la campaña: el nivel, los PG máximos y las características solo cambian al subir de nivel.'))+'</p>';
   // ---- resumen (columna izquierda)
-  let r='<aside class="pjres"><div class="pjrethd"><button type="button" class="pjfoto'+(rt.estado?' est':'')+'" data-act="pjtab" data-t="notas" title="'+esc(T('Cambiar retrato'))+'">'+(foto?'<img src="'+foto+'" alt="">':'<span class="pjav">'+esc((f.nombre.trim()[0]||'?').toUpperCase())+'</span>')+'</button>'
+  let r='<aside class="pjres"><div class="pjrethd"><button type="button" class="pjfoto'+(rt.estado?' est':'')+'" data-act="pjtab" data-t="notas" title="'+esc(T('Cambiar retrato'))+'">'+(foto?'<img src="'+foto+'" alt="">':'<span class="pjav pjico">'+pjClsIco(f)+'</span>')+'</button>'
    +'<a class="btn sm ghost" href="#personajes">← '+esc(T('Personajes'))+'</a></div>'
    +'<input class="pjname noi18n" data-pjf="nombre" value="'+esc(f.nombre)+'" maxlength="80" aria-label="'+esc(T('Nombre'))+'">'
    +'<p class="pjcls"><b>'+esc(pjCls(f))+'</b>'+(new Set(f.niveles.map(n=>n.c)).size>1?' · '+esc(T('Nivel'))+' '+N:'')+(f.subclase?' · '+esc(f.subclase):'')+'</p>'
    +(!f.subclase&&f.niveles[0]&&Ficha.nivelClase(f,f.niveles[0].c)>=3&&pjSubclases(f).length?'<label class="pjelige">'+esc(T('Toca elegir subclase'))+pjSubSel(f)+'</label>':'')
    +'<p class="pjorg noi18n"><i>'+esc([pjEspNombre(f),f.trasfondo].filter(Boolean).join(' · '))+'</i> <span class="pjtag">'+esc(camp?T('De campaña'):T('Libre'))+'</span></p>'
-   +'<div class="pjvida"><span class="pjlbl">'+esc(T('Puntos de vida'))+'</span><div class="pjrow"><span class="pjhpnum">'+f.hp+' / '+mx+(f.temp?'<b class="pjtmpv" title="'+esc(T('PG temporales'))+'">+'+f.temp+'</b>':'')+'</span>'+'<span class="pjstate">'+esc(T(pjEstado(f.hp,mx)))+'</span>'
+   +(f.muertes.length?'<p class="pjvuelto" title="'+esc(f.muertes.map(m=>pjFecha(m.t)+': '+m.causa+(m.nota?' ('+m.nota+')':'')).join(' · '))+'">'+esc(f.muertes.length>1?T('Ha muerto')+' '+f.muertes.length+' '+T('veces'):T('Ha muerto una vez'))+' · <span class="noi18n">'+esc(f.muertes[f.muertes.length-1].causa)+'</span></p>':'')
+   +'<div class="pjvida"><span class="pjlbl">'+esc(T('Puntos de vida'))+'</span><div class="pjrow"><span class="pjhpnum">'+f.hp+' / '+mx+(f.temp?'<b class="pjtmpv" title="'+esc(T('PG temporales'))+'">+'+f.temp+'</b>':'')+'</span>'+'<span class="pjstate">'+esc(T(pjEstado(f.hp,mx,f.muerte.fa>=3)))+'</span>'
    +'<label class="pjinsp" title="'+esc(T('Inspiración'))+'"><input type="checkbox" data-pjchk="insp"'+(f.insp?' checked':'')+'><svg viewBox="0 0 24 30" width="22" height="27" aria-hidden="true"><path d="M12 2C12 2 4 12.5 4 19a8 8 0 0 0 16 0C20 12.5 12 2 12 2Z"/></svg><span>'+esc(T('Insp.'))+'</span></label></div>'
    +'<div class="pjhp"><i class="'+pjHpCls(pct)+'" style="width:'+pct+'%"></i></div>'
    +'<div class="pjvact"><input id="pj-amt" type="number" min="1" value="1" aria-label="'+esc(T('Cantidad'))+'"><div class="pjvbtn"><button type="button" class="btn sm danger" data-act="pjdano">'+esc(T('Daño'))+'</button><button type="button" class="btn sm" data-act="pjcura">'+esc(T('Curar'))+'</button><button type="button" class="btn sm" data-act="pjtemp" title="'+esc(T('Suma la cantidad como PG temporales. No se acumulan: te quedas con el mayor'))+'">'+esc(T('Temporales'))+'</button></div>'
@@ -10129,6 +10541,7 @@ function pjSheetHTML(f,lista){
    +'<div class="pjmuerte" role="group" aria-label="'+esc(T('Salvaciones contra muerte'))+'"><span class="pjlbl">'+esc(T('Salvaciones contra muerte'))+'</span>'
    +['ex','fa'].map(k=>'<div class="pjmrow '+k+'"><span>'+esc(T(k==='ex'?'Éxitos':'Fallos'))+'</span><span class="pjcirc">'+[1,2,3].map(n=>'<button type="button" class="pjc'+(f.muerte[k]>=n?' on':'')+'" data-act="pjmuerte" data-k="'+k+'" data-n="'+n+'" aria-pressed="'+(f.muerte[k]>=n)+'" aria-label="'+esc(T(k==='ex'?'Éxito':'Fallo'))+' '+n+'"></button>').join('')+'</span></div>').join('')+'<div class="pjmrow cans"><span>'+esc(T('Cansancio'))+'</span><span class="pjcirc pjcans6">'+[1,2,3,4,5,6].map(n=>'<button type="button" class="pjc'+(f.agot>=n?' on':'')+'" data-act="pjagot" data-n="'+n+'" aria-pressed="'+(f.agot>=n)+'" aria-label="'+esc(T('Cansancio'))+' '+n+'"></button>').join('')+'</span></div></div>'
    +'<div class="pjrow pjacc"><button type="button" class="btn sm primary" data-act="pjlevel">'+esc(T('Subir de nivel'))+'</button><button type="button" class="btn sm" data-act="pjstat">'+esc(T('Statblock'))+'</button><button type="button" class="btn sm" data-act="pjexport">'+esc(T('Exportar'))+'</button><button type="button" class="btn sm" data-act="pjprint">'+esc(T('Imprimir / guardar PDF'))+'</button></div></aside>';
+  if(dead)r=pjMuertoAside(f,foto,N);   // ficha bloqueada: sin vida, descansos ni acciones
   // ---- franja de datos fijos
   const cc=pjCA(f),st=(l,v,u)=>'<div class="pjst"><span class="pjstl">'+esc(T(l))+'</span><b class="pjstv">'+(String(v).startsWith('<button')?v:esc(v))+(u?'<small>'+esc(u)+'</small>':'')+'</b></div>',vm=/^([\d.,]+)\s*(.*)$/.exec(String(cc.vel||f.vel).trim());
   const franja='<div class="pjstrip">'+st('CA',cc.v)+st('Velocidad',vm?vm[1]:cc.vel,vm?vm[2]:'')+st('Iniciativa',pjTir(Ficha.mod(f.car.des),T('Iniciativa')))+st('Competencia',pjSgn(pb))+st('Percepción pasiva',Ficha.pasiva(f,'percepcion'))+'</div>';
@@ -10136,7 +10549,7 @@ function pjSheetHTML(f,lista){
     return '<div class="pjab"><span class="k">'+esc(T(ABK[a]))+'</span><span class="m">'+pjTir(m,T('Prueba de')+' '+T(ABN[a]))+'</span>'+'<span class="lk" title="'+esc(T('Cambia solo al subir de nivel'))+'">'+v+'</span>'
      +'</div>';}).join('')+'</div>';
   // ---- paneles
-  const pCombate=abs+pjEfectosHTML(f)
+  const pCombate=abs+pjMuerteAyuda(f)+pjEstadosHTML(f)+pjEfectosHTML(f)
    +pjDet('hab','Habilidades y salvaciones',pjHabHTML(f),pjPend(f,'habil','salvac'))+pjDet('atq','Ataques',pjAtqHTML(f),pjPend(f,'ataques'))
    +pjDet('def','Estados, resistencias y vulnerabilidades',pjListaHTML(f,'defensas',Ficha.DEFS),pjPend(f,'defensas'));
   const pRecursosDM='<div class="pjbox"><h3>'+esc(T('Recursos'))+'</h3>'+(f.recursos.length?'<ul class="pjlist pjfilas">'+f.recursos.map(q=>'<li><span><b>'+esc(q.n)+'</b> <small class="pcsub">'+esc(recarga(q))+(q.cor?' · '+esc(T('1 en descanso corto')):'')+(q.a?' · '+esc(T('de la clase')):'')+'</small></span><span class="pjrow">'+pjPips(q.max,q.uso,'pjrec',' data-id="'+esc(q.id)+'"',pjRecBloq(q))+(q.a?'':'<button type="button" class="btn sm ghost" data-act="pjrecdel" data-id="'+esc(q.id)+'" aria-label="'+esc(T('Quitar'))+'">×</button>')+'</span></li>').join('')+'</ul>':'<p class="pcsub">'+esc(T('Sin recursos: ira, puntos de ki, inspiración…'))+'</p>')
@@ -10174,9 +10587,9 @@ function pjSheetHTML(f,lista){
 ;
   const pRegistro='<details class="pjbox"><summary>'+esc(T('Registro de cambios'))+' ('+f.registro.length+')</summary><ul class="pjlist">'+f.registro.slice(-40).reverse().map(x=>'<li><small class="pcsub noi18n">'+esc(new Date(x.t).toLocaleString())+(x.por?' · '+esc(x.por):'')+'</small><span class="noi18n">'+esc(x.a+(x.d?': '+x.d:''))+'</span></li>').join('')+'</ul></details>';
   const pan={combate:pCombate,rasgos:pRasgos,conjuros:pConjuros,inventario:pInventario,notas:pNotas,dm:PJROL==='dm'?pjConfigDMHTML(f,pRecursosDM,pRegistro):''};
-  return '<div class="pjsheet pjrol" data-tab="'+pjTab+'" style="--pj:'+col+'">'
-   +'<nav class="pjtabs" role="tablist" aria-label="'+esc(T('Secciones de la hoja'))+'">'+pjTabs().map(([k,n])=>'<button type="button" role="tab" class="pjtab" data-act="pjtab" data-t="'+k+'" aria-selected="'+(k===pjTab)+'">'+esc(T(n))+'</button>').join('')+'</nav>'
-   +'<div class="pjhoja">'+av+'<div class="pjlay">'+r+'<div class="pjmain">'+franja+pjTabs().map(([k])=>'<section class="pjpan" data-p="'+k+'" role="tabpanel">'+pan[k]+'</section>').join('')+'</div></div></div></div>';
+  return '<div class="pjsheet pjrol'+(dead?' pjmuerto':'')+'" data-tab="'+pjTab+'" style="--pj:'+col+'">'
+   +'<nav class="pjtabs" role="tablist" aria-label="'+esc(T('Secciones de la hoja'))+'">'+pjTabs(f).map(([k,n])=>'<button type="button" role="tab" class="pjtab" data-act="pjtab" data-t="'+k+'" aria-selected="'+(k===pjTab)+'">'+esc(T(n))+'</button>').join('')+'</nav>'
+   +'<div class="pjhoja">'+av+'<div class="pjlay">'+r+'<div class="pjmain">'+franja+pjTabs(f).map(([k])=>'<section class="pjpan" data-p="'+k+'" role="tabpanel">'+pan[k]+'</section>').join('')+'</div></div></div></div>';
 }
 /* Orden de las listas del inventario: solo cambia cómo se ven (no toca la ficha) y se recuerda en este equipo. Lo que no tiene peso, precio o categoría va siempre al final. */
 const PJ_INV_ORD=[['alta','Orden de alta'],['nombre','Nombre'],['categoria','Categoría'],['peso','Peso'],['valor','Valor']];
@@ -10333,6 +10746,7 @@ function pjNuevaCopia(f,extra){return Ficha.norm({...JSON.parse(JSON.stringify(f
 document.addEventListener('change',e=>{
   const el=e.target;if(!el.closest)return;
   if(el.closest('#view-personajes')){
+    if(el.closest('.pjsheet')&&!el.closest('.pjpan[data-p="dm"]')&&pjSel){const s=pjGet(pjSel);if(s&&Ficha.muerto(s.f)){pjRender();return;}}   // muerto: la ficha no admite cambios
     if(el.dataset.pjf!==undefined){const s=pjGet(pjSel);if(s)pjCommit(Ficha.editar(s.f,el.dataset.pjf,el.value,pjCtx()),s);}
     else if(el.dataset.pjcfg!==undefined){pjCfgSet({criterio:el.value==='xp'?'xp':'hito'});pjRender();}
     else if(el.dataset.pjperm!==undefined){if(Object.hasOwn(Ficha.POLITICAS_DEFECTO,el.dataset.pjperm)&&Ficha.POLITICAS.includes(el.value))pjCfgSet({permisos:{...pjPoliticas(),[el.dataset.pjperm]:el.value}});pjRender();}

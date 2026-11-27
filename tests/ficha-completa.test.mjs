@@ -171,3 +171,49 @@ test('campos de la hoja oficial: subclase, tamaño, inspiración, salvaciones co
   assert.deepEqual(juega(F.invAnadir(c,{n:'Escudo'}).f,g=>F.invMarcar(g,g.inventario[0].id,'eq',true)).propuestos,['inventario']);
   assert.ok(F.exportar(F.norm({...mago(),pers:{altura:'1,70 m'}}),{formato:'md'}).includes('**Altura:** 1,70 m'));
 });
+
+test('salvaciones contra muerte: 0 PG no mata, el daño sobrante igual a los PG máximos sí, y 3 fallos o 3 éxitos cierran la cuenta',()=>{
+  const f=mago(),mx=F.hpMax(f),d=(g,n,o)=>F.dano(g,n,null,o).f,a0=d(f,mx);
+  assert.deepEqual([a0.hp,a0.muerte.ex,a0.muerte.fa],[0,0,0],'a 0 PG no se muere: empiezan las salvaciones');
+  assert.equal(d(f,mx+mx-1).muerte.fa,0,'sobra menos que los PG máximos: no es instantánea');
+  assert.equal(d(f,mx+mx).muerte.fa,3,'sobra igual a los PG máximos: muerte instantánea');
+  assert.equal(d(a0,2).muerte.fa,1,'daño con 0 PG: un fallo');
+  assert.equal(d(a0,2,{critico:true}).muerte.fa,2,'crítico con 0 PG: dos fallos');
+  assert.equal(d(a0,mx).muerte.fa,3,'daño con 0 PG igual a los PG máximos: muere');
+  assert.equal(F.salvMuerte(a0,1).f.muerte.fa,2,'1 natural: dos fallos');
+  assert.deepEqual([F.salvMuerte(a0,20).f.hp,F.salvMuerte(a0,20).f.muerte.fa],[1,0],'20 natural: recupera 1 PG');
+  let e=a0;for(const x of [10,14,19])e=F.salvMuerte(e,x).f;assert.equal(e.muerte.ex,3);assert.equal(F.salvMuerte(e,15).error,'estable','estable: no tira más');
+  assert.equal(d(e,1).muerte.ex,0,'el daño quita el estado estable');
+  let m=a0;for(const x of [9,5,2])m=F.salvMuerte(m,x).f;assert.equal(m.muerte.fa,3);
+  assert.equal(F.curar(m,5).error,'muerto');assert.equal(F.dano(m,1).error,'muerto');
+  const c=F.curar(d(a0,2),4).f;assert.deepEqual([c.hp,c.muerte.ex,c.muerte.fa],[4,0,0],'curar con 0 PG limpia las marcas');
+});
+
+test('personaje muerto (3 fallos o cansancio 6): la ficha se bloquea y solo se desbloquea al revivir',()=>{
+  const f=mago(),a0=F.dano(f,F.hpMax(f)).f,m=F.norm({...a0,muerte:{ex:0,fa:3}}),c=F.norm({...f,agot:6});
+  assert.deepEqual([F.muerto(f),F.muerto(m),F.muerto(c)],[false,true,true]);
+  for(const x of [m,c]){
+    assert.equal(F.curar(x,3).error,'muerto');assert.equal(F.dano(x,3).error,'muerto');assert.equal(F.temporales(x,3).error,'muerto');
+    assert.equal(F.descansoLargo(x).error,'muerto','el descanso largo no le quita cansancio a un muerto');assert.equal(F.descansoCorto(x,[]).error,'muerto');
+  }
+  assert.equal(F.salvMuerte(m,15).error,'muerto');assert.equal(F.revivir(f,{pg:1}).error,'no_muerto','solo se revive a un muerto');
+  const r=F.revivir(m,{pg:1,via:'Revivir'}).f;assert.deepEqual([r.hp,r.muerte.ex,r.muerte.fa,F.muerto(r)],[1,0,0,false]);
+  assert.equal(F.revivir(m,{pg:'max'}).f.hp,F.hpMax(m),'Resurrección: todos los PG');
+  const rc=F.revivir(c,{pg:4}).f;assert.deepEqual([rc.hp,rc.agot,F.muerto(rc)],[4,5,false],'si murió de cansancio queda en el nivel 5');
+  assert.equal(F.curar(rc,2).ok,true,'tras revivir vuelve a admitir curación');
+});
+
+test('la causa de cada muerte queda anotada para siempre, también después de revivir',()=>{
+  const f=mago(),mx=F.hpMax(f),ult=g=>g.muertes[g.muertes.length-1];
+  const a=F.dano(f,mx+mx,JUG).f;assert.match(ult(a).causa,/Muerte instantánea: un solo golpe de \d+ de daño/);assert.equal(a.muertes.length,1);
+  const b0=F.dano(f,mx).f,b=F.dano(F.dano(F.dano(b0,1).f,1).f,1).f;assert.match(ult(b).causa,/Tercer fallo: recibió 1 de daño estando a 0 PG/);
+  let c=b0;for(const d of [2,3,4])c=F.salvMuerte(c,d).f;assert.match(ult(c).causa,/Tres fallos en las salvaciones contra muerte/);
+  assert.match(ult(F.salvMuerte(F.salvMuerte(b0,3).f,1).f).causa,/pifia/);
+  assert.match(ult(F.editar(f,'agot',6,JUG).f).causa,/Cansancio de nivel 6/);
+  assert.match(ult(F.editar(f,'muerte.fa',3,JUG).f).causa,/marcados a mano/);
+  assert.equal(F.curar(b0,1).f.muertes.length,0,'sin morir no se anota nada');
+  const n=F.notaMuerte(a,'Aliento del dragón rojo',DM).f;assert.equal(ult(n).nota,'Aliento del dragón rojo');assert.equal(F.notaMuerte(f,'x',DM).error,'no_muerto');
+  const r=F.revivir(n,{pg:1,via:'Revivir'},DM).f;assert.equal(r.muertes.length,1,'revivir no borra el historial');assert.ok(ult(r).vuelta>0);assert.equal(ult(r).via,'Revivir');
+  const otra=F.dano(F.norm({...r,hp:r.hp}),mx+mx,JUG).f;assert.equal(otra.muertes.length,2,'una segunda muerte se suma a la anterior');
+  assert.equal(F.norm(JSON.parse(JSON.stringify(otra))).muertes.length,2,'sobrevive a guardar y cargar');
+});

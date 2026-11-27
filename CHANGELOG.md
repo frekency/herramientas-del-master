@@ -4,6 +4,17 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.130.0] - 2026-11-27
+### Añadido
+- **Salvaciones contra muerte.** A 0 PG el personaje cae inconsciente en vez de morir: botón «Tirar salvación contra muerte» (10 o más, éxito; 9 o menos, fallo; 1 natural, dos fallos; 20 natural, recupera 1 PG) con el contador de éxitos y fallos y la regla desplegable. El daño a 0 PG es un fallo (dos si es crítico) y quita el estado estable; la muerte instantánea se aplica cuando el daño que sobra iguala o supera los PG máximos.
+- **Personaje muerto.** Con tres fallos o seis niveles de cansancio la ficha se bloquea (solo se ve el inventario) y la tarjeta lo marca. El máster puede anotar la causa y devolverlo a la vida (Revivir, Resurrección o a mano); el historial de muertes se conserva.
+- **Estados que te afectan** en la ficha: el cansancio con sus penalizadores por nivel y cada estado marcado con lo que provoca, tomado de su regla del compendio.
+- **Equipo inicial en el creador:** la clase y el trasfondo ofrecen sus opciones (A, B o C); lo elegido pasa al inventario y el oro a la bolsa.
+### Cambiado
+- **Creador de personajes por bloques plegables:** cada bloque se cierra al completarse y se abre el siguiente; el pie indica qué falta para avanzar. Cada clase indica su manual de origen (Manual del Jugador 2024) y avisa si una versión viene de otro manual.
+- **Tarjetas de personaje** con el token o el icono de su clase, barra de PG y color de clase; la hoja usa ese color solo en detalles.
+- Tests del creador y de la ficha actualizados al nuevo flujo y a las reglas de muerte.
+
 ## [1.129.0] - 2026-11-27
 ### Añadido
 - **Conjuros de la ficha por niveles** (Trucos, Nivel I…), sin elegir el nivel: lo da el compendio. Tabla con cabecera de columnas (nombre y escuela, alcance, ataque o CD, daño y notas) y fichas emergentes del compendio sobre el conjuro, Concentración y Ritual.
