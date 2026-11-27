@@ -1,12 +1,12 @@
 // Efectos de los rasgos de clase: la hoja los reúne con su origen desde x.ef del compendio; los estados (furia…) se activan y gastan su recurso.
-import {test} from 'node:test';
+import {testM as test,MANUAL} from './manual.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PAGE} from './lib.mjs';
 
 const window={};new Function('window',PAGE.match(/<script id="ficha-core">([\s\S]*?)<\/script>/)[1])(window);
 const F=window.Ficha;
-const D=JSON.parse(readFileSync(new URL('../datos/es/compendio.json',import.meta.url),'utf8'));
+const D=MANUAL;
 const EF=JSON.parse(readFileSync(new URL('../tools/efectos-clase.json',import.meta.url),'utf8'));
 const fold=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const datos=Object.fromEntries(D.clases.map(x=>[fold(x.n),x]));
@@ -146,6 +146,55 @@ test('statblock: Guerrero con cota de malla, escudo y espada larga',()=>{
   assert.ok(s.adicionales.some(a=>/Tomar aliento/.test(a.n)));
   assert.ok(s.avisos.some(a=>/Sigilo/.test(a)));
   assert.equal(s.car.find(c=>c.a==='fue').s,3+3);assert.equal(s.car.find(c=>c.a==='des').s,1);
+});
+
+test('maestría con armas: lo elegido queda fijado hasta un descanso largo, que da un solo cambio',()=>{
+  const cupo=F.maestriaCupo(barbaro(1),datos),b0=barbaro(1);
+  assert.ok(cupo>=2);
+  let f=F.maestriaSet(b0,'Hacha de mano',true,cupo).f;f=F.maestriaSet(f,'Hacha a dos manos',true,cupo).f;   // llenar huecos libres no cuesta
+  assert.deepEqual(f.maestrias,['Hacha de mano','Hacha a dos manos']);
+  const q=F.maestriaSet(f,'Hacha de mano',false,cupo);                      // fijada: no se quita
+  assert.equal(q.ok,false);assert.equal(q.error,'mae_bloqueada');
+  assert.equal(F.maestriaSet(f,'Hacha de mano',false,cupo,true).ok,true);    // el máster sí puede
+  assert.equal(F.maestriaSet(f,'Espada larga',true,cupo).error,'sin_cupo');   // y sin hueco no se añade otra
+  const d=F.descansoLargo(f,{}).f;assert.equal(d.maesCambio,1);               // el descanso largo da un cambio
+  const c=F.maestriaSet(d,'Hacha de mano',false,cupo);assert.equal(c.ok,true);assert.equal(c.f.maesCambio,0);
+  const g=F.maestriaSet(c.f,'Lanza',true,cupo).f;assert.deepEqual(g.maestrias,['Hacha a dos manos','Lanza']);
+  assert.equal(F.maestriaSet(g,'Lanza',false,cupo).error,'mae_bloqueada');    // ya gastó el cambio
+});
+
+test('decisiones pendientes: la maestría aparece al elegir/cambiar, se ofrece al descansar o subir y se puede renunciar',()=>{
+  const b0=barbaro(1),cupo=F.maestriaCupo(b0,datos),ids=(f,m)=>F.decisiones(f,datos,m).map(d=>d.id);
+  assert.deepEqual(ids(b0,'largo'),['maestria']);assert.deepEqual(ids(b0,'nivel'),['maestria']);assert.deepEqual(ids(b0,'corto'),[]);   // huecos por elegir
+  let f=b0;for(const a of ['Hacha de mano','Hacha a dos manos'].slice(0,cupo))f=F.maestriaSet(f,a,true,cupo).f;
+  assert.deepEqual(ids(f),[]);                                                  // todo elegido y fijado: nada que decidir
+  const d=F.descansoLargo(f,{}).f;assert.match(F.decisiones(d,datos)[0].txt,/cambiar una/);
+  assert.deepEqual(ids(F.decisionCerrar(d,'maestria').f),[]);                   // «mantener como está» renuncia al cambio
+  assert.equal(F.decisionCerrar(d,'no-existe').ok,false);
+  assert.deepEqual(F.decisiones(F.norm({id:'m',nombre:'M',niveles:[{c:'mago',hp:6}]}),datos),[]);   // sin maestría de clase no hay decisión
+});
+
+test('decisiones por rasgo: el descanso corto, el largo y la subida de nivel anotan lo que el manual deja decidir',()=>{
+  const mk=(c,n,x={})=>F.norm({id:'a',nombre:'X',niveles:Array.from({length:n},()=>({c,hp:7})),...x});
+  const ids=(f,m)=>F.decisiones(f,datos,m).map(d=>d.id);
+  const mago=mk('mago',5);
+  assert.deepEqual(ids(F.descansoLargo(mago,{}).f,'largo'),['cj-prep-mago','truco-mago']);
+  assert.deepEqual(ids(F.descansoCorto(mago,[],{}).f,'corto'),['mago-recuperacion','mago-memorizar']);
+  assert.deepEqual(ids(mk('guerrero',3),'largo'),['maestria']);                     // solo la maestría con armas, que se puede cambiar tras un descanso largo
+  const s=F.subir(mk('clerigo',2),{c:'clerigo',hp:5},null,{});
+  assert.deepEqual(ids(s.f,'nivel'),['truco-clerigo']);
+  assert.deepEqual(ids(F.decisionCerrar(s.f,'truco-clerigo').f),[]);                // «hecho» lo quita
+  assert.deepEqual(ids(F.descansoCorto(mk('explorador',4,{subclase:'Cazador'}),[],{}).f,'corto'),['explorador-presa']);   // solo con esa subclase
+  assert.deepEqual(ids(F.descansoCorto(mk('explorador',4),[],{}).f,'corto'),[]);
+  assert.deepEqual(ids(F.subir(mk('bardo',0),{c:'bardo',hp:8},null,{}).f),[]);       // el nivel 1 no es «subir»: nada que sustituir
+});
+
+test('conjuroSustituir: cambia un conjuro por otro en su sitio y conserva si estaba preparado',()=>{
+  const f=F.norm({id:'a',nombre:'X',niveles:[{c:'clerigo',hp:8},{c:'clerigo',hp:5}],conjuros:['Luz','Curar heridas','Bendecir'],magia:{niv:{'Curar heridas':1,Bendecir:1},prep:['Curar heridas']}});
+  const r=F.conjuroSustituir(f,'Curar heridas','Escudo de la fe',1).f;
+  assert.deepEqual(r.conjuros,['Luz','Escudo de la fe','Bendecir']);assert.deepEqual(r.magia.prep,['Escudo de la fe']);assert.equal(r.magia.niv['Curar heridas'],undefined);assert.equal(r.magia.niv['Escudo de la fe'],1);
+  const t=F.conjuroSustituir(f,'Luz','Taumaturgia',0).f;assert.deepEqual(t.conjuros,['Taumaturgia','Curar heridas','Bendecir']);assert.equal(t.magia.niv.Taumaturgia,undefined);
+  assert.equal(F.conjuroSustituir(f,'Luz','bendecir',1).error,'ya_esta');assert.equal(F.conjuroSustituir(f,'Nada','Luz',0).error,'no_existe');
 });
 
 test('statblock: armadura que exige más Fuerza baja la velocidad; sin competencia se avisa; sin armadura sirve la Defensa del Bárbaro',()=>{

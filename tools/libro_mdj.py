@@ -40,8 +40,8 @@ def dotes(d, f5):
     return out, esp
 
 
-def _srd():
-    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'datos', 'es', 'compendio.json')
+def _previo():
+    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'datos', 'privado', 'libros', 'manual-del-jugador-2024.json')
     return json.load(open(ruta, encoding='utf-8'))
 
 
@@ -151,13 +151,13 @@ def main():
     base = {}
     if os.path.exists(salida): base = json.load(open(salida, encoding='utf-8'))
     df, esp = dotes(d, f5)
-    srd = _srd()
-    ya = lambda k: {E.fold(x['n']) for x in srd.get(k, [])}
-    base['dotes'] = df          # también lo que ya está en el SRD: al importar, el SRD manda y el módulo solo añade su etiqueta
+    previo = _previo()
+    ya = lambda k: {E.fold(x['n']) for x in previo.get(k, [])}
+    base['dotes'] = df          # también lo que ya traiga otro módulo
     tb = trasfondos(d)
     base['trasfondos'] = tb
     base['especies'] = especies(d)
-    ya_sub = {E.fold(t) for c in srd.get('clases', []) for t in c.get('sub', [])}
+    ya_sub = {E.fold(t) for c in previo.get('clases', []) for t in c.get('sub', [])}
     sc = normaliza_subclases(subclases(d))
     base['rasgos'] = sc
     print('subclases nuevas', len({(x['cls'], x['sub']) for x in sc}), '· rasgos', len(sc))

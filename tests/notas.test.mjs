@@ -11,7 +11,7 @@ const item=(tipo,nombre,extra={})=>N.norm({id:'i'+nombre.replace(/\W/g,''),tipo,
 test('norm: rechaza tipos desconocidos y limpia campos que no son del tipo',()=>{
   assert.equal(N.norm({tipo:'hack',nombre:'x'}),null);
   assert.equal(N.norm(null),null);
-  const n=N.norm({tipo:'npc',nombre:'Elda',campos:{rol:'Posadera',estado:'activa',__proto__:{x:1},criatura:'srd:Commoner'}});
+  const n=N.norm({tipo:'npc',nombre:'Elda',campos:{rol:'Posadera',estado:'activa',__proto__:{x:1},criatura:'my:Commoner'}});
   assert.deepEqual(Object.keys(n.campos).sort(),['acompana','actitud','aspecto','criatura','equipo','eventos','inventario','lugar','publico','quiere','ref','rol','secreto','stats']);
   assert.equal(n.campos.rol,'Posadera');
 });

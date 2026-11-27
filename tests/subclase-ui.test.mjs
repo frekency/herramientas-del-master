@@ -7,6 +7,7 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE,testNav} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
@@ -14,7 +15,7 @@ const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
 window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}}};
-window.__SRD=true;localStorage.clear();</script>`;
+localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
@@ -23,7 +24,7 @@ const TAIL=`<script>
     pjLoad();
     const f=Ficha.norm({id:'p1',nombre:'Brakka',niveles:[{c:'barbaro',hp:12},{c:'barbaro',hp:7}],car:{fue:16,des:12,con:14,int:8,sab:10,car:10}});
     PJ.push(f);pjGuardar();pjSel='p1';
-    compLoad();for(let i=0;i<40&&!COMP_SRD;i++)await wait(250);await wait(400);
+    ${MANUAL_JS}await wait(400);
     ok('una ficha anterior, sin rasgos guardados, los recibe al cargar el compendio (Bárbaro 2: Defensa sin armadura, Furia…)',PJ[0].rasgos.some(x=>/Furia/.test(x.n))&&PJ[0].rasgos.some(x=>/Defensa sin armadura/.test(x.n)));
     const nr=PJ[0].rasgos.length;PJ[0].rasgos=PJ[0].rasgos.filter(x=>!/Furia/.test(x.n));pjGuardar();
     ok('lo que se borra a mano no vuelve solo',!PJ[0].rasgos.some(x=>/^Furia$/.test(x.n))&&PJ[0].rasgos.length===nr-1);
@@ -38,7 +39,7 @@ const TAIL=`<script>
     ok('con nivel 3 sale el aviso de elegir subclase en el resumen',!!box.querySelector('.pjelige select[data-pjsub]'));
     sel=box.querySelector('select[data-pjsub]');
     const opts=[...sel.options].map(o=>o.value).filter(Boolean);
-    ok('las opciones son las del Bárbaro (SRD: Senda del berserker)',opts.length>=1&&opts.some(x=>/berserker/i.test(x))&&!opts.some(x=>/Colegio|Dominio|Círculo/i.test(x)));
+    ok('las opciones son las del Bárbaro (Senda del berserker)',opts.length>=1&&opts.some(x=>/berserker/i.test(x))&&!opts.some(x=>/Colegio|Dominio|Círculo/i.test(x)));
     const n0=PJ[0].rasgos.length;
     pjSel='p1';location.hash='#personajes/p1';await wait(500);pjRender();await wait(300);
     const real=document.querySelector('#pj-body select[data-pjsub]');
@@ -78,7 +79,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('subclase: se elige de la lista de la clase y trae sus rasgos',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('subclase: se elige de la lista de la clase y trae sus rasgos',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-sub-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

@@ -54,11 +54,27 @@ const TAIL=`<script>
     await typeIn('[data-pjf="pers.historia"]','Nació en un faro.');
     ok('historia',F().pers.historia==='Nació en un faro.');
     // magia
+    setSpells([{n:'Escudo',en:'Shield',lv:1,sch:'abjuracion',ct:'Reacción',rg:'Personal',comp:'V S',conc:false,rit:false,cls:['Mago']},{n:'Luz',en:'Light',lv:0,sch:'evocacion',ct:'Acción',rg:'Toque',comp:'V M',conc:false,rit:false,cls:['Mago']}]);
     document.getElementById('pj-spin').value='Escudo';await click('[data-act="pjspadd"]');
-    await sel('[data-pjsplv]','1');await chk('[data-pjspprep]',true);
+    ok('el nivel del conjuro lo da el compendio: sin selector de nivel y agrupado bajo «Nivel I»',!document.querySelector('[data-pjsplv]')&&/Nivel I/.test(document.querySelector('.pjsplv h4').textContent));
+    await chk('[data-pjspprep]',true);
+    document.getElementById('pj-spin').value='Luz';await click('[data-act="pjspadd"]');
+    ok('un truco se clasifica solo en «Trucos» y no se prepara',/Trucos/.test(document.querySelector('.pjsplv h4').textContent)&&!F().magia.niv['Luz']&&document.querySelectorAll('[data-pjspprep]').length===1);
+    {const a=F().conjuros.length;document.getElementById('pj-spin').value='Inventado';await click('[data-act="pjspadd"]');ok('un conjuro que no está en el compendio no se añade',F().conjuros.length===a);}
+    await click('[data-act="pjsprm"][data-n="Luz"]');
     ok('conjuro con nivel y preparado',F().conjuros.length===1&&F().magia.niv[F().conjuros[0]]===1&&F().magia.prep.length===1);
-    await sel('[data-pjf="magia.hab"]','sab');
-    ok('característica de lanzamiento',Ficha.magia(F()).hab==='sab'&&body().textContent.includes('CD '+Ficha.magia(F()).cd));
+    ok('la aptitud mágica no se elige en la hoja: sin selector y con resumen de aptitud, CD de salvación y ataque',!document.querySelector('[data-pjf="magia.hab"]')&&(t=>/Aptitud mágica/.test(t)&&/Inteligencia/.test(t)&&t.includes('CD de salvación')&&t.includes(String(Ficha.magia(F()).cd))&&/Ataque/.test(t))(document.querySelector('.pjmgres').textContent));
+    setSpells([{n:'Rayo de escarcha',en:'Ray of Frost',lv:0,sch:'evocacion',ct:'Acción',rg:'18 m',comp:'V S',conc:false,rit:false,use:'D20+ata.conj.',cls:['Mago'],d:'Haz un ataque de conjuro a distancia. Si acierta, el objetivo recibe 1d8 de daño de frío. Mejora de truco. El daño aumenta en 1d8 cuando alcanzas los niveles 5 (2d8), 11 (3d8) y 17 (4d8).'},{n:'Bola de fuego',en:'Fireball',lv:3,sch:'evocacion',ct:'Acción',rg:'45 m',comp:'V S M',conc:false,rit:false,use:'TdS Des.',cls:['Mago'],d:'Todas las criaturas haran una tirada de salvación de Destreza; sufrirán 8d6 de daño de fuego si la fallan.'},{n:'Escudo',en:'Shield',lv:1,sch:'abjuracion',ct:'Reacción',rg:'Personal',comp:'V S',conc:false,rit:false,use:'Directo',cls:['Mago'],d:'Un campo de fuerza te protege.'}]);
+    for(const n of ['Rayo de escarcha','Bola de fuego'])document.getElementById('pj-spin').value=n,await click('[data-act="pjspadd"]');
+    {const atq=body().querySelector('[data-pjdet="atq"]').textContent,mg=Ficha.magia(F());
+     ok('el truco de ataque sale en Automáticos mágicos con su tirada y su dado',/Automáticos mágicos/.test(atq)&&/Rayo de escarcha/.test(atq)&&!!body().querySelector('[data-pjdet="atq"] [data-roll="hit"][data-mod="'+mg.atq+'"]')&&!!body().querySelector('[data-pjdet="atq"] [data-roll="dmg"][data-ex="1d8"]'));
+     ok('un conjuro de nivel 1+ sin preparar no sale, y los de utilidad tampoco',!/Bola de fuego/.test(atq)&&!/Escudo/.test(atq));
+     await chk('[data-pjspprep][data-n="Bola de fuego"]',true);
+     {const cab=document.querySelector('.pjspcab'),fila=[...document.querySelectorAll('.pjsptab li')].find(l=>l.dataset.n==='Bola de fuego');
+      ok('la lista de conjuros lleva cabecera de columnas y cada fila su alcance, CD, daño y notas',!!cab&&/Alcance/.test(cab.textContent)&&/Imp\\. \\/ CD/.test(cab.textContent)&&/Notas/.test(cab.textContent)&&!!fila&&/45 m/.test(fila.textContent)&&/CD \\d+/.test(fila.textContent)&&/8d6/.test(fila.textContent)&&/1 acción/.test(fila.textContent));}
+     const atq2=body().querySelector('[data-pjdet="atq"]').textContent;
+     ok('al prepararlo sale con CD de salvación y su daño',/Bola de fuego/.test(atq2)&&/CD \\d+ DES/.test(atq2)&&!!body().querySelector('[data-pjdet="atq"] [data-roll="dmg"][data-ex="8d6"]'));}
+    for(const n of ['Rayo de escarcha','Bola de fuego'])await click('[data-act="pjsprm"][data-n="'+n+'"]');
     // los apartados abiertos se recuerdan al repintar
     const d=body().querySelector('[data-pjdet="def"]');d.open=true;d.dispatchEvent(new Event('toggle'));await wait(100);await typeIn('[data-pjf="pers.edad"]','30');
     ok('el apartado abierto sigue abierto',!!body().querySelector('[data-pjdet="def"][open]'));

@@ -1,4 +1,4 @@
-// Manuales por campaña: qué manuales (SRD y módulos) se aplican a la campaña, guardado en su configuración.
+// Manuales por campaña: qué manuales (módulos) se aplican a la campaña, guardado en su configuración.
 // Necesita Edge o Chrome (variable BROWSER para indicar otro); si no hay ninguno, el test se salta.
 import assert from 'node:assert/strict';
 import http from 'node:http';

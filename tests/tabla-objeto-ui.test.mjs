@@ -7,20 +7,21 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 import {testNav} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
-const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));window.__SRD=true;localStorage.clear();</script>`;
+const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
   const go=async h=>{location.hash=h;await wait(500);};
   try{
     await wait(1200);
-    for(let i=0;i<40&&!COMP_SRD;i++)await wait(250);
+    ${MANUAL_JS}
     const filas=[[1,15,'Abanico','Infrecuente'],[16,35,'Ancla','Infrecuente'],[36,60,'Árbol','Infrecuente'],[61,75,'Bote cisne','Rara'],[76,85,'Látigo','Rara'],[86,100,'Pájaro','Rara']];
     const a=Array(100).fill(''),b=Array(100).fill('');
     for(const [d,h,x,r] of filas)for(let i=d-1;i<h;i++){a[i]=x;b[i]=r;}
@@ -50,15 +51,15 @@ const TAIL=`<script>
     await go('#compendio/rasgos');
     ok('ya no se mezclan con los rasgos de clase',![...document.querySelectorAll('#cm-list tr.sprow')].some(r=>/Senda de prueba \\(B/.test(r.textContent)&&/Subclase/.test(r.textContent)));
     await go('#compendio/objetos');
-    // la ficha de pluma del SRD (HTML con tabla de rangos) también se puede tirar
+    // la ficha de pluma del manual (HTML con tabla de rangos) también se puede tirar
     document.getElementById('cm-q').value='ficha de pluma';document.getElementById('cm-q').dispatchEvent(new Event('input'));await wait(300);
-    const srd=[...document.querySelectorAll('#cm-list tr.sprow')].find(r=>/^Ficha de pluma$/.test(r.querySelector('td').textContent.replace(/\\s*↗\\s*$/,'').trim()));
-    ok('el SRD trae Ficha de pluma',!!srd);
-    if(srd){srd.click();await wait(300);
+    const fpl=[...document.querySelectorAll('#cm-list tr.sprow')].find(r=>/^Ficha de pluma$/.test(r.querySelector('td').textContent.replace(/\\s*↗\\s*$/,'').trim()));
+    ok('el manual trae Ficha de pluma',!!fpl);
+    if(fpl){fpl.click();await wait(300);
       const d2=document.querySelector('#fc-body'),bt=d2&&d2.querySelector('[data-act="cmtbhtml"]');
-      ok('la tabla del SRD tiene botón de tirada',!!bt);
+      ok('la tabla del manual tiene botón de tirada',!!bt);
       if(bt){bt.click();await wait(200);
-        ok('la ficha del SRD sigue abierta y da fila',!!document.querySelector('#fc-body')&&/^\\d+ → (Abanico|Ancla|Árbol|Bote cisne|Látigo|Pájaro) - (Infrecuente|Rara)$/.test(document.querySelector('#fc-body .cmtbres').textContent.trim()));}}
+        ok('la ficha del manual sigue abierta y da fila',!!document.querySelector('#fc-body')&&/^\\d+ → (Abanico|Ancla|Árbol|Bote cisne|Látigo|Pájaro) - (Infrecuente|Rara)$/.test(document.querySelector('#fc-body .cmtbres').textContent.trim()));}}
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -76,7 +77,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('tabla incrustada en un objeto: rangos y tirada',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('tabla incrustada en un objeto: rangos y tirada',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-to-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

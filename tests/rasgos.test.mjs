@@ -1,16 +1,11 @@
-// Rasgos de clase del compendio: cada rasgo, rasgo de subclase y opción sale como entrada propia, sacado del texto de las clases.
-import {test} from 'node:test';
+// Rasgos de clase del Manual del Jugador: cada rasgo, rasgo de subclase y opción es una entrada propia.
+import {testM as test,MANUAL} from './manual.mjs';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {PAGE} from './lib.mjs';
 
-const src=PAGE.match(/function rasgosDeClases\(cl\)\{[\s\S]*?\n\}\n/)[0];
-const fold=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-const rasgosDeClases=new Function('fold',src+'return rasgosDeClases;')(fold);
-const COMP=JSON.parse(readFileSync(new URL('../datos/es/compendio.json',import.meta.url),'utf8'));
+const COMP=MANUAL;
 
-test('rasgos: cada fila de la tabla de rasgos de cada clase tiene su entrada',()=>{
-  const r=rasgosDeClases(COMP.clases);
+test('rasgos: cada clase tiene sus rasgos de clase y de subclase',()=>{
+  const r=COMP.rasgos;
   assert.ok(r.length>=260,'salen '+r.length);
   for(const c of COMP.clases){
     const mios=r.filter(x=>x.cls===c.n&&!x.sub&&x.tipo==='Rasgo de clase');
@@ -21,15 +16,10 @@ test('rasgos: cada fila de la tabla de rasgos de cada clase tiene su entrada',()
 });
 
 test('rasgos: nombres únicos, opciones y subclases',()=>{
-  const r=rasgosDeClases(COMP.clases);
+  const r=COMP.rasgos;
   assert.equal(new Set(r.map(x=>x.n)).size,r.length,'nombres repetidos');
   const f=r.find(x=>x.base==='Ataque furtivo'&&x.cls==='Pícaro');
   assert.ok(f&&f.nv===1&&/dados|daño/i.test(f.d));
   assert.ok(r.some(x=>x.cls==='Brujo'&&x.tipo==='Opción de clase'&&x.nv===null));
   assert.ok(r.some(x=>x.cls==='Pícaro'&&x.sub==='Ladrón'&&x.base==='Manos rápidas'&&x.nv===3));
-});
-
-test('rasgos: datos raros no rompen',()=>{
-  assert.deepEqual(rasgosDeClases(null),[]);
-  assert.deepEqual(rasgosDeClases([{n:'X',d:5},{n:'Y'}]),[]);
 });

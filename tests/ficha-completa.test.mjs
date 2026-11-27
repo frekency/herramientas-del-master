@@ -67,6 +67,11 @@ test('magia: característica, CD y ataque; nivel y preparados por conjuro',()=>{
   assert.equal(F.conjuroPreparar(f,'Nada',true).ok,false);
   f=F.conjuroPreparar(f,'Escudo',true).f;f=F.conjuroQuitar(f,'Escudo').f;   // al quitar el conjuro se limpia todo lo suyo
   assert.deepEqual(f.magia.prep,[]);assert.equal(f.magia.niv.Escudo,undefined);
+  {let h=F.norm({nombre:'Bardo',niveles:[{c:'bardo',hp:8}],conjuros:['Hablar con los animales','Escudo'],magia:{niv:{'Hablar con los animales':1,Escudo:1},prep:[],sp:['Hablar con los animales','Inventado']}});
+    assert.deepEqual(h.magia.sp,['Hablar con los animales']);assert.deepEqual(h.magia.prep,['Hablar con los animales']);   // un siempre preparado va preparado y solo vale si el conjuro está
+    h=F.conjuroPreparar(h,'Hablar con los animales',false).f;assert.deepEqual(h.magia.prep,['Hablar con los animales']);   // no se puede desmarcar
+    assert.equal(F.conjuroSustituir(h,'Hablar con los animales','Luz',0).error,'siempre_preparado');
+    h=F.conjuroQuitar(h,'Hablar con los animales').f;assert.deepEqual(h.magia.sp,[]);}
   const g=F.norm({nombre:'Brujo',niveles:[{c:'brujo',hp:8}]});assert.equal(F.magia(g).hab,'car');
 });
 

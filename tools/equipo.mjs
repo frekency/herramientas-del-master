@@ -1,5 +1,5 @@
 // Estructura armas y armaduras del compendio (x.arma / x.arm) a partir de su texto, para que la hoja calcule CA y ataques.
-// Uso:  node tools/equipo.mjs [ruta.json]   (por defecto datos/es/compendio.json; reescribe el archivo)
+// Uso:  node tools/equipo.mjs [ruta.json]   (por defecto datos/privado/libros/manual-del-jugador-2024.json; reescribe el archivo)
 //   x.arma = {cat:'sencilla'|'marcial', dist:bool, dano:'1d8', tipo:'cortante', props:[…], versatil:'1d10', alc:[6,18], mae:'Debilitar'}
 //   x.arm  = {tipo:'ligera'|'media'|'pesada', ca:16, des:bool, desMax:2|null, fue:13, sig:bool} · escudo: {tipo:'escudo', bono:2}
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -42,7 +42,7 @@ export function conEquipo(datos) {
   return datos;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const ruta = process.argv[2] || fileURLToPath(new URL('../datos/es/compendio.json', import.meta.url));
+  const ruta = process.argv[2] || fileURLToPath(new URL('../datos/privado/libros/manual-del-jugador-2024.json', import.meta.url));
   const d = conEquipo(JSON.parse(readFileSync(ruta, 'utf8')));
   writeFileSync(ruta, JSON.stringify(d));
   console.log(`${d.objetos.filter(x => x.arma).length} armas, ${d.objetos.filter(x => x.arm).length} armaduras/escudos`);

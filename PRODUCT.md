@@ -17,12 +17,12 @@ La versión pública es el producto principal. La personal es la misma página c
 
 ## Product Purpose
 
-Reúne en una sola página web las herramientas que un máster necesita para dirigir: tracker de combate, jugadores, tablas aleatorias, referencia rápida de reglas y compendio del SRD 5.2.1 (criaturas, conjuros, objetos, dotes, clases, especies y trasfondos). Funciona en cuanto se abre, sin instalar nada ni registrarse. Tiene éxito cuando el máster puede llevar un combate entero, y encontrar cualquier regla o criatura, sin salir de la página ni frenar la mesa.
+Reúne en una sola página web las herramientas que un máster necesita para dirigir: tracker de combate, jugadores, tablas aleatorias, referencia rápida de reglas y compendio de los manuales (criaturas, conjuros, objetos, dotes, clases, especies y trasfondos). Funciona en cuanto se abre, sin instalar nada ni registrarse. Tiene éxito cuando el máster puede llevar un combate entero, y encontrar cualquier regla o criatura, sin salir de la página ni frenar la mesa.
 
 ## Positioning
 
 - **Todo en una página**: combate, jugadores, tablas, referencia y compendio juntos, sin instalar nada.
-- **Español primero**: reglas 2024 y el SRD 5.2.1 oficial en español. La interfaz está en 6 idiomas.
+- **Español primero**: reglas 2024 y el Manual del Jugador oficial en español.
 - **Gratis y sin cuenta**: todo funciona sin registrarse. La cuenta solo sirve para guardar lo tuyo (personajes, encuentros, tablas, criaturas y módulos) en la nube.
 - **Tus propios contenidos**: módulos homebrew, criaturas y tablas propias, y la copia personal de los manuales del usuario.
 
@@ -38,8 +38,7 @@ Reúne en una sola página web las herramientas que un máster necesita para dir
 - Un solo archivo HTML (HTML + CSS + JS vanilla), sin dependencias ni compilación. Los datos van en JSON aparte (`datos/<idioma>/*.json`, `i18n/*.json`).
 - Rutas por hash (`#combate`, `#jugadores`, `#tablas`, `#referencia`, `#modulos`, páginas de elemento del compendio).
 - i18n: el español está en la página; el resto de idiomas se traduce con diccionarios `i18n/<lang>.json` (clave en español) y un MutationObserver. Todo texto nuevo de la interfaz necesita entrada en los 5 diccionarios, y cada versión su entrada de changelog en los 6 idiomas.
-- Datos del SRD en español e inglés. Francés, portugués, italiano y alemán usan por ahora los datos en inglés.
-- El SRD 5.2.1 va siempre cargado, para todos.
+- Nada viene cargado de serie: el contenido son módulos que cada usuario activa.
 - Unidades configurables: m/kg o pies/libras.
 - Temas claro y oscuro.
 - Versionado semántico, con `VERSION`, `CHANGELOG.md`, el historial dentro de la página y una etiqueta git por versión.
@@ -47,14 +46,14 @@ Reúne en una sola página web las herramientas que un máster necesita para dir
 
 ## Brand Commitments
 
-- Nombre: «Herramientas del Máster». La versión pública se titula «Herramientas del Máster SRD».
+- Nombre: «Herramientas del Máster».
 - Voz: español cercano, de tú, frases cortas y claras. La terminología es la oficial de D&D 2024 en español.
-- Licencia: el contenido del SRD 5.2.1 se usa bajo CC-BY-4.0, con su atribución obligatoria.
-- No se publica contenido oficial que no sea del SRD (manuales) ni se copia texto de otras webs de referencia.
+- Licencia: los manuales tienen copyright de Wizards of the Coast; se usan solo en privado y no se publican ni se empaquetan.
+- No se publica contenido oficial (manuales) ni se copia texto de otras webs de referencia.
 
 ## Evidence on Hand
 
-- Contenido real del SRD 5.2.1 en español e inglés: 331 criaturas, 339 conjuros y el compendio.
+- Contenido real del Manual del Jugador 2024 en español como módulo privado: clases, especies, trasfondos, dotes, objetos, conjuros y reglas.
 - Datos de ejemplo integrados: dos PJ (Lyra y Thorin), un combate, un encuentro y tres tablas.
 - No hay testimonios, cifras de usuarios ni prensa: no inventarlos.
 

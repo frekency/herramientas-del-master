@@ -7,22 +7,23 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 import {testNav} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
-const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));window.__SRD=true;localStorage.clear();</script>`;
+const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
   try{
     await wait(1200);
     location.hash='#compendio/rasgos';
-    for(let i=0;i<40&&!(COMP_SRD&&COMP_SRD.rasgos);i++)await wait(250);
+    ${MANUAL_JS}
     await wait(500);
-    ok('los rasgos se sacan de las clases',COMP_SRD&&COMP_SRD.rasgos&&COMP_SRD.rasgos.length>=260);
+    ok('los rasgos se sacan de las clases',compList('rasgos').length>=260);
     ok('la pestaña lista los rasgos',document.querySelectorAll('#cm-list tr.sprow').length>=260);
     ok('hay filtros de clase y tipo y no hay botón de crear',!document.getElementById('cm-f1').hidden&&!document.getElementById('cm-f2').hidden&&document.getElementById('cm-new').hidden);
     const q=document.getElementById('cm-q');q.value='furtivo';q.dispatchEvent(new Event('input',{bubbles:true}));await wait(300);
@@ -50,7 +51,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('compendio: rasgos de clase',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('compendio: rasgos de clase',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-ras-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

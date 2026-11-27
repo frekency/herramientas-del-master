@@ -1,13 +1,9 @@
 // Cada entrada del compendio tiene su propia página (#compendio/<pestaña>/<slug>): sin nombres vacíos ni repetidos (uno taparía al otro).
-import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {PAGE} from './lib.mjs';
+import {MANUAL as M,testM} from './manual.mjs';
 
 const fold=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 const slug=n=>fold(n).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const leer=f=>JSON.parse(readFileSync(new URL('../datos/es/'+f,import.meta.url),'utf8'));
-const rasgosDeClases=new Function('fold',PAGE.match(/function rasgosDeClases\(cl\)\{[\s\S]*?\n\}\n/)[0]+'return rasgosDeClases;')(fold);
 
 function unico(nombre,lista){
   const vistos=new Map();
@@ -19,13 +15,11 @@ function unico(nombre,lista){
   }
 }
 
-test('páginas: el compendio del SRD no repite nombres dentro de cada pestaña',()=>{
-  const c=leer('compendio.json');
-  for(const k of Object.keys(c))unico(k,c[k]);
-  unico('rasgos',rasgosDeClases(c.clases));
+testM('páginas: el compendio no repite nombres dentro de cada pestaña',()=>{
+  for(const k of ['objetos','dotes','clases','especies','trasfondos','reglas','rasgos'])unico(k,M[k]);
 });
 
-test('páginas: criaturas y conjuros del SRD tampoco',()=>{
-  unico('criaturas',leer('bestiario.json'));
-  unico('conjuros',leer('conjuros.json'));
+testM('páginas: criaturas y conjuros tampoco',()=>{
+  unico('criaturas',M.criaturas);
+  unico('conjuros',M.conjuros);
 });

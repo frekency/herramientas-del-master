@@ -7,13 +7,14 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 import {testNav} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
-const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));window.__SRD=true;localStorage.clear();</script>`;
+const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
@@ -21,7 +22,7 @@ const TAIL=`<script>
   try{
     await wait(1200);
     await go('#homebrew');
-    for(let i=0;i<40&&!COMP_SRD;i++)await wait(250);
+    ${MANUAL_JS}
     renderHB();
     ok('la sección existe y está vacía al principio',!document.getElementById('view-homebrew').hidden&&/Aún no hay/.test(document.getElementById('hb-body').textContent));
     ok('hay enlace en el menú',!!document.querySelector('.pagenav a[href="#homebrew"]'));
@@ -72,12 +73,12 @@ const TAIL=`<script>
     ok('el jugador no vuelve a subirlas (las conserva)',!!scSnapshot()['hb:critico-con-mala-pata']);
     await go('#referencia');
     const cj=[...document.querySelectorAll('#qr-body .qrcard')].find(c=>/Crítico con mala pata/.test(c.textContent));
-    ok('al entrar en la referencia le salen, con su etiqueta Homebrew, junto a las del SRD',!!cj&&!!cj.querySelector('.hbtag')&&document.querySelectorAll('#qr-body .qrcard').length>100);
+    ok('al entrar en la referencia le salen, con su etiqueta Homebrew, junto a las de los manuales',!!cj&&!!cj.querySelector('.hbtag')&&document.querySelectorAll('#qr-body .qrcard').length>100);
     scApply({bajados:[],borrados:['hb:critico-con-mala-pata']});
     ok('si el máster la desactiva, desaparece',hbcLoad().length===0&&!compList('reglas').some(x=>x._camp));
     Store.campaigns.setRol(Store.campaigns.active(),'master');
     await go('#homebrew');
-    ok('el SRD no lleva etiqueta',compList('reglas').filter(x=>!x._mine).length>100&&compList('reglas',true).filter(x=>x._mine).length===2);
+    ok('los manuales no llevan etiqueta',compList('reglas').filter(x=>!x._mine).length>100&&compList('reglas',true).filter(x=>x._mine).length===2);
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+String(e.stack).slice(0,200));}
   R.err=window.__err||[];
   const pre=document.createElement('pre');pre.id='__res';pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -95,7 +96,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('reglas homebrew y referencia rápida',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('reglas homebrew y referencia rápida',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-hb-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

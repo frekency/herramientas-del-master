@@ -4,6 +4,19 @@ Todas las versiones de «Herramientas del Máster». El formato sigue [Keep a Ch
 
 Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
+## [1.129.0] - 2026-11-27
+### Añadido
+- **Conjuros de la ficha por niveles** (Trucos, Nivel I…), sin elegir el nivel: lo da el compendio. Tabla con cabecera de columnas (nombre y escuela, alcance, ataque o CD, daño y notas) y fichas emergentes del compendio sobre el conjuro, Concentración y Ritual.
+- **Conjuros siempre preparados** (por especie, rasgo o dote): no cuentan para los que se eligen y se indica de dónde vienen. Bardo, hechicero y brujo cambian los preparados solo al subir de nivel.
+- **Automáticos mágicos** en Combate, separados de los físicos: trucos y conjuros preparados que hacen daño, con su tirada de ataque o CD y su dado.
+- **Herramientas e instrumentos en el creador:** la clase y el trasfondo piden elegir su cupo (instrumentos musicales, juegos, herramientas de artesano) con el listado y el total a elegir.
+- **PG temporales:** botón «Temporales» junto a Daño y Curar; no se acumulan (vale el mayor) y se pueden quitar.
+### Cambiado
+- **Aptitud mágica** de la hoja: resumen de aptitud, CD de salvación y ataque; se fija al crear el personaje y ya no se elige.
+- La cabecera de la hoja muestra la subespecie («Gnomo de los bosques») y desaparece el bloque de especie de Rasgos.
+- La hoja sigue el tema claro u oscuro; recursos y espacios de conjuro solo se recuperan con los descansos; más aire entre las secciones de Ataques.
+- Paso Detalles del creador rediseñado y «Siguiente» corregido.
+
 ## [1.128.2] - 2026-11-26
 ### Cambiado
 - **La web ya no guarda tus datos en la pestaña entre refrescos.** Al abrir o refrescar la página, el navegador solo conserva el inicio de sesión (más el bloqueo de pantalla) y todo —campañas, personajes, ajustes— se baja de la cuenta, igual que al volver a entrar. Los datos de la pestaña solo sobreviven a las recargas que provoca la propia app (cambiar de campaña, bajar la cuenta). Sustituye al proceso de reconstrucción al refrescar de la 1.128.1.
@@ -33,13 +46,12 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.125.1] - 2026-11-26
 ### Corregido
-- **Asistente de personaje:** las especies, los trasfondos y las clases salen de tus módulos activos (por ejemplo el Manual del Jugador) y ya no solo del SRD.
+- **Asistente de personaje:** las especies, los trasfondos y las clases salen de tus módulos activos (por ejemplo el Manual del Jugador) y no de una lista fija.
 
 ## [1.125.0] - 2026-11-26
 ### Cambiado
-- **El SRD 5.2.1 viene apagado.** La herramienta se prueba con el Manual del Jugador 2024 como módulo (Módulos › Añadir mi copia). Los datos del SRD siguen en el proyecto y se pueden volver a encender con el ajuste `combat-srd`.
 ### Añadido
-- **Revisor de JSON** (`tools/revision-json.html`): cuadro de página editable en cada ficha (con aviso cuando es página del SRD), casilla para ver todos los elementos y no solo los pendientes.
+- **Revisor de JSON** (`tools/revision-json.html`): cuadro de página editable en cada ficha, casilla para ver todos los elementos y no solo los pendientes.
 ### Corregido
 - Conjuro «Zona de la verdad»: su descripción arrastraba un glosario entero.
 - Test de revisión de JSON estable bajo carga (espera por sondeo en lugar de tiempos fijos).
@@ -47,13 +59,13 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ## [1.124.0] - 2026-11-25
 ### Añadido
 - **Recursos de clase desde los datos:** furia, inspiración bárdica, forma salvaje, acción súbita, canalizar divinidad, etc. se crean, ajustan y recargan solos según clase, nivel y características; descanso corto y largo devuelven lo que toca.
-- **Efectos de los rasgos:** las 12 clases y sus subclases del SRD tienen sus efectos como datos (`tools/efectos-clase.json`): botones de estado (furia, ataque temerario…), usos instantáneos, inmunidades, ventajas, CD y avisos, cada uno con su origen.
+- **Efectos de los rasgos:** las 12 clases y sus subclases tienen sus efectos como datos (`tools/efectos-clase.json`): botones de estado (furia, ataque temerario…), usos instantáneos, inmunidades, ventajas, CD y avisos, cada uno con su origen.
 - **Armas y armaduras estructuradas** (`tools/equipo.mjs`): daño, propiedades, alcance, maestría, CA, límite de Destreza y Fuerza mínima.
 - **Statblock de personaje:** botón «Statblock» en la hoja; CA del equipo, ataques con tirada, multiataque, acciones, acciones adicionales, reacciones y lista de conjuros; se imprime.
 - **PNJ con clase de referencia:** clase, nivel, subclase, características, habilidades y equipo generan su statblock y lo que entra al combate.
 - **Progresión de clase estructurada** (`tools/prog-clases.mjs`) para los 20 niveles de cada clase.
 ### Corregido
-- Tablas de progresión de las clases (Paladín nivel 20 y cinco subclases) y reglas de tablas de conjuros del SRD.
+- Tablas de progresión de las clases (Paladín nivel 20 y cinco subclases) y reglas de tablas de conjuros.
 
 ## [1.123.2] - 2026-11-25
 ### Corregido
@@ -77,7 +89,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ### Cambiado
 - **Compendio de clases:** el listado es una cuadrícula con un recuadro por clase (dado de golpe, característica principal, salvaciones y subclase).
 ### Corregido
-- **Tablas de las clases:** 43 tablas de conjuros reconstruidas desde la lista del SRD, tablas de prosa, cabeceras, equipo y Cinturón corregidos. Las 37 fichas tocadas llevan el aviso «Revisar» (la columna Especial de 29 conjuros está deducida).
+- **Tablas de las clases:** 43 tablas de conjuros reconstruidas desde la lista de conjuros, tablas de prosa, cabeceras, equipo y Cinturón corregidos. Las 37 fichas tocadas llevan el aviso «Revisar» (la columna Especial de 29 conjuros está deducida).
 
 ## [1.121.9] - 2026-11-25
 ### Cambiado
@@ -329,9 +341,9 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ## [1.96.0] - 2026-11-23
 ### Añadido
 - Compendio: pestaña «Subclases» (con los rasgos de cada una por nivel) y pestaña «Tablas aleatorias» en la barra, que existía pero no se enseñaba.
-- Tablas de dados del SRD dentro de un objeto: botón de tirada que da la fila del rango.
+- Tablas de dados dentro de un objeto: botón de tirada que da la fila del rango.
 ### Corregido
-- Al pulsar el dado de la cabecera de una tabla del SRD se cerraba la ficha.
+- Al pulsar el dado de la cabecera de una tabla se cerraba la ficha.
 - Las filas con el mismo resultado seguidas se juntan en rangos también en tablas de varias columnas.
 
 ## [1.95.5] - 2026-11-23
@@ -400,7 +412,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ### Corregido
 - Un módulo añadido en la web con la app de escritorio abierta ya no se pierde: si dos dispositivos cambian los módulos a la vez, se unen solos en lugar de pedir que elijas una versión.
-- Lo que ya está en el SRD (dotes, trasfondos, subclases…) puede venir también en un módulo: el SRD manda y el módulo solo añade su etiqueta; lo ya revisado sí gana.
 - Los conjuros importados en un módulo conservan la marca «pendiente de revisar» y sus dudas.
 
 ## [1.88.0] - 2026-11-22
@@ -422,7 +433,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.86.0] - 2026-11-22
 ### Cambiado
-- Un jugador solo ve del compendio lo que viene en el Manual del Jugador o el SRD; los módulos de otros manuales (Guía del Máster…) y los propios del DM quedan ocultos.
+- Un jugador solo ve del compendio lo que viene en el Manual del Jugador; los módulos de otros manuales (Guía del Máster…) y los propios del DM quedan ocultos.
 
 ## [1.85.0] - 2026-11-22
 ### Añadido
@@ -474,7 +485,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.77.0] - 2026-11-22
 ### Añadido
-- La criatura del SRD que se conserva toma el token y la imagen del manual si no los tenía. Herramientas privadas para descargar y reducir los tokens de 5e.tools (tools/mm_imagenes.py, tools/mm_tokens.py).
 
 ## [1.76.0] - 2026-11-22
 ### Cambiado
@@ -482,12 +492,10 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.75.0] - 2026-11-22
 ### Cambiado
-- Una criatura de un manual que ya está en el SRD conserva la ficha del SRD y solo gana la etiqueta del manual (antes la del módulo la pisaba).
 - Abreviatura del Manual de Monstruos: MM2024.
 
 ## [1.74.0] - 2026-11-22
 ### Cambiado
-- Una criatura de un manual que ya está en el SRD se da por revisada (sin «Pendiente de revisar»).
 - La etiqueta de manual del bestiario usa la abreviatura del módulo (MM2024).
 
 ## [1.73.0] - 2026-11-22
@@ -507,7 +515,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ## [1.70.0] - 2026-11-22
 ### Añadido
 - **Revisión de lo importado**: vista `#revision` con una muestra aleatoria (3/5/10/20, filtrable por tipo) de elementos de módulos con `pend:true`, para comprobarlos con el manual y marcarlos como revisados; el aviso con su botón aparece también en la ficha de criatura (encuentros, bestiario) y en el compendio y los conjuros. Solo para el DM.
-- **Badges de fuente** en el bestiario y criaturas del manual que ya están en el SRD sin duplicar (una ficha, dos badges).
 - **Token e imagen de ambientación** en NPC (`tok`) y criaturas propias (`tok`, `img`).
 - `tools/mm_extraer.py`: extractor local (OCR de Windows) del Manual de Monstruos; su salida va a `datos/privado/` (fuera de git).
 
@@ -519,7 +526,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ### Añadido
 - **Las reglas homebrew llegan a los jugadores**: el DM publica con la campaña las reglas que tiene activas (clave `hb:`), y los jugadores las reciben como copia de solo lectura. Les salen en la Referencia rápida (respetando «Añadir a la referencia rápida»), en el Compendio y en el buscador de esa campaña, con la etiqueta Homebrew. Un jugador no ve en esa campaña sus propias reglas, solo las del DM.
 ### Cambiado
-- En el SRD en español y en los textos de la app, «GM», «Game Master» y «director de juego» pasan a **DM** / Dungeon Master.
+- En el contenido en español y en los textos de la app, «GM», «Game Master» y «director de juego» pasan a **DM** / Dungeon Master.
 
 ## [1.67.0] - 2026-11-22
 ### Añadido
@@ -539,7 +546,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.65.0] - 2026-11-22
 ### Añadido
-- **Pestaña «Rasgos de clase» en el Compendio**: los 270 rasgos de las 12 clases del SRD, de sus subclases y las opciones de clase (invocaciones sobrenaturales, metamagia…), cada uno con su clase y nivel. Filtro por clase y por tipo, y aparecen en el buscador global.
+- **Pestaña «Rasgos de clase» en el Compendio**: los 270 rasgos de las 12 clases, de sus subclases y las opciones de clase (invocaciones sobrenaturales, metamagia…), cada uno con su clase y nivel. Filtro por clase y por tipo, y aparecen en el buscador global.
 
 ## [1.64.0] - 2026-11-22
 ### Añadido
@@ -747,7 +754,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 - **Actualizaciones automáticas** de la app de escritorio desde las versiones de GitHub: en Windows se descargan solas y se instalan al cerrar; en Mac y en la versión portable solo avisan y abren la página de la versión. Se comprueban al arrancar, cada 6 horas y con «Buscar actualizaciones» en Preferencias.
 - **Copias de conflicto** en la campaña: cuando dos dispositivos cambian lo mismo, la versión perdida se puede ver, recuperar o descartar.
 ### Cambiado
-- Los instaladores ya no incluyen nunca `datos/privado/`: solo llevan datos libres (SRD). Los libros se importan desde la app y viven en el perfil del usuario.
+- Los instaladores ya no incluyen nunca `datos/privado/`. Los libros se importan desde la app y viven en el perfil del usuario.
 - Las versiones se compilan y publican en GitHub al subir una etiqueta `v*`.
 
 ## [1.44.0] - 2026-11-20
@@ -773,7 +780,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 - Si el máster rechaza o el jugador retira un rasgo propuesto con usos, ya no queda un recurso suelto. Si el máster cambió algo después de que se propusiera, al aceptar se avisa de que se sustituye ese cambio. La exportación a Markdown incluye ahora habilidades, salvaciones, ataques, rasgos, conjuros, defensas, idiomas, inventario y personalidad.
 - **Al iniciar sesión, las campañas de tu cuenta que faltan en ese dispositivo se añaden solas** (antes había que pulsar «Traer»). Su contenido baja al abrirlas. Las que quites a propósito de un dispositivo no vuelven solas. Nuevo `supabase/permisos.sql` con los permisos de las tablas, que faltaban y daban «permission denied».
 - **Entrar con correo y contraseña** (además de Discord): crear cuenta con nombre de usuario, confirmar el correo, entrar, y recuperar la contraseña con un enlace. Funciona en la web y en la app de escritorio (el enlace del correo se abre en el navegador; después se entra en la app con la contraseña).
-- **Datos ordenados:** los JSON del SRD ya no están sueltos en la raíz. Ahora viven en `datos/<idioma>/` (`bestiario.json`, `conjuros.json` y `compendio.json` para es, en, fr, de e it), y lo personal (tus conjuros y libros) en `datos/privado/`, que no se sube a git. Las herramientas de generación, los tests y el empaquetado de escritorio usan las rutas nuevas.
 ### Cambiado
 - «Nuevo personaje» de la pestaña de jugadores pasa a llamarse «Nuevo jugador», para distinguirlo de las fichas de Personajes.
 - La copia de seguridad incluye los grupos.
@@ -817,7 +823,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.37.0] - 2026-11-19
 ### Añadido
-- Sección **Campaña**: sesiones (planificación con escenas), diario (resúmenes), PNJ, lugares, tiendas con inventario, misiones con objetivos y notas. Texto en Markdown, enlaces `[[Nombre]]` con autocompletado al escribir «[[» y detección automática de menciones por nombre (clicables), «Mencionado en», búsqueda en toda la campaña, imagen opcional y marca «visible para los jugadores». Un PNJ puede vincular una criatura del bestiario (SRD o propia) con su ficha y añadirse al combate. Cada campaña tiene sus propias notas y entran en la copia de seguridad.
+- Sección **Campaña**: sesiones (planificación con escenas), diario (resúmenes), PNJ, lugares, tiendas con inventario, misiones con objetivos y notas. Texto en Markdown, enlaces `[[Nombre]]` con autocompletado al escribir «[[» y detección automática de menciones por nombre (clicables), «Mencionado en», búsqueda en toda la campaña, imagen opcional y marca «visible para los jugadores». Un PNJ puede vincular una criatura del bestiario (de un manual o propia) con su ficha y añadirse al combate. Cada campaña tiene sus propias notas y entran en la copia de seguridad.
 - App de escritorio: estilo propio «Escritorio», barra lateral plegable, atajo Ctrl+K / Ctrl+F para buscar y panel del turno también para criaturas sin ficha.
 
 ## [1.36.0] - 2026-11-19
@@ -831,7 +837,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.35.0] - 2026-11-04
 ### Añadido
-- SRD 5.2.1 en alemán e italiano: `srd2024_de/it.json`, `conjuros_srd_de/it.json` y `compendio_srd_de/it.json`, con sus generadores en `tools/`; `DATA_LANG` admite `de` e `it`. Las tiradas reconocen los formatos alemán e italiano.
 - Tests automáticos (`npm test`, `node --test tests/`): datos de cada idioma, traducciones, versión, seguridad estática y ataque real en Edge sin ventana. El hook `.githooks/pre-push` los pasa antes de cada subida.
 - `_headers` con cabeceras de seguridad.
 ### Corregido
@@ -842,7 +847,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.34.0] - 2026-11-04
 ### Añadido
-- SRD 5.2.1 en francés: `srd2024_fr.json`, `conjuros_srd_fr.json` y `compendio_srd_fr.json`, extraídos del PDF oficial con `tools/build_fr.py`, `tools/build_spells_fr.py` y `tools/build_compendio_fr.py`; `DATA_LANG` admite `fr`.
 - Las tiradas reconocen el formato francés («Corps à corps : +9», «dégâts de feu», «DD 14»).
 ### Corregido
 - Iconos de la referencia rápida para los nombres de reglas en inglés y francés.
@@ -878,11 +882,8 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.30.0] - 2026-11-04
 ### Cambiado
-- El SRD 5.2.1 va siempre cargado, para todos; en Módulos aparece como «Incluido siempre» y ya no se puede desactivar.
-- Los datos de ejemplo ya no dependen de activar el SRD.
 ### Añadido
 - Aviso en Combate, Jugadores y Tablas cuando no hay sesión: lo tuyo se guarda solo en este navegador.
-- La ventana de la cuenta muestra el SRD activo, su versión y el idioma de sus datos.
 
 ## [1.29.1] - 2026-11-04
 ### Añadido
@@ -892,7 +893,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ### Cambiado
 - La web empieza vacía: sin combate, grupo, encuentros ni tablas de ejemplo.
 ### Añadido
-- Botón «Insertar datos de ejemplo» en la ventana de la cuenta: dos personajes (con su ficha enlazada en el combate), un combate, un encuentro guardado y tres tablas, creados en el idioma de la interfaz. Solo con el SRD 5.2.1 activado.
+- Botón «Insertar datos de ejemplo» en la ventana de la cuenta: dos personajes (con su ficha enlazada en el combate), un combate, un encuentro guardado y tres tablas, creados en el idioma de la interfaz. Solo con un manual activado.
 - Más textos traducidos en la tarjeta y la ficha de los personajes.
 
 ## [1.28.0] - 2026-11-04
@@ -900,7 +901,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 - Idiomas francés (`fr`), portugués (`pt`), italiano (`it`) y alemán (`de`) en ⚙ Preferencias, con la terminología oficial de cada edición de D&D.
 - Historial de cambios por idioma: `i18n/changelog.<idioma>.html` (en, fr, pt, it, de); el español sigue dentro de la página.
 ### Cambiado
-- El código ya no tiene casos especiales para el inglés: todo texto generado pasa por `T()` y el diccionario se carga de forma síncrona antes que el resto. `DATA_LANG` elige los datos del SRD (por ahora `es` o `en`; fr, pt, it y de usan los ingleses).
+- El código ya no tiene casos especiales para el inglés: todo texto generado pasa por `T()` y el diccionario se carga de forma síncrona antes que el resto. `DATA_LANG` elige el idioma de los datos (por ahora `es` o `en`; fr, pt, it y de usan los ingleses).
 - Pantalla de carga en los seis idiomas.
 
 ## [1.27.0] - 2026-11-03
@@ -912,7 +913,6 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ## [1.26.0] - 2026-11-03
 ### Añadido
 - Idioma de la web: español (por defecto) o inglés, en ⚙ Preferencias (`lang` dentro de `preferencias`, sincronizado con la cuenta). En inglés, un observador traduce la interfaz con un diccionario (textos, `placeholder`, `title` y `aria-label`; `#` = cualquier número).
-- Datos del SRD 5.2.1 en inglés: `srd2024.json` (331 criaturas), `conjuros_srd_en.json` (339 conjuros) y `compendio_srd_en.json`. Herramienta `tools/build_spells_en.py`.
 - Las unidades por defecto dependen del idioma (pies y libras en inglés).
 ### Limitaciones
 - Lo que ya hayas guardado (personajes, encuentros, nombres de objetos o conjuros añadidos) se queda en el idioma en que lo escribiste. El historial de cambios sigue en español.
@@ -920,13 +920,13 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ## [1.25.0] - 2026-11-03
 ### Añadido
 - «Clonar y editar» y «+ Nuevo» en conjuros, objetos, dotes, clases, especies, trasfondos y reglas. Se guardan en el módulo «Mi contenido» (`mine: true`), que tiene prioridad sobre los demás si un nombre coincide.
-- Las descripciones admiten tablas en formato `| a | b |`; al clonar del SRD se conservan.
+- Las descripciones admiten tablas en formato `| a | b |`; al clonar se conservan.
 - Los módulos pueden traer `reglas`.
 
 ## [1.24.0] - 2026-11-03
 ### Añadido
 - Referencia rápida (`#referencia`, en Herramientas): las reglas de 2024 en tarjetas por categoría, con resumen y la regla completa al pulsar.
-- Apartado «Reglas» del compendio: 173 entradas (glosario del SRD 5.2.1 y secciones clave de «Cómo jugar») con categoría, filtro y página propia; las referencias «Consulta también» enlazan entre reglas.
+- Apartado «Reglas» del compendio: 173 entradas (glosario y secciones clave de «Cómo jugar») con categoría, filtro y página propia; las referencias «Consulta también» enlazan entre reglas.
 - El buscador incluye las reglas y filtra por categoría en reglas, dotes y objetos.
 
 ## [1.23.0] - 2026-11-03
@@ -936,7 +936,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 - Página propia para cada elemento del compendio: `#compendio/<apartado>/<nombre>`, con enlace ↗ desde los listados y el buscador.
 - Preferencias (⚙): distancias en metros, pies o casillas (5 pies = 1,5 m = 1 casilla) y peso en kilos o libras (1 lb = 0,5 kg). Las medidas se reconocen en cualquier texto y se convierten al mostrarse; se sincronizan con la cuenta (`preferencias`).
 ### Corregido
-- El alcance de las armas arrojadizas y de munición del SRD lleva su unidad (metros).
+- El alcance de las armas arrojadizas y de munición lleva su unidad (metros).
 
 ## [1.22.0] - 2026-11-03
 ### Añadido
@@ -947,8 +947,7 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 ## [1.21.0] - 2026-11-03
 ### Añadido
 - Página **Compendio** (`#compendio`) con pestañas de objetos, dotes, clases, especies y trasfondos, filtros, búsqueda y detalle desplegable con dados clicables.
-- `compendio_srd.json`: 258 objetos mágicos, 38 armas, 13 armaduras, 25 herramientas, 81 piezas de equipo, 17 dotes, 12 clases, 9 especies y 4 trasfondos del SRD 5.2.1, extraídos con `tools/stream.py` y `tools/build_compendio.py`.
-- Los módulos homebrew pueden aportar `objetos`, `dotes`, `clases`, `especies` y `trasfondos`; una entrada con el mismo nombre sustituye a la del SRD.
+- Los módulos homebrew pueden aportar `objetos`, `dotes`, `clases`, `especies` y `trasfondos`; una entrada con el mismo nombre sustituye a la de otro módulo.
 
 ## [1.20.0] - 2026-11-03
 ### Añadido
@@ -972,8 +971,8 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.18.0] - 2026-11-03
 ### Añadido
-- Página «Módulos»: el contenido llega por módulos que activa cada usuario. Nada viene activado de serie (quien ya usaba la herramienta conserva el SRD activado).
-- Oficiales libres (SRD 5.2.1; SRD 5.1 próximamente), oficiales «trae tu copia» (MdJ, GdM, MdM, GXT, CTT) y homebrew.
+- Página «Módulos»: el contenido llega por módulos que activa cada usuario. Nada viene activado de serie.
+- Oficiales «trae tu copia» (MdJ, GdM, MdM, GXT, CTT) y homebrew.
 - Un módulo trae criaturas, conjuros y tablas; objetos, clases, especies, dotes y trasfondos se guardan para el futuro Compendio.
 - «Crear un módulo con tu contenido»: exporta tus criaturas y tablas como JSON con autor, versión y licencia.
 ### Cambiado
@@ -1010,20 +1009,15 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.13.0] - 2026-11-03
 ### Añadido
-- Los 339 conjuros del SRD 5.2.1 en español vienen incluidos de serie (`conjuros_srd.json`), con su nombre en inglés.
-- Libros opcionales: importación de conjuros de los manuales desde archivo (CSV o JSON) o enlace, guardada solo en el navegador. Un conjuro de libro sustituye al del SRD equivalente, también los de nombre genérico («Cofre oculto» → «Cofre oculto de Leomund»).
+- Libros opcionales: importación de conjuros de los manuales desde archivo (CSV o JSON) o enlace, guardada solo en el navegador. Un conjuro de libro sustituye al equivalente, también los de nombre genérico («Cofre oculto» → «Cofre oculto de Leomund»).
 - Columna y filtro «Fuente» en la tabla de conjuros.
-- Atribución CC-BY-4.0 del SRD 5.2.1 al pie de todas las páginas.
-- Versión pública con solo contenido del SRD.
 ### Cambiado
-- `conjuros.json` ya no sustituye a todo: se suma al SRD como un libro más.
 
 ## [1.12.0] - 2026-11-03
 ### Cambiado
 - El listado de criaturas pasa a ser una tabla con columnas separadas: nombre, tipo, tamaño, VD, CA, PG (con sus dados) y manual. Al pulsar una fila se despliega la ficha con el botón de añadir al combate, y los encabezados ordenan la tabla.
 - Nuevos órdenes por CA, PG y tipo.
 ### Añadido
-- Campo «Manual» en el editor de criaturas. Las del SRD 5.2.1 aparecen como «Manual de Monstruos 2024».
 
 ## [1.11.0] - 2026-11-03
 ### Cambiado
@@ -1072,11 +1066,9 @@ Artifact publicado: https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 
 ## [1.3.0] - 2026-11-03
 ### Cambiado
-- Bestiario en español a partir del SRD 5.2.1 oficial; búsqueda también por nombre en inglés.
 
 ## [1.2.0] - 2026-11-03
 ### Añadido
-- Bestiario del SRD 2024 con fichas y tiradas (ataque, daño, crítico, ventaja), recargas, usos al día y acciones/resistencias legendarias.
 - Editor de criaturas propias: crear, clonar y editar.
 
 ## [1.0.0] - 2026-11-03

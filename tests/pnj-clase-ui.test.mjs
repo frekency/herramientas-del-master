@@ -7,6 +7,7 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE,testNav} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
@@ -14,14 +15,13 @@ const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
 window.__env=[];window.__AppShell={platform:'win32',titlebar(){},mesa:{abrir(){},cerrar(){},enviar(p){window.__env.push(p);},onEstado(){}}};
-window.__SRD=true;localStorage.clear();</script>`;
+localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
   try{
     await wait(1200);
-    compLoad();
-    for(let i=0;i<40&&!COMP_SRD;i++)await wait(250);
+    ${MANUAL_JS}
     await wait(500);
     const it=Notas.norm({tipo:'npc',nombre:'Capitán Varo',campos:{ref:{c:'guerrero',n:5,sub:'Campeón',car:[16,12,14,10,10,10],hab:'Atletismo, Percepción',eq:'Cota de malla, Escudo, Espada larga'}}});
     CP.push(it);
@@ -54,7 +54,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('PNJ con clase de referencia: statblock y combate',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('PNJ con clase de referencia: statblock y combate',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-pnjc-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

@@ -1,6 +1,6 @@
 # Compila la app de escritorio (Windows y Mac) en GitHub.
 # Como datos/privado/ (conjuros.json y libros/) no está en el repositorio, estos instaladores
-# solo llevan el SRD: son los que se pueden compartir.
+# no llevan ningún dato: cada usuario importa sus módulos desde la app.
 # Se lanza a mano (Actions → Escritorio → Run workflow) o al subir una etiqueta v*.
 name: Escritorio
 on:

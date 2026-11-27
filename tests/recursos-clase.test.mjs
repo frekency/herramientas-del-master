@@ -1,12 +1,12 @@
 // Recursos de clase parametrizados: salen de x.prog y x.recursos del compendio, sin código por clase.
-import {test} from 'node:test';
+import {testM as test,MANUAL} from './manual.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PAGE} from './lib.mjs';
 
 const window={};new Function('window',PAGE.match(/<script id="ficha-core">([\s\S]*?)<\/script>/)[1])(window);
 const F=window.Ficha;
-const D=JSON.parse(readFileSync(new URL('../datos/es/compendio.json',import.meta.url),'utf8'));
+const D=MANUAL;
 const fold=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const datos=Object.fromEntries(D.clases.map(x=>[fold(x.n),x]));
 const ficha=(c,n,car={})=>F.norm({id:'a',nombre:'T',car:{fue:10,des:10,con:10,int:10,sab:10,car:10,...car},niveles:Array.from({length:n},()=>({c,hp:6}))});

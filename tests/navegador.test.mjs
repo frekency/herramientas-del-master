@@ -31,12 +31,12 @@ const MOD={id:'hb-xss',n:P('mod.n'),ab:P('mod.ab'),autor:P('mod.autor'),desc:P('
   especies:[{n:P('es.n'),tipo:P('es.tipo'),tam:P('es.tam'),vel:P('es.vel'),d:P('es.d'),_html:true}],
   trasfondos:[{n:P('tf.n'),car:P('tf.car'),dote:P('tf.dote'),hab:P('tf.hab'),herr:P('tf.herr'),equipo:P('tf.equipo'),d:P('tf.d'),_html:true}],
   reglas:[{n:P('rg.n'),cat:P('rg.cat'),tag:P('rg.tag'),d:P('rg.d'),_html:true}]};
-const STORE={'combat-modules-v1':{on:{srd521:true},list:[MOD]},
+const STORE={'combat-modules-v1':{on:{mdj:true},list:[MOD]},
   'combat-party-v1':[{id:'p1',n:P('pc.n'),cls:P('pc.cls'),esp:P('pc.esp'),tf:P('pc.tf'),jug:P('pc.jug'),notas:P('pc.notas'),ac:15,hp:20,max:20}],
   'combat-bestiary-v1':[creature('my')]};
 
 // Datos con tipos absurdos: un módulo así no debe dejar la página rota (se queda guardado en el navegador)
-const BASURA={'combat-modules-v1':{on:{srd521:true},list:[{id:'hb-basura',n:'Basura',on:true,
+const BASURA={'combat-modules-v1':{on:{mdj:true},list:[{id:'hb-basura',n:'Basura',on:true,
     criaturas:[{n:'Basura 1',ab:'x',t:'no',a:[null,[1],'x'],b:{},ac:'?',hp:null,sp:{},cr:[]},{n:5},{n:'Basura 3',ab:[null,'a'],l:[[null,null]]}],
     conjuros:[{n:'Conjuro basura',lv:'x',cls:'Mago',d:null,sch:5},{n:7,d:{}}],
     tablas:[{n:'Tabla basura',columnas:{a:'no lista',b:null}},{n:'T2',cols:'x',cells:5}],
@@ -74,7 +74,7 @@ const TAIL=`<script>
   await wait(1500);
   // Restaurar una copia de seguridad maliciosa: módulo con HTML y «__proto__» en los interruptores
   const bk=JSON.stringify({bestiario:[${JSON.stringify(creature("bk"))}],modulos:{list:[${JSON.stringify({...MOD,id:"hb-bk",n:P("bk.mod"),objetos:[{n:P("bk.ob"),d:P("bk.d"),k:"magico",_html:true}]})}]}})
-    .replace('"modulos":{','"modulos":{"on":{"__proto__":{"srd521":false,"hb-xss":false},"constructor":true},');
+    .replace('"modulos":{','"modulos":{"on":{"__proto__":{"mdj":false,"hb-xss":false},"constructor":true},');
   const io=document.getElementById('io-text'),ib=document.querySelector('[data-act="ioimport"]');
   if(io&&ib){io.value=bk;ib.click();await wait(300);}
   ok('copia: sin contaminar el prototipo',Object.getPrototypeOf(mods().on)===Object.prototype&&!('constructor' in mods().on&&mods().on.constructor===true));

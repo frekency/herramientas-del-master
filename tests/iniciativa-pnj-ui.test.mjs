@@ -23,7 +23,7 @@ const TAIL=`<script>
     const q=s=>document.querySelector(s),click=async s=>{q(s).click();await wait(250);};
     const pjF=state.factions.find(f=>f.pc),enF=state.factions.find(f=>!f.pc);
     const mk=(n,f,t)=>({id:uid(),name:n,factionId:f.id,init:null,initBonus:2,hp:10,maxHp:10,temp:0,ac:12,conds:[],notes:'',ds:0,df:0,tpl:t,used:{},uses:{},la:0,lr:0,ex:false});
-    state.creatures=[mk('Goblin 1',enF,'srd:Goblin'),mk('Goblin 2',enF,'srd:Goblin'),mk('Jefe',pjF,'srd:Goblin Boss'),mk('Lyra',pjF,null)];
+    state.creatures=[mk('Goblin 1',enF,'my:Goblin'),mk('Goblin 2',enF,'my:Goblin'),mk('Jefe',pjF,'my:Goblin Boss'),mk('Lyra',pjF,null)];
     const pcs=state.factions.filter(f=>!f.pc);
     sortInto(state);render();await wait(200);
     ok('hay criaturas',state.creatures.length===4);

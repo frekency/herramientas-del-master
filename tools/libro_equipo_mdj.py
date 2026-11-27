@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Equipo de aventurero del Manual del Jugador 2024 (escaneado con capa OCR) -> objetos pendientes de revisar.
 
-Solo uso personal. Los títulos «NOMBRE (precio)» vienen con ruido de OCR: el nombre se ajusta al más parecido del SRD.
+Solo uso personal. Los títulos «NOMBRE (precio)» vienen con ruido de OCR: el nombre se ajusta al más parecido de otros textos.
 Uso: python tools/libro_equipo_mdj.py <pdf> <modulo.json> <compendio.json>
 """
 import sys, os, re, json, difflib
@@ -21,8 +21,8 @@ def precio(t):
 def main():
     pdf, modulo, comp = sys.argv[1:4]
     d = pymupdf.open(pdf)
-    srd = [x['n'] for x in json.load(open(comp, encoding='utf-8'))['objetos'] if x.get('k') == 'equipo']
-    fsrd = {E.fold(n): n for n in srd}
+    previo = [x['n'] for x in json.load(open(comp, encoding='utf-8'))['objetos'] if x.get('k') == 'equipo']
+    fprevio = {E.fold(n): n for n in previo}
     L = []
     for p in range(224, 232):
         ls, _ = E.lineas_pag(d, p); L += [r for r in ls if not (r['y'] > 1380 and r['size'] > 19)]
@@ -39,10 +39,10 @@ def main():
         if E.fold(nom).startswith('municion'): nom = 'Munición (variable)'
         f = E.fold(nom)
         du = ['texto leído de un escaneado con OCR: compruébalo con el libro']
-        if f in fsrd: n = fsrd[f]
+        if f in fprevio: n = fprevio[f]
         else:
-            c = difflib.get_close_matches(f, list(fsrd), 1, 0.6)
-            if c: n = fsrd[c[0]]; du.append('nombre corregido desde «%s» (OCR): compruébalo' % nom)
+            c = difflib.get_close_matches(f, list(fprevio), 1, 0.6)
+            if c: n = fprevio[c[0]]; du.append('nombre corregido desde «%s» (OCR): compruébalo' % nom)
             else: n = E.titulo_bonito(nom) if nom.isupper() else nom; du.append('nombre no reconocido: compruébalo')
         if E.fold(n) in vistos: continue
         vistos.add(E.fold(n))
@@ -52,8 +52,8 @@ def main():
     m = json.load(open(modulo, encoding='utf-8'))
     m['objetos'] = [o for o in m.get('objetos', []) if o.get('k') != 'equipo'] + out
     json.dump(m, open(modulo, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    falt = [n for n in srd if E.fold(n) not in vistos]
-    print(len(out), 'equipos; sin hallar del SRD:', falt)
+    falt = [n for n in previo if E.fold(n) not in vistos]
+    print(len(out), 'equipos; sin hallar de otros textos:', falt)
     for o in out:
         if len(o['dudas']) > 1: print(' ', o['n'], o['dudas'][1:])
 

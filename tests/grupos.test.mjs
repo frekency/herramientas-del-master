@@ -64,7 +64,7 @@ test('grupos: una tarjeta de jugador no puede estar en dos grupos ni en uno que 
   assert.equal(G.agregar(l,orcos.g.id,{k:'jugador',ref:'p9'}).error,'jugador_en_grupo_no_jugador');
   assert.equal(G.agregar(l,l[0].id,{k:'jugador',ref:'p1'}).error,'ya_esta');
   assert.equal(G.mover(l,l[0].miembros[0].id,orcos.g.id).error,'jugador_en_grupo_no_jugador');
-  const r=G.agregar(l,orcos.g.id,{k:'criatura',ref:'srd:Orc',n:'Orco',cant:3});assert.ok(r.ok);assert.equal(r.m.cant,3);
+  const r=G.agregar(l,orcos.g.id,{k:'criatura',ref:'my:Orc',n:'Orco',cant:3});assert.ok(r.ok);assert.equal(r.m.cant,3);
   assert.equal(G.agregar(l,orcos.g.id,{k:'criatura',ref:''}).error,'miembro_invalido');
 });
 
@@ -84,7 +84,7 @@ test('grupos: el jugador lleva un personaje y se sabe quién lleva cada uno',()=
 });
 
 test('grupos: sanea todo',()=>{
-  const l=G.normLista([{id:'a b',n:'x'.repeat(200),tipo:'raro',color:'rojo',miembros:[null,{k:'dragon',ref:'x'},{k:'criatura',ref:'srd:Orc',cant:999}]},{id:'g2'},'x']);
+  const l=G.normLista([{id:'a b',n:'x'.repeat(200),tipo:'raro',color:'rojo',miembros:[null,{k:'dragon',ref:'x'},{k:'criatura',ref:'my:Orc',cant:999}]},{id:'g2'},'x']);
   assert.equal(l.length,2);assert.equal(l[0].n.length,40);assert.equal(l[0].tipo,'neutral');assert.equal(l[0].color,G.COLOR.neutral);
   assert.equal(l[0].miembros.length,1);assert.equal(l[0].miembros[0].cant,40);
   assert.match(l[0].id,/^g[a-z0-9]+$/);
@@ -92,7 +92,7 @@ test('grupos: sanea todo',()=>{
 
 test('grupos: aFilas pasa un grupo rival a filas de encuentro y avisa de lo que no se resuelve',()=>{
   let l=G.crear([],{n:'Bandidos',tipo:'rivales'});const gid=l.g.id;l=l.lista;
-  for(const m of [{k:'criatura',ref:'srd:Bandido',n:'Bandido',cant:4},{k:'pnj',ref:'n1',n:'Jefe'},{k:'pj',ref:'f9',n:'Renegado'}])l=G.agregar(l,gid,m).lista;
+  for(const m of [{k:'criatura',ref:'my:Bandido',n:'Bandido',cant:4},{k:'pnj',ref:'n1',n:'Jefe'},{k:'pj',ref:'f9',n:'Renegado'}])l=G.agregar(l,gid,m).lista;
   const r=G.aFilas(l[0],m=>m.ref==='n1'?null:{tpl:m.k==='criatura'?m.ref:null,name:m.n,maxHp:11,ac:12});
   assert.equal(r.filas.length,2);assert.equal(r.filas[0].cant,4);assert.equal(r.filas[0].fname,'Bandidos');assert.equal(r.filas[1].pj,true);
   assert.equal(r.fallan.length,1);assert.equal(r.fallan[0].k,'pnj');

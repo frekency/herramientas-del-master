@@ -1,11 +1,11 @@
 // Importar personajes exportados de Roliando (dnd-sheet v1) con el JSON real de un druida de nivel 3.
-import {test} from 'node:test';
+import {testM as test,MANUAL} from './manual.mjs';
 import assert from 'node:assert/strict';
 import {PAGE,read,json} from './lib.mjs';
 
 const window={};new Function('window',PAGE.match(/<script id="ficha-core">([\s\S]*?)<\/script>/)[1])(window);
 const F=window.Ficha;
-const SP=Object.fromEntries(json('datos/es/conjuros.json').map(s=>[s.en.toLowerCase(),{n:s.n,lv:s.lv}]));
+const SP=Object.fromEntries(MANUAL.conjuros.map(s=>[s.en.toLowerCase(),{n:s.n,lv:s.lv}]));
 const res=n=>SP[n.toLowerCase()]||null;
 const TXT=read('tests/fixtures/roliando-rhiavel.json');
 

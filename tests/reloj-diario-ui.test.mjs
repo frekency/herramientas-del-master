@@ -7,6 +7,7 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 import {testNav} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -15,7 +16,7 @@ const BROWSER=BROWSERS.find(b=>existsSync(b));
 
 const STORE={'camp-notes-v1':{v:1,items:[{id:'s1',tipo:'sesion',nombre:'La mina',campos:{estado:'planeada',fecha:'2026-11-20'}}]},'camp-fichas-v1':[{v:1,id:'c1',nombre:'Lyra',origen:'campana',campana:'local',car:{fue:8,des:14,con:14,int:16,sab:10,car:10},niveles:[{c:'mago',hp:6}]}]};
 const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));
-window.__SRD=true;localStorage.clear();for(const[k,v]of Object.entries(${JSON.stringify(STORE)}))localStorage.setItem(k,JSON.stringify(v));</script>`;
+localStorage.clear();for(const[k,v]of Object.entries(${JSON.stringify(STORE)}))localStorage.setItem(k,JSON.stringify(v));</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
@@ -23,6 +24,7 @@ const TAIL=`<script>
   const setv=(sel,v)=>{const i=document.querySelector(sel);if(!i)throw new Error('no hay '+sel);i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));};
   try{
     await wait(1500);
+    ${MANUAL_JS}
     const rb=()=>document.getElementById('relbar'),mod=()=>document.getElementById('sesmodal'),F=()=>PJC.find(x=>x.id==='c1');
     location.hash='#combate';await wait(300);
     // reloj
@@ -63,7 +65,7 @@ const TAIL=`<script>
     ok('el objeto del compendio entra sintonizable y con 6 usos',it&&it.sint&&it.uso===6);
     await click('[data-act="pjinvuso"]');
     ok('usar gasta una carga',F().inventario.find(i=>i.n==='Anillo de estrellas fugaces').ug===1);
-    setv('#pji-c','Munición +1, +2 o +3');await click('[data-act="pjinvcomp"]');
+    setv('#pji-c','Flecha');await click('[data-act="pjinvcomp"]');
     ok('la munición se marca como tal',F().inventario.some(i=>i.mun));
   }catch(e){(window.__err=window.__err||[]).push('flujo: '+e+' '+(e.stack||'').split('\\n')[1]);}
   R.err=window.__err||[];
@@ -82,7 +84,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('reloj de campaña, diario del personaje e inventario del compendio',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('reloj de campaña, diario del personaje e inventario del compendio',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-rel-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

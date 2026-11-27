@@ -1,5 +1,5 @@
 {
- "_": "Efectos de los rasgos de clase (SRD 5.2.1), por clase y nombre de rasgo tal como sale en la tabla de progresión. Vocabulario cerrado: ca {f:'10+des+con'} · vel {v:3} · ventaja {en:['salv:des','prueba:fue','ataque:fue','iniciativa']} · resiste {tipos:[]} · dano {v:{col}|número} · ataques {n} · aviso {txt} · estado {id,n,gasta:'recurso',cond,dur,ef:[…]} (se activa con un botón, gasta 1 uso del recurso y sus efectos solo valen mientras está activo). cond = condición que la hoja no comprueba y se enseña como nota. Un rasgo sin entrada aquí se enseña solo como texto.",
+ "_": "Efectos de los rasgos de clase, por clase y nombre de rasgo tal como sale en la tabla de progresión. Vocabulario cerrado: ca {f:'10+des+con'} · vel {v:3} · ventaja {en:['salv:des','prueba:fue','ataque:fue','iniciativa']} · resiste {tipos:[]} · dano {v:{col}|número} · ataques {n} · aviso {txt} · estado {id,n,gasta:'recurso',cond,dur,ef:[…]} (se activa con un botón, gasta 1 uso del recurso y sus efectos solo valen mientras está activo). cond = condición que la hoja no comprueba y se enseña como nota. Un rasgo sin entrada aquí se enseña solo como texto.",
  "Bárbaro": {
   "Defensa sin armadura": [
    {

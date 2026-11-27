@@ -1,5 +1,5 @@
 {
-  "_": "Recursos que da cada clase (SRD 5.2.1). max: {col} columna de la tabla de progresión (x.prog) · {mod:'car',min:1} modificador · {por_nv:5} por nivel de clase · {lv:{'2':1,'17':2}} escalones por nivel · número fijo. rec: 'corto' o 'largo' (qué descanso lo devuelve entero); recNv: cambios de recarga por nivel; cor: usos que devuelve un descanso corto además. nv: nivel desde el que existe.",
+  "_": "Recursos que da cada clase. max: {col} columna de la tabla de progresión (x.prog) · {mod:'car',min:1} modificador · {por_nv:5} por nivel de clase · {lv:{'2':1,'17':2}} escalones por nivel · número fijo. rec: 'corto' o 'largo' (qué descanso lo devuelve entero); recNv: cambios de recarga por nivel; cor: usos que devuelve un descanso corto además. nv: nivel desde el que existe.",
   "Bárbaro": [
     {
       "id": "furia",

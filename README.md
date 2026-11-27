@@ -2,7 +2,6 @@
 
 Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de jugadores, bestiario y conjuros. Es una sola página HTML, sin dependencias ni compilación.
 
-- **Versión pública (solo SRD):** https://claude.ai/artifact/K7X9AHasDjENmmQ8457oZW
 - **Versión personal:** https://claude.ai/artifact/N4KWLLNZUVYXCYNriSYwtP
 - **Versión:** ver `VERSION` y `CHANGELOG.md`.
 
@@ -10,18 +9,13 @@ Herramientas para dirigir partidas de D&D 2024: tracker de combate, gestión de 
 | Archivo | Qué es |
 |---|---|
 | `index.html` | La aplicación completa (HTML + CSS + JS). |
-| `datos/<idioma>/` | Datos del SRD 5.2.1 (CC-BY-4.0, Wizards of the Coast) en español (`datos/es/`; la app es solo en español). Cada carpeta tiene `bestiario.json` (criaturas), `conjuros.json` (los 339 conjuros, con su nombre en inglés) y `compendio.json` (objetos, dotes, trasfondos, especies y clases). Es lo único que se publica en abierto. |
+| `datos/privado/libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`, que reúne todo el Manual del Jugador 2024: clases, especies, trasfondos, dotes, objetos, conjuros y reglas). **Uso personal**: ignorado por git; no se publica ni se empaqueta. |
 | `datos/privado/conjuros.json` | Conjuros generados a partir del CSV personal (manuales). **Uso personal**: no se publica en abierto ni se sube al repositorio (la carpeta `datos/privado/` está en `.gitignore`). |
-| `tools/build_srd.py` | Descarga y compacta el SRD 2024 en inglés desde Open5e. |
-| `tools/build_es.py` | Extrae los textos del PDF oficial en español y los empareja con los datos en inglés. |
-| `datos/privado/libros/` | Tus libros en JSON listos para importar (p. ej. `manual-del-jugador-2024.json`). **Uso personal**: ignorado por git. |
 | `tools/build_spells.py` | Convierte el CSV de conjuros a `datos/privado/conjuros.json`. |
-| `tools/build_srd_spells.py` | Extrae los conjuros del PDF oficial en español (`pdftotext`) y les pone el nombre en inglés de Open5e. |
 
-## Contenido libre y libros opcionales
-- De serie solo va contenido del **SRD 5.2.1** (CC-BY-4.0): bestiario y conjuros. Es lo único que se publica en abierto.
-- Los manuales (Manual del Jugador, etc.) se añaden por usuario desde ✨ Conjuros → 📚 Libros opcionales, con un archivo CSV/JSON propio o un enlace. Se guardan solo en ese navegador y sustituyen al conjuro del SRD equivalente.
-- Versión pública: la misma página con el título «Herramientas del Máster SRD» y solo `datos/es/bestiario.json` + `datos/es/conjuros.json`.
+## Contenido y libros
+- La página no trae reglas ni criaturas de serie: todo el contenido son módulos que se activan en 📚 Módulos.
+- Los manuales (Manual del Jugador, etc.) se añaden por usuario desde 📚 Módulos, con un archivo JSON/CSV propio o un enlace. Se guardan solo en ese navegador, y un conjuro de un manual sustituye al de otro con el mismo nombre.
 
 ## Probarlo en local
 ```
@@ -44,7 +38,7 @@ El hook `.githooks/pre-push` pasa los tests antes de cada `git push` y no deja s
 Versionado semántico. Cada cambio actualiza `VERSION`, `CHANGELOG.md`, el historial de la página principal y crea una etiqueta git `vX.Y.Z`.
 
 ## Licencias
-El contenido del SRD 5.2.1 se usa bajo CC-BY-4.0: «This work includes material from the System Reference Document 5.2.1 ("SRD 5.2.1") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License.»
+Los manuales son contenido con copyright de Wizards of the Coast: se usan solo de forma personal y nunca se suben al repositorio ni se empaquetan en el instalador. Herramienta no oficial, sin relación con Wizards of the Coast.
 
 ## Cuentas y catálogo (Supabase)
 

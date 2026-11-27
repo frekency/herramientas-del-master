@@ -2,9 +2,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
+import {existsSync} from 'node:fs';
+import path from 'node:path';
 import {read,PAGE,SCRIPTS,ROOT} from './lib.mjs';
 
-const tracked=execFileSync('git',['ls-files'],{cwd:ROOT,encoding:'utf8'}).split('\n').filter(Boolean);
+const tracked=execFileSync('git',['ls-files'],{cwd:ROOT,encoding:'utf8'}).split('\n').filter(Boolean).filter(f=>existsSync(path.join(ROOT,f)));   // sin los borrados que aún no se han confirmado
 const TEXT=tracked.filter(f=>/\.(html|js|mjs|json|sql|md|py|toml|txt)$/.test(f)&&!/^datos\//.test(f));
 
 test('ningún secreto en el repositorio (service_role, claves secretas, tokens)',()=>{
@@ -64,10 +66,11 @@ test('Supabase: todas las tablas con RLS y las funciones security definer con se
   assert.deepEqual(sql.match(/clave in \(([^)]*)\)/)[1].match(/\w+/g).sort(),keys,'SYNC_KEYS y la restricción de clave no coinciden');
 });
 
-test('los datos de terceros (módulos) no pueden marcarse como HTML de confianza',()=>{
-  // Solo el SRD propio se pinta como HTML; un módulo con «_html:true» colaría código en la página.
-  const m=PAGE.match(/const mod=\[\.\.\.activeMods\(\)[^\n]*/)?.[0]||'';
-  assert.match(m,/_html:false/,'compList no anula _html en los módulos');
+test('los datos de terceros (módulos) pasan siempre por el saneador de HTML',()=>{
+  // Ninguna ficha se pinta como HTML de confianza: la descripción de un módulo con «_html:true» no puede colar código en la página.
+  assert.ok(!/_html/.test(PAGE),'queda una marca _html de confianza');
+  const m=PAGE.match(/const cmDesc=[^\n]*/)?.[0]||'';
+  assert.match(m,/htmlTxt\(x\.d,true\)/,'cmDesc no sanea la descripción');
 });
 
 test('El hosting sirve la página con cabeceras de seguridad',()=>{

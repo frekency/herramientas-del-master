@@ -120,7 +120,7 @@ function pinta(){
   cont.innerHTML=L.slice(0,LIM).map(([k,i,x])=>{
     const du=Array.isArray(x.dudas)&&x.dudas.length?'<ul class="dudas">'+x.dudas.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':'';
     const motivo=x.rev?'<div class="motivo">'+esc(x.rev)+'</div>':(x.pend?'<div class="motivo">Pendiente de revisar</div>':'');
-    const meta=['t','r','s','cls','tipo'].filter(f=>x[f]).map(f=>esc(x[f])).concat(x.fte==='SRD'?['SRD']:[]).join(' · ');
+    const meta=['t','r','s','cls','tipo'].filter(f=>x[f]).map(f=>esc(x[f])).join(' · ');
     return '<section class="card'+(pend(x)?'':' hecho')+'" data-k="'+esc(k)+'" data-i="'+i+'"><h2>'+esc(x.n)+' <span class="sec">'+esc(k)+(meta?' · '+meta:'')+'</span></h2>'+motivo+du
       +'<div class="prev">'+(typeof x.d==='string'?limpia(x.d):'<i>Sin descripción en HTML</i>')+'</div>'
       +'<div class="acts"><button class="btn primary" data-a="editar">Editar</button><button class="btn" data-a="html">Ver HTML</button><button class="btn ok" data-a="ok">'+(pend(x)?'Marcar revisado':'Ya revisado')+'</button>'+(x._rv?'<button class="btn" data-a="deshacer">Deshacer</button>':'')+'<label class="pgl">'+(x.fte==='SRD'?'Página del SRD':'Página')+' <input data-pg value="'+esc(x.pg)+'" inputmode="numeric" aria-label="'+(x.fte==='SRD'?'Página del SRD':'Página del libro')+' de '+esc(x.n)+'"></label></div></section>';

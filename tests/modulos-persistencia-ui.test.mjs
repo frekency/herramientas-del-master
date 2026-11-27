@@ -47,7 +47,7 @@ const TAIL=`<script>
     ok('reimportar no deshace lo revisado',!md2.criaturas.find(c=>c.n==='Bicho Uno').pend&&md2.criaturas.find(c=>c.n==='Bicho Dos').pend);
     ok('modFusionar conserva lo añadido a mano',modFusionar({criaturas:[{n:'Mío',hp:1}]},{criaturas:[{n:'Otro',hp:2}]}).criaturas.length===2);
     // la cuenta no sustituye un módulo con más contenido
-    const remoto={on:{srd521:true},list:[{id:md.id,n:'Libro de prueba',criaturas:[{n:'Bicho Uno',pend:true}]}]};
+    const remoto={on:{mdj:true},list:[{id:md.id,n:'Libro de prueba',criaturas:[{n:'Bicho Uno',pend:true}]}]};
     const mez=spValorSeguro('modulos',remoto);
     ok('la cuenta no pisa el módulo local más completo',mez.list.find(m=>m.id===md.id).criaturas.length===2);
     ok('y no toca otras claves',spValorSeguro('tablas',{x:1}).x===1);

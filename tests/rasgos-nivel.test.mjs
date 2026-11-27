@@ -1,15 +1,14 @@
 // Rasgos de clase y subclase por nivel: Ficha.rasgosNivel los copia a f.rasgos con su texto, sin duplicar y enlazando el recurso de clase.
-import {test} from 'node:test';
+import {testM as test,MANUAL} from './manual.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PAGE} from './lib.mjs';
 
 const window={};new Function('window',PAGE.match(/<script id="ficha-core">([\s\S]*?)<\/script>/)[1])(window);
 const F=window.Ficha;
-const D=JSON.parse(readFileSync(new URL('../datos/es/compendio.json',import.meta.url),'utf8'));
+const D=MANUAL;
 const fold=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-const rasgosDeClases=new Function('fold',PAGE.match(/function rasgosDeClases[\s\S]*?\r?\n}\r?\n/)[0]+';return rasgosDeClases;')(fold);
-const textos=rasgosDeClases(D.clases);
+const textos=D.rasgos;
 const datos=Object.fromEntries(D.clases.map(x=>[fold(x.n),x]));
 const ficha=(c,n,extra={})=>F.norm({id:'a',nombre:'X',car:{fue:10,des:10,con:12,int:10,sab:10,car:16},niveles:Array.from({length:n},()=>({c,hp:6})),...extra});
 const nombres=f=>f.rasgos.map(r=>r.n);

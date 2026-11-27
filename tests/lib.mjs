@@ -12,15 +12,14 @@ export const PAGE=read('index.html');
 // Scripts en línea de la página (sin los que cargan un src)
 export const SCRIPTS=[...PAGE.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
 
-// Idiomas de la interfaz (además del español, que es el texto original) y de los datos del SRD
+// Idiomas de la interfaz (además del español, que es el texto original)
 export const UI_LANGS=[];   // la interfaz es solo en español
-export const DATA_LANGS=['es'];   // carpetas datos/<idioma>/
-export const BEST=Object.fromEntries(DATA_LANGS.map(l=>[l,`datos/${l}/bestiario.json`]));
 
 /* Test de navegador: la página se carga en Edge/Chrome sin cabeza y el flujo se sondea en tiempo virtual, así que con la máquina cargada
    (varios navegadores a la vez) una espera puede quedarse corta. Se reintenta hasta 3 veces; un fallo real falla las 3, y si pasa
    tras reintentar se avisa en la salida para que se vea cuánto se está tapando. */
 export function testNav(name,opts,fn){
+  if(opts&&opts.manual&&!existsSync(path.join(ROOT,'datos/privado/libros/manual-del-jugador-2024.json')))opts={...opts,skip:'falta datos/privado/libros/manual-del-jugador-2024.json (no va en git)'};
   return test(name,opts,async t=>{
     let ultimo,primero;
     for(let n=1;n<=3;n++){
@@ -33,3 +32,7 @@ export function testNav(name,opts,fn){
     throw ultimo;
   });
 }
+
+/* Script de página para los tests de navegador que necesitan contenido: instala el Manual del Jugador como módulo, igual que «Añadir mi copia».
+   Es el único contenido de la herramienta (no hay datos de serie); el archivo no va en git, así que esos tests se saltan si falta (opción manual:true en testNav). */
+export const MANUAL_JS="importModule(await (await fetch('datos/privado/libros/manual-del-jugador-2024.json')).text(),'manual-del-jugador-2024.json','mdj');await new Promise(r=>setTimeout(r,1500));";

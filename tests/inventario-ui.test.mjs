@@ -7,12 +7,13 @@ import {execFile} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {ROOT,PAGE,testNav} from './lib.mjs';
+import {MANUAL_JS} from './lib.mjs';
 
 const BROWSERS=[process.env.BROWSER,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
 const BROWSER=BROWSERS.find(b=>existsSync(b));
 
-const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));window.__SRD=true;localStorage.clear();</script>`;
+const head=`<script>window.__err=[];addEventListener('error',e=>__err.push(e.message));addEventListener('unhandledrejection',e=>__err.push(String(e.reason)));localStorage.clear();</script>`;
 const TAIL=`<script>
 (async()=>{
   const R={c:[]},wait=ms=>new Promise(r=>setTimeout(r,ms)),ok=(n,v)=>R.c.push([n,!!v]);
@@ -20,11 +21,11 @@ const TAIL=`<script>
   const celdas=n=>{const tr=filas().find(r=>r.querySelector("th").textContent.startsWith(n));return tr?[...tr.children].map(c=>c.textContent.replace(/↗/,"").trim()):null;};
   try{
     await wait(1200);
-    location.hash="#compendio/armas";await wait(500);for(let i=0;i<40&&!COMP_SRD;i++)await wait(250);renderInv();await wait(200);
+    location.hash="#compendio/armas";await wait(500);${MANUAL_JS}renderInv();await wait(200);
     ok("la sección se muestra dentro del Compendio, con su pestaña marcada",!document.getElementById("view-armas").hidden&&document.querySelector(".pagenav").dataset.blk==="compendio"&&!!document.querySelector("#view-armas [data-cmnav] a[href='#compendio/armas'][aria-selected=true]"));
     ok("la barra de apartados cuenta las armas",document.querySelector("#view-armas [data-cmnav] a[href='#compendio/armas'] .pcsub").textContent==="38");
     ok("no queda en Utilidades",!document.querySelector("#view-utilidades a[href='#inventario']")&&!document.querySelector(".pagenav a[href='#inventario']"));
-    ok("salen las 38 armas del SRD en 4 categorías",filas().length===38&&document.querySelectorAll("#inv-body .invh").length===4);
+    ok("salen las 38 armas del manual en 4 categorías",filas().length===38&&document.querySelectorAll("#inv-body .invh").length===4);
     ok("las categorías van como en el manual",[...document.querySelectorAll("#inv-body .invh")].map(h=>h.textContent.replace(/\\s*\\d+$/,"").trim()).join("|")==="Armas cuerpo a cuerpo sencillas|Armas a distancia sencillas|Armas cuerpo a cuerpo marciales|Armas a distancia marciales");
     {const c=celdas("Espada larga");
      ok("espada larga: daño, propiedades, maestría, peso y precio",c&&c[2]==="1d8 cortante (1d10 a dos manos)"&&c[3]==="Versátil (1d10)"&&c[4]==="Debilitar"&&c[5]==="1,5 kg"&&c[6]==="15 po");}
@@ -33,7 +34,7 @@ const TAIL=`<script>
     {const c=celdas("Daga");ok("daga: propiedades con el alcance de lo arrojadizo (la app añade pies y casillas según las preferencias)",c&&c[3].startsWith("Arrojadiza (alcance 6/18 m")&&c[3].endsWith("Ligera, Sutil")&&c[5]==="0,5 kg");}
     {const c=celdas("Ballesta pesada");ok("ballesta pesada: munición con su alcance",c&&c[3].includes("Munición (alcance 30/120 m")&&c[3].includes("Recarga")&&c[6]==="50 po");}
     {const c=celdas("Maza");ok("sin propiedades sale una raya, no un aviso",c&&c[3]==="—"&&!filas().find(r=>r.querySelector("th").textContent.startsWith("Maza")).querySelector(".invfalta"));}
-    ok("con el SRD completo no falta ningún dato",!document.querySelector("#inv-body .invfalta"));
+    ok("con el manual completo no falta ningún dato",!document.querySelector("#inv-body .invfalta"));
     ok("el contador cuenta las armas",document.getElementById("inv-count").textContent.startsWith("38 armas · 0 revisadas"));
     {const q=document.getElementById("inv-q");q.value="ballesta";q.dispatchEvent(new Event("input",{bubbles:true}));await wait(100);
      ok("buscar filtra por nombre",filas().length===3);
@@ -56,7 +57,7 @@ const TAIL=`<script>
     {const f=document.getElementById("inv-f");f.checked=true;f.dispatchEvent(new Event("change",{bubbles:true}));await wait(100);
      ok("«solo con datos que faltan» deja solo esa",filas().length===1);
      f.checked=false;f.dispatchEvent(new Event("change",{bubbles:true}));await wait(100);}
-    ok("el filtro de módulo lista el SRD y el de prueba",[...document.getElementById("inv-u").options].map(o=>o.value).filter(Boolean).join("|")==="SRD 5.2.1|XX");
+    ok("el filtro de módulo lista el manual y el de prueba",[...document.getElementById("inv-u").options].map(o=>o.value).filter(Boolean).join("|")==="XPHB|XX");
   }catch(e){(window.__err=window.__err||[]).push("flujo: "+e+" "+String(e.stack).slice(0,300));}
   R.err=window.__err||[];
   const pre=document.createElement("pre");pre.id="__res";pre.textContent=JSON.stringify(R);document.body.append(pre);
@@ -74,7 +75,7 @@ function serve(){
   return new Promise(ok=>srv.listen(0,'127.0.0.1',()=>ok(srv)));
 }
 
-testNav('Compendio › Armas',{skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
+testNav('Compendio › Armas',{manual:true,skip:!BROWSER&&'no hay Edge ni Chrome',timeout:120000},async()=>{
   const srv=await serve(),port=srv.address().port,prof=mkdtempSync(path.join(os.tmpdir(),'hdm-inv-'));
   try{
     const dom=await new Promise((ok,ko)=>execFile(BROWSER,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check',

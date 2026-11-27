@@ -5,4 +5,4 @@ export {readFileSync,existsSync,mkdtempSync,rmSync} from 'node:fs';
 export {execFile} from 'node:child_process';
 export {default as os} from 'node:os';
 export {default as path} from 'node:path';
-export {ROOT,PAGE,testNav} from './lib.mjs';
+export {ROOT,PAGE,testNav,MANUAL_JS} from './lib.mjs';

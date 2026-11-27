@@ -1,5 +1,5 @@
-// Estructura la tabla de progresión de cada clase del compendio (datos/es/compendio.json) en datos: x.prog.
-// Uso:  node tools/prog-clases.mjs [ruta.json]   (por defecto datos/es/compendio.json; reescribe el archivo)
+// Estructura la tabla de progresión de cada clase del compendio (datos/privado/libros/manual-del-jugador-2024.json) en datos: x.prog.
+// Uso:  node tools/prog-clases.mjs [ruta.json]   (por defecto datos/privado/libros/manual-del-jugador-2024.json; reescribe el archivo)
 // También copia a x.recursos lo declarado en tools/recursos-clase.json (qué recursos da cada clase y cómo se recuperan).
 // Y a x.ef lo de tools/efectos-clase.json (efectos de los rasgos, con su vocabulario).
 // La tabla HTML sigue siendo la fuente que se enseña; prog es lo que leen la hoja de personaje y los recursos.
@@ -82,7 +82,7 @@ export function conProg(datos) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const ruta = process.argv[2] || fileURLToPath(new URL('../datos/es/compendio.json', import.meta.url));
+  const ruta = process.argv[2] || fileURLToPath(new URL('../datos/privado/libros/manual-del-jugador-2024.json', import.meta.url));
   const d = conProg(JSON.parse(readFileSync(ruta, 'utf8')));
   writeFileSync(ruta, JSON.stringify(d));
   console.log(d.clases.map(c => `${c.n}: ${c.prog ? c.prog.filas.length + ' niveles, ' + c.prog.cols.length + ' columnas' : 'SIN TABLA'}`).join('\n'));

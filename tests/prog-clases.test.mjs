@@ -1,10 +1,10 @@
 // Tablas de progresión de las clases del compendio: la tabla HTML y su versión estructurada (x.prog) deben cuadrar con las reglas.
-import { test } from 'node:test';
+import { testM as test, MANUAL } from './manual.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { progDe } from '../tools/prog-clases.mjs';
 
-const D = JSON.parse(readFileSync(new URL('../datos/es/compendio.json', import.meta.url), 'utf8'));
+const D = MANUAL;
 const FULL = [[2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1, 1], [4, 3, 3, 3, 2, 1, 1],
   [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1, 1], [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1]];
 const HALF = [[2], [2], [3], [3], [4, 2], [4, 2], [4, 3], [4, 3], [4, 3, 2], [4, 3, 2], [4, 3, 3], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2]];
